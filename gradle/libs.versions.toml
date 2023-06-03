@@ -1,0 +1,75 @@
+# Central declaration of dependencies (Gradle Version Catalog)
+# https://docs.gradle.org/current/userguide/platforms.html#sub:conventional-dependencies-toml
+
+# Declaring Rich and/or Ranged Versions
+# https://docs.gradle.org/current/userguide/rich_versions.html
+# https://docs.gradle.org/current/userguide/single_versions.html
+
+
+[versions]
+
+fluxoKmpConf = "0.1.0"
+
+# Java/Kotlin compatibility
+javaLangTarget = "11"
+kotlinLangVersion = "1.7"
+
+# Kotlin version, aligned with Compose Multiplatform
+# https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
+# https://github.com/JetBrains/kotlin/releases
+kotlin = "1.8.20"
+
+# Compose Multiplatform from JetBrains
+# https://github.com/JetBrains/compose-multiplatform/releases
+jetbrains-compose = "1.4.0"
+
+# https://github.com/google/ksp/releases
+ksp = "1.8.20-1.0.11"
+
+# https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
+android-gradle-plugin = "8.0.2"
+
+# Public API management tool
+# https://github.com/Kotlin/binary-compatibility-validator/releases
+# 0.13+ uses Kotlin metadata 0.6.0 (conflicts with AtomicFU!)
+bcv = "0.12.1"
+
+# Dokka is a documentation engine for Kotlin/Java
+# https://github.com/Kotlin/dokka/releases
+# https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
+dokka = "1.8.20-dev-219"
+
+# https://github.com/detekt/detekt/releases
+detekt = "1.23.0"
+
+# Gradle plugin for building plugins for IntelliJ-based IDEs
+# https://plugins.gradle.org/plugin/org.jetbrains.intellij
+# https://github.com/JetBrains/gradle-intellij-plugin/releases
+gradle-intellij-plugin = "1.14.0"
+
+
+[libraries]
+
+plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bcv" }
+plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version.ref = "gradle-intellij-plugin" }
+plugin-jetbrains-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
+plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
+plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
+
+
+[plugins]
+
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }
+
+# Publish plugins to the Gradle Plugin Portal
+# https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }
+
+# Plugin that guards against unintentional dependency changes
+# https://github.com/dropbox/dependency-guard/releases
+deps-guard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }

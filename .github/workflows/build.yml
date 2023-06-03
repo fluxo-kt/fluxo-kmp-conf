@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**-check.yml'
+      - '**-submission.yml'
+      - '**-validation.yml'
+      - '**.*ignore'
+      - '**.md'
+      - '**.txt'
+      - '**benchmark.yml'
+      - '**dependabot.yml'
+  push:
+    paths-ignore:
+      - '**-check.yml'
+      - '**-submission.yml'
+      - '**-validation.yml'
+      - '**.*ignore'
+      - '**.md'
+      - '**.txt'
+      - '**benchmark.yml'
+      - '**dependabot.yml'
+
+env:
+  CI: true
+  BUILD_NUMBER: ${{ github.run_number }}
+  SCM_TAG: ${{ github.sha }}
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+jobs:
+  checks:
+    name: 'Build and check'
+    timeout-minutes: 25
+    runs-on: 'ubuntu-latest'
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@beefd8c500e5f70ce4fc69e314d454dcf8822f4b
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 'Set up JDK 17'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+          cache-read-only: ${{ (github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev') }}
+
+      - name: 'Build and check plugin itself'
+        run: ./gradlew build assemble check --continue --stacktrace --scan
+
+      - name: "Add build scan URL as PR comment"
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request' && failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
+            })

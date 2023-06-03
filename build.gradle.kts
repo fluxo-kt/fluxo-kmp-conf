@@ -1,5 +1,15 @@
-val buildTask = tasks.register("buildPlugins")
+@Suppress("DSL_SCOPE_VIOLATION")
+plugins {
+    alias(libs.plugins.deps.guard)
+}
 
-subprojects {
-    buildTask.configure { dependsOn(tasks.named("build")) }
+dependencyGuard {
+    configuration("classpath")
+}
+
+if (hasProperty("buildScan")) {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+    }
 }

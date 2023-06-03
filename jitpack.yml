@@ -1,0 +1,9 @@
+# Configuration file for jitpack.io
+
+# Specify JDK version
+# https://jitpack.io/docs/BUILDING/#java-version
+jdk:
+  - openjdk11
+
+install:
+    - ./gradlew :fluxo-kmp-conf:publishToMavenLocal

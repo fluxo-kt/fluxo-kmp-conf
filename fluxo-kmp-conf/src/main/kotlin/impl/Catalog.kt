@@ -6,13 +6,12 @@ import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.plugin.use.PluginDependency
 import kotlin.jvm.optionals.getOrNull
 
 
 internal val Project.catalogs: VersionCatalogsExtension
-    get() = extensions.getByType(VersionCatalogsExtension::class)
+    get() = extensions.getByType(VersionCatalogsExtension::class.java)
 
 internal val Project.libsCatalog: VersionCatalog
     get() = catalogs.named("libs")

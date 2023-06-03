@@ -1,0 +1,401 @@
+public final class AndroidConfigSetup {
+	public fun <init> (IIIILjava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ZLjava/util/List;Lkotlin/jvm/functions/Function2;)V
+	public synthetic fun <init> (IIIILjava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ZLjava/util/List;Lkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component10 ()Lkotlin/jvm/functions/Function2;
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/Boolean;
+	public final fun component8 ()Z
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy (IIIILjava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ZLjava/util/List;Lkotlin/jvm/functions/Function2;)LAndroidConfigSetup;
+	public static synthetic fun copy$default (LAndroidConfigSetup;IIIILjava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ZLjava/util/List;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)LAndroidConfigSetup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBuildToolsVersion ()Ljava/lang/String;
+	public final fun getCompileSdkVersion ()I
+	public final fun getConfigurator ()Lkotlin/jvm/functions/Function2;
+	public final fun getEnableBuildConfig ()Ljava/lang/Boolean;
+	public final fun getLanguages ()Ljava/util/List;
+	public final fun getLastSdkVersion ()I
+	public final fun getMinSdkVersion ()I
+	public final fun getPreviewSdkVersion ()Ljava/lang/String;
+	public final fun getSetupCompose ()Z
+	public final fun getTargetSdkVersion ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class AndroidConfigSetupKt {
+	public static final fun requireDefaultAndroidConfigSetup (Lorg/gradle/api/Project;)LAndroidConfigSetup;
+}
+
+public final class BinaryCompatibilityValidatorConfig {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;ZZ)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDisableForNonRelease ()Z
+	public final fun getIgnoredClasses ()Ljava/util/List;
+	public final fun getIgnoredPackages ()Ljava/util/List;
+	public final fun getJsApiChecks ()Z
+	public final fun getNonPublicMarkers ()Ljava/util/List;
+}
+
+public final class Compilations {
+	public static final field INSTANCE LCompilations;
+	public final fun isDarwinEnabled ()Z
+	public final fun isGenericEnabled ()Z
+	public final fun isGenericEnabledForProject (Lorg/gradle/api/Project;)Z
+	public final fun isWindowsEnabled ()Z
+}
+
+public final class CompilationsKt {
+	public static final fun isGenericCompilationEnabled (Lorg/gradle/api/Project;)Z
+}
+
+public final class CompilationsKt$disableCompilationsOfNeeded$3$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class GradleSetupPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class GradleSetupPlugin$apply$3$1$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class GradleSetupPlugin$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class KotlinConfigSetup {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component10 ()Z
+	public final fun component11 ()Z
+	public final fun component12 ()Z
+	public final fun component13 ()Z
+	public final fun component14 ()Z
+	public final fun component15 ()Z
+	public final fun component16 ()Ljava/util/List;
+	public final fun component17 ()Lkotlin/jvm/functions/Function1;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Z
+	public final fun component4 ()Z
+	public final fun component5 ()Z
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun component8 ()Z
+	public final fun component9 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;)LKotlinConfigSetup;
+	public static synthetic fun copy$default (LKotlinConfigSetup;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)LKotlinConfigSetup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAddStdlibDependency ()Z
+	public final fun getAllowGradlePlatform ()Z
+	public final fun getAlwaysIndyLambdas ()Z
+	public final fun getConfigurator ()Lkotlin/jvm/functions/Function1;
+	public final fun getJavaLangTarget ()Ljava/lang/String;
+	public final fun getJavaParameters ()Z
+	public final fun getKotlinLangVersion ()Ljava/lang/String;
+	public final fun getOptInInternal ()Z
+	public final fun getOptIns ()Ljava/util/List;
+	public final fun getProgressive ()Z
+	public final fun getRemoveAssertionsInRelease ()Z
+	public final fun getSetupCoroutines ()Z
+	public final fun getSetupJvmToolchain ()Z
+	public final fun getSetupSerialization ()Z
+	public final fun getSuppressKotlinComposeCompatCheck ()Z
+	public final fun getUseExperimentalFastJarFs ()Z
+	public final fun getWarningsAsErrors ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class KotlinConfigSetupKt {
+	public static final fun requireDefaultKotlinConfigSetup (Lorg/gradle/api/Project;)LKotlinConfigSetup;
+}
+
+public final class MultiplatformSourceSets : org/gradle/api/NamedDomainObjectContainer {
+	public synthetic fun add (Ljava/lang/Object;)Z
+	public fun add (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Z
+	public fun addAll (Ljava/util/Collection;)Z
+	public fun addAllLater (Lorg/gradle/api/provider/Provider;)V
+	public fun addLater (Lorg/gradle/api/provider/Provider;)V
+	public fun addRule (Ljava/lang/String;Lgroovy/lang/Closure;)Lorg/gradle/api/Rule;
+	public fun addRule (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/Rule;
+	public fun addRule (Lorg/gradle/api/Rule;)Lorg/gradle/api/Rule;
+	public fun all (Lgroovy/lang/Closure;)V
+	public fun all (Lorg/gradle/api/Action;)V
+	public fun clear ()V
+	public final fun commonCompileOnly (Ljava/lang/Object;)V
+	public synthetic fun configure (Lgroovy/lang/Closure;)Ljava/lang/Object;
+	public fun configure (Lgroovy/lang/Closure;)Lorg/gradle/api/NamedDomainObjectContainer;
+	public fun configureEach (Lorg/gradle/api/Action;)V
+	public final fun contains (Ljava/lang/Object;)Z
+	public fun contains (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Z
+	public fun containsAll (Ljava/util/Collection;)Z
+	public synthetic fun create (Ljava/lang/String;)Ljava/lang/Object;
+	public fun create (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public synthetic fun create (Ljava/lang/String;Lgroovy/lang/Closure;)Ljava/lang/Object;
+	public fun create (Ljava/lang/String;Lgroovy/lang/Closure;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public synthetic fun create (Ljava/lang/String;Lorg/gradle/api/Action;)Ljava/lang/Object;
+	public fun create (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public synthetic fun findAll (Lgroovy/lang/Closure;)Ljava/util/Collection;
+	public fun findAll (Lgroovy/lang/Closure;)Ljava/util/Set;
+	public synthetic fun findByName (Ljava/lang/String;)Ljava/lang/Object;
+	public fun findByName (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public final fun getAllSet ()Ljava/util/Set;
+	public final fun getAndroidNativeSet ()Ljava/util/Set;
+	public final fun getAndroidSet ()Ljava/util/Set;
+	public fun getAsMap ()Ljava/util/SortedMap;
+	public synthetic fun getAt (Ljava/lang/String;)Ljava/lang/Object;
+	public fun getAt (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public synthetic fun getByName (Ljava/lang/String;)Ljava/lang/Object;
+	public fun getByName (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public synthetic fun getByName (Ljava/lang/String;Lgroovy/lang/Closure;)Ljava/lang/Object;
+	public fun getByName (Ljava/lang/String;Lgroovy/lang/Closure;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public synthetic fun getByName (Ljava/lang/String;Lorg/gradle/api/Action;)Ljava/lang/Object;
+	public fun getByName (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public fun getCollectionSchema ()Lorg/gradle/api/NamedDomainObjectCollectionSchema;
+	public final fun getCommon ()LSourceSetBundle;
+	public final fun getDarwinSet ()Ljava/util/Set;
+	public final fun getIosSet ()Ljava/util/Set;
+	public final fun getJavaSet ()Ljava/util/Set;
+	public final fun getJsSet ()Ljava/util/Set;
+	public final fun getLinuxSet ()Ljava/util/Set;
+	public final fun getMacosSet ()Ljava/util/Set;
+	public final fun getMingwSet ()Ljava/util/Set;
+	public fun getNamer ()Lorg/gradle/api/Namer;
+	public fun getNames ()Ljava/util/SortedSet;
+	public final fun getNativeSet ()Ljava/util/Set;
+	public fun getRules ()Ljava/util/List;
+	public fun getSize ()I
+	public final fun getTvosSet ()Ljava/util/Set;
+	public final fun getWasmSet ()Ljava/util/Set;
+	public final fun getWatchosSet ()Ljava/util/Set;
+	public fun isEmpty ()Z
+	public fun iterator ()Ljava/util/Iterator;
+	public synthetic fun matching (Lgroovy/lang/Closure;)Lorg/gradle/api/DomainObjectCollection;
+	public synthetic fun matching (Lgroovy/lang/Closure;)Lorg/gradle/api/NamedDomainObjectCollection;
+	public fun matching (Lgroovy/lang/Closure;)Lorg/gradle/api/NamedDomainObjectSet;
+	public synthetic fun matching (Lorg/gradle/api/specs/Spec;)Lorg/gradle/api/DomainObjectCollection;
+	public synthetic fun matching (Lorg/gradle/api/specs/Spec;)Lorg/gradle/api/NamedDomainObjectCollection;
+	public fun matching (Lorg/gradle/api/specs/Spec;)Lorg/gradle/api/NamedDomainObjectSet;
+	public synthetic fun maybeCreate (Ljava/lang/String;)Ljava/lang/Object;
+	public fun maybeCreate (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public fun named (Ljava/lang/String;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public fun named (Ljava/lang/String;Ljava/lang/Class;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public fun named (Ljava/lang/String;Ljava/lang/Class;Lorg/gradle/api/Action;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public fun named (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public fun register (Ljava/lang/String;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public fun register (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public final fun remove (Ljava/lang/Object;)Z
+	public fun remove (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Z
+	public fun removeAll (Ljava/util/Collection;)Z
+	public fun retainAll (Ljava/util/Collection;)Z
+	public final fun size ()I
+	public fun toArray ()[Ljava/lang/Object;
+	public fun toArray ([Ljava/lang/Object;)[Ljava/lang/Object;
+	public fun whenObjectAdded (Lgroovy/lang/Closure;)V
+	public fun whenObjectAdded (Lorg/gradle/api/Action;)Lorg/gradle/api/Action;
+	public fun whenObjectRemoved (Lgroovy/lang/Closure;)V
+	public fun whenObjectRemoved (Lorg/gradle/api/Action;)Lorg/gradle/api/Action;
+	public synthetic fun withType (Ljava/lang/Class;)Lorg/gradle/api/DomainObjectCollection;
+	public synthetic fun withType (Ljava/lang/Class;)Lorg/gradle/api/NamedDomainObjectCollection;
+	public fun withType (Ljava/lang/Class;)Lorg/gradle/api/NamedDomainObjectSet;
+	public fun withType (Ljava/lang/Class;Lgroovy/lang/Closure;)Lorg/gradle/api/DomainObjectCollection;
+	public fun withType (Ljava/lang/Class;Lorg/gradle/api/Action;)Lorg/gradle/api/DomainObjectCollection;
+}
+
+public final class PublicationConfig {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/gradle/api/Project;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/gradle/api/Project;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDeveloperEmail ()Ljava/lang/String;
+	public final fun getDeveloperId ()Ljava/lang/String;
+	public final fun getDeveloperName ()Ljava/lang/String;
+	public final fun getGroup ()Ljava/lang/String;
+	public final fun getLicenseName ()Ljava/lang/String;
+	public final fun getLicenseUrl ()Ljava/lang/String;
+	public final fun getProjectDescription ()Ljava/lang/String;
+	public final fun getProjectName ()Ljava/lang/String;
+	public final fun getProjectUrl ()Ljava/lang/String;
+	public final fun getPublicationUrl ()Ljava/lang/String;
+	public final fun getRepositoryPassword ()Ljava/lang/String;
+	public final fun getRepositoryUrl ()Ljava/lang/String;
+	public final fun getRepositoryUserName ()Ljava/lang/String;
+	public final fun getScmTag ()Ljava/lang/String;
+	public final fun getScmUrl ()Ljava/lang/String;
+	public final fun getSigningKey ()Ljava/lang/String;
+	public final fun getSigningPassword ()Ljava/lang/String;
+	public final fun getVersion ()Ljava/lang/String;
+	public final fun isSigningEnabled ()Z
+	public final fun isSnapshot ()Z
+}
+
+public final class SetupAndroidKt {
+	public static final fun setupAndroidApp (Lorg/gradle/api/Project;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupAndroidApp$default (Lorg/gradle/api/Project;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupAndroidLibrary (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupAndroidLibrary$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class SetupAndroidKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupBinaryCompatibilityValidatorKt {
+	public static final fun setupBinaryCompatibilityValidator (Lorg/gradle/api/Project;LBinaryCompatibilityValidatorConfig;)V
+	public static synthetic fun setupBinaryCompatibilityValidator$default (Lorg/gradle/api/Project;LBinaryCompatibilityValidatorConfig;ILjava/lang/Object;)V
+}
+
+public final class SetupBinaryCompatibilityValidatorKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupDefaultsKt {
+	public static final fun setupDefaults (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;LAndroidConfigSetup;LKotlinConfigSetup;LBinaryCompatibilityValidatorConfig;LPublicationConfig;)V
+	public static synthetic fun setupDefaults$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;LAndroidConfigSetup;LKotlinConfigSetup;LBinaryCompatibilityValidatorConfig;LPublicationConfig;ILjava/lang/Object;)V
+}
+
+public final class SetupIdeaPluginKt {
+	public static final fun setupIdeaPlugin (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+}
+
+public final class SetupIdeaPluginKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupJsAppKt {
+	public static final fun setupJsApp (Lorg/gradle/api/Project;)V
+}
+
+public final class SetupJsAppKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupKotlinKt {
+	public static final fun setupKotlin (Lorg/gradle/api/Project;LKotlinConfigSetup;ZLjava/util/List;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupKotlin$default (Lorg/gradle/api/Project;LKotlinConfigSetup;ZLjava/util/List;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class SetupMultiplatformKt {
+	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)LSourceSetBundle;
+	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
+	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;ILjava/lang/Object;)Lkotlin/properties/PropertyDelegateProvider;
+	public static final fun dependencies (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function1;)V
+	public static final fun dependsOn (LSourceSetBundle;LSourceSetBundle;)V
+	public static final fun dependsOn (LSourceSetBundle;Ljava/lang/Iterable;)V
+	public static final fun dependsOn (Ljava/lang/Iterable;LSourceSetBundle;)V
+	public static final fun dependsOn (Ljava/lang/Iterable;Ljava/lang/Iterable;)V
+	public static final fun dependsOn (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;LSourceSetBundle;)V
+	public static final fun dependsOn (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Ljava/lang/Iterable;)V
+	public static final fun dependsOnBundles (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Ljava/lang/Iterable;)V
+	public static final fun getMain (Ljava/lang/Iterable;)Ljava/util/List;
+	public static final fun getTest (Ljava/lang/Iterable;)Ljava/util/List;
+	public static final fun iosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun iosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun ksp (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun macosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun macosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun plus (LSourceSetBundle;LSourceSetBundle;)Ljava/util/Set;
+	public static final fun plus (LSourceSetBundle;Ljava/util/Set;)Ljava/util/Set;
+	public static final fun setupMultiplatform (Lorg/gradle/api/Project;LKotlinConfigSetup;Ljava/lang/String;ZLjava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupMultiplatform$default (Lorg/gradle/api/Project;LKotlinConfigSetup;Ljava/lang/String;ZLjava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupSourceSets (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Lkotlin/jvm/functions/Function1;)V
+	public static final fun tvosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun tvosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun watchosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun watchosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+}
+
+public final class SetupPublicationKt {
+	public static final fun setupPublication (Lorg/gradle/api/Project;)V
+}
+
+public final class SetupPublicationKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupPublicationKt$setupPublicationAndroidLibrary$1$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupPublicationKt$setupPublicationRepository$1$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupTestsReportKt {
+	public static final fun setupTestsReport (Lorg/gradle/api/Project;)V
+}
+
+public final class SetupTestsReportKt$setupTestsReport$1$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupVerificationKt {
+	public static final fun setupVerification (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;)V
+	public static synthetic fun setupVerification$default (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;ILjava/lang/Object;)V
+}
+
+public final class SetupVerificationKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SetupVerificationKt$setupVerification$3$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final synthetic fun execute (Ljava/lang/Object;)V
+}
+
+public final class SourceSetBundle {
+	public fun <init> (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)V
+	public final fun component1 ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public final fun component2 ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public final fun copy (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)LSourceSetBundle;
+	public static synthetic fun copy$default (LSourceSetBundle;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;ILjava/lang/Object;)LSourceSetBundle;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMain ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public final fun getTest ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class UtilsKt {
+	public static final fun areComposeMetricsEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun buildNumber (Lorg/gradle/api/Project;)Ljava/lang/String;
+	public static final fun buildNumberSuffix (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun buildNumberSuffix$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun disableTests (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun envOrPropInt (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/Integer;
+	public static final fun envOrPropList (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/util/List;
+	public static final fun envOrPropValue (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/String;
+	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Z
+	public static final fun isCI (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isDesugaringEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isMaxDebugEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isR8Disabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isRelease (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun scmTag (Lorg/gradle/api/Project;Z)Lorg/gradle/api/provider/Provider;
+	public static synthetic fun scmTag$default (Lorg/gradle/api/Project;ZILjava/lang/Object;)Lorg/gradle/api/provider/Provider;
+	public static final fun signingKey (Lorg/gradle/api/Project;)Ljava/lang/String;
+	public static final fun useKotlinDebug (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+}
+
