@@ -10,7 +10,7 @@ updates:
     commit-message:
       prefix: "build(deps)"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     reviewers:
       - "amal"
     labels:
@@ -22,21 +22,9 @@ updates:
     commit-message:
       prefix: "ci(GitHub)"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     reviewers:
       - "amal"
     labels:
       - "gh-action"
-      - "dependencies"
-
-  - package-ecosystem: "npm"
-    directory: "/"
-    commit-message:
-      prefix: "build(deps)"
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "amal"
-    labels:
-      - "js"
       - "dependencies"

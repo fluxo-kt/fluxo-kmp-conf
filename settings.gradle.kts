@@ -1,5 +1,3 @@
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
 pluginManagement {
     repositories {
         google()
@@ -16,13 +14,10 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev/")
     }
-    versionCatalogs {
-        create("libs") {
-            from(files("../libs.versions.toml"))
-        }
-    }
 }
 
-rootProject.name = "plugins"
+rootProject.name = "fluxo-kmp-conf"
 
-include("setup")
+// On module update, don't forget to update '.github/workflows/deps-submission.yml'!
+
+include(":fluxo-kmp-conf")
