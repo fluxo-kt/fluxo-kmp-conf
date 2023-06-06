@@ -9,22 +9,22 @@ plugins {
 }
 
 dependencyResolutionManagement {
-//    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         gradlePluginPortal()
-        mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev/")
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
-logger.lifecycle("> Conf Gradle version is ${gradle.gradleVersion}")
-logger.lifecycle("> Conf JRE version is ${System.getProperty("java.version")}")
-logger.lifecycle("> Conf CPUs ${Runtime.getRuntime().availableProcessors()}")
+// Environment logging
+run {
+    val gradle = gradle.gradleVersion
+    val java = System.getProperty("java.version")
+    val cpus = Runtime.getRuntime().availableProcessors()
+    logger.lifecycle("> Conf Gradle $gradle, JRE $java, $cpus CPUs")
+}
 
 rootProject.name = "fluxo-kmp-conf"
 
 // On module update, don't forget to update '.github/workflows/deps-submission.yml'!
-
 include(":fluxo-kmp-conf")

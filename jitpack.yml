@@ -6,4 +6,4 @@ jdk:
   - openjdk11
 
 install:
-    - ./gradlew :fluxo-kmp-conf:publishToMavenLocal
+  - ./gradlew :fluxo-kmp-conf:publishToMavenLocal

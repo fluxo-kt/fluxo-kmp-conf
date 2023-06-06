@@ -25,13 +25,20 @@ fun Project.setupBinaryCompatibilityValidator(
     }
 
     when {
-        hasExtension<KotlinMultiplatformExtension>() -> setupBinaryCompatibilityValidatorMultiplatform(config)
-        hasExtension<LibraryExtension>() -> setupBinaryCompatibilityValidatorAndroidLibrary(config)
-        else -> error("Unsupported project type for API checks")
+        hasExtension<KotlinMultiplatformExtension>() ->
+            setupBinaryCompatibilityValidatorMultiplatform(config)
+
+        hasExtension<LibraryExtension>() ->
+            setupBinaryCompatibilityValidatorAndroidLibrary(config)
+
+        else ->
+            error("Unsupported project type for API checks")
     }
 }
 
-private fun Project.setupBinaryCompatibilityValidatorMultiplatform(config: BinaryCompatibilityValidatorConfig?) {
+private fun Project.setupBinaryCompatibilityValidatorMultiplatform(
+    config: BinaryCompatibilityValidatorConfig?,
+) {
     applyBinaryCompatibilityValidator(config)
 
     if (config?.jsApiChecks != false) {
@@ -51,7 +58,9 @@ private fun Project.setupBinaryCompatibilityValidatorMultiplatform(config: Binar
     }
 }
 
-private fun Project.setupBinaryCompatibilityValidatorAndroidLibrary(config: BinaryCompatibilityValidatorConfig?) {
+private fun Project.setupBinaryCompatibilityValidatorAndroidLibrary(
+    config: BinaryCompatibilityValidatorConfig?,
+) {
     applyBinaryCompatibilityValidator(config)
 }
 

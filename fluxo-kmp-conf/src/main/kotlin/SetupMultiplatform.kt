@@ -6,6 +6,9 @@ import impl.libsCatalog
 import impl.onLibrary
 import impl.optionalVersion
 import impl.testImplementation
+import kotlin.jvm.optionals.getOrNull
+import kotlin.properties.PropertyDelegateProvider
+import kotlin.properties.ReadOnlyProperty
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -25,9 +28,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
-import kotlin.jvm.optionals.getOrNull
-import kotlin.properties.PropertyDelegateProvider
-import kotlin.properties.ReadOnlyProperty
 
 typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 
@@ -84,7 +84,10 @@ fun Project.setupMultiplatform(
     }
 }
 
-private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(config: KotlinConfigSetup, project: Project) {
+private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
+    config: KotlinConfigSetup,
+    project: Project,
+) {
     setupSourceSets {
         val libs = project.libsCatalog
 
@@ -95,16 +98,23 @@ private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(config: 
             }
 
             if (config.setupCoroutines) {
-                val enforcedPlatformImplementation: (Provider<MinimalExternalModuleDependency>) -> Unit = {
+                libs.onLibrary("kotlinx-coroutines-bom") {
                     val platform = enforcedPlatform(it)
-                    if (config.allowGradlePlatform) implementation(platform) else testImplementation(platform)
+                    if (config.allowGradlePlatform) {
+                        implementation(platform)
+                    } else {
+                        testImplementation(platform)
+                    }
                 }
-                libs.onLibrary("kotlinx-coroutines-bom", enforcedPlatformImplementation)
             }
 
             val platformImplementation: (Provider<MinimalExternalModuleDependency>) -> Unit = {
                 val platform = platform(it)
-                if (config.allowGradlePlatform) implementation(platform) else testImplementation(platform)
+                if (config.allowGradlePlatform) {
+                    implementation(platform)
+                } else {
+                    testImplementation(platform)
+                }
             }
             libs.onLibrary("square-okio-bom", platformImplementation)
             libs.onLibrary("square-okhttp-bom", platformImplementation)
@@ -181,7 +191,10 @@ private fun KotlinMultiplatformExtension.setupSourceSets(project: Project) {
     }
 }
 
-private fun MultiplatformSourceSets.setupCommonJavaSourceSets(project: Project, sourceSet: Set<SourceSetBundle>) {
+private fun MultiplatformSourceSets.setupCommonJavaSourceSets(
+    project: Project,
+    sourceSet: Set<SourceSetBundle>,
+) {
     if (sourceSet.isEmpty()) {
         return
     }
@@ -433,7 +446,8 @@ fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
     // use ksp<Target>() or add(ksp<SourceSet>).
     // https://kotlinlang.org/docs/ksp-multiplatform.html
     val parent = (this as DefaultKotlinDependencyHandler).parent
-    var configurationName = parent.compileOnlyConfigurationName.replace("compileOnly", "", ignoreCase = true)
+    var configurationName =
+        parent.compileOnlyConfigurationName.replace("compileOnly", "", ignoreCase = true)
     if (configurationName.startsWith("commonMain", ignoreCase = true)) {
         configurationName += "Metadata"
     } else {
@@ -470,8 +484,16 @@ fun KotlinMultiplatformExtension.watchosCompat(
     simulatorArm64: String? = DEFAULT_TARGET_NAME,
 ) {
     enableTarget(name = x64, enableDefault = { watchosX64() }, enableNamed = { watchosX64(it) })
-    enableTarget(name = arm32, enableDefault = { watchosArm32() }, enableNamed = { watchosArm32(it) })
-    enableTarget(name = arm64, enableDefault = { watchosArm64() }, enableNamed = { watchosArm64(it) })
+    enableTarget(
+        name = arm32,
+        enableDefault = { watchosArm32() },
+        enableNamed = { watchosArm32(it) },
+    )
+    enableTarget(
+        name = arm64,
+        enableDefault = { watchosArm64() },
+        enableNamed = { watchosArm64(it) },
+    )
     enableTarget(
         name = simulatorArm64,
         enableDefault = { watchosSimulatorArm64() },
@@ -493,7 +515,10 @@ fun KotlinMultiplatformExtension.tvosCompat(
     )
 }
 
-fun KotlinMultiplatformExtension.macosCompat(x64: String? = DEFAULT_TARGET_NAME, arm64: String? = DEFAULT_TARGET_NAME) {
+fun KotlinMultiplatformExtension.macosCompat(
+    x64: String? = DEFAULT_TARGET_NAME,
+    arm64: String? = DEFAULT_TARGET_NAME,
+) {
     enableTarget(name = x64, enableDefault = { macosX64() }, enableNamed = { macosX64(it) })
     enableTarget(name = arm64, enableDefault = { macosArm64() }, enableNamed = { macosArm64(it) })
 }

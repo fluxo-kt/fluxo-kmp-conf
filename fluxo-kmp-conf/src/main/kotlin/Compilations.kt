@@ -79,7 +79,9 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
              * @see org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask
              */
             project.tasks
-                .matching { it::class.java.name.startsWith("org.jetbrains.kotlin.gradle.targets.js.") }
+                .matching {
+                    it::class.java.name.startsWith("org.jetbrains.kotlin.gradle.targets.js.")
+                }
                 .configureEach {
                     if (enabled) {
                         logger.info("{}, {}, task disabled", project, this)
@@ -126,7 +128,8 @@ private fun KotlinTarget.isCompilationAllowed(): Boolean = when (platformType) {
     KotlinPlatformType.wasm,
     -> project.isGenericCompilationEnabled
 
-    KotlinPlatformType.native -> (this as KotlinNativeTarget).konanTarget.family.isCompilationAllowed(project)
+    KotlinPlatformType.native ->
+        (this as KotlinNativeTarget).konanTarget.family.isCompilationAllowed(project)
 }
 
 private fun Family.isCompilationAllowed(project: Project): Boolean = when (this) {
@@ -149,16 +152,19 @@ private fun Family.isCompilationAllowed(project: Project): Boolean = when (this)
 
 internal fun AbstractTestTask.isTestTaskAllowed(): Boolean {
     return when (this) {
-        is KotlinJsTest -> project.isGenericCompilationEnabled
+        is KotlinJsTest ->
+            project.isGenericCompilationEnabled
 
-        is KotlinNativeTest -> nativeFamilyFromString(platformFromTaskName(name)).isCompilationAllowed(project)
+        is KotlinNativeTest ->
+            nativeFamilyFromString(platformFromTaskName(name)).isCompilationAllowed(project)
 
         // JVM/Android tests
         else -> project.isGenericCompilationEnabled
     }
 }
 
-private fun platformFromTaskName(name: String): String? = name.splitCamelCase(limit = 2).firstOrNull()
+private fun platformFromTaskName(name: String): String? =
+    name.splitCamelCase(limit = 2).firstOrNull()
 
 @Suppress("CyclomaticComplexMethod")
 private fun nativeFamilyFromString(platform: String?): Family = when {
@@ -167,8 +173,8 @@ private fun nativeFamilyFromString(platform: String?): Family = when {
     platform.equals("ios", ignoreCase = true) -> Family.IOS
 
     platform.equals("darwin", ignoreCase = true) ||
-            platform.equals("apple", ignoreCase = true) ||
-            platform.equals("macos", ignoreCase = true)
+        platform.equals("apple", ignoreCase = true) ||
+        platform.equals("macos", ignoreCase = true)
     -> Family.OSX
 
     platform.equals("android", ignoreCase = true) -> Family.ANDROID
@@ -176,8 +182,8 @@ private fun nativeFamilyFromString(platform: String?): Family = when {
     platform.equals("wasm", ignoreCase = true) -> Family.WASM
 
     platform.equals("mingw", ignoreCase = true) ||
-            platform.equals("win", ignoreCase = true) ||
-            platform.equals("windows", ignoreCase = true)
+        platform.equals("win", ignoreCase = true) ||
+        platform.equals("windows", ignoreCase = true)
     -> Family.MINGW
 
     else -> throw IllegalArgumentException("Unsupported family: $platform")

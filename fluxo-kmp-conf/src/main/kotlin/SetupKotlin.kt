@@ -134,37 +134,38 @@ internal fun Project.setupKotlinExtension(
     setupKotlinTasks(config, optIns)
 }
 
-private fun Project.setupKotlinTasks(config: KotlinConfigSetup, optIns: List<String>) = afterEvaluate {
-    val isCI by isCI()
-    val isRelease by isRelease()
-    val disableTests by disableTests()
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
-        val taskName = name
-        val isJsTask = "Js" in taskName
-        val isTestTask = "Test" in taskName
-        val isReleaseTask = "Release" in taskName
-        val warningsAsErrors = config.warningsAsErrors &&
-            !isJsTask && !isTestTask && (isCI || isRelease)
+private fun Project.setupKotlinTasks(config: KotlinConfigSetup, optIns: List<String>) =
+    afterEvaluate {
+        val isCI by isCI()
+        val isRelease by isRelease()
+        val disableTests by disableTests()
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+            val taskName = name
+            val isJsTask = "Js" in taskName
+            val isTestTask = "Test" in taskName
+            val isReleaseTask = "Release" in taskName
+            val warningsAsErrors = config.warningsAsErrors &&
+                !isJsTask && !isTestTask && (isCI || isRelease)
 
-        if (isTestTask && disableTests) {
-            enabled = false
-        }
-
-        compilerOptions {
-            if (warningsAsErrors) {
-                allWarningsAsErrors.set(true)
+            if (isTestTask && disableTests) {
+                enabled = false
             }
-            setupKotlinOptions(
-                project = project,
-                isReleaseTask = isReleaseTask,
-                isTestTask = isTestTask,
-                warningsAsErrors = warningsAsErrors,
-                config = config,
-                optIns = optIns,
-            )
+
+            compilerOptions {
+                if (warningsAsErrors) {
+                    allWarningsAsErrors.set(true)
+                }
+                setupKotlinOptions(
+                    project = project,
+                    isReleaseTask = isReleaseTask,
+                    isTestTask = isTestTask,
+                    warningsAsErrors = warningsAsErrors,
+                    config = config,
+                    optIns = optIns,
+                )
+            }
         }
     }
-}
 
 internal fun DependencyHandler.setupKotlinDependencies(
     project: Project,
@@ -331,8 +332,10 @@ private fun KotlinCommonCompilerOptions.setupKotlinOptions(
             // https://github.com/androidx/androidx/blob/androidx-main/compose/compiler/design/compiler-metrics.md#interpreting-compose-compiler-metrics
             val reportsDir = "${project.buildDir.absolutePath}/reports/compose"
             freeCompilerArgs.addAll(
-                "-P", "$p:metricsDestination=$reportsDir",
-                "-P", "$p:reportsDestination=$reportsDir",
+                "-P",
+                "$p:metricsDestination=$reportsDir",
+                "-P",
+                "$p:reportsDestination=$reportsDir",
             )
 
             // Convert the report to human-readable html.

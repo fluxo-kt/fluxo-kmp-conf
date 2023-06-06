@@ -27,7 +27,9 @@ class GradleSetupPlugin : Plugin<Project> {
         if (useKotlinDebug) target.logger.lifecycle("> Conf USE_KOTLIN_DEBUG mode is enabled!")
 
         val areComposeMetricsEnabled by target.areComposeMetricsEnabled()
-        if (areComposeMetricsEnabled) target.logger.lifecycle("> Conf COMPOSE_METRICS mode is enabled!")
+        if (areComposeMetricsEnabled) {
+            target.logger.lifecycle("> Conf COMPOSE_METRICS mode is enabled!")
+        }
 
         val isR8Disabled by target.isR8Disabled()
         if (isR8Disabled) target.logger.lifecycle("> Conf DISABLE_R8 mode is enabled!")
@@ -77,19 +79,23 @@ class GradleSetupPlugin : Plugin<Project> {
             afterEvaluate {
                 target.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
                     val libs = target.libsCatalog
-                    target.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
-                        lockFileDirectory = project.rootDir.resolve(".kotlin-js-store")
-                        libs.onVersion("js-engineIo") { resolution("engine.io", it) }
-                        libs.onVersion("js-socketIo") { resolution("socket.io", it) }
-                        libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
-                    }
-                    target.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().apply {
-                        libs.onVersion("js-karma") { versions.karma.version = it }
-                        libs.onVersion("js-mocha") { versions.mocha.version = it }
-                        libs.onVersion("js-webpack") { versions.webpack.version = it }
-                        libs.onVersion("js-webpackCli") { versions.webpackCli.version = it }
-                        libs.onVersion("js-webpackDevServer") { versions.webpackDevServer.version = it }
-                    }
+                    target.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>()
+                        .apply {
+                            lockFileDirectory = project.rootDir.resolve(".kotlin-js-store")
+                            libs.onVersion("js-engineIo") { resolution("engine.io", it) }
+                            libs.onVersion("js-socketIo") { resolution("socket.io", it) }
+                            libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
+                        }
+                    target.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>()
+                        .apply {
+                            libs.onVersion("js-karma") { versions.karma.version = it }
+                            libs.onVersion("js-mocha") { versions.mocha.version = it }
+                            libs.onVersion("js-webpack") { versions.webpack.version = it }
+                            libs.onVersion("js-webpackCli") { versions.webpackCli.version = it }
+                            libs.onVersion("js-webpackDevServer") {
+                                versions.webpackDevServer.version = it
+                            }
+                        }
                 }
             }
         }

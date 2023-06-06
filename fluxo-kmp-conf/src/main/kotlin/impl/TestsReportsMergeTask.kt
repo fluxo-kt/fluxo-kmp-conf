@@ -1,6 +1,10 @@
 package impl
 
 import groovy.time.TimeCategory
+import java.io.FileOutputStream
+import java.util.Date
+import java.util.concurrent.ConcurrentLinkedQueue
+import javax.xml.stream.XMLOutputFactory
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.OutputFile
@@ -11,10 +15,6 @@ import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
-import java.io.FileOutputStream
-import java.util.Date
-import java.util.concurrent.ConcurrentLinkedQueue
-import javax.xml.stream.XMLOutputFactory
 
 /**
  * Exports merged JUnit-like XML tests report for all tests in all projects.
@@ -179,7 +179,8 @@ internal abstract class TestsReportsMergeTask : DefaultTask() {
         testResults.clear()
 
         if (totalFailures > 0) {
-            throw TaskExecutionException(this, IllegalStateException("$totalFailures from $totalTests tests $status!"))
+            val cause = IllegalStateException("$totalFailures from $totalTests tests $status!")
+            throw TaskExecutionException(this, cause)
         }
     }
 

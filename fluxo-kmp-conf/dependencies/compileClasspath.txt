@@ -19,8 +19,8 @@ io.gitlab.arturbosch.detekt:detekt-parser:1.23.0
 io.gitlab.arturbosch.detekt:detekt-psi-utils:1.23.0
 io.gitlab.arturbosch.detekt:detekt-tooling:1.23.0
 org.jetbrains.compose:compose-gradle-plugin:1.4.0
-org.jetbrains.dokka:dokka-core:1.8.20-dev-219
-org.jetbrains.dokka:dokka-gradle-plugin:1.8.20-dev-219
+org.jetbrains.dokka:dokka-core:1.8.10
+org.jetbrains.dokka:dokka-gradle-plugin:1.8.10
 org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.14.0
 org.jetbrains.kotlin:kotlin-compiler-embeddable:1.8.21
 org.jetbrains.kotlin:kotlin-gradle-plugin-annotations:1.8.20

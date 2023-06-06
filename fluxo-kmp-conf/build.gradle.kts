@@ -2,9 +2,10 @@
 plugins {
     `kotlin-dsl`
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.gradle.plugin.publish)
     alias(libs.plugins.kotlinx.binCompatValidator)
     alias(libs.plugins.deps.guard)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.gradle.plugin.publish)
 }
 
 val pluginName = "fluxo-kmp-conf"
@@ -42,15 +43,18 @@ configurations.implementation {
 }
 
 dependencies {
-    compileOnly(libs.plugin.kotlin)
+    compileOnly(libs.detekt.core)
+
     compileOnly(libs.plugin.android)
-    compileOnly(libs.plugin.ksp)
     compileOnly(libs.plugin.binCompatValidator)
+    compileOnly(libs.plugin.detekt)
     compileOnly(libs.plugin.dokka)
     compileOnly(libs.plugin.intellij)
     compileOnly(libs.plugin.jetbrains.compose)
-    compileOnly(libs.detekt.core)
-    compileOnly(libs.plugin.detekt)
+    compileOnly(libs.plugin.kotlin)
+    compileOnly(libs.plugin.ksp)
+
+    detektPlugins(libs.detekt.formatting)
 }
 
 gradlePlugin {
@@ -60,7 +64,8 @@ gradlePlugin {
     website.set(projectUrl)
     vcsUrl.set("$projectUrl/tree/main")
 
-    val shortDescr = "Convenience Gradle plugin for reliable configuration of Kotlin projects by Fluxo"
+    val shortDescr =
+        "Convenience Gradle plugin for reliable configuration of Kotlin projects by Fluxo"
     plugins.create(pluginName) {
         id = pluginId
         implementationClass = "GradleSetupPlugin"
@@ -73,7 +78,7 @@ gradlePlugin {
                 "android",
                 "gradle-configuration",
                 "convenience",
-            )
+            ),
         )
     }
 
@@ -137,4 +142,10 @@ gradlePlugin {
 dependencyGuard {
     configuration("compileClasspath")
     configuration("runtimeClasspath")
+}
+
+detekt {
+    parallel = true
+    config.setFrom(rootProject.file("detekt.yml"))
+    baseline = file("detekt-baseline.xml")
 }

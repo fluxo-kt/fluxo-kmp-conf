@@ -25,6 +25,8 @@ import impl.onVersion
 import impl.optionalVersion
 import impl.runtimeOnly
 import impl.testImplementation
+import java.io.File
+import java.util.Properties
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -38,8 +40,6 @@ import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
-import java.io.File
-import java.util.Properties
 
 @Suppress("LongParameterList")
 fun Project.setupAndroidLibrary(
@@ -449,7 +449,9 @@ private fun Project.setupSigning(appExtension: BaseAppModuleExtension) {
             if (!alias.isNullOrEmpty()) {
                 releaseConfigured = alias == "release"
                 maybeCreate(alias).apply {
-                    logger.lifecycle("> Conf :signing: '$alias' configuration loaded from properties")
+                    logger.lifecycle(
+                        "> Conf :signing: '$alias' configuration loaded from properties",
+                    )
                     keyAlias = alias
                     storeFile = getKeystoreFile(properties["keystorePath"])
                     val password = properties["keystorePassword"]?.toString()
@@ -464,7 +466,9 @@ private fun Project.setupSigning(appExtension: BaseAppModuleExtension) {
                 if (!alias.isNullOrEmpty()) {
                     releaseConfigured = true
                     create("release") {
-                        logger.lifecycle("> Conf :signing: 'release' configuration loaded from properties")
+                        logger.lifecycle(
+                            "> Conf :signing: 'release' configuration loaded from properties",
+                        )
                         keyAlias = alias
                         storeFile = getKeystoreFile(properties["releaseKeystorePath"])
                         val password = properties["releaseKeystorePassword"]?.toString()
@@ -594,7 +598,15 @@ internal fun DependencyHandler.setupAndroidDependencies(
     libs.onLibrary("androidx-test-rules") { androidTestImplementation(it) }
     libs.onLibrary("androidx-test-runner") { androidTestImplementation(it) }
 
-    libs.onLibrary("firebase-bom") { implementation(if (isApplication) enforcedPlatform(it) else platform(it)) }
+    libs.onLibrary("firebase-bom") {
+        implementation(
+            if (isApplication) {
+                enforcedPlatform(it)
+            } else {
+                platform(it)
+            },
+        )
+    }
     libs.onLibrary("androidx-compose-bom") { implementation(platform(it)) }
 
     if (setupRoom) {

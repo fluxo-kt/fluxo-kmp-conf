@@ -9,7 +9,8 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 
 
-internal fun Detekt.isDetektTaskAllowed(): Boolean = getTaskDetailsFromName(name).platform.isTaskAllowed(project)
+internal fun Detekt.isDetektTaskAllowed(): Boolean =
+    getTaskDetailsFromName(name).platform.isTaskAllowed(project)
 
 internal fun Task.isTaskAllowedBasedByName(): Boolean {
     return getTaskDetailsFromName(name, allowNonDetekt = true).platform.isTaskAllowed(project)
@@ -33,10 +34,15 @@ private fun DetectedTaskPlatform?.isTaskAllowed(project: Project): Boolean = whe
     else -> true
 }
 
-private fun getTaskDetailsFromName(name: String, allowNonDetekt: Boolean = false): DetectedTaskDetails {
+private fun getTaskDetailsFromName(
+    name: String,
+    allowNonDetekt: Boolean = false,
+): DetectedTaskDetails {
     val parts = name.splitCamelCase()
     var list = if (!allowNonDetekt) {
-        check(parts.isNotEmpty() && parts[0] == DetektPlugin.DETEKT_TASK_NAME) { "Unexpected detect task name: $name" }
+        require(parts.isNotEmpty() && parts[0] == DetektPlugin.DETEKT_TASK_NAME) {
+            "Unexpected detect task name: $name"
+        }
         parts.drop(1)
     } else {
         parts
@@ -60,7 +66,10 @@ private fun getTaskDetailsFromName(name: String, allowNonDetekt: Boolean = false
     @Suppress("ComplexCondition")
     if (platform == DetectedTaskPlatform.UNKNOWN &&
         list.firstOrNull().equals("assemble", ignoreCase = true) &&
-        list.lastOrNull().let { it.equals("release", ignoreCase = true) || it.equals("debug", ignoreCase = true) }
+        list.lastOrNull().let {
+            it.equals("release", ignoreCase = true) ||
+                it.equals("debug", ignoreCase = true)
+        }
     ) {
         println("// // Android assemble: $name")
         platform = DetectedTaskPlatform.ANDROID

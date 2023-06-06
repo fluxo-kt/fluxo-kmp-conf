@@ -1,9 +1,9 @@
 package impl
 
+import kotlin.reflect.KClass
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
-import kotlin.reflect.KClass
 
 internal inline fun <reified T : Any> ExtensionAware.hasExtension(): Boolean {
     return try {

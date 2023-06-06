@@ -1,6 +1,6 @@
-import org.gradle.api.Project
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.gradle.api.Project
 
 @Suppress("LongParameterList", "MemberVisibilityCanBePrivate")
 class PublicationConfig(

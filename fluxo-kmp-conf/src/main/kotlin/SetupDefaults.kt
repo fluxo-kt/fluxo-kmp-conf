@@ -16,7 +16,7 @@ fun Project.setupDefaults(
             kotlinConfig,
             binaryCompatibilityValidatorConfig,
             publicationConfig,
-        )
+        ),
     )
 }
 

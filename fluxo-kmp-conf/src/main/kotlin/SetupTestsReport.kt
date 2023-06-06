@@ -65,9 +65,13 @@ fun Project.setupTestsReport() {
 
             ignoreFailures = true // Always run all tests for all modules
 
-            afterTest(KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
-                mergedReport.get().registerTestResult(testTask, desc, result)
-            }))
+            afterTest(
+                KotlinClosure2(
+                    { desc: TestDescriptor, result: TestResult ->
+                        mergedReport.get().registerTestResult(testTask, desc, result)
+                    },
+                ),
+            )
         }
     }
 }

@@ -2,6 +2,7 @@
 
 import com.android.build.gradle.LibraryExtension
 import impl.hasExtension
+import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPluginExtension
@@ -26,7 +27,6 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 /*
@@ -52,12 +52,23 @@ private const val USE_DOKKA: Boolean = true
 fun Project.setupPublication() {
     val config = requireDefaults<PublicationConfig>()
     when {
-        hasExtension<KotlinMultiplatformExtension>() -> setupPublicationMultiplatform(config)
-        hasExtension<LibraryExtension>() -> setupPublicationAndroidLibrary(config)
-        hasExtension { GradlePluginDevelopmentExtension::class } -> setupPublicationGradlePlugin(config)
-        hasExtension<KotlinJvmProjectExtension>() -> setupPublicationKotlinJvm(config)
-        hasExtension { JavaPluginExtension::class } -> setupPublicationJava(config)
-        else -> error("Unsupported project type for publication")
+        hasExtension<KotlinMultiplatformExtension>() ->
+            setupPublicationMultiplatform(config)
+
+        hasExtension<LibraryExtension>() ->
+            setupPublicationAndroidLibrary(config)
+
+        hasExtension { GradlePluginDevelopmentExtension::class } ->
+            setupPublicationGradlePlugin(config)
+
+        hasExtension<KotlinJvmProjectExtension>() ->
+            setupPublicationKotlinJvm(config)
+
+        hasExtension { JavaPluginExtension::class } ->
+            setupPublicationJava(config)
+
+        else ->
+            error("Unsupported project type for publication")
     }
 
     // Reproducible builds setup
@@ -90,7 +101,8 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
                     it.name.startsWith("sign") && it.name.endsWith("Publication")
                 }
                 tasks.matching {
-                    it.name.endsWith("PublicationToMavenLocal") || it.name.endsWith("PublicationToMavenRepository")
+                    it.name.endsWith("PublicationToMavenLocal") ||
+                        it.name.endsWith("PublicationToMavenRepository")
                 }.configureEach {
                     dependsOn(deps)
                 }
@@ -289,7 +301,10 @@ internal fun Project.setupPublicationRepository(config: PublicationConfig) {
     }
 }
 
-private fun Project.setupPublicationExtension(config: PublicationConfig, sourceJarTask: Jar? = null) {
+private fun Project.setupPublicationExtension(
+    config: PublicationConfig,
+    sourceJarTask: Jar? = null,
+) {
     extensions.configure<PublishingExtension> {
         publications.withType<MavenPublication>().configureEach {
             sourceJarTask?.let { artifact(it) }

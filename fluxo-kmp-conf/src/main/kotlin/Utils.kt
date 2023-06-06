@@ -2,16 +2,23 @@
 
 import impl.envOrProp
 import impl.envOrPropFlag
+import java.util.regex.Pattern
 import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
-import java.util.regex.Pattern
 
 operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNull == true
 
-fun Project.envOrPropValue(name: String): String? = envOrProp(name).orNull?.takeIf { it.isNotEmpty() }
-fun Project.envOrPropInt(name: String): Int? = envOrPropValue(name)?.toIntOrNull()
-fun Project.envOrPropList(name: String): List<String> = envOrPropValue(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
+
+fun Project.envOrPropValue(name: String): String? =
+    envOrProp(name).orNull?.takeIf { it.isNotEmpty() }
+
+fun Project.envOrPropInt(name: String): Int? =
+    envOrPropValue(name)?.toIntOrNull()
+
+fun Project.envOrPropList(name: String): List<String> =
+    envOrPropValue(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
+
 
 fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
 
@@ -58,8 +65,8 @@ fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
             result = tagName
                 // current commit short hash
                 ?: runCommand("git rev-parse --short=7 HEAD")
-                    // current branch name
-                    ?: if (allowBranch) runCommand("git rev-parse --abbrev-ref HEAD") else null
+                // current branch name
+                ?: if (allowBranch) runCommand("git rev-parse --abbrev-ref HEAD") else null
         } else if (result.length == 40) {
             // full commit hash, sha1
             result = result.substring(0, 7)
