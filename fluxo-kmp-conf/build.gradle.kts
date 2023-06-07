@@ -44,10 +44,10 @@ configurations.implementation {
 
 dependencies {
     compileOnly(libs.detekt.core)
+    implementation(libs.plugin.detekt)
 
     compileOnly(libs.plugin.android)
     compileOnly(libs.plugin.binCompatValidator)
-    compileOnly(libs.plugin.detekt)
     compileOnly(libs.plugin.dokka)
     compileOnly(libs.plugin.intellij)
     compileOnly(libs.plugin.jetbrains.compose)
