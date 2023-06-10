@@ -358,10 +358,8 @@ private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) 
             "**/**version.txt",
             "**/*-ktx.version",
             "**/CertPathReviewerMessages_de.properties",
-            "**/DebugProbesKt.bin",
             "**/app-metadata.properties",
             "**/org/apache/commons/**",
-            "**/previous-compilation-data.bin", // See https://github.com/Kotlin/kotlinx.coroutines/issues/3668
             "**/version.properties",
             "*.txt",
             "META-INF/**.properties",
@@ -379,7 +377,14 @@ private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) 
             "okhttp3/**",
             "res/**/keep.xml",
 
+            // See https://github.com/Kotlin/kotlinx.coroutines#avoiding-including-the-debug-infrastructure-in-the-resulting-apk
+            "**/DebugProbesKt.bin",
+
+            // See https://github.com/Kotlin/kotlinx.coroutines/issues/3668
+            "**/previous-compilation-data.bin",
+
             // Required for kotlin serialization
+            // TODO: Make it customizable
             // "**/*.kotlin_*",
 
             // /com/google/api/client/googleapis/google-api-client.properties
