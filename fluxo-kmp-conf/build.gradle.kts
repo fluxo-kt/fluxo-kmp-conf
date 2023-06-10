@@ -45,6 +45,7 @@ configurations.implementation {
 dependencies {
     compileOnly(libs.detekt.core)
     implementation(libs.plugin.detekt)
+    detektPlugins(libs.detekt.formatting)
 
     compileOnly(libs.plugin.android)
     compileOnly(libs.plugin.binCompatValidator)
@@ -54,7 +55,8 @@ dependencies {
     compileOnly(libs.plugin.kotlin)
     compileOnly(libs.plugin.ksp)
 
-    detektPlugins(libs.detekt.formatting)
+    implementation(libs.ktlint)
+    implementation(libs.plugin.spotless)
 }
 
 gradlePlugin {

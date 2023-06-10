@@ -24,8 +24,8 @@ internal inline fun ExtensionAware.hasExtension(clazz: () -> KClass<*>): Boolean
 internal val Project.isRootProject: Boolean
     get() = rootProject == this
 
-internal fun Project.checkIsRootProject() {
-    require(isRootProject) { "Must be called on a root project" }
+internal fun Project.checkIsRootProject(name: String) {
+    require(isRootProject) { "$name MUST be called on a root project" }
 }
 
 

@@ -351,8 +351,8 @@ public final class SetupTestsReportKt$setupTestsReport$1$inlined$sam$i$org_gradl
 }
 
 public final class SetupVerificationKt {
-	public static final fun setupVerification (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;)V
-	public static synthetic fun setupVerification$default (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;ILjava/lang/Object;)V
+	public static final fun setupVerification (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;Z)V
+	public static synthetic fun setupVerification$default (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;ZILjava/lang/Object;)V
 }
 
 public final class SetupVerificationKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {

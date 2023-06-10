@@ -6,7 +6,11 @@ com.android.tools.build:gradle-api:8.0.2
 com.android.tools.build:gradle:8.0.2
 com.android.tools.build:manifest-merger:31.0.2
 com.android:zipflinger:8.0.2
+com.diffplug.spotless:spotless-lib-extra:2.39.0
+com.diffplug.spotless:spotless-lib:2.39.0
+com.diffplug.spotless:spotless-plugin-gradle:6.19.0
 com.google.devtools.ksp:symbol-processing-gradle-plugin:1.8.20-1.0.11
+com.pinterest:ktlint:0.49.1
 com.squareup.okhttp3:okhttp:3.14.9
 com.squareup.okio:okio:1.17.2
 com.squareup.retrofit2:retrofit:2.9.0

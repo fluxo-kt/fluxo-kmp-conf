@@ -16,6 +16,16 @@ internal val Project.catalogs: VersionCatalogsExtension
 internal val Project.libsCatalog: VersionCatalog
     get() = catalogs.named("libs")
 
+internal val Project.libsCatalogOptional: VersionCatalog?
+    get() {
+        return try {
+            libsCatalog
+        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+            logger.warn("'libs' catalog is not available in ':$name' project: $e")
+            null
+        }
+    }
+
 
 internal fun VersionCatalog.onLibrary(
     alias: String,
@@ -78,6 +88,6 @@ internal fun VersionCatalog.v(alias: String): String {
     return findVersion(alias).get().toString()
 }
 
-internal fun VersionCatalog.optionalVersion(alias: String): String? {
-    return findVersion(alias).getOrNull()?.toString()
+internal fun VersionCatalog?.optionalVersion(alias: String): String? {
+    return this?.findVersion(alias)?.getOrNull()?.toString()
 }

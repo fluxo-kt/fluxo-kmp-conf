@@ -15,7 +15,7 @@ import org.gradle.kotlin.dsl.withType
 private const val TEST_REPORTS_TASK_NAME = "mergedTestReport"
 
 fun Project.setupTestsReport() {
-    checkIsRootProject()
+    checkIsRootProject("setupTestsReport")
 
     val mergedReport = tasks.register(TEST_REPORTS_TASK_NAME, TestsReportsMergeTask::class.java) {
         group = JavaBasePlugin.VERIFICATION_GROUP

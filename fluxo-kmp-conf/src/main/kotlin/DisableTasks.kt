@@ -8,7 +8,7 @@ import org.gradle.kotlin.dsl.extra
 private const val PROPERTY_NAME = "setup.disableTasks"
 
 internal fun Project.ensureUnreachableTasksDisabled() {
-    checkIsRootProject()
+    checkIsRootProject("ensureUnreachableTasksDisabled")
 
     if (extra.has(PROPERTY_NAME)) {
         return
