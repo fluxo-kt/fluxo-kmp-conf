@@ -7,43 +7,43 @@ import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
-operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNull == true
+public operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNull == true
 
 
-fun Project.envOrPropValue(name: String): String? =
+public fun Project.envOrPropValue(name: String): String? =
     envOrProp(name).orNull?.takeIf { it.isNotEmpty() }
 
-fun Project.envOrPropInt(name: String): Int? =
+public fun Project.envOrPropInt(name: String): Int? =
     envOrPropValue(name)?.toIntOrNull()
 
-fun Project.envOrPropList(name: String): List<String> =
+public fun Project.envOrPropList(name: String): List<String> =
     envOrPropValue(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
 
 
-fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
+public fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
 
-fun Project.isRelease(): Provider<Boolean> = envOrPropFlag("RELEASE")
+public fun Project.isRelease(): Provider<Boolean> = envOrPropFlag("RELEASE")
 
-fun Project.useKotlinDebug(): Provider<Boolean> = envOrPropFlag("USE_KOTLIN_DEBUG")
+public fun Project.useKotlinDebug(): Provider<Boolean> = envOrPropFlag("USE_KOTLIN_DEBUG")
 
-fun Project.disableTests(): Provider<Boolean> = envOrPropFlag("DISABLE_TESTS")
+public fun Project.disableTests(): Provider<Boolean> = envOrPropFlag("DISABLE_TESTS")
 
-fun Project.areComposeMetricsEnabled(): Provider<Boolean> = envOrPropFlag("COMPOSE_METRICS")
+public fun Project.areComposeMetricsEnabled(): Provider<Boolean> = envOrPropFlag("COMPOSE_METRICS")
 
-fun Project.isDesugaringEnabled(): Provider<Boolean> = envOrPropFlag("DESUGARING")
+public fun Project.isDesugaringEnabled(): Provider<Boolean> = envOrPropFlag("DESUGARING")
 
-fun Project.isMaxDebugEnabled(): Provider<Boolean> = envOrPropFlag("MAX_DEBUG")
+public fun Project.isMaxDebugEnabled(): Provider<Boolean> = envOrPropFlag("MAX_DEBUG")
 
-fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8")
+public fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8")
 
-fun Project?.buildNumber(): String? = "BUILD_NUMBER".let {
+public fun Project?.buildNumber(): String? = "BUILD_NUMBER".let {
     return this?.envOrProp(it)?.orNull ?: System.getProperty(it, null)
 }
 
 
-fun Project.signingKey(): String? = envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
+public fun Project.signingKey(): String? = envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
 
-fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): String {
+public fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): String {
     val n = buildNumber()
     return if (!n.isNullOrBlank()) "$delimiter$n" else default
 }
@@ -51,7 +51,7 @@ fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): S
 
 @Incubating
 @Suppress("ComplexCondition", "MagicNumber")
-fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
+public fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
     val envOrProp = envOrProp("SCM_TAG")
     return provider {
         var result = envOrProp.orNull

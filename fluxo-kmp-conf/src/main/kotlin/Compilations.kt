@@ -23,15 +23,15 @@ import org.jetbrains.kotlin.konan.target.Family
 // TODO: JS is still initialized on MINGW64 when splitTargets enabled
 //  https://github.com/fluxo-kt/fluxo/actions/runs/3831771108/jobs/6521297773
 
-object Compilations {
+public object Compilations {
 
-    val isGenericEnabled: Boolean get() = isValidOs { it.isLinux }
-    val isDarwinEnabled: Boolean get() = isValidOs { it.isMacOsX }
-    val isWindowsEnabled: Boolean get() = isValidOs { it.isWindows }
+    public val isGenericEnabled: Boolean get() = isValidOs { it.isLinux }
+    public val isDarwinEnabled: Boolean get() = isValidOs { it.isMacOsX }
+    public val isWindowsEnabled: Boolean get() = isValidOs { it.isWindows }
 
     // Try to overcome the Gradle livelock issue
     // https://github.com/gradle/gradle/issues/20455#issuecomment-1327259045
-    fun isGenericEnabledForProject(project: Project): Boolean = when {
+    public fun isGenericEnabledForProject(project: Project): Boolean = when {
         project.isCI().get() -> isDarwinEnabled
         else -> isGenericEnabled
     }
@@ -40,7 +40,7 @@ object Compilations {
         !EnvParams.splitTargets || predicate(OperatingSystem.current())
 }
 
-val Project.isGenericCompilationEnabled
+public val Project.isGenericCompilationEnabled: Boolean
     get() = Compilations.isGenericEnabledForProject(this)
 
 internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project) {

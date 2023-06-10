@@ -49,7 +49,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 private const val USE_DOKKA: Boolean = true
 
 
-fun Project.setupPublication() {
+public fun Project.setupPublication() {
     val config = requireDefaults<PublicationConfig>()
     when {
         hasExtension<KotlinMultiplatformExtension>() ->

@@ -2,7 +2,7 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 
 @Suppress("LongParameterList")
-data class KotlinConfigSetup(
+public data class KotlinConfigSetup(
     /**
      * Override for the Kotlin lang version used.
      * Use "latest" for the latest value.
@@ -95,4 +95,4 @@ data class KotlinConfigSetup(
     val configurator: (KotlinCommonCompilerOptions.() -> Unit)? = null,
 )
 
-fun Project.requireDefaultKotlinConfigSetup(): KotlinConfigSetup = requireDefaults()
+public fun Project.requireDefaultKotlinConfigSetup(): KotlinConfigSetup = requireDefaults()

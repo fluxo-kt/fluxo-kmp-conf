@@ -2,7 +2,7 @@
  *
  * @see kotlinx.validation.ApiValidationExtension
  */
-class BinaryCompatibilityValidatorConfig(
+public data class BinaryCompatibilityValidatorConfig(
     /**
      * Fully qualified package names that not consider public API.
      * For example, it could be `kotlinx.coroutines.internal` or `kotlinx.serialization.implementation`.

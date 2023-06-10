@@ -1,7 +1,7 @@
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extra
 
-fun Project.setupDefaults(
+public fun Project.setupDefaults(
     multiplatformConfigurator: MultiplatformConfigurator? = null,
     androidConfig: AndroidConfigSetup? = null,
     kotlinConfig: KotlinConfigSetup? = null,

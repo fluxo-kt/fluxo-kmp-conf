@@ -42,7 +42,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 @Suppress("LongParameterList")
-fun Project.setupAndroidLibrary(
+public fun Project.setupAndroidLibrary(
     namespace: String,
     enableBuildConfig: Boolean? = null,
     setupRoom: Boolean = false,
@@ -74,7 +74,7 @@ fun Project.setupAndroidLibrary(
 }
 
 @Suppress("LongParameterList")
-fun Project.setupAndroidApp(
+public fun Project.setupAndroidApp(
     applicationId: String,
     versionCode: Int,
     versionName: String,

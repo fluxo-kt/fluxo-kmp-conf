@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 private const val PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-validator"
 
-fun Project.setupBinaryCompatibilityValidator(
+public fun Project.setupBinaryCompatibilityValidator(
     config: BinaryCompatibilityValidatorConfig? = getDefaults<BinaryCompatibilityValidatorConfig>(),
 ) {
     val calledExplicitly = gradle.startParameter.taskNames

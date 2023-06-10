@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.AbstractKotlinSourceSet
 
-fun Project.setupKotlin(
+public fun Project.setupKotlin(
     config: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     setupKsp: Boolean = hasKsp,
     optIns: List<String> = emptyList(),

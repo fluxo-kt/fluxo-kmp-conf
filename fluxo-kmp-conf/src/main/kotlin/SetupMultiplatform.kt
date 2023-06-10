@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
-typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
+public typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 
 internal val Project.multiplatformExtension: KotlinMultiplatformExtension
     get() = kotlinExtension as KotlinMultiplatformExtension
@@ -38,7 +38,7 @@ internal val Project.multiplatformExtension: KotlinMultiplatformExtension
 //  https://github.com/05nelsonm/gradle-kmp-configuration-plugin
 
 @Suppress("LongParameterList")
-fun Project.setupMultiplatform(
+public fun Project.setupMultiplatform(
     config: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     namespace: String? = null,
     setupCompose: Boolean = false,
@@ -258,7 +258,7 @@ private fun KotlinMultiplatformExtension.setupCompose(project: Project, jbCompos
 }
 
 
-fun KotlinMultiplatformExtension.setupSourceSets(block: MultiplatformSourceSets.() -> Unit) {
+public fun KotlinMultiplatformExtension.setupSourceSets(block: MultiplatformSourceSets.() -> Unit) {
     MultiplatformSourceSets(targets, sourceSets).block()
 }
 
@@ -284,46 +284,46 @@ internal fun KotlinTargetsContainer.isMultiplatformTargetEnabled(target: Target)
         }
     }
 
-class MultiplatformSourceSets
+public class MultiplatformSourceSets
 internal constructor(
     private val targets: NamedDomainObjectCollection<KotlinTarget>,
     private val sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
 ) : NamedDomainObjectContainer<KotlinSourceSet> by sourceSets {
 
-    val common: SourceSetBundle by bundle()
+    public val common: SourceSetBundle by bundle()
 
     /** All enabled targets */
-    val allSet: Set<SourceSetBundle> = targets.toSourceSetBundles()
+    public val allSet: Set<SourceSetBundle> = targets.toSourceSetBundles()
 
     /** androidJvm, jvm */
-    val javaSet: Set<SourceSetBundle> = targets
+    public val javaSet: Set<SourceSetBundle> = targets
         .filter { it.platformType in setOf(KotlinPlatformType.androidJvm, KotlinPlatformType.jvm) }
         .toSourceSetBundles()
 
     /** androidJvm */
-    val androidSet: Set<SourceSetBundle> = targets
+    public val androidSet: Set<SourceSetBundle> = targets
         .filter { it.platformType == KotlinPlatformType.androidJvm }
         .toSourceSetBundles()
 
     /** js */
-    val jsSet: Set<SourceSetBundle> = targets
+    public val jsSet: Set<SourceSetBundle> = targets
         .filter { it.platformType == KotlinPlatformType.js }
         .toSourceSetBundles()
 
     /** All Kotlin/Native targets */
-    val nativeSet: Set<SourceSetBundle> = nativeSourceSets()
-    val linuxSet: Set<SourceSetBundle> = nativeSourceSets(Family.LINUX)
-    val mingwSet: Set<SourceSetBundle> = nativeSourceSets(Family.MINGW)
-    val androidNativeSet: Set<SourceSetBundle> = nativeSourceSets(Family.ANDROID)
-    val wasmSet: Set<SourceSetBundle> = nativeSourceSets(Family.WASM)
+    public val nativeSet: Set<SourceSetBundle> = nativeSourceSets()
+    public val linuxSet: Set<SourceSetBundle> = nativeSourceSets(Family.LINUX)
+    public val mingwSet: Set<SourceSetBundle> = nativeSourceSets(Family.MINGW)
+    public val androidNativeSet: Set<SourceSetBundle> = nativeSourceSets(Family.ANDROID)
+    public val wasmSet: Set<SourceSetBundle> = nativeSourceSets(Family.WASM)
 
     /** All Darwin targets */
-    val darwinSet: Set<SourceSetBundle> =
+    public val darwinSet: Set<SourceSetBundle> =
         nativeSourceSets(Family.IOS, Family.OSX, Family.WATCHOS, Family.TVOS)
-    val iosSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS)
-    val watchosSet: Set<SourceSetBundle> = nativeSourceSets(Family.WATCHOS)
-    val tvosSet: Set<SourceSetBundle> = nativeSourceSets(Family.TVOS)
-    val macosSet: Set<SourceSetBundle> = nativeSourceSets(Family.OSX)
+    public val iosSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS)
+    public val watchosSet: Set<SourceSetBundle> = nativeSourceSets(Family.WATCHOS)
+    public val tvosSet: Set<SourceSetBundle> = nativeSourceSets(Family.TVOS)
+    public val macosSet: Set<SourceSetBundle> = nativeSourceSets(Family.OSX)
 
     private fun nativeSourceSets(vararg families: Family = Family.values()): Set<SourceSetBundle> =
         targets.filterIsInstance<KotlinNativeTarget>()
@@ -346,7 +346,7 @@ internal constructor(
     }
 
 
-    fun commonCompileOnly(dependencyNotation: Any) {
+    public fun commonCompileOnly(dependencyNotation: Any) {
         // A compileOnly dependencies aren't applicable for Kotlin/Native.
         // Use 'implementation' or 'api' dependency type instead.
         common.main.dependencies {
@@ -358,7 +358,7 @@ internal constructor(
     }
 }
 
-fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String): SourceSetBundle {
+public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String): SourceSetBundle {
     return SourceSetBundle(
         main = maybeCreate("${name}Main"),
         // Support for androidSourceSetLayout v2
@@ -367,7 +367,7 @@ fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String): Source
     )
 }
 
-fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
+public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
     name: String? = null,
 ): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, SourceSetBundle>> =
     PropertyDelegateProvider { _, property ->
@@ -375,7 +375,7 @@ fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
         ReadOnlyProperty { _, _ -> bundle }
     }
 
-data class SourceSetBundle(
+public data class SourceSetBundle(
     val main: KotlinSourceSet,
     val test: KotlinSourceSet,
 )
@@ -383,18 +383,18 @@ data class SourceSetBundle(
 
 // region Dependecies declaration
 
-operator fun SourceSetBundle.plus(other: SourceSetBundle): Set<SourceSetBundle> =
+public operator fun SourceSetBundle.plus(other: SourceSetBundle): Set<SourceSetBundle> =
     this + setOf(other)
 
-operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<SourceSetBundle> =
+public operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<SourceSetBundle> =
     setOf(this) + other
 
-infix fun SourceSetBundle.dependsOn(other: SourceSetBundle) {
+public infix fun SourceSetBundle.dependsOn(other: SourceSetBundle) {
     main.dependsOn(other.main)
     test.dependsOn(other.test)
 }
 
-infix fun Iterable<SourceSetBundle>.dependsOn(other: Iterable<SourceSetBundle>) {
+public infix fun Iterable<SourceSetBundle>.dependsOn(other: Iterable<SourceSetBundle>) {
     forEach { left ->
         other.forEach { right ->
             left.dependsOn(right)
@@ -402,45 +402,45 @@ infix fun Iterable<SourceSetBundle>.dependsOn(other: Iterable<SourceSetBundle>) 
     }
 }
 
-infix fun SourceSetBundle.dependsOn(other: Iterable<SourceSetBundle>) {
+public infix fun SourceSetBundle.dependsOn(other: Iterable<SourceSetBundle>) {
     listOf(this) dependsOn other
 }
 
-infix fun Iterable<SourceSetBundle>.dependsOn(other: SourceSetBundle) {
+public infix fun Iterable<SourceSetBundle>.dependsOn(other: SourceSetBundle) {
     this dependsOn listOf(other)
 }
 
 
-infix fun KotlinSourceSet.dependsOn(other: SourceSetBundle) {
+public infix fun KotlinSourceSet.dependsOn(other: SourceSetBundle) {
     dependsOn(if ("Test" in name) other.test else other.main)
 }
 
 @JvmName("dependsOnBundles")
-infix fun KotlinSourceSet.dependsOn(other: Iterable<SourceSetBundle>) {
+public infix fun KotlinSourceSet.dependsOn(other: Iterable<SourceSetBundle>) {
     other.forEach { right ->
         dependsOn(right)
     }
 }
 
-infix fun KotlinSourceSet.dependsOn(other: Iterable<KotlinSourceSet>) {
+public infix fun KotlinSourceSet.dependsOn(other: Iterable<KotlinSourceSet>) {
     other.forEach { right ->
         dependsOn(right)
     }
 }
 
 
-val Iterable<SourceSetBundle>.main: List<KotlinSourceSet> get() = map { it.main }
+public val Iterable<SourceSetBundle>.main: List<KotlinSourceSet> get() = map { it.main }
 
-val Iterable<SourceSetBundle>.test: List<KotlinSourceSet> get() = map { it.test }
+public val Iterable<SourceSetBundle>.test: List<KotlinSourceSet> get() = map { it.test }
 
-infix fun Iterable<KotlinSourceSet>.dependencies(configure: KotlinDependencyHandler.() -> Unit) {
+public infix fun Iterable<KotlinSourceSet>.dependencies(configure: KotlinDependencyHandler.() -> Unit) {
     forEach { left ->
         left.dependencies(configure)
     }
 }
 
 
-fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
+public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
     // Starting from KSP 1.0.1, applying KSP on a multiplatform project requires
     // instead of writing the ksp("dep")
     // use ksp<Target>() or add(ksp<SourceSet>).
@@ -463,7 +463,7 @@ fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
 
 // region Darwin compat
 
-fun KotlinMultiplatformExtension.iosCompat(
+public fun KotlinMultiplatformExtension.iosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm64: String? = DEFAULT_TARGET_NAME,
     simulatorArm64: String? = DEFAULT_TARGET_NAME,
@@ -477,7 +477,7 @@ fun KotlinMultiplatformExtension.iosCompat(
     )
 }
 
-fun KotlinMultiplatformExtension.watchosCompat(
+public fun KotlinMultiplatformExtension.watchosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm32: String? = DEFAULT_TARGET_NAME,
     arm64: String? = DEFAULT_TARGET_NAME,
@@ -501,7 +501,7 @@ fun KotlinMultiplatformExtension.watchosCompat(
     )
 }
 
-fun KotlinMultiplatformExtension.tvosCompat(
+public fun KotlinMultiplatformExtension.tvosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm64: String? = DEFAULT_TARGET_NAME,
     simulatorArm64: String? = DEFAULT_TARGET_NAME,
@@ -515,7 +515,7 @@ fun KotlinMultiplatformExtension.tvosCompat(
     )
 }
 
-fun KotlinMultiplatformExtension.macosCompat(
+public fun KotlinMultiplatformExtension.macosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm64: String? = DEFAULT_TARGET_NAME,
 ) {

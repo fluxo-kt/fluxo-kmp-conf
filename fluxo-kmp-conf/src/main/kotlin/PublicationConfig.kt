@@ -3,38 +3,38 @@ import java.util.Date
 import org.gradle.api.Project
 
 @Suppress("LongParameterList", "MemberVisibilityCanBePrivate")
-class PublicationConfig(
-    val group: String,
+public class PublicationConfig(
+    public val group: String,
     version: String,
-    val projectName: String,
+    public val projectName: String,
 
-    val projectDescription: String,
-    val projectUrl: String,
-    val scmUrl: String,
+    public val projectDescription: String,
+    public val projectUrl: String,
+    public val scmUrl: String,
 
-    val developerId: String,
-    val developerName: String,
-    val developerEmail: String,
+    public val developerId: String,
+    public val developerName: String,
+    public val developerEmail: String,
 
-    val signingKey: String?,
-    val signingPassword: String?,
+    public val signingKey: String?,
+    public val signingPassword: String?,
 
-    val repositoryUserName: String?,
-    val repositoryPassword: String?,
+    public val repositoryUserName: String?,
+    public val repositoryPassword: String?,
 
-    val publicationUrl: String = projectUrl,
-    val isSnapshot: Boolean = version.contains("SNAPSHOT", ignoreCase = true),
+    public val publicationUrl: String = projectUrl,
+    public val isSnapshot: Boolean = version.contains("SNAPSHOT", ignoreCase = true),
     reproducibleSnapshots: Boolean = version.endsWith("SNAPSHOT", ignoreCase = true),
 
-    val scmTag: String? = if (isSnapshot) "main" else "v$version",
+    public val scmTag: String? = if (isSnapshot) "main" else "v$version",
 
-    val repositoryUrl: String = when {
+    public val repositoryUrl: String = when {
         isSnapshot -> "https://s01.oss.sonatype.org/content/repositories/snapshots/"
         else -> "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
     },
 
-    val licenseName: String? = "The Apache License, Version 2.0",
-    val licenseUrl: String? = "http://www.apache.org/licenses/LICENSE-2.0.txt",
+    public val licenseName: String? = "The Apache License, Version 2.0",
+    public val licenseUrl: String? = "http://www.apache.org/licenses/LICENSE-2.0.txt",
 
     /** Set for [reproducibleSnapshots] */
     project: Project? = null,
@@ -45,9 +45,9 @@ class PublicationConfig(
     // https://motorro.medium.com/thanks-a-lot-for-this-step-by-step-instructions-f6fecbe5a4e6
     // https://central.sonatype.org/publish/requirements/gpg/
 ) {
-    val version: String
+    public val version: String
 
-    val isSigningEnabled: Boolean
+    public val isSigningEnabled: Boolean
         get() = !signingKey.isNullOrEmpty()
 
     init {

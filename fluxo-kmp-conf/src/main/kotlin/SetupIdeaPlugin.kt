@@ -9,7 +9,7 @@ import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-fun Project.setupIdeaPlugin(
+public fun Project.setupIdeaPlugin(
     group: String,
     version: String,
     sinceBuild: String,

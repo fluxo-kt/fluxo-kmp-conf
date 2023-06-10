@@ -59,6 +59,10 @@ dependencies {
     implementation(libs.plugin.spotless)
 }
 
+kotlin {
+    explicitApi()
+}
+
 gradlePlugin {
     val projectUrl = "https://github.com/fluxo-kt/fluxo-kmp-conf"
     val scmUrl = "scm:git:git://github.com/fluxo-kt/fluxo-kmp-conf.git"

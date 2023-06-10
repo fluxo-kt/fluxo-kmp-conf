@@ -37,7 +37,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
  * @param ignoredBuildTypes List of Android build types for which to create no detekt task.
  * @param ignoredFlavors List of Android build flavors for which to create no detekt task.
  */
-fun Project.setupVerification(
+public fun Project.setupVerification(
     ignoredBuildTypes: List<String> = listOf(),
     ignoredFlavors: List<String> = listOf(),
     kotlinConfig: KotlinConfigSetup? = getDefaults(),

@@ -10,7 +10,7 @@ import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 
 @Suppress("unused", "EmptyFunctionBlock", "ktPropBy")
-class GradleSetupPlugin : Plugin<Project> {
+public class GradleSetupPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         if (!target.isRootProject) {
