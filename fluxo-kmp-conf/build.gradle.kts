@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaCompilation
+
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -13,29 +16,56 @@ val pluginId = "io.github.fluxo-kt.fluxo-kmp-conf"
 group = "io.github.fluxo-kt"
 version = libs.versions.fluxoKmpConf.get()
 
-libs.versions.javaLangTarget.get().let { javaLangTarget ->
-    java {
-        JavaVersion.toVersion(javaLangTarget).let { v ->
-            sourceCompatibility = v
-            targetCompatibility = v
-        }
-    }
-
-    val kotlinLangVersion = libs.versions.kotlinLangVersion.get()
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = javaLangTarget
-            languageVersion = kotlinLangVersion
-            apiVersion = kotlinLangVersion
-            allWarningsAsErrors = true
-        }
-    }
-
-    logger.lifecycle("> Conf compatibility for Kotlin $kotlinLangVersion, JVM $javaLangTarget")
-}
-
 kotlin {
     explicitApi()
+
+    coreLibrariesVersion = libs.versions.kotlinCoreLibraries.get()
+
+    target.compilations {
+        val kotlinVersion = libs.versions.kotlinLangVersion.get()
+        val main by getting {
+            libs.versions.javaLangTarget.get().let { jvmVersion ->
+                kotlinOptions {
+                    jvmTarget = jvmVersion
+                    languageVersion = kotlinVersion
+                    apiVersion = kotlinVersion
+                    allWarningsAsErrors = true
+                }
+                compileJavaTaskProvider.configure {
+                    sourceCompatibility = jvmVersion
+                    targetCompatibility = jvmVersion
+                }
+                logger.lifecycle("> Conf compatibility for Kotlin $kotlinVersion, JVM $jvmVersion")
+            }
+        }
+
+        val configureLatest: (KotlinWithJavaCompilation<KotlinJvmOptions, *>).() -> Unit = {
+            kotlinOptions {
+                jvmTarget = "17"
+                languageVersion = "2.0"
+                apiVersion = "2.0"
+            }
+            compileJavaTaskProvider.configure {
+                sourceCompatibility = "17"
+                targetCompatibility = "17"
+            }
+        }
+
+        val test by getting(configureLatest)
+
+        // Experimental test compilation with the latest Kotlin settings.
+        // Don't try for sources with old compatibility settings.
+        val isInCompositeBuild = gradle.includedBuilds.size > 1
+        if (!isInCompositeBuild && kotlinVersion.toFloat() >= 1.6f) {
+            create("experimentalTest") {
+                configureLatest()
+                source(main.defaultSourceSet)
+                tasks.named("check") {
+                    dependsOn(compileTaskProvider)
+                }
+            }.associateWith(test)
+        }
+    }
 }
 
 configurations.implementation {
