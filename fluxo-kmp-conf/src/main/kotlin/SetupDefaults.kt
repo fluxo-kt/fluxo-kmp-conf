@@ -1,5 +1,5 @@
+import impl.extra
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.extra
 
 public fun Project.setupDefaults(
     multiplatformConfigurator: MultiplatformConfigurator? = null,

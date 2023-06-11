@@ -1,33 +1,7 @@
 package impl
 
-import kotlin.reflect.KClass
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
-
-internal inline fun <reified T : Any> ExtensionAware.hasExtension(): Boolean {
-    return try {
-        extensions.findByType(T::class.java) != null
-    } catch (_: NoClassDefFoundError) {
-        false
-    }
-}
-
-internal inline fun ExtensionAware.hasExtension(clazz: () -> KClass<*>): Boolean {
-    return try {
-        extensions.findByType(clazz().java) != null
-    } catch (_: NoClassDefFoundError) {
-        false
-    }
-}
-
-internal val Project.isRootProject: Boolean
-    get() = rootProject == this
-
-internal fun Project.checkIsRootProject(name: String) {
-    require(isRootProject) { "$name MUST be called on a root project" }
-}
-
 
 private fun String?.tryAsBoolean(): Boolean {
     return arrayOf("true", "1", "on").any { it.equals(this, ignoreCase = true) }

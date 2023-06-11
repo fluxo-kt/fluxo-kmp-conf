@@ -1,6 +1,6 @@
-package impl
+package fluxo.conf
 
-import impl.MergeDetektBaselinesTask.Companion.TASK_NAME
+import fluxo.conf.MergeDetektBaselinesTask.Companion.TASK_NAME
 import io.github.detekt.tooling.api.BaselineProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection

@@ -65,27 +65,6 @@ public final class CompilationsKt {
 	public static final fun isGenericCompilationEnabled (Lorg/gradle/api/Project;)Z
 }
 
-public final class CompilationsKt$disableCompilationsOfNeeded$3$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
-public final class GradleSetupPlugin : org/gradle/api/Plugin {
-	public fun <init> ()V
-	public synthetic fun apply (Ljava/lang/Object;)V
-	public fun apply (Lorg/gradle/api/Project;)V
-}
-
-public final class GradleSetupPlugin$apply$3$1$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
-public final class GradleSetupPlugin$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
 public final class KotlinConfigSetup {
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;)V
@@ -259,19 +238,9 @@ public final class SetupAndroidKt {
 	public static synthetic fun setupAndroidLibrary$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public final class SetupAndroidKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
 public final class SetupBinaryCompatibilityValidatorKt {
 	public static final fun setupBinaryCompatibilityValidator (Lorg/gradle/api/Project;LBinaryCompatibilityValidatorConfig;)V
 	public static synthetic fun setupBinaryCompatibilityValidator$default (Lorg/gradle/api/Project;LBinaryCompatibilityValidatorConfig;ILjava/lang/Object;)V
-}
-
-public final class SetupBinaryCompatibilityValidatorKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
 }
 
 public final class SetupDefaultsKt {
@@ -283,18 +252,8 @@ public final class SetupIdeaPluginKt {
 	public static final fun setupIdeaPlugin (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 }
 
-public final class SetupIdeaPluginKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
 public final class SetupJsAppKt {
 	public static final fun setupJsApp (Lorg/gradle/api/Project;)V
-}
-
-public final class SetupJsAppKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
 }
 
 public final class SetupKotlinKt {
@@ -336,43 +295,13 @@ public final class SetupPublicationKt {
 	public static final fun setupPublication (Lorg/gradle/api/Project;)V
 }
 
-public final class SetupPublicationKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
-public final class SetupPublicationKt$setupPublicationAndroidLibrary$1$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
-public final class SetupPublicationKt$setupPublicationRepository$1$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
 public final class SetupTestsReportKt {
 	public static final fun setupTestsReport (Lorg/gradle/api/Project;)V
-}
-
-public final class SetupTestsReportKt$setupTestsReport$1$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
 }
 
 public final class SetupVerificationKt {
 	public static final fun setupVerification (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;Z)V
 	public static synthetic fun setupVerification$default (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;ZILjava/lang/Object;)V
-}
-
-public final class SetupVerificationKt$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
-}
-
-public final class SetupVerificationKt$setupVerification$3$inlined$sam$i$org_gradle_api_Action$0 : org/gradle/api/Action {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final synthetic fun execute (Ljava/lang/Object;)V
 }
 
 public final class SourceSetBundle {
@@ -407,5 +336,11 @@ public final class UtilsKt {
 	public static synthetic fun scmTag$default (Lorg/gradle/api/Project;ZILjava/lang/Object;)Lorg/gradle/api/provider/Provider;
 	public static final fun signingKey (Lorg/gradle/api/Project;)Ljava/lang/String;
 	public static final fun useKotlinDebug (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class fluxo/conf/FluxoKmpConfPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
 }
 

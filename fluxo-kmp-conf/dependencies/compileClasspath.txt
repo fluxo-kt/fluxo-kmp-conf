@@ -34,7 +34,6 @@ org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20
 org.jetbrains.kotlin:kotlin-gradle-plugins-bom:1.8.20
 org.jetbrains.kotlin:kotlin-native-utils:1.8.20
 org.jetbrains.kotlin:kotlin-project-model:1.8.20
-org.jetbrains.kotlin:kotlin-reflect:1.8.10
 org.jetbrains.kotlin:kotlin-tooling-core:1.8.20
 org.jetbrains.kotlin:kotlin-util-io:1.8.20
 org.jetbrains.kotlinx:binary-compatibility-validator:0.12.1

@@ -14,30 +14,31 @@ import com.android.builder.model.BaseConfig
 import com.google.devtools.ksp.gradle.KspExtension
 import impl.androidTestImplementation
 import impl.compileOnlyWithConstraint
+import impl.configureExtension
 import impl.debugCompileOnly
 import impl.debugImplementation
+import impl.exclude
+import impl.get
 import impl.implementation
+import impl.kotlin
 import impl.ksp
 import impl.libsCatalog
+import impl.lowercase
 import impl.onBundle
 import impl.onLibrary
 import impl.onVersion
 import impl.optionalVersion
 import impl.runtimeOnly
 import impl.testImplementation
+import impl.the
+import impl.withType
 import java.io.File
 import java.util.Properties
-import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.PluginAware
-import org.gradle.kotlin.dsl.exclude
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
@@ -53,7 +54,7 @@ public fun Project.setupAndroidLibrary(
     body: (LibraryExtension.() -> Unit)? = null,
 ) {
     /** @see com.android.build.api.dsl.LibraryExtension */
-    extensions.configure<LibraryExtension>("android") {
+    configureExtension<LibraryExtension>("android") {
         logger.lifecycle("> Conf :setupAndroidLibrary")
 
         setupKotlin0(config = kotlinConfig)
@@ -86,7 +87,7 @@ public fun Project.setupAndroidApp(
     kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
     body: (BaseAppModuleExtension.() -> Unit)? = null,
 ) {
-    extensions.configure<BaseAppModuleExtension>("android") {
+    configureExtension<BaseAppModuleExtension>("android") {
         logger.lifecycle("> Conf :setupAndroidApp")
         namespace = applicationId
 
@@ -128,12 +129,12 @@ internal fun Project.setupAndroidCommon(
     kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
 ) {
     // https://developer.android.com/studio/build/extend-agp
-    val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
+    val androidComponents = the<AndroidComponentsExtension<*, *, *>>()
     androidComponents.finalizeDsl {
         it.onFinalizeDsl(project)
     }
 
-    extensions.configure<CommonExtension<*, *, *, *>>("android") {
+    configureExtension<CommonExtension<*, *, *, *>>("android") {
         val ns = namespace.replace('-', '.').lowercase()
         logger.lifecycle("> Conf Android namespace '$ns'")
         this.namespace = ns
@@ -291,8 +292,12 @@ private fun CommonExtension<*, *, *, *>.setupDefaultConfig(
         else -> config.targetSdkVersion
     }
     (this as? ApplicationBaseFlavor)?.targetSdk = targetSdk
-    @Suppress("DEPRECATION") // Will be removed from AGP DSL in v9.0
-    (this as? LibraryBaseFlavor)?.targetSdk = targetSdk
+
+    try {
+        @Suppress("DEPRECATION") // Will be removed from AGP DSL in v9.0
+        (this as? LibraryBaseFlavor)?.targetSdk = targetSdk
+    } catch (_: Throwable) {
+    }
 
     // Don't rasterize vector drawables (androidMinSdk >= 21)
     @Suppress("MagicNumber")
@@ -402,9 +407,9 @@ private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) 
             if (isCI || isRelease) "META-INF/**.version" else null,
         )
 
-        // Release-only packaging options (https://issuetracker.google.com/issues/155215248#comment5)
-        val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
-        androidComponents.apply {
+        // Release-only packaging options with `androidComponents`
+        // https://issuetracker.google.com/issues/155215248#comment5
+        project.configureExtension<AndroidComponentsExtension<*, *, *>> {
             onVariants(selector().withBuildType("release")) {
                 it.packaging.resources.excludes.add("META-INF/**.version")
             }
@@ -414,21 +419,19 @@ private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) 
 
 private fun CommonExtension<*, *, *, *>.kotlinOptions(
     project: Project,
-    configure: Action<KotlinJvmOptions>,
+    configure: KotlinJvmOptions.() -> Unit,
 ) {
-    val extensions = (this as ExtensionAware).extensions
+    val extensionAware = this as ExtensionAware
     project.plugins.withId("org.jetbrains.kotlin.android") {
         try {
-            extensions.configure("kotlinOptions", configure)
+            extensionAware.configureExtension("kotlinOptions", configure)
         } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
-            project.logger.error("$e", e)
+            project.logger.error("kotlinOptions error: $e", e)
         }
     }
 }
 
-internal fun Project.ksp(configure: Action<KspExtension>) {
-    extensions.configure("ksp", configure)
-}
+internal fun Project.ksp(configure: KspExtension.() -> Unit) = configureExtension("ksp", configure)
 
 internal val PluginAware.hasKsp: Boolean get() = plugins.hasPlugin("com.google.devtools.ksp")
 
@@ -439,7 +442,6 @@ private fun Project.setupSigning(appExtension: BaseAppModuleExtension) {
         debug.enableMaxSigning()
 
         var releaseConfigured = false
-        // FIXME: Extract as a AGP plugin
         // FIXME: Better gradle conf cache support?
         var signPropsFile = rootProject.file("signing.properties")
         if (!signPropsFile.canRead()) {
@@ -474,13 +476,13 @@ private fun Project.setupSigning(appExtension: BaseAppModuleExtension) {
                         logger.lifecycle(
                             "> Conf :signing: 'release' configuration loaded from properties",
                         )
-                        keyAlias = alias
-                        storeFile = getKeystoreFile(properties["releaseKeystorePath"])
+                        it.keyAlias = alias
+                        it.storeFile = getKeystoreFile(properties["releaseKeystorePath"])
                         val password = properties["releaseKeystorePassword"]?.toString()
-                        storePassword = password
-                        keyPassword = properties["releaseKeyPassword"]?.toString()
+                        it.storePassword = password
+                        it.keyPassword = properties["releaseKeyPassword"]?.toString()
                             .orEmpty().ifEmpty { password }
-                        enableMaxSigning()
+                        it.enableMaxSigning()
                     }
                 }
             }
@@ -490,11 +492,11 @@ private fun Project.setupSigning(appExtension: BaseAppModuleExtension) {
         if (!releaseConfigured) {
             create("release") {
                 logger.lifecycle("> Conf :signing: 'release' configuration copied from 'debug'")
-                storeFile = debug.storeFile
-                keyAlias = debug.keyAlias
-                storePassword = debug.storePassword
-                keyPassword = debug.keyPassword
-                enableMaxSigning()
+                it.storeFile = debug.storeFile
+                it.keyAlias = debug.keyAlias
+                it.storePassword = debug.storePassword
+                it.keyPassword = debug.keyPassword
+                it.enableMaxSigning()
             }
         }
     }

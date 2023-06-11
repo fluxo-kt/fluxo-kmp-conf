@@ -1,8 +1,8 @@
+import impl.configureExtension
+import impl.withType
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.intellij.IntelliJPluginExtension
 import org.jetbrains.intellij.tasks.BuildSearchableOptionsTask
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
@@ -19,12 +19,12 @@ public fun Project.setupIdeaPlugin(
     this.version = version
 
     setupKotlin0 {
-        tasks.withType<BuildSearchableOptionsTask>().configureEach {
+        tasks.withType<BuildSearchableOptionsTask> {
             enabled = project.isGenericCompilationEnabled
         }
     }
 
-    extensions.configure<JavaPluginExtension> {
+    configureExtension<JavaPluginExtension> {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -35,11 +35,11 @@ public fun Project.setupIdeaPlugin(
         }
     }
 
-    tasks.withType<PatchPluginXmlTask>().configureEach {
+    tasks.withType<PatchPluginXmlTask> {
         this.sinceBuild.set(sinceBuild)
     }
 
-    extensions.configure<IntelliJPluginExtension> {
+    configureExtension<IntelliJPluginExtension> {
         this.version.set(intellijVersion)
         this.updateSinceUntilBuild.set(false)
     }

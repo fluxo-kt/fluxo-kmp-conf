@@ -1,61 +1,78 @@
+package fluxo.conf
+
+import areComposeMetricsEnabled
+import disableTests
+import ensureUnreachableTasksDisabled
+import getValue
 import impl.isRootProject
 import impl.libsCatalog
 import impl.onVersion
+import impl.register
+import impl.the
+import impl.withType
+import isCI
+import isDesugaringEnabled
+import isMaxDebugEnabled
+import isR8Disabled
+import isRelease
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
-import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
+import useKotlinDebug
 
 @Suppress("unused", "EmptyFunctionBlock", "ktPropBy")
-public class GradleSetupPlugin : Plugin<Project> {
+public class FluxoKmpConfPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         if (!target.isRootProject) {
             return
         }
 
+        val logger = target.logger
+
         val isCI by target.isCI()
-        if (isCI) target.logger.lifecycle("> Conf CI mode is enabled!")
+        if (isCI) logger.lifecycle("> Conf CI mode is enabled!")
 
         val isRelease by target.isRelease()
-        if (isRelease) target.logger.lifecycle("> Conf RELEASE mode is enabled!")
+        if (isRelease) logger.lifecycle("> Conf RELEASE mode is enabled!")
 
         val useKotlinDebug by target.useKotlinDebug()
-        if (useKotlinDebug) target.logger.lifecycle("> Conf USE_KOTLIN_DEBUG mode is enabled!")
+        if (useKotlinDebug) logger.warn("> Conf USE_KOTLIN_DEBUG mode is enabled!")
 
         val areComposeMetricsEnabled by target.areComposeMetricsEnabled()
         if (areComposeMetricsEnabled) {
-            target.logger.lifecycle("> Conf COMPOSE_METRICS mode is enabled!")
+            logger.lifecycle("> Conf COMPOSE_METRICS mode is enabled!")
         }
 
         val isR8Disabled by target.isR8Disabled()
-        if (isR8Disabled) target.logger.lifecycle("> Conf DISABLE_R8 mode is enabled!")
+        if (isR8Disabled) logger.warn("> Conf DISABLE_R8 mode is enabled!")
 
         val disableTests by target.disableTests()
-        if (disableTests) target.logger.lifecycle("> Conf DISABLE_TESTS mode is enabled!")
+        if (disableTests) logger.warn("> Conf DISABLE_TESTS mode is enabled!")
 
         val isMaxDebug by target.isMaxDebugEnabled()
-        if (isMaxDebug) target.logger.lifecycle("> Conf MAX_DEBUG mode is enabled!")
+        if (isMaxDebug) logger.warn("> Conf MAX_DEBUG mode is enabled!")
 
         val isDesugaringEnabled by target.isDesugaringEnabled()
-        if (isDesugaringEnabled) target.logger.lifecycle("> Conf DESUGARING mode is enabled!")
+        if (isDesugaringEnabled) logger.warn("> Conf DESUGARING mode is enabled!")
 
-        target.logger.lifecycle("> Conf JRE version is ${System.getProperty("java.version")}")
-        target.logger.lifecycle("> Conf Gradle version is ${target.gradle.gradleVersion}")
-        target.logger.lifecycle("> Conf CPUs ${Runtime.getRuntime().availableProcessors()}")
-
+        // Environment logging
+        run {
+            val gradle = target.gradle.gradleVersion
+            val java = System.getProperty("java.version")
+            val cpus = Runtime.getRuntime().availableProcessors()
+            logger.lifecycle("> Conf Gradle $gradle, JRE $java, $cpus CPUs")
+        }
 
         target.subprojects {
             // Convenience task to print full dependencies tree for any module
             // Use `buildEnvironment` task for the report about plugins
             // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
-            tasks.register<DependencyReportTask>("allDeps")
+            it.tasks.register<DependencyReportTask>("allDeps")
         }
 
-        target.tasks.register<Task>(name = "resolveDependencies") {
+        target.tasks.register<Task>("resolveDependencies") {
             group = "other"
             description = "Resolve and prefetch dependencies"
             doLast {
@@ -72,11 +89,11 @@ public class GradleSetupPlugin : Plugin<Project> {
             }
         }
 
-        // Fix Kotlin/JS incompatibilities by pinning the dependencies versions.
+        // Fix Kotlin/JS incompatibilities by pinning the versions of dependencies.
         // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
         // Also see https://github.com/rjaros/kvision/blob/d9044ab/build.gradle.kts#L28
-        target.allprojects {
-            afterEvaluate {
+        target.allprojects { p ->
+            p.afterEvaluate {
                 target.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
                     val libs = target.libsCatalog
                     target.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>()
@@ -100,7 +117,7 @@ public class GradleSetupPlugin : Plugin<Project> {
             }
         }
 
-        // Run only for CI. Takes time and not so useful locally
+        // Run only for CI. Takes time and not so useful locally.
         if (isCI) {
             target.ensureUnreachableTasksDisabled()
         }

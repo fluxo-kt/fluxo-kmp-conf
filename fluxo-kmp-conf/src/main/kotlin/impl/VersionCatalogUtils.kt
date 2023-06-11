@@ -1,6 +1,5 @@
 package impl
 
-import kotlin.jvm.optionals.getOrNull
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependencyBundle
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
@@ -11,7 +10,7 @@ import org.gradle.plugin.use.PluginDependency
 
 
 internal val Project.catalogs: VersionCatalogsExtension
-    get() = extensions.getByType(VersionCatalogsExtension::class.java)
+    get() = the<VersionCatalogsExtension>()
 
 internal val Project.libsCatalog: VersionCatalog
     get() = catalogs.named("libs")

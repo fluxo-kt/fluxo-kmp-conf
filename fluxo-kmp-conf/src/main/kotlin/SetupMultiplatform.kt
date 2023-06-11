@@ -1,12 +1,16 @@
 @file:Suppress("TooManyFunctions")
 
 import com.android.build.gradle.LibraryExtension
+import impl.capitalizeAsciiOnly
+import impl.configureExtension
+import impl.getOrNull
+import impl.ifNotEmpty
 import impl.implementation
+import impl.kotlin
 import impl.libsCatalog
 import impl.onLibrary
 import impl.optionalVersion
 import impl.testImplementation
-import kotlin.jvm.optionals.getOrNull
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import org.gradle.api.NamedDomainObjectCollection
@@ -16,7 +20,6 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.kotlin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
@@ -27,7 +30,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
-import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
 public typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 
@@ -69,7 +71,7 @@ public fun Project.setupMultiplatform(
                 enableBuildConfig = enableBuildConfig,
                 kotlinConfig = config,
             )
-            project.extensions.configure<LibraryExtension>("android") {
+            project.configureExtension<LibraryExtension>("android") {
                 configureAndroid?.invoke(this)
             }
         }
@@ -453,7 +455,7 @@ public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
     } else {
         configurationName = configurationName.replace("Main", "", ignoreCase = true)
     }
-    configurationName = "ksp${configurationName[0].uppercase()}${configurationName.substring(1)}"
+    configurationName = "ksp${configurationName.capitalizeAsciiOnly()}"
     project.logger.lifecycle(">>> ksp configurationName: $configurationName")
     return project.dependencies.add(configurationName, dependencyNotation)
 }

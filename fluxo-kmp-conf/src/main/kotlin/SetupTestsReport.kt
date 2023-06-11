@@ -1,7 +1,10 @@
 @file:Suppress("ArgumentListWrapping", "Wrapping")
 
-import impl.TestsReportsMergeTask
+import fluxo.conf.TestsReportsMergeTask
 import impl.checkIsRootProject
+import impl.closureOf
+import impl.register
+import impl.withType
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.testing.AbstractTestTask
@@ -9,15 +12,13 @@ import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.kotlin.dsl.KotlinClosure2
-import org.gradle.kotlin.dsl.withType
 
 private const val TEST_REPORTS_TASK_NAME = "mergedTestReport"
 
 public fun Project.setupTestsReport() {
     checkIsRootProject("setupTestsReport")
 
-    val mergedReport = tasks.register(TEST_REPORTS_TASK_NAME, TestsReportsMergeTask::class.java) {
+    val mergedReport = tasks.register<TestsReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
         group = JavaBasePlugin.VERIFICATION_GROUP
         description = "Combines all tests reports from all modules to the published root one"
         output.set(project.layout.buildDirectory.file("tests-report-merged.xml"))
@@ -30,8 +31,8 @@ public fun Project.setupTestsReport() {
                 "check", "test", "allTests", "assemble", "build",
                 "jvmTest", "jsTest", "jsNodeTest", "jsBrowserTest", "mingwX64Test",
             )
-            tasks.matching { it.name in targetNames }.configureEach {
-                finalizedBy(mergedReport)
+            tasks.matching { it.name in targetNames }.configureEach { t ->
+                t.finalizedBy(mergedReport)
             }
         }
 
@@ -51,26 +52,24 @@ public fun Project.setupTestsReport() {
             }
 
             testLogging {
-                events = setOf(
+                it.events = setOf(
                     TestLogEvent.FAILED,
                     TestLogEvent.SKIPPED,
                     TestLogEvent.STANDARD_OUT,
                     TestLogEvent.STANDARD_ERROR,
                 )
-                exceptionFormat = TestExceptionFormat.FULL
-                showExceptions = true
-                showCauses = true
-                showStackTraces = true
+                it.exceptionFormat = TestExceptionFormat.FULL
+                it.showExceptions = true
+                it.showCauses = true
+                it.showStackTraces = true
             }
 
             ignoreFailures = true // Always run all tests for all modules
 
             afterTest(
-                KotlinClosure2(
-                    { desc: TestDescriptor, result: TestResult ->
-                        mergedReport.get().registerTestResult(testTask, desc, result)
-                    },
-                ),
+                closureOf { desc: TestDescriptor, result: TestResult ->
+                    mergedReport.get().registerTestResult(testTask, desc, result)
+                },
             )
         }
     }

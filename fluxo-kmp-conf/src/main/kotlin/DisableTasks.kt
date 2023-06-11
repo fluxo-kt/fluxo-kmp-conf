@@ -1,9 +1,9 @@
 import impl.checkIsRootProject
+import impl.extra
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.logging.Logger
-import org.gradle.kotlin.dsl.extra
 
 private const val PROPERTY_NAME = "setup.disableTasks"
 
@@ -16,7 +16,7 @@ internal fun Project.ensureUnreachableTasksDisabled() {
     extra.set(PROPERTY_NAME, true)
 
     gradle.taskGraph.whenReady {
-        DisableTasks(graph = this, logger = logger)
+        DisableTasks(graph = it, logger = logger)
             .apply()
     }
 }

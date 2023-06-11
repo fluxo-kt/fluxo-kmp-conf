@@ -1,7 +1,11 @@
 @file:Suppress("ktPropBy")
 
 import impl.compileOnlyWithConstraint
+import impl.configureExtensionIfAvailable
+import impl.exclude
+import impl.get
 import impl.implementation
+import impl.kotlin
 import impl.libsCatalog
 import impl.onBundle
 import impl.onLibrary
@@ -9,6 +13,7 @@ import impl.onVersion
 import impl.optionalVersion
 import impl.testImplementation
 import impl.v
+import impl.withType
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
@@ -16,10 +21,6 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
-import org.gradle.kotlin.dsl.exclude
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.Kotlin2JsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -81,13 +82,13 @@ internal fun Project.setupKotlinExtension(
             kotlin.jvmToolchain(javaLangTarget.substringAfter('.').toInt())
         } else {
             logger.lifecycle("> Conf Java compatibility $javaLangTarget")
-            extensions.findByType(JavaPluginExtension::class.java)?.run {
+            configureExtensionIfAvailable<JavaPluginExtension> {
                 JavaVersion.toVersion(javaLangTarget).let { v ->
                     sourceCompatibility = v
                     targetCompatibility = v
                 }
             }
-            tasks.withType(JavaCompile::class.java) {
+            tasks.withType<JavaCompile> {
                 sourceCompatibility = javaLangTarget
                 targetCompatibility = javaLangTarget
             }
@@ -108,7 +109,7 @@ internal fun Project.setupKotlinExtension(
             compilations.forEach { it.disableCompilation() }
         }
 
-        languageSettings {
+        it.languageSettings {
             // https://kotlinlang.org/docs/compatibility-modes.html
             languageVersion = kotlinLangVersion.version
             apiVersion = kotlinLangVersion.version
@@ -139,7 +140,7 @@ private fun Project.setupKotlinTasks(config: KotlinConfigSetup, optIns: List<Str
         val isCI by isCI()
         val isRelease by isRelease()
         val disableTests by disableTests()
-        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>> {
             val taskName = name
             val isJsTask = "Js" in taskName
             val isTestTask = "Test" in taskName

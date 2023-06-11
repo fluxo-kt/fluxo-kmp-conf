@@ -1,6 +1,5 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    `kotlin-dsl`
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlinx.binCompatValidator)
     alias(libs.plugins.deps.guard)
@@ -15,7 +14,6 @@ group = "io.github.fluxo-kt"
 version = libs.versions.fluxoKmpConf.get()
 
 libs.versions.javaLangTarget.get().let { javaLangTarget ->
-    logger.lifecycle("> Conf Java compatibility $javaLangTarget")
     java {
         JavaVersion.toVersion(javaLangTarget).let { v ->
             sourceCompatibility = v
@@ -24,14 +22,20 @@ libs.versions.javaLangTarget.get().let { javaLangTarget ->
     }
 
     val kotlinLangVersion = libs.versions.kotlinLangVersion.get()
-    logger.lifecycle("> Conf Kotlin language and API $kotlinLangVersion")
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = javaLangTarget
             languageVersion = kotlinLangVersion
             apiVersion = kotlinLangVersion
+            allWarningsAsErrors = true
         }
     }
+
+    logger.lifecycle("> Conf compatibility for Kotlin $kotlinLangVersion, JVM $javaLangTarget")
+}
+
+kotlin {
+    explicitApi()
 }
 
 configurations.implementation {
@@ -59,10 +63,6 @@ dependencies {
     implementation(libs.plugin.spotless)
 }
 
-kotlin {
-    explicitApi()
-}
-
 gradlePlugin {
     val projectUrl = "https://github.com/fluxo-kt/fluxo-kmp-conf"
     val scmUrl = "scm:git:git://github.com/fluxo-kt/fluxo-kmp-conf.git"
@@ -74,7 +74,7 @@ gradlePlugin {
         "Convenience Gradle plugin for reliable configuration of Kotlin projects by Fluxo"
     plugins.create(pluginName) {
         id = pluginId
-        implementationClass = "GradleSetupPlugin"
+        implementationClass = "fluxo.conf.FluxoKmpConfPlugin"
         displayName = shortDescr
         description = "$shortDescr. See $projectUrl for more details."
         tags.set(

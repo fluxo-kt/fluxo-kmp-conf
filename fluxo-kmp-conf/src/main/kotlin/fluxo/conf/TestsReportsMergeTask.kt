@@ -1,4 +1,4 @@
-package impl
+package fluxo.conf
 
 import groovy.time.TimeCategory
 import java.io.FileOutputStream

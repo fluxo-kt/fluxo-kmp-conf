@@ -1,12 +1,12 @@
 import com.android.build.gradle.LibraryExtension
+import impl.configureExtension
 import impl.hasExtension
 import impl.libsCatalog
 import impl.onPlugin
+import impl.withType
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 private const val PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-validator"
@@ -67,7 +67,7 @@ private fun Project.setupBinaryCompatibilityValidatorAndroidLibrary(
 private fun Project.applyBinaryCompatibilityValidator(config: BinaryCompatibilityValidatorConfig?) {
     plugins.apply(PLUGIN_ID)
     config ?: return
-    extensions.configure<ApiValidationExtension> {
+    configureExtension<ApiValidationExtension> {
         ignoredPackages += config.ignoredPackages
         nonPublicMarkers += config.nonPublicMarkers
         ignoredClasses += config.ignoredClasses

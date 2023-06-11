@@ -1,7 +1,14 @@
 @file:Suppress("TooManyFunctions")
 
 import com.android.build.gradle.LibraryExtension
+import impl.actionOf
+import impl.configureExtension
+import impl.create
+import impl.get
+import impl.getByType
 import impl.hasExtension
+import impl.named
+import impl.withType
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -11,15 +18,6 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.creating
-import org.gradle.kotlin.dsl.existing
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.withType
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugins.signing.SigningExtension
@@ -45,6 +43,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 // TODO: Set RC/alpha/beta releases status to Ivy's: milestone/integration when it will be possible
 //  https://github.com/gradle/gradle/issues/12600
 //  https://github.com/gradle/gradle/issues/20016
+
+// TODO: Protect publication tasks from invalid GIT state (dirty, untracked files, etc.)
+//  https://github.com/tbroyer/gradle-errorprone-plugin/blob/0f91e78/build.gradle.kts#L24
 
 private const val USE_DOKKA: Boolean = true
 
@@ -73,7 +74,7 @@ public fun Project.setupPublication() {
 
     // Reproducible builds setup
     // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
-    tasks.withType<AbstractArchiveTask>().configureEach {
+    tasks.withType<AbstractArchiveTask> {
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
     }
@@ -104,7 +105,7 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
                     it.name.endsWith("PublicationToMavenLocal") ||
                         it.name.endsWith("PublicationToMavenRepository")
                 }.configureEach {
-                    dependsOn(deps)
+                    it.dependsOn(deps)
                 }
             }
         }
@@ -120,7 +121,7 @@ private fun Project.setupPublicationAndroidLibrary(config: PublicationConfig) {
 
     val androidExtension = extensions.getByType<LibraryExtension>()
 
-    val sourceJarTask by tasks.creating(Jar::class) {
+    val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
         from(androidExtension.sourceSets.getByName("main").java.srcDirs)
         archiveClassifier.set("source")
     }
@@ -138,12 +139,14 @@ private fun Project.setupPublicationAndroidLibrary(config: PublicationConfig) {
         }
     }
 
-    afterEvaluate {
-        extensions.configure<PublishingExtension> {
-            publications {
-                createMavenPublication(name = "debug", artifactIdSuffix = "-debug")
-                createMavenPublication(name = "release", artifactIdSuffix = "")
-            }
+    afterEvaluate { p ->
+        p.configureExtension<PublishingExtension> {
+            publications(
+                actionOf {
+                    createMavenPublication(name = "debug", artifactIdSuffix = "-debug")
+                    createMavenPublication(name = "release", artifactIdSuffix = "")
+                },
+            )
         }
     }
 
@@ -158,7 +161,7 @@ private fun Project.setupPublicationGradlePlugin(config: PublicationConfig) {
 
     val gradlePluginExtension = extensions.getByType<GradlePluginDevelopmentExtension>()
 
-    val sourceJarTask by tasks.creating(Jar::class) {
+    val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
         from(gradlePluginExtension.pluginSourceSet.java.srcDirs)
         archiveClassifier.set("sources")
     }
@@ -182,7 +185,7 @@ private fun Project.setupPublicationKotlinJvm(config: PublicationConfig) {
 
     val kotlinPluginExtension = extensions.getByType<KotlinJvmProjectExtension>()
 
-    val sourceJarTask by tasks.creating(Jar::class) {
+    val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
         from(kotlinPluginExtension.sourceSets.getByName("main").kotlin.srcDirs)
         archiveClassifier.set("sources")
     }
@@ -203,7 +206,7 @@ private fun Project.setupPublicationJava(config: PublicationConfig) {
 
     val javaPluginExtension = extensions.getByType<JavaPluginExtension>()
 
-    val sourceJarTask by tasks.creating(Jar::class) {
+    val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
         from(javaPluginExtension.sourceSets.getByName("main").java.srcDirs)
         archiveClassifier.set("sources")
     }
@@ -221,7 +224,7 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
         val taskName = "dokkaHtmlAsJavadoc"
         val dokkaHtmlAsJavadoc = project.tasks.run {
             findByName(taskName) ?: run {
-                val dokkaHtml by project.tasks.existing(DokkaTask::class)
+                val dokkaHtml = project.tasks.named<DokkaTask>("dokkaHtml")
                 create<Jar>(taskName) {
                     setupJavadocJar()
                     from(dokkaHtml)
@@ -236,34 +239,34 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
         artifact(project.javadocJarTask())
     }
 
-    pom {
-        name.set(config.projectName)
-        description.set(config.projectDescription)
-        url.set(config.publicationUrl)
+    pom { pom ->
+        pom.name.set(config.projectName)
+        pom.description.set(config.projectDescription)
+        pom.url.set(config.publicationUrl)
 
         if (!config.licenseName.isNullOrEmpty()) {
-            licenses {
-                license {
-                    name.set(config.licenseName)
-                    url.set(config.licenseUrl)
+            pom.licenses { spec ->
+                spec.license { l ->
+                    l.name.set(config.licenseName)
+                    l.url.set(config.licenseUrl)
                 }
             }
         }
 
-        developers {
-            developer {
-                id.set(config.developerId)
-                name.set(config.developerName)
-                email.set(config.developerEmail)
+        pom.developers { spec ->
+            spec.developer { d ->
+                d.id.set(config.developerId)
+                d.name.set(config.developerName)
+                d.email.set(config.developerEmail)
             }
         }
 
-        scm {
-            url.set(config.projectUrl)
-            connection.set(config.scmUrl)
-            developerConnection.set(config.scmUrl)
+        pom.scm { scm ->
+            scm.url.set(config.projectUrl)
+            scm.connection.set(config.scmUrl)
+            scm.developerConnection.set(config.scmUrl)
             config.scmTag.takeIf { !it.isNullOrEmpty() }?.let {
-                tag.set(it)
+                scm.tag.set(it)
             }
         }
     }
@@ -280,21 +283,21 @@ internal fun Project.setupPublicationRepository(config: PublicationConfig) {
         logger.warn("> Conf SIGNING_KEY IS NOT SET! Publications are unsigned")
     }
 
-    extensions.configure<PublishingExtension> {
+    configureExtension<PublishingExtension> {
         if (config.isSigningEnabled) {
-            extensions.configure<SigningExtension> {
+            configureExtension<SigningExtension> {
                 useInMemoryPgpKeys(config.signingKey, config.signingPassword)
                 sign(publications)
             }
         }
 
-        repositories {
-            maven {
-                setUrl(config.repositoryUrl)
+        repositories { handler ->
+            handler.maven { repo ->
+                repo.setUrl(config.repositoryUrl)
 
-                credentials {
-                    username = config.repositoryUserName
-                    password = config.repositoryPassword
+                repo.credentials { creds ->
+                    creds.username = config.repositoryUserName
+                    creds.password = config.repositoryPassword
                 }
             }
         }
@@ -305,8 +308,8 @@ private fun Project.setupPublicationExtension(
     config: PublicationConfig,
     sourceJarTask: Jar? = null,
 ) {
-    extensions.configure<PublishingExtension> {
-        publications.withType<MavenPublication>().configureEach {
+    configureExtension<PublishingExtension> {
+        publications.withType<MavenPublication> {
             sourceJarTask?.let { artifact(it) }
             setupPublicationPom(project, config)
         }
@@ -317,7 +320,7 @@ private fun Project.applyMavenPublishPlugin() = plugins.apply("maven-publish")
 
 private fun Project.javadocJarTask(): Task {
     val taskName = "javadocJar"
-    return tasks.findByName(taskName) ?: tasks.create<Jar>(taskName).apply(Jar::setupJavadocJar)
+    return tasks.findByName(taskName) ?: tasks.create<Jar>(taskName, Jar::setupJavadocJar)
 }
 
 private fun Jar.setupJavadocJar() {

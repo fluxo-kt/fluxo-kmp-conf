@@ -2,11 +2,11 @@ import impl.EnvParams
 import impl.isTaskAllowedBasedByName
 import impl.isTestRelated
 import impl.splitCamelCase
+import impl.the
+import impl.withType
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.internal.os.OperatingSystem
-import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -63,14 +63,14 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
         return
     }
     project.afterEvaluate {
-        project.tasks.withType<org.gradle.jvm.tasks.Jar> {
+        it.tasks.withType<org.gradle.jvm.tasks.Jar> {
             if (enabled && !isTaskAllowedBasedByName()) {
-                logger.info("{}, {}, jar disabled", project, this)
+                logger.info("{}, {}, jar disabled", it, this)
                 enabled = false
             }
         }
 
-        if (!project.isGenericCompilationEnabled) {
+        if (!it.isGenericCompilationEnabled) {
             /**
              * @see org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
              * @see org.jetbrains.kotlin.gradle.targets.js.npm.PublicPackageJsonTask
@@ -78,14 +78,14 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
              * @see org.jetbrains.kotlin.gradle.targets.js.typescript.TypeScriptValidationTask
              * @see org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask
              */
-            project.tasks
-                .matching {
-                    it::class.java.name.startsWith("org.jetbrains.kotlin.gradle.targets.js.")
+            it.tasks
+                .matching { t ->
+                    t::class.java.name.startsWith("org.jetbrains.kotlin.gradle.targets.js.")
                 }
-                .configureEach {
-                    if (enabled) {
-                        logger.info("{}, {}, task disabled", project, this)
-                        enabled = false
+                .configureEach { t ->
+                    if (t.enabled) {
+                        t.logger.info("{}, {}, task disabled", project, this)
+                        t.enabled = false
                     }
                 }
         }
@@ -106,7 +106,7 @@ private fun KotlinTarget.disableCompilationsOfNeeded(disableTests: Boolean) {
 private fun KotlinTarget.disableCompilations(testOnly: Boolean = false) {
     compilations.configureEach {
         if (!testOnly || isTestRelated()) {
-            disableCompilation()
+            it.disableCompilation()
         }
     }
 }
