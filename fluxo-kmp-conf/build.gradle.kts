@@ -56,20 +56,21 @@ kotlin {
             }
         }
 
-        val test by getting(configureLatest)
+        getByName("test", configureLatest)
 
         // Experimental test compilation with the latest Kotlin settings.
         // Don't try for sources with old compatibility settings.
         val isInCompositeBuild = gradle.includedBuilds.size > 1
-        if (!isInCompositeBuild && kotlinVersion.toFloat() >= 1.6f) {
+        if (!isInCompositeBuild && kotlinVersion.toFloat() >= 1.4f) {
             create("experimentalTest") {
                 configureLatest()
-                @Suppress("DEPRECATION")
+                // Deprecated in Kotlin 1.9.0
+                @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
                 source(main.defaultSourceSet)
                 tasks.named("check") {
                     dependsOn(compileTaskProvider)
                 }
-            }.associateWith(test)
+            }
         }
     }
 }
