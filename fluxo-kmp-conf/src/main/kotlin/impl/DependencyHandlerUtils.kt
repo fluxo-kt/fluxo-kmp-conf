@@ -89,5 +89,5 @@ private fun addConfiguredDependencyTo(
     dependencyNotation: Provider<*>,
     action: ExternalModuleDependency.() -> Unit,
 ) {
-    dependencies.addProvider(configuration, dependencyNotation, actionOf(action))
+    dependencies.addProvider(configuration, dependencyNotation, action)
 }

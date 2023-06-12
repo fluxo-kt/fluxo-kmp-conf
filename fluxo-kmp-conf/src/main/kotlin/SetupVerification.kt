@@ -11,7 +11,6 @@ import com.diffplug.gradle.spotless.SpotlessPlugin
 import com.diffplug.spotless.kotlin.DiktatStep
 import com.diffplug.spotless.kotlin.KtLintStep
 import fluxo.conf.MergeDetektBaselinesTask
-import impl.actionOf
 import impl.checkIsRootProject
 import impl.configureExtension
 import impl.dependencies
@@ -27,6 +26,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -163,7 +163,7 @@ public fun Project.setupVerification(
             libs?.onLibrary("detekt-compose") { detektPlugins(it) }
         }
 
-        val function = actionOf<Plugin<*>> {
+        val function = Action<Plugin<*>> {
             project.setupLint(mergeLint, ignoredBuildTypes, ignoredFlavors)
         }
         plugins.withId("com.android.library", function)

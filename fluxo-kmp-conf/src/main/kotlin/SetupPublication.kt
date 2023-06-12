@@ -1,7 +1,6 @@
 @file:Suppress("TooManyFunctions")
 
 import com.android.build.gradle.LibraryExtension
-import impl.actionOf
 import impl.configureExtension
 import impl.create
 import impl.get
@@ -145,12 +144,10 @@ private fun Project.setupPublicationAndroidLibrary(config: PublicationConfig) {
 
     afterEvaluate {
         configureExtension<PublishingExtension> {
-            publications(
-                actionOf {
-                    createMavenPublication(name = "debug", artifactIdSuffix = "-debug")
-                    createMavenPublication(name = "release", artifactIdSuffix = "")
-                },
-            )
+            publications {
+                createMavenPublication(name = "debug", artifactIdSuffix = "-debug")
+                createMavenPublication(name = "release", artifactIdSuffix = "")
+            }
         }
     }
 

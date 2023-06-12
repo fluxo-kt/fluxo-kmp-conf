@@ -55,7 +55,7 @@ internal fun <T : Any> ExtensionAware.configureExtension(
     name: String,
     type: KClass<T>? = null,
     action: T.() -> Unit,
-) = extensions.configure(name, actionOf(action))
+) = extensions.configure(name, action)
 
 
 internal val ExtensionAware.extra: ExtraPropertiesExtension
@@ -85,5 +85,5 @@ internal fun <T : Any> ExtensionContainer.conf(
     type: KClass<T>? = null,
     action: T.() -> Unit,
 ) {
-    configure(name, actionOf(action))
+    configure(name, action)
 }
