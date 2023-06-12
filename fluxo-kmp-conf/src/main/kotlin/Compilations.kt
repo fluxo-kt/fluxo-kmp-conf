@@ -63,14 +63,14 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
         return
     }
     project.afterEvaluate {
-        it.tasks.withType<org.gradle.jvm.tasks.Jar> {
+        tasks.withType<org.gradle.jvm.tasks.Jar> {
             if (enabled && !isTaskAllowedBasedByName()) {
-                logger.info("{}, {}, jar disabled", it, this)
+                logger.info("{}, {}, jar disabled", this.project, this)
                 enabled = false
             }
         }
 
-        if (!it.isGenericCompilationEnabled) {
+        if (!isGenericCompilationEnabled) {
             /**
              * @see org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
              * @see org.jetbrains.kotlin.gradle.targets.js.npm.PublicPackageJsonTask
@@ -78,14 +78,14 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
              * @see org.jetbrains.kotlin.gradle.targets.js.typescript.TypeScriptValidationTask
              * @see org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask
              */
-            it.tasks
+            tasks
                 .matching { t ->
                     t::class.java.name.startsWith("org.jetbrains.kotlin.gradle.targets.js.")
                 }
-                .configureEach { t ->
-                    if (t.enabled) {
-                        t.logger.info("{}, {}, task disabled", project, this)
-                        t.enabled = false
+                .configureEach {
+                    if (enabled) {
+                        logger.info("{}, {}, task disabled", project, this)
+                        enabled = false
                     }
                 }
         }
@@ -106,7 +106,7 @@ private fun KotlinTarget.disableCompilationsOfNeeded(disableTests: Boolean) {
 private fun KotlinTarget.disableCompilations(testOnly: Boolean = false) {
     compilations.configureEach {
         if (!testOnly || isTestRelated()) {
-            it.disableCompilation()
+            disableCompilation()
         }
     }
 }

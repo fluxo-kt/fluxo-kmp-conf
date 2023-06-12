@@ -16,7 +16,7 @@ internal fun Project.ensureUnreachableTasksDisabled() {
     extra.set(PROPERTY_NAME, true)
 
     gradle.taskGraph.whenReady {
-        DisableTasks(graph = it, logger = logger)
+        DisableTasks(graph = this, logger = logger)
             .apply()
     }
 }

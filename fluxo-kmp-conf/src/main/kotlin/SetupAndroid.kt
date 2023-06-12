@@ -476,13 +476,13 @@ private fun Project.setupSigning(appExtension: BaseAppModuleExtension) {
                         logger.lifecycle(
                             "> Conf :signing: 'release' configuration loaded from properties",
                         )
-                        it.keyAlias = alias
-                        it.storeFile = getKeystoreFile(properties["releaseKeystorePath"])
+                        keyAlias = alias
+                        storeFile = getKeystoreFile(properties["releaseKeystorePath"])
                         val password = properties["releaseKeystorePassword"]?.toString()
-                        it.storePassword = password
-                        it.keyPassword = properties["releaseKeyPassword"]?.toString()
+                        storePassword = password
+                        keyPassword = properties["releaseKeyPassword"]?.toString()
                             .orEmpty().ifEmpty { password }
-                        it.enableMaxSigning()
+                        enableMaxSigning()
                     }
                 }
             }
@@ -492,11 +492,11 @@ private fun Project.setupSigning(appExtension: BaseAppModuleExtension) {
         if (!releaseConfigured) {
             create("release") {
                 logger.lifecycle("> Conf :signing: 'release' configuration copied from 'debug'")
-                it.storeFile = debug.storeFile
-                it.keyAlias = debug.keyAlias
-                it.storePassword = debug.storePassword
-                it.keyPassword = debug.keyPassword
-                it.enableMaxSigning()
+                storeFile = debug.storeFile
+                keyAlias = debug.keyAlias
+                storePassword = debug.storePassword
+                keyPassword = debug.keyPassword
+                enableMaxSigning()
             }
         }
     }

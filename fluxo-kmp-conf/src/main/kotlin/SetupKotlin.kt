@@ -109,7 +109,7 @@ internal fun Project.setupKotlinExtension(
             compilations.forEach { it.disableCompilation() }
         }
 
-        it.languageSettings {
+        languageSettings {
             // https://kotlinlang.org/docs/compatibility-modes.html
             languageVersion = kotlinLangVersion.version
             apiVersion = kotlinLangVersion.version

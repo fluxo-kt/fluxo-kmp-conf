@@ -30,4 +30,4 @@ private class KotlinClosure2<in T, in U, V : Any>(
 }
 
 
-internal fun <T> actionOf(action: T.() -> Unit): Action<T> = Action { it.action() }
+internal fun <T> actionOf(action: T.() -> Unit): Action<T> = Action { action() }

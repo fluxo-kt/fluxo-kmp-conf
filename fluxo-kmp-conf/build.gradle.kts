@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaCompilation
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.sam.receiver)
     alias(libs.plugins.kotlinx.binCompatValidator)
     alias(libs.plugins.deps.guard)
     alias(libs.plugins.detekt)
@@ -15,6 +16,10 @@ val pluginId = "io.github.fluxo-kt.fluxo-kmp-conf"
 
 group = "io.github.fluxo-kt"
 version = libs.versions.fluxoKmpConf.get()
+
+samWithReceiver {
+    annotation("org.gradle.api.HasImplicitReceiver")
+}
 
 kotlin {
     explicitApi()
@@ -59,6 +64,7 @@ kotlin {
         if (!isInCompositeBuild && kotlinVersion.toFloat() >= 1.6f) {
             create("experimentalTest") {
                 configureLatest()
+                @Suppress("DEPRECATION")
                 source(main.defaultSourceSet)
                 tasks.named("check") {
                     dependsOn(compileTaskProvider)

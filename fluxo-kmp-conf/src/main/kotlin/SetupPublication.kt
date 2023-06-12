@@ -92,6 +92,7 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
     if (!isGenericCompilationEnabled) return
     multiplatformExtension.apply {
         if (targets.any { it.platformType == KotlinPlatformType.androidJvm }) {
+            @Suppress("DEPRECATION")
             android {
                 publishLibraryVariants("release", "debug")
             }
@@ -105,7 +106,7 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
                     it.name.endsWith("PublicationToMavenLocal") ||
                         it.name.endsWith("PublicationToMavenRepository")
                 }.configureEach {
-                    it.dependsOn(deps)
+                    dependsOn(deps)
                 }
             }
         }
@@ -139,8 +140,8 @@ private fun Project.setupPublicationAndroidLibrary(config: PublicationConfig) {
         }
     }
 
-    afterEvaluate { p ->
-        p.configureExtension<PublishingExtension> {
+    afterEvaluate {
+        configureExtension<PublishingExtension> {
             publications(
                 actionOf {
                     createMavenPublication(name = "debug", artifactIdSuffix = "-debug")
@@ -239,34 +240,34 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
         artifact(project.javadocJarTask())
     }
 
-    pom { pom ->
-        pom.name.set(config.projectName)
-        pom.description.set(config.projectDescription)
-        pom.url.set(config.publicationUrl)
+    pom {
+        name.set(config.projectName)
+        description.set(config.projectDescription)
+        url.set(config.publicationUrl)
 
         if (!config.licenseName.isNullOrEmpty()) {
-            pom.licenses { spec ->
-                spec.license { l ->
-                    l.name.set(config.licenseName)
-                    l.url.set(config.licenseUrl)
+            licenses {
+                license {
+                    name.set(config.licenseName)
+                    url.set(config.licenseUrl)
                 }
             }
         }
 
-        pom.developers { spec ->
-            spec.developer { d ->
-                d.id.set(config.developerId)
-                d.name.set(config.developerName)
-                d.email.set(config.developerEmail)
+        developers {
+            developer {
+                id.set(config.developerId)
+                name.set(config.developerName)
+                email.set(config.developerEmail)
             }
         }
 
-        pom.scm { scm ->
-            scm.url.set(config.projectUrl)
-            scm.connection.set(config.scmUrl)
-            scm.developerConnection.set(config.scmUrl)
+        scm {
+            url.set(config.projectUrl)
+            connection.set(config.scmUrl)
+            developerConnection.set(config.scmUrl)
             config.scmTag.takeIf { !it.isNullOrEmpty() }?.let {
-                scm.tag.set(it)
+                tag.set(it)
             }
         }
     }
@@ -291,13 +292,13 @@ internal fun Project.setupPublicationRepository(config: PublicationConfig) {
             }
         }
 
-        repositories { handler ->
-            handler.maven { repo ->
-                repo.setUrl(config.repositoryUrl)
+        repositories {
+            maven {
+                setUrl(config.repositoryUrl)
 
-                repo.credentials { creds ->
-                    creds.username = config.repositoryUserName
-                    creds.password = config.repositoryPassword
+                credentials {
+                    username = config.repositoryUserName
+                    password = config.repositoryPassword
                 }
             }
         }

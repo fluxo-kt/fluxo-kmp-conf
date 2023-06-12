@@ -76,6 +76,7 @@ plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", ver
 [plugins]
 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-sam-receiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

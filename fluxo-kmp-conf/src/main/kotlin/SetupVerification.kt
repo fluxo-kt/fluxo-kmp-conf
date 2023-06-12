@@ -66,7 +66,7 @@ public fun Project.setupVerification(
     }
 
     tasks.matching { it.name == "check" }.configureEach {
-        it.dependsOn(mergeDetekt, mergeLint)
+        dependsOn(mergeDetekt, mergeLint)
     }
 
     val detektCompose = rootProject.file("detekt-compose.yml")
@@ -122,9 +122,9 @@ public fun Project.setupVerification(
             val baselineTasks = tasks.withType<DetektCreateBaselineTask> {
                 baseline.set(file("$detektBaselineIntermediate-$name.xml"))
             }
-            mergeDetektBaselinesTask.configure { t ->
-                t.dependsOn(baselineTasks)
-                t.baselineFiles.from(baselineTasks.map { it.baseline })
+            mergeDetektBaselinesTask.configure {
+                dependsOn(baselineTasks)
+                baselineFiles.from(baselineTasks.map { it.baseline })
             }
         }
 
@@ -139,10 +139,10 @@ public fun Project.setupVerification(
                 jvmTarget = javaLangTarget
             }
             reports {
-                it.sarif.required.set(true)
-                it.html.required.set(true)
-                it.txt.required.set(false)
-                it.xml.required.set(false)
+                sarif.required.set(true)
+                html.required.set(true)
+                txt.required.set(false)
+                xml.required.set(false)
             }
         }
         val detektAll = tasks.register<Task>("detektAll") {
@@ -151,11 +151,11 @@ public fun Project.setupVerification(
             dependsOn(detektTasks)
         }
         tasks.matching { it.name == "check" }.configureEach {
-            it.dependsOn(detektAll)
+            dependsOn(detektAll)
         }
-        mergeDetekt.configure { t ->
-            t.dependsOn(detektTasks)
-            t.input.from(detektTasks.map { it.sarifReportFile })
+        mergeDetekt.configure {
+            dependsOn(detektTasks)
+            input.from(detektTasks.map { it.sarifReportFile })
         }
 
         dependencies {
@@ -191,7 +191,7 @@ private fun Project.setupSpotless(enableDiktat: Boolean = false) {
             // https://github.com/search?l=Kotlin&q=spotless+language%3AKotlin&type=Code
             // https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/c60d0a2/conventions/src/main/kotlin/otel.spotless-conventions.gradle.kts
 
-            // optional: limit format enforcement to just the files changed by this feature branch
+            // optional: limit format enforcement to the files changed by this feature branch only
             // ratchetFrom = "origin/dev"
 
             // TODO: read base settings from .editorconfig ?
@@ -221,65 +221,65 @@ private fun Project.setupSpotless(enableDiktat: Boolean = false) {
 
             // TODO: Only if kotlin plugin enabled?
             val editorConfigPath = rootProject.file(".editorconfig")
-            kotlin { k ->
-                k.target("**/*.kt", "**/*.kts")
+            kotlin {
+                target("**/*.kt", "**/*.kts")
 
                 // https://github.com/search?q=setEditorConfigPath+path%3A*.kt&type=code
                 try {
-                    k.ktlint(libs.optionalVersion("ktlint") ?: KtLintStep.defaultVersion())
+                    ktlint(libs.optionalVersion("ktlint") ?: KtLintStep.defaultVersion())
                 } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
                     logger.warn("ktlint version error: $e", e)
-                    k.ktlint()
+                    ktlint()
                 }.setEditorConfigPath(editorConfigPath)
 
                 if (enableDiktat) {
                     try {
                         val v = libs.optionalVersion("diktat") ?: DiktatStep.defaultVersionDiktat()
-                        k.diktat(v)
+                        diktat(v)
                     } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
                         logger.warn("diktat version error: $e", e)
-                        k.diktat()
+                        diktat()
                     }
                 }
 
-                k.targetExclude(*excludePaths)
+                targetExclude(*excludePaths)
 
                 // TODO: Licenses
                 // licenseHeader("/* (C)$YEAR */")
             }
-            kotlinGradle { k ->
+            kotlinGradle {
                 try {
-                    k.ktlint(libs.optionalVersion("ktlint") ?: KtLintStep.defaultVersion())
+                    ktlint(libs.optionalVersion("ktlint") ?: KtLintStep.defaultVersion())
                 } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
                     logger.warn("ktlint version error: $e", e)
-                    k.ktlint()
+                    ktlint()
                 }.setEditorConfigPath(editorConfigPath)
 
                 if (enableDiktat) {
                     try {
                         val v = libs.optionalVersion("diktat") ?: DiktatStep.defaultVersionDiktat()
-                        k.diktat(v)
+                        diktat(v)
                     } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
                         logger.warn("diktat version error: $e", e)
-                        k.diktat()
+                        diktat()
                     }
                 }
             }
 
             // TODO: Only if java plugin enabled
             java {
-                it.target("**/*.java")
-                it.googleJavaFormat().aosp()
-                it.defaultFormatSettings()
+                target("**/*.java")
+                googleJavaFormat().aosp()
+                defaultFormatSettings()
             }
 
             json {
-                it.target("**/*.json")
-                it.targetExclude(*excludePaths)
-                it.gson().indentWithSpaces(2).sortByKeys()
+                target("**/*.json")
+                targetExclude(*excludePaths)
+                gson().indentWithSpaces(2).sortByKeys()
             }
             format("misc") {
-                it.target(
+                target(
                     "**/*.css",
                     "**/*.dockerfile",
                     "**/*.gradle",
@@ -299,7 +299,7 @@ private fun Project.setupSpotless(enableDiktat: Boolean = false) {
                     ".gitconfig",
                     ".gitignore",
                 )
-                it.defaultFormatSettings(numSpacesPerTab = 2)
+                defaultFormatSettings(numSpacesPerTab = 2)
             }
 
             // TODO: Freshmark
@@ -310,29 +310,29 @@ private fun Project.setupSpotless(enableDiktat: Boolean = false) {
         // `spotlessPredeclare` is only declared after spotless.predeclareDeps call
         if (isRootProject) {
             configureExtension<SpotlessExtension>("spotlessPredeclare") {
-                kotlin { k ->
-                    k.ktlint()
+                kotlin {
+                    ktlint()
                     if (enableDiktat) {
-                        k.diktat()
+                        diktat()
                     }
                 }
-                kotlinGradle { k ->
-                    k.ktlint()
+                kotlinGradle {
+                    ktlint()
                     if (enableDiktat) {
-                        k.diktat()
+                        diktat()
                     }
                 }
                 java {
-                    it.googleJavaFormat()
+                    googleJavaFormat()
                 }
                 json {
-                    it.gson()
+                    gson()
                 }
                 yaml {
-                    it.jackson()
+                    jackson()
                 }
                 format("markdown") {
-                    it.prettier()
+                    prettier()
                 }
             }
         }
@@ -375,7 +375,7 @@ private fun Project.setupLint(
             val lintTask = this
             if (name.startsWith("lintReport")) {
                 mergeLint.configure {
-                    it.input.from(lintTask.sarifReportOutputFile)
+                    input.from(lintTask.sarifReportOutputFile)
                     dependsOn(lintTask)
                 }
             }

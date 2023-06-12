@@ -31,8 +31,8 @@ public fun Project.setupTestsReport() {
                 "check", "test", "allTests", "assemble", "build",
                 "jvmTest", "jsTest", "jsNodeTest", "jsBrowserTest", "mingwX64Test",
             )
-            tasks.matching { it.name in targetNames }.configureEach { t ->
-                t.finalizedBy(mergedReport)
+            tasks.matching { it.name in targetNames }.configureEach {
+                finalizedBy(mergedReport)
             }
         }
 
@@ -52,16 +52,16 @@ public fun Project.setupTestsReport() {
             }
 
             testLogging {
-                it.events = setOf(
+                events = setOf(
                     TestLogEvent.FAILED,
                     TestLogEvent.SKIPPED,
                     TestLogEvent.STANDARD_OUT,
                     TestLogEvent.STANDARD_ERROR,
                 )
-                it.exceptionFormat = TestExceptionFormat.FULL
-                it.showExceptions = true
-                it.showCauses = true
-                it.showStackTraces = true
+                exceptionFormat = TestExceptionFormat.FULL
+                showExceptions = true
+                showCauses = true
+                showStackTraces = true
             }
 
             ignoreFailures = true // Always run all tests for all modules

@@ -69,7 +69,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             // Convenience task to print full dependencies tree for any module
             // Use `buildEnvironment` task for the report about plugins
             // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
-            it.tasks.register<DependencyReportTask>("allDeps")
+            tasks.register<DependencyReportTask>("allDeps")
         }
 
         target.tasks.register<Task>("resolveDependencies") {
@@ -92,9 +92,9 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         // Fix Kotlin/JS incompatibilities by pinning the versions of dependencies.
         // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
         // Also see https://github.com/rjaros/kvision/blob/d9044ab/build.gradle.kts#L28
-        target.allprojects { p ->
-            p.afterEvaluate {
-                target.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
+        target.allprojects {
+            afterEvaluate {
+                plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
                     val libs = target.libsCatalog
                     target.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>()
                         .apply {
