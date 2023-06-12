@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
 
-package impl
+package fluxo.conf.impl
 
 import java.util.Locale
 import java.util.Optional

@@ -1,4 +1,4 @@
-package impl
+package fluxo.conf.impl
 
 internal object EnvParams {
 

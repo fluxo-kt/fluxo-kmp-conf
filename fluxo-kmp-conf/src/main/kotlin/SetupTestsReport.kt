@@ -1,10 +1,10 @@
 @file:Suppress("ArgumentListWrapping", "Wrapping")
 
 import fluxo.conf.TestsReportsMergeTask
-import impl.checkIsRootProject
-import impl.closureOf
-import impl.register
-import impl.withType
+import fluxo.conf.impl.checkIsRootProject
+import fluxo.conf.impl.closureOf
+import fluxo.conf.impl.register
+import fluxo.conf.impl.withType
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.testing.AbstractTestTask

@@ -1,19 +1,19 @@
 @file:Suppress("ktPropBy")
 
-import impl.compileOnlyWithConstraint
-import impl.configureExtensionIfAvailable
-import impl.exclude
-import impl.get
-import impl.implementation
-import impl.kotlin
-import impl.libsCatalog
-import impl.onBundle
-import impl.onLibrary
-import impl.onVersion
-import impl.optionalVersion
-import impl.testImplementation
-import impl.v
-import impl.withType
+import fluxo.conf.impl.compileOnlyWithConstraint
+import fluxo.conf.impl.configureExtensionIfAvailable
+import fluxo.conf.impl.exclude
+import fluxo.conf.impl.get
+import fluxo.conf.impl.implementation
+import fluxo.conf.impl.kotlin
+import fluxo.conf.impl.libsCatalog
+import fluxo.conf.impl.onBundle
+import fluxo.conf.impl.onLibrary
+import fluxo.conf.impl.onVersion
+import fluxo.conf.impl.optionalVersion
+import fluxo.conf.impl.testImplementation
+import fluxo.conf.impl.v
+import fluxo.conf.impl.withType
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency

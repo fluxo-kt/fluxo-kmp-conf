@@ -1,13 +1,13 @@
 @file:Suppress("TooManyFunctions")
 
 import com.android.build.gradle.LibraryExtension
-import impl.configureExtension
-import impl.create
-import impl.get
-import impl.hasExtension
-import impl.named
-import impl.the
-import impl.withType
+import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.create
+import fluxo.conf.impl.get
+import fluxo.conf.impl.hasExtension
+import fluxo.conf.impl.named
+import fluxo.conf.impl.the
+import fluxo.conf.impl.withType
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Project
 import org.gradle.api.Task

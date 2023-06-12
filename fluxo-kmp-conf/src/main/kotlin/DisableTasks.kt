@@ -1,5 +1,5 @@
-import impl.checkIsRootProject
-import impl.extra
+import fluxo.conf.impl.checkIsRootProject
+import fluxo.conf.impl.extra
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph

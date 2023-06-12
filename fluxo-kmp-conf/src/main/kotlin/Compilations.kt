@@ -1,9 +1,9 @@
-import impl.EnvParams
-import impl.configureExtension
-import impl.isTaskAllowedBasedByName
-import impl.isTestRelated
-import impl.splitCamelCase
-import impl.withType
+import fluxo.conf.impl.EnvParams
+import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.isTaskAllowedBasedByName
+import fluxo.conf.impl.isTestRelated
+import fluxo.conf.impl.splitCamelCase
+import fluxo.conf.impl.withType
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.internal.os.OperatingSystem

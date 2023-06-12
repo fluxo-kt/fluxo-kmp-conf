@@ -1,4 +1,4 @@
-package impl
+package fluxo.conf.impl
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider

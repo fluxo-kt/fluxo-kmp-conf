@@ -1,6 +1,6 @@
 @file:Suppress("TooManyFunctions")
 
-package impl
+package fluxo.conf.impl
 
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.ModuleDependency

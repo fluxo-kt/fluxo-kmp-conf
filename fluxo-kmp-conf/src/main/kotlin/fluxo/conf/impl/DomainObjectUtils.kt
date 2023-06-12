@@ -1,6 +1,6 @@
 @file:Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 
-package impl
+package fluxo.conf.impl
 
 import org.gradle.api.DomainObjectCollection
 import org.gradle.api.NamedDomainObjectCollection

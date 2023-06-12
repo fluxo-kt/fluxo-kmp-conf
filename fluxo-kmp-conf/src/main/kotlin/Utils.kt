@@ -1,7 +1,7 @@
 @file:Suppress("TooManyFunctions", "ktPropBy")
 
-import impl.envOrProp
-import impl.envOrPropFlag
+import fluxo.conf.impl.envOrProp
+import fluxo.conf.impl.envOrPropFlag
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
 import org.gradle.api.Project

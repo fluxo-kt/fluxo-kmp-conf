@@ -1,16 +1,16 @@
 @file:Suppress("TooManyFunctions")
 
 import com.android.build.gradle.LibraryExtension
-import impl.capitalizeAsciiOnly
-import impl.configureExtension
-import impl.getOrNull
-import impl.ifNotEmpty
-import impl.implementation
-import impl.kotlin
-import impl.libsCatalog
-import impl.onLibrary
-import impl.optionalVersion
-import impl.testImplementation
+import fluxo.conf.impl.capitalizeAsciiOnly
+import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.getOrNull
+import fluxo.conf.impl.ifNotEmpty
+import fluxo.conf.impl.implementation
+import fluxo.conf.impl.kotlin
+import fluxo.conf.impl.libsCatalog
+import fluxo.conf.impl.onLibrary
+import fluxo.conf.impl.optionalVersion
+import fluxo.conf.impl.testImplementation
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import org.gradle.api.NamedDomainObjectCollection

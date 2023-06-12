@@ -1,9 +1,9 @@
 import com.android.build.gradle.LibraryExtension
-import impl.configureExtension
-import impl.hasExtension
-import impl.libsCatalog
-import impl.onPlugin
-import impl.withType
+import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.hasExtension
+import fluxo.conf.impl.libsCatalog
+import fluxo.conf.impl.onPlugin
+import fluxo.conf.impl.withType
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project

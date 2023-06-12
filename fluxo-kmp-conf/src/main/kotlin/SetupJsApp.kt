@@ -1,4 +1,4 @@
-import impl.configureExtension
+import fluxo.conf.impl.configureExtension
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 

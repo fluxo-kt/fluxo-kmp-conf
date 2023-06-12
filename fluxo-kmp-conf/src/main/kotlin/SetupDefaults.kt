@@ -1,4 +1,4 @@
-import impl.extra
+import fluxo.conf.impl.extra
 import org.gradle.api.Project
 
 public fun Project.setupDefaults(

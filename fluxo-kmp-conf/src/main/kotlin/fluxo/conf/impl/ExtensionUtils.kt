@@ -1,6 +1,6 @@
 @file:Suppress("UNUSED_PARAMETER")
 
-package impl
+package fluxo.conf.impl
 
 import kotlin.reflect.KClass
 import org.gradle.api.plugins.ExtensionAware

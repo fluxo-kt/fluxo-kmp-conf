@@ -1,4 +1,4 @@
-package impl
+package fluxo.conf.impl
 
 import Compilations
 import io.gitlab.arturbosch.detekt.Detekt
