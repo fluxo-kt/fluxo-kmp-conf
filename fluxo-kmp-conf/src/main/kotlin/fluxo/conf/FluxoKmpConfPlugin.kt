@@ -4,11 +4,11 @@ import areComposeMetricsEnabled
 import disableTests
 import ensureUnreachableTasksDisabled
 import getValue
+import impl.configureExtension
 import impl.isRootProject
 import impl.libsCatalog
 import impl.onVersion
 import impl.register
-import impl.the
 import impl.withType
 import isCI
 import isDesugaringEnabled
@@ -19,6 +19,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import useKotlinDebug
 
 @Suppress("unused", "EmptyFunctionBlock", "ktPropBy")
@@ -96,23 +98,21 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             afterEvaluate {
                 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
                     val libs = target.libsCatalog
-                    target.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>()
-                        .apply {
-                            lockFileDirectory = project.rootDir.resolve(".kotlin-js-store")
-                            libs.onVersion("js-engineIo") { resolution("engine.io", it) }
-                            libs.onVersion("js-socketIo") { resolution("socket.io", it) }
-                            libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
+                    target.configureExtension<YarnRootExtension> {
+                        lockFileDirectory = project.rootDir.resolve(".kotlin-js-store")
+                        libs.onVersion("js-engineIo") { resolution("engine.io", it) }
+                        libs.onVersion("js-socketIo") { resolution("socket.io", it) }
+                        libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
+                    }
+                    target.configureExtension<NodeJsRootExtension> {
+                        libs.onVersion("js-karma") { versions.karma.version = it }
+                        libs.onVersion("js-mocha") { versions.mocha.version = it }
+                        libs.onVersion("js-webpack") { versions.webpack.version = it }
+                        libs.onVersion("js-webpackCli") { versions.webpackCli.version = it }
+                        libs.onVersion("js-webpackDevServer") {
+                            versions.webpackDevServer.version = it
                         }
-                    target.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>()
-                        .apply {
-                            libs.onVersion("js-karma") { versions.karma.version = it }
-                            libs.onVersion("js-mocha") { versions.mocha.version = it }
-                            libs.onVersion("js-webpack") { versions.webpack.version = it }
-                            libs.onVersion("js-webpackCli") { versions.webpackCli.version = it }
-                            libs.onVersion("js-webpackDevServer") {
-                                versions.webpackDevServer.version = it
-                            }
-                        }
+                    }
                 }
             }
         }

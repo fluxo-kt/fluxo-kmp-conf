@@ -128,13 +128,13 @@ internal fun Project.setupAndroidCommon(
     setupCompose: Boolean = config.setupCompose,
     kotlinConfig: KotlinConfigSetup = requireDefaultKotlinConfigSetup(),
 ) {
+    // configure `androidComponents` extension
     // https://developer.android.com/studio/build/extend-agp
-    val androidComponents = the<AndroidComponentsExtension<*, *, *>>()
-    androidComponents.finalizeDsl {
+    the(AndroidComponentsExtension::class).finalizeDsl {
         it.onFinalizeDsl(project)
     }
 
-    configureExtension<CommonExtension<*, *, *, *>>("android") {
+    configureExtension("android", CommonExtension::class) {
         val ns = namespace.replace('-', '.').lowercase()
         logger.lifecycle("> Conf Android namespace '$ns'")
         this.namespace = ns
@@ -409,7 +409,7 @@ private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) 
 
         // Release-only packaging options with `androidComponents`
         // https://issuetracker.google.com/issues/155215248#comment5
-        project.configureExtension<AndroidComponentsExtension<*, *, *>> {
+        project.configureExtension("androidComponents", AndroidComponentsExtension::class) {
             onVariants(selector().withBuildType("release")) {
                 it.packaging.resources.excludes.add("META-INF/**.version")
             }
@@ -419,19 +419,20 @@ private fun CommonExtension<*, *, *, *>.setupPackagingOptions(project: Project) 
 
 private fun CommonExtension<*, *, *, *>.kotlinOptions(
     project: Project,
-    configure: KotlinJvmOptions.() -> Unit,
+    action: KotlinJvmOptions.() -> Unit,
 ) {
     val extensionAware = this as ExtensionAware
     project.plugins.withId("org.jetbrains.kotlin.android") {
         try {
-            extensionAware.configureExtension("kotlinOptions", configure)
+            extensionAware.configureExtension("kotlinOptions", action = action)
         } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
             project.logger.error("kotlinOptions error: $e", e)
         }
     }
 }
 
-internal fun Project.ksp(configure: KspExtension.() -> Unit) = configureExtension("ksp", configure)
+internal fun Project.ksp(action: KspExtension.() -> Unit) =
+    configureExtension("ksp", action = action)
 
 internal val PluginAware.hasKsp: Boolean get() = plugins.hasPlugin("com.google.devtools.ksp")
 

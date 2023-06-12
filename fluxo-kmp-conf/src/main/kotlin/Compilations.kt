@@ -1,8 +1,8 @@
 import impl.EnvParams
+import impl.configureExtension
 import impl.isTaskAllowedBasedByName
 import impl.isTestRelated
 import impl.splitCamelCase
-import impl.the
 import impl.withType
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.AbstractTestTask
@@ -52,8 +52,9 @@ internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project
     if (!EnvParams.splitTargets) {
         if (disableTests) {
             // yarn.lock calculated differently without tests, ignore mismatch
-            project.rootProject.plugins.withType(YarnPlugin::class.java) {
-                with(project.rootProject.the<YarnRootExtension>()) {
+            val rootProject = project.rootProject
+            rootProject.plugins.withType<YarnPlugin> {
+                rootProject.configureExtension<YarnRootExtension> {
                     yarnLockMismatchReport = YarnLockMismatchReport.NONE
                     yarnLockAutoReplace = false
                     reportNewYarnLock = false

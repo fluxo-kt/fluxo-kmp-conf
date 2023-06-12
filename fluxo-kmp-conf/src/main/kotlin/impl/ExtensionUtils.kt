@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package impl
 
 import kotlin.reflect.KClass
@@ -8,7 +10,7 @@ import org.gradle.api.reflect.TypeOf
 
 internal inline fun <reified T : Any> ExtensionAware.hasExtension(): Boolean {
     return try {
-        extensions.findByType(typeOf<T>()) != null
+        extensions.findByType(T::class.java) != null
     } catch (_: NoClassDefFoundError) {
         false
     }
@@ -29,14 +31,15 @@ internal inline fun ExtensionAware.hasExtension(clazz: () -> KClass<*>): Boolean
  *
  * @see org.gradle.api.plugins.ExtensionContainer.getByType
  */
-internal inline fun <reified T : Any> ExtensionAware.the(): T = extensions.getByType<T>()
+internal inline fun <reified T : Any> ExtensionAware.the(type: KClass<T>? = null): T =
+    extensions.getByType<T>()
 
 
 internal inline fun <reified T : Any> ExtensionAware.configureExtensionIfAvailable(
     noinline action: T.() -> Unit,
 ): Boolean {
     return try {
-        extensions.findByType(typeOf<T>())?.run(action)
+        extensions.findByType(T::class.java)?.run(action)
         true
     } catch (_: NoClassDefFoundError) {
         false
@@ -44,26 +47,43 @@ internal inline fun <reified T : Any> ExtensionAware.configureExtensionIfAvailab
 }
 
 internal inline fun <reified T : Any> ExtensionAware.configureExtension(
+    type: KClass<T>? = null,
     noinline action: T.() -> Unit,
-) = extensions.configure<T>(action)
+) = extensions.configure<T>(type, action)
 
-internal fun <T : Any> ExtensionAware.configureExtension(name: String, action: T.() -> Unit) =
-    extensions.configure(name, actionOf(action))
+internal fun <T : Any> ExtensionAware.configureExtension(
+    name: String,
+    type: KClass<T>? = null,
+    action: T.() -> Unit,
+) = extensions.configure(name, actionOf(action))
 
 
 internal val ExtensionAware.extra: ExtraPropertiesExtension
     get() = extensions.extraProperties
 
 
+/** Saves deep generic type requirements. */
 internal inline fun <reified T> typeOf(): TypeOf<T> = object : TypeOf<T>() {}
 
 
-internal inline fun <reified T : Any> ExtensionContainer.getByType(): T = getByType(typeOf<T>())
+internal inline fun <reified T : Any> ExtensionContainer.getByTypeStrict(): T =
+    getByType(typeOf<T>())
 
-internal inline fun <reified T : Any> ExtensionContainer.configure(noinline action: T.() -> Unit) {
-    configure(typeOf<T>(), actionOf(action))
+internal inline fun <reified T : Any> ExtensionContainer.getByType(type: KClass<T>? = null): T =
+    getByType(T::class.java)
+
+
+internal inline fun <reified T : Any> ExtensionContainer.configure(
+    type: KClass<T>? = null,
+    noinline action: T.() -> Unit,
+) {
+    configure(T::class.java, actionOf(action))
 }
 
-internal fun <T : Any> ExtensionContainer.conf(name: String, action: T.() -> Unit) {
+internal fun <T : Any> ExtensionContainer.conf(
+    name: String,
+    type: KClass<T>? = null,
+    action: T.() -> Unit,
+) {
     configure(name, actionOf(action))
 }

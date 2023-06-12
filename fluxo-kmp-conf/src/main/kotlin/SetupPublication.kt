@@ -5,9 +5,9 @@ import impl.actionOf
 import impl.configureExtension
 import impl.create
 import impl.get
-import impl.getByType
 import impl.hasExtension
 import impl.named
+import impl.the
 import impl.withType
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Project
@@ -59,13 +59,13 @@ public fun Project.setupPublication() {
         hasExtension<LibraryExtension>() ->
             setupPublicationAndroidLibrary(config)
 
-        hasExtension { GradlePluginDevelopmentExtension::class } ->
+        hasExtension<GradlePluginDevelopmentExtension>() ->
             setupPublicationGradlePlugin(config)
 
         hasExtension<KotlinJvmProjectExtension>() ->
             setupPublicationKotlinJvm(config)
 
-        hasExtension { JavaPluginExtension::class } ->
+        hasExtension<JavaPluginExtension>() ->
             setupPublicationJava(config)
 
         else ->
@@ -92,9 +92,12 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
     if (!isGenericCompilationEnabled) return
     multiplatformExtension.apply {
         if (targets.any { it.platformType == KotlinPlatformType.androidJvm }) {
-            @Suppress("DEPRECATION")
-            android {
-                publishLibraryVariants("release", "debug")
+            try {
+                // Kotlin before 1.9
+                @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
+                android().publishLibraryVariants("release", "debug")
+            } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+                logger.error("android.publishLibraryVariants error: $e", e)
             }
 
             // Gradle 8 compatibility
@@ -120,7 +123,7 @@ private fun Project.setupPublicationAndroidLibrary(config: PublicationConfig) {
 
     applyMavenPublishPlugin()
 
-    val androidExtension = extensions.getByType<LibraryExtension>()
+    val androidExtension = the<LibraryExtension>()
 
     val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
         from(androidExtension.sourceSets.getByName("main").java.srcDirs)
@@ -160,7 +163,7 @@ private fun Project.setupPublicationGradlePlugin(config: PublicationConfig) {
     group = config.group
     version = config.version
 
-    val gradlePluginExtension = extensions.getByType<GradlePluginDevelopmentExtension>()
+    val gradlePluginExtension = the<GradlePluginDevelopmentExtension>()
 
     val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
         from(gradlePluginExtension.pluginSourceSet.java.srcDirs)
@@ -184,7 +187,7 @@ private fun Project.setupPublicationKotlinJvm(config: PublicationConfig) {
     group = config.group
     version = config.version
 
-    val kotlinPluginExtension = extensions.getByType<KotlinJvmProjectExtension>()
+    val kotlinPluginExtension = the<KotlinJvmProjectExtension>()
 
     val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
         from(kotlinPluginExtension.sourceSets.getByName("main").kotlin.srcDirs)
@@ -205,7 +208,7 @@ private fun Project.setupPublicationJava(config: PublicationConfig) {
     group = config.group
     version = config.version
 
-    val javaPluginExtension = extensions.getByType<JavaPluginExtension>()
+    val javaPluginExtension = the<JavaPluginExtension>()
 
     val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
         from(javaPluginExtension.sourceSets.getByName("main").java.srcDirs)

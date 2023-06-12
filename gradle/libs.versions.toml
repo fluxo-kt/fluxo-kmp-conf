@@ -13,12 +13,12 @@ fluxoKmpConf = "0.1.0"
 # Java/Kotlin compatibility
 javaLangTarget = "11"
 kotlinLangVersion = "1.5"
-kotlinCoreLibraries = "1.4.32"
+kotlinCoreLibraries = "1.5.32"
 
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
-kotlin = "1.8.20"
+kotlin = "1.8.22"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
