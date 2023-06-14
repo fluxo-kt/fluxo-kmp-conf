@@ -3,9 +3,20 @@ package fluxo.conf.impl
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
-private fun String?.tryAsBoolean(): Boolean {
-    return arrayOf("true", "1", "on").any { it.equals(this, ignoreCase = true) }
+
+internal val EMPTY_FUN: (Any?) -> Unit = {}
+
+@Suppress("MagicNumber")
+internal val KOTLIN_1_8 = KotlinVersion(1, 8)
+
+
+/** @see org.jetbrains.kotlin.cli.common.toBooleanLenient */
+internal fun String?.tryAsBoolean(): Boolean {
+    return TRUE_VALUES.any { it.equals(this, ignoreCase = true) }
 }
+
+private val TRUE_VALUES = arrayOf("true", "1", "on", "y", "yes")
+
 
 @Suppress("unused")
 private fun Project.booleanProperty(name: String): Provider<Boolean> {
@@ -28,21 +39,28 @@ private fun Project.stringProperty(name: String): Provider<String> {
 }
 
 private fun Project.envVar(name: String): Provider<String?> {
-    val env = providers.environmentVariable(name)
     return provider {
-        env.orNull ?: System.getProperty(name)
+        providers.environmentVariable(name).orNull ?: System.getProperty(name)
     }
 }
 
 
 internal fun Project.envOrPropFlag(name: String): Provider<Boolean> {
-    val env = envVar(name)
-    val prop = stringProperty(name)
-    return provider { env.orNull != null || prop.orNull.tryAsBoolean() }
+    return provider {
+        envVar(name).orNull != null || stringProperty(name).orNull.tryAsBoolean()
+    }.memoize()
 }
 
 internal fun Project.envOrProp(name: String): Provider<String?> {
-    val env = envVar(name)
-    val prop = stringProperty(name)
-    return provider { env.orNull?.takeIf { it.isNotEmpty() } ?: prop.orNull }
+    return provider { envOrPropRaw(name) }.memoize()
+}
+
+internal fun Project.envOrPropRaw(name: String): String? {
+    return envVar(name).orNull?.takeIf { it.isNotEmpty() }
+        ?: stringProperty(name).orNull?.takeIf { it.isNotEmpty() }
+}
+
+internal fun Project?.envOrPropValueLenient(name: String): String? {
+    // Check environment variable even if no project provided
+    return if (this != null) envOrPropRaw(name) else System.getProperty(name)
 }

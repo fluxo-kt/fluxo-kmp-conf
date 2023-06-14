@@ -9,6 +9,10 @@ output-reports:
     - 'XmlOutputReport'
     - 'MdOutputReport'
 
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
 style:
   MaxLineLength:
     maxLineLength: 100

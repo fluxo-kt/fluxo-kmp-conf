@@ -2,9 +2,10 @@ package fluxo.conf.impl
 
 internal object EnvParams {
 
+    // FIXME: Implement or remove it
     val metadataOnly: Boolean get() = System.getProperty("metadata_only") != null
 
-    // FIXME: Windows build in the split_targets mode still prepares JS environment, android AARs, detekt analyzes JVM, etc.
-    //  https://github.com/fluxo-kt/fluxo/actions/runs/4084164094/jobs/7040541558#step:10:704
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("Use KMP_TARGETS instead")
     val splitTargets: Boolean get() = System.getProperty("split_targets") != null
 }

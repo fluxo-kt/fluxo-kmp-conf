@@ -9,7 +9,7 @@ import fluxo.conf.impl.implementation
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.libsCatalog
 import fluxo.conf.impl.onLibrary
-import fluxo.conf.impl.optionalVersion
+import fluxo.conf.impl.v
 import fluxo.conf.impl.testImplementation
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
@@ -93,7 +93,7 @@ private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
     setupSourceSets {
         val libs = project.libsCatalog
 
-        val kotlinVersion = libs.optionalVersion("kotlin")
+        val kotlinVersion = libs.v("kotlin")
         project.dependencies.apply {
             enforcedPlatform(kotlin("bom", kotlinVersion)).let {
                 if (config.allowGradlePlatform) implementation(it) else testImplementation(it)

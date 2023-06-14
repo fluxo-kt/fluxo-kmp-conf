@@ -2,6 +2,8 @@
 
 import fluxo.conf.impl.envOrProp
 import fluxo.conf.impl.envOrPropFlag
+import fluxo.conf.impl.envOrPropValueLenient
+import fluxo.conf.target.KmpTargetCode.Companion.KMP_TARGETS_PROP
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
 import org.gradle.api.Project
@@ -11,13 +13,13 @@ public operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNu
 
 
 public fun Project.envOrPropValue(name: String): String? =
-    envOrProp(name).orNull?.takeIf { it.isNotEmpty() }
+    envOrPropValueLenient(name)
 
 public fun Project.envOrPropInt(name: String): Int? =
-    envOrPropValue(name)?.toIntOrNull()
+    envOrPropValueLenient(name)?.toIntOrNull()
 
 public fun Project.envOrPropList(name: String): List<String> =
-    envOrPropValue(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
+    envOrPropValueLenient(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
 
 
 public fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
@@ -36,12 +38,15 @@ public fun Project.isMaxDebugEnabled(): Provider<Boolean> = envOrPropFlag("MAX_D
 
 public fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8")
 
-public fun Project?.buildNumber(): String? = "BUILD_NUMBER".let {
-    return this?.envOrProp(it)?.orNull ?: System.getProperty(it, null)
-}
+public fun Project?.buildNumber(): String? = envOrPropValueLenient("BUILD_NUMBER")
+
+internal fun Project.allKmpTargetsEnabled(): Boolean = envOrPropFlag("KMP_TARGETS_ALL").get()
+
+internal fun Project.requestedKmpTargets(): String? = envOrPropValueLenient(KMP_TARGETS_PROP)
 
 
-public fun Project.signingKey(): String? = envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
+public fun Project.signingKey(): String? =
+    envOrPropValueLenient("SIGNING_KEY")?.replace("\\n", "\n")
 
 public fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): String {
     val n = buildNumber()
@@ -52,6 +57,10 @@ public fun Project?.buildNumberSuffix(default: String = "", delimiter: String = 
 @Incubating
 @Suppress("ComplexCondition", "MagicNumber")
 public fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
+    // TODO: Optimize, make lazy accessible via root project
+    //  see com.diffplug.gradle.spotless.GitRatchetGradle
+    //  com.diffplug.gradle.spotless.SpotlessTask.getRatchet
+
     val envOrProp = envOrProp("SCM_TAG")
     return provider {
         var result = envOrProp.orNull
@@ -65,8 +74,8 @@ public fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
             result = tagName
                 // current commit short hash
                 ?: runCommand("git rev-parse --short=7 HEAD")
-                // current branch name
-                ?: if (allowBranch) runCommand("git rev-parse --abbrev-ref HEAD") else null
+                    // current branch name
+                    ?: if (allowBranch) runCommand("git rev-parse --abbrev-ref HEAD") else null
         } else if (result.length == 40) {
             // full commit hash, sha1
             result = result.substring(0, 7)
@@ -90,7 +99,7 @@ private fun Project.runCommand(command: String): String? {
                 null
             }
         }
-    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+    } catch (e: Throwable) {
         logger.error("Error running command `$command`: $e", e)
         null
     }

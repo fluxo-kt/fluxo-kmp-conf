@@ -1,27 +1,43 @@
-import fluxo.conf.impl.checkIsRootProject
-import fluxo.conf.impl.extra
-import org.gradle.api.Project
+package fluxo.conf.feat
+
+import fluxo.conf.FluxoKmpConfContext
+import fluxo.conf.impl.SHOW_DEBUG_LOGS
+import fluxo.conf.impl.d
+import fluxo.conf.impl.l
+import fluxo.conf.impl.v
+import getValue
+import isCI
+import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.logging.Logger
 
-private const val PROPERTY_NAME = "setup.disableTasks"
 
-internal fun Project.ensureUnreachableTasksDisabled() {
-    checkIsRootProject("ensureUnreachableTasksDisabled")
+private val unreachableTasksDisabled = AtomicBoolean(false)
 
-    if (extra.has(PROPERTY_NAME)) {
+// Disable unreachable tasks
+// FIXME: Check if this is actually useful
+internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
+    if (!unreachableTasksDisabled.compareAndSet(false, true)) {
         return
     }
-    extra.set(PROPERTY_NAME, true)
 
-    gradle.taskGraph.whenReady {
-        DisableTasks(graph = this, logger = logger)
-            .apply()
+    // Run only for CI.
+    // Takes time and not so useful during local development.
+    val project = rootProject
+    val isCI by project.isCI()
+    if ((isCI || SHOW_DEBUG_LOGS) && !isProjectInSyncRun) {
+        val logger = project.logger
+        project.gradle.taskGraph.whenReady {
+            if (!isProjectInSyncRun) {
+                DisableUnreachableTasks(graph = this, logger = logger)
+                    .apply()
+            }
+        }
     }
 }
 
-private class DisableTasks(
+private class DisableUnreachableTasks(
     private val graph: TaskExecutionGraph,
     private val logger: Logger,
 ) {
@@ -46,7 +62,12 @@ private class DisableTasks(
     }
 
     fun apply() {
-        graph.allTasks.filterNot { it.enabled }.forEach { disableChildren(it) }
+        if (SHOW_DEBUG_LOGS) logger.v("DisableUnreachableTasks.apply")
+        for (it in graph.allTasks) {
+            if (it.enabled) {
+                disableChildren(it)
+            }
+        }
     }
 
     private fun disableChildren(task: Task) {
@@ -54,13 +75,13 @@ private class DisableTasks(
             if (child.enabled) {
                 if (!isTaskAccessible(task = child)) {
                     child.enabled = false
-                    logger.lifecycle("Inaccessible task disabled: ${child.path}")
+                    logger.l("Inaccessible task disabled: ${child.path}")
                     disableChildren(task = child)
                 } else {
-                    logger.info("Task accessible: ${child.path}")
+                    logger.d("Task accessible: ${child.path}")
                 }
             } else {
-                logger.info("Task already disabled: ${child.path}")
+                logger.d("Task already disabled: ${child.path}")
                 disableChildren(task = child)
             }
         }
@@ -70,7 +91,7 @@ private class DisableTasks(
         val isPathExists = (it != task) && isPathExists(source = it, destination = task)
 
         if (isPathExists) {
-            logger.info("Task {} accessible from {}", task, it)
+            logger.d("Task ${task.path} accessible from ${it.path}")
         }
 
         isPathExists
@@ -80,13 +101,13 @@ private class DisableTasks(
         results.getOrPut(source to destination) {
             when {
                 !source.enabled -> false
-                source == destination -> true.also { logger.info("Task reached: {}", destination) }
+                source == destination -> true.also { logger.d("Task reached: ${destination.path}") }
 
                 else -> graph.getDependencies(source)
                     .any { isPathExists(source = it, destination = destination) }
                     .also {
                         if (it) {
-                            logger.info("Task path found from {} to {}", source, destination)
+                            logger.d("Task path found from ${source.path} to ${destination.path}")
                         }
                     }
             }

@@ -6,6 +6,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryBaseFlavor
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.android.build.gradle.internal.lint.AndroidLintTask
@@ -27,10 +28,10 @@ import fluxo.conf.impl.lowercase
 import fluxo.conf.impl.onBundle
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.onVersion
-import fluxo.conf.impl.optionalVersion
 import fluxo.conf.impl.runtimeOnly
 import fluxo.conf.impl.testImplementation
 import fluxo.conf.impl.the
+import fluxo.conf.impl.v
 import fluxo.conf.impl.withType
 import java.io.File
 import java.util.Properties
@@ -422,10 +423,10 @@ private fun CommonExtension<*, *, *, *>.kotlinOptions(
     action: KotlinJvmOptions.() -> Unit,
 ) {
     val extensionAware = this as ExtensionAware
-    project.plugins.withId("org.jetbrains.kotlin.android") {
+    project.pluginManager.withPlugin("org.jetbrains.kotlin.android") {
         try {
             extensionAware.configureExtension("kotlinOptions", action = action)
-        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+        } catch (e: Throwable) {
             project.logger.error("kotlinOptions error: $e", e)
         }
     }
@@ -538,7 +539,7 @@ internal fun DependencyHandler.setupAndroidDependencies(
     libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(it) }
 
     if (kotlinConfig.addStdlibDependency) {
-        implementation(kotlin("stdlib", libs.optionalVersion("kotlin")))
+        implementation(kotlin("stdlib", libs.v("kotlin")))
     }
     androidTestImplementation(kotlin("test-junit"))
 
@@ -668,6 +669,27 @@ private fun CommonExtension<*, *, *, *>.onFinalizeDsl(project: Project) {
             val enableTest = if (isReleaseBuildType) enableMaxDebug else "true"
             bt.buildConfigField(boolean, "TEST", enableTest)
             bt.buildConfigField(boolean, "MAX_DEBUG", enableMaxDebug)
+        }
+    }
+}
+
+private fun Project.configureMonkeyLauncherTasks() {
+    the(AndroidComponentsExtension::class).onVariants { variant ->
+        if (variant !is ApplicationVariant) {
+            return@onVariants
+        }
+        val appId = variant.applicationId.get()
+        val variantName = variant.name.replaceFirstChar { it.uppercase() }
+        val installTask = tasks.named("install$variantName")
+        tasks.register("connected${variant.name}MonkeyTest") {
+            dependsOn(installTask)
+            doLast {
+                exec {
+                    commandLine =
+                        "adb shell monkey -p $appId -c android.intent.category.LAUNCHER 1"
+                            .split(" ")
+                }
+            }
         }
     }
 }

@@ -95,7 +95,7 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
                 // Kotlin before 1.9
                 @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
                 android().publishLibraryVariants("release", "debug")
-            } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+            } catch (e: Throwable) {
                 logger.error("android.publishLibraryVariants error: $e", e)
             }
 
@@ -233,7 +233,7 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
             }
         }
         artifact(dokkaHtmlAsJavadoc)
-    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+    } catch (e: Throwable) {
         if (useDokka) {
             project.logger.warn("Fallback to Javadoc. Dokka publication setup error: $e", e)
         }

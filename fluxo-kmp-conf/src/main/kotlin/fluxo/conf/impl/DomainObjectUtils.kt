@@ -7,6 +7,7 @@ import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.PolymorphicDomainObjectContainer
+import org.gradle.api.model.ObjectFactory
 
 internal inline fun <reified S : Any> DomainObjectCollection<in S>.withType(
     noinline configuration: S.() -> Unit,
@@ -70,3 +71,7 @@ internal inline fun <reified U : Any> PolymorphicDomainObjectContainer<in U>.cre
 internal inline fun <reified U : Any> PolymorphicDomainObjectContainer<in U>.maybeCreate(
     name: String,
 ) = maybeCreate(name, U::class.java)
+
+
+internal inline fun <reified T : Any> ObjectFactory.container(): NamedDomainObjectContainer<T> =
+    domainObjectContainer(T::class.java)

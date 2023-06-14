@@ -19,8 +19,10 @@ import fluxo.conf.impl.isDetektTaskAllowed
 import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.libsCatalogOptional
 import fluxo.conf.impl.onLibrary
-import fluxo.conf.impl.optionalVersion
+import fluxo.conf.impl.v
 import fluxo.conf.impl.register
+import fluxo.conf.impl.withAnyPlugin
+import fluxo.conf.impl.withPlugin
 import fluxo.conf.impl.withType
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
@@ -163,11 +165,9 @@ public fun Project.setupVerification(
             libs?.onLibrary("detekt-compose") { detektPlugins(it) }
         }
 
-        val function = Action<Plugin<*>> {
+        withAnyPlugin("com.android.library", "com.android.application") {
             project.setupLint(mergeLint, ignoredBuildTypes, ignoredFlavors)
         }
-        plugins.withId("com.android.library", function)
-        plugins.withId("com.android.application", function)
     }
 
     setupTestsReport()
@@ -226,17 +226,17 @@ private fun Project.setupSpotless(enableDiktat: Boolean = false) {
 
                 // https://github.com/search?q=setEditorConfigPath+path%3A*.kt&type=code
                 try {
-                    ktlint(libs.optionalVersion("ktlint") ?: KtLintStep.defaultVersion())
-                } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+                    ktlint(libs.v("ktlint") ?: KtLintStep.defaultVersion())
+                } catch (e: Throwable) {
                     logger.warn("ktlint version error: $e", e)
                     ktlint()
                 }.setEditorConfigPath(editorConfigPath)
 
                 if (enableDiktat) {
                     try {
-                        val v = libs.optionalVersion("diktat") ?: DiktatStep.defaultVersionDiktat()
+                        val v = libs.v("diktat") ?: DiktatStep.defaultVersionDiktat()
                         diktat(v)
-                    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+                    } catch (e: Throwable) {
                         logger.warn("diktat version error: $e", e)
                         diktat()
                     }
@@ -249,17 +249,17 @@ private fun Project.setupSpotless(enableDiktat: Boolean = false) {
             }
             kotlinGradle {
                 try {
-                    ktlint(libs.optionalVersion("ktlint") ?: KtLintStep.defaultVersion())
-                } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+                    ktlint(libs.v("ktlint") ?: KtLintStep.defaultVersion())
+                } catch (e: Throwable) {
                     logger.warn("ktlint version error: $e", e)
                     ktlint()
                 }.setEditorConfigPath(editorConfigPath)
 
                 if (enableDiktat) {
                     try {
-                        val v = libs.optionalVersion("diktat") ?: DiktatStep.defaultVersionDiktat()
+                        val v = libs.v("diktat") ?: DiktatStep.defaultVersionDiktat()
                         diktat(v)
-                    } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+                    } catch (e: Throwable) {
                         logger.warn("diktat version error: $e", e)
                         diktat()
                     }

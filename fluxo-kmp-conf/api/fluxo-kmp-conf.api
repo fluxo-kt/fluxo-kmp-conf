@@ -206,6 +206,27 @@ public final class MultiplatformSourceSets : org/gradle/api/NamedDomainObjectCon
 	public fun withType (Ljava/lang/Class;Lorg/gradle/api/Action;)Lorg/gradle/api/DomainObjectCollection;
 }
 
+public final class PropsAndEnvKt {
+	public static final fun areComposeMetricsEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun buildNumber (Lorg/gradle/api/Project;)Ljava/lang/String;
+	public static final fun buildNumberSuffix (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun buildNumberSuffix$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun disableTests (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun envOrPropInt (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/Integer;
+	public static final fun envOrPropList (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/util/List;
+	public static final fun envOrPropValue (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/String;
+	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Z
+	public static final fun isCI (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isDesugaringEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isMaxDebugEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isR8Disabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isRelease (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun scmTag (Lorg/gradle/api/Project;Z)Lorg/gradle/api/provider/Provider;
+	public static synthetic fun scmTag$default (Lorg/gradle/api/Project;ZILjava/lang/Object;)Lorg/gradle/api/provider/Provider;
+	public static final fun signingKey (Lorg/gradle/api/Project;)Ljava/lang/String;
+	public static final fun useKotlinDebug (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+}
+
 public final class PublicationConfig {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/gradle/api/Project;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/gradle/api/Project;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -317,30 +338,351 @@ public final class SourceSetBundle {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class UtilsKt {
-	public static final fun areComposeMetricsEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun buildNumber (Lorg/gradle/api/Project;)Ljava/lang/String;
-	public static final fun buildNumberSuffix (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-	public static synthetic fun buildNumberSuffix$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
-	public static final fun disableTests (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun envOrPropInt (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/Integer;
-	public static final fun envOrPropList (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/util/List;
-	public static final fun envOrPropValue (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/String;
-	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Z
-	public static final fun isCI (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun isDesugaringEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun isMaxDebugEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun isR8Disabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun isRelease (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun scmTag (Lorg/gradle/api/Project;Z)Lorg/gradle/api/provider/Provider;
-	public static synthetic fun scmTag$default (Lorg/gradle/api/Project;ZILjava/lang/Object;)Lorg/gradle/api/provider/Provider;
-	public static final fun signingKey (Lorg/gradle/api/Project;)Ljava/lang/String;
-	public static final fun useKotlinDebug (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-}
-
 public final class fluxo/conf/FluxoKmpConfPlugin : org/gradle/api/Plugin {
 	public fun <init> ()V
 	public synthetic fun apply (Ljava/lang/Object;)V
 	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public abstract class fluxo/conf/dsl/FluxoConfigurationExtension {
+	public final fun configure (Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class fluxo/conf/dsl/container/CommonContainer : fluxo/conf/dsl/container/Container$ConfigurableTarget {
+}
+
+public abstract class fluxo/conf/dsl/container/Container : org/gradle/api/Named {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getName ()Ljava/lang/String;
+}
+
+public abstract class fluxo/conf/dsl/container/Container$ConfigurableTarget : fluxo/conf/dsl/container/Container {
+	public final fun pluginIds ([Ljava/lang/String;)V
+	public final fun sourceSetMain (Lkotlin/jvm/functions/Function1;)V
+	public final fun sourceSetTest (Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class fluxo/conf/dsl/container/target/KmpConfigurationContainerDsl : fluxo/conf/dsl/container/target/TargetAndroidContainer$Configure, fluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Configure, fluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure, fluxo/conf/dsl/container/target/TargetAppleMacosContainer$Configure, fluxo/conf/dsl/container/target/TargetAppleTvosContainer$Configure, fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure, fluxo/conf/dsl/container/target/TargetJsContainer$Configure, fluxo/conf/dsl/container/target/TargetJvmContainer$Configure, fluxo/conf/dsl/container/target/TargetLinuxContainer$Configure, fluxo/conf/dsl/container/target/TargetMingwContainer$Configure, fluxo/conf/dsl/container/target/TargetWasmContainer$Configure, fluxo/conf/dsl/container/target/TargetWasmNativeContainer$Configure {
+	public final fun common (Lkotlin/jvm/functions/Function1;)V
+	public final fun kotlin (Lkotlin/jvm/functions/Function1;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget : fluxo/conf/dsl/container/Container$ConfigurableTarget {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun target (Lkotlin/jvm/functions/Function1;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$CommonJvm : fluxo/conf/dsl/container/target/KmpTarget {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getCompileSourceCompatibility ()Lorg/gradle/api/JavaVersion;
+	public final fun getCompileTargetCompatibility ()Lorg/gradle/api/JavaVersion;
+	public final fun getKotlinJvmTarget ()Lorg/gradle/api/JavaVersion;
+	public final fun setCompileSourceCompatibility (Lorg/gradle/api/JavaVersion;)V
+	public final fun setCompileTargetCompatibility (Lorg/gradle/api/JavaVersion;)V
+	public final fun setKotlinJvmTarget (Lorg/gradle/api/JavaVersion;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm : fluxo/conf/dsl/container/target/KmpTarget {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs : fluxo/conf/dsl/container/target/KmpTarget$NonJvm {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;I)V
+	public fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;I)V
+	public static synthetic fun testTimeout$default (Lfluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure;Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;IILjava/lang/Object;)V
+	public static synthetic fun testTimeout$default (Lfluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure;Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;IILjava/lang/Object;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native : fluxo/conf/dsl/container/target/KmpTarget$NonJvm {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Android : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Mingw : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple$Ios : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple$Macos : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple$Tvos : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple$Watchos : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Linux : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Wasm : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetAndroidContainer : fluxo/conf/dsl/container/target/KmpTarget$CommonJvm {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun android (Lkotlin/jvm/functions/Function1;)V
+	public final fun sourceSetTestInstrumented (Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAndroidContainer$App : fluxo/conf/dsl/container/target/TargetAndroidContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetAndroidContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun androidApp (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidApp$default (Lfluxo/conf/dsl/container/target/TargetAndroidContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun androidLibrary (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidLibrary$default (Lfluxo/conf/dsl/container/target/TargetAndroidContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAndroidContainer$Library : fluxo/conf/dsl/container/target/TargetAndroidContainer {
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetAndroidNativeContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Android {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Arm32 : fluxo/conf/dsl/container/target/TargetAndroidNativeContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Arm64 : fluxo/conf/dsl/container/target/TargetAndroidNativeContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun androidNative64 ()V
+	public fun androidNativeAll ()V
+	public fun androidNativeArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNativeArm32$default (Lfluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun androidNativeArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNativeArm64$default (Lfluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun androidNativeX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNativeX64$default (Lfluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun androidNativeX86 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNativeX86$default (Lfluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAndroidNativeContainer$X64 : fluxo/conf/dsl/container/target/TargetAndroidNativeContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAndroidNativeContainer$X86 : fluxo/conf/dsl/container/target/TargetAndroidNativeContainer {
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetAppleIosContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple$Ios {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleIosContainer$Arm32 : fluxo/conf/dsl/container/target/TargetAppleIosContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleIosContainer$Arm64 : fluxo/conf/dsl/container/target/TargetAppleIosContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun iosAll ()V
+	public fun iosArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun iosArm32$default (Lfluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun iosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun iosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun iosSimulatorArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun iosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun iosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun iosX64$default (Lfluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleIosContainer$SimulatorArm64 : fluxo/conf/dsl/container/target/TargetAppleIosContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleIosContainer$X64 : fluxo/conf/dsl/container/target/TargetAppleIosContainer {
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetAppleMacosContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple$Macos {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleMacosContainer$Arm64 : fluxo/conf/dsl/container/target/TargetAppleMacosContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetAppleMacosContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun macosAll ()V
+	public fun macosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun macosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleMacosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun macosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun macosX64$default (Lfluxo/conf/dsl/container/target/TargetAppleMacosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleMacosContainer$X64 : fluxo/conf/dsl/container/target/TargetAppleMacosContainer {
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetAppleTvosContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple$Tvos {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleTvosContainer$Arm64 : fluxo/conf/dsl/container/target/TargetAppleTvosContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetAppleTvosContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun tvosAll ()V
+	public fun tvosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun tvosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleTvosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun tvosSimulatorArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun tvosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleTvosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun tvosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun tvosX64$default (Lfluxo/conf/dsl/container/target/TargetAppleTvosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleTvosContainer$SimulatorArm64 : fluxo/conf/dsl/container/target/TargetAppleTvosContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleTvosContainer$X64 : fluxo/conf/dsl/container/target/TargetAppleTvosContainer {
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Apple$Watchos {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Arm32 : fluxo/conf/dsl/container/target/TargetAppleWatchosContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Arm64 : fluxo/conf/dsl/container/target/TargetAppleWatchosContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun watchosAll ()V
+	public fun watchosArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun watchosArm32$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun watchosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun watchosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun watchosDeviceArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun watchosDeviceArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun watchosSimulatorArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun watchosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun watchosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun watchosX64$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun watchosX86 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun watchosX86$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$DeviceArm64 : fluxo/conf/dsl/container/target/TargetAppleWatchosContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$SimulatorArm64 : fluxo/conf/dsl/container/target/TargetAppleWatchosContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$X64 : fluxo/conf/dsl/container/target/TargetAppleWatchosContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$X86 : fluxo/conf/dsl/container/target/TargetAppleWatchosContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetJsContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getCompilerType ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;
+	public final fun setCompilerType (Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;)V
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetJsContainer$Configure : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure {
+	public fun js (Ljava/lang/String;Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun js$default (Lfluxo/conf/dsl/container/target/TargetJsContainer$Configure;Ljava/lang/String;Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetJvmContainer : fluxo/conf/dsl/container/target/KmpTarget$CommonJvm {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetJvmContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun jvm (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun jvm$default (Lfluxo/conf/dsl/container/target/TargetJvmContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetLinuxContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Unix$Linux {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetLinuxContainer$Arm32Hfp : fluxo/conf/dsl/container/target/TargetLinuxContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetLinuxContainer$Arm64 : fluxo/conf/dsl/container/target/TargetLinuxContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetLinuxContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun linuxAll ()V
+	public fun linuxArm32Hfp (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun linuxArm32Hfp$default (Lfluxo/conf/dsl/container/target/TargetLinuxContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun linuxArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun linuxArm64$default (Lfluxo/conf/dsl/container/target/TargetLinuxContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun linuxMips32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun linuxMips32$default (Lfluxo/conf/dsl/container/target/TargetLinuxContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun linuxMipsel32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun linuxMipsel32$default (Lfluxo/conf/dsl/container/target/TargetLinuxContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun linuxX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun linuxX64$default (Lfluxo/conf/dsl/container/target/TargetLinuxContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetLinuxContainer$Mips32 : fluxo/conf/dsl/container/target/TargetLinuxContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetLinuxContainer$Mipsel32 : fluxo/conf/dsl/container/target/TargetLinuxContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetLinuxContainer$X64 : fluxo/conf/dsl/container/target/TargetLinuxContainer {
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetMingwContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Mingw {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetMingwContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun mingwAll ()V
+	public fun mingwX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun mingwX64$default (Lfluxo/conf/dsl/container/target/TargetMingwContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun mingwX86 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun mingwX86$default (Lfluxo/conf/dsl/container/target/TargetMingwContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/conf/dsl/container/target/TargetMingwContainer$X64 : fluxo/conf/dsl/container/target/TargetMingwContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetMingwContainer$X86 : fluxo/conf/dsl/container/target/TargetMingwContainer {
+}
+
+public final class fluxo/conf/dsl/container/target/TargetWasmContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetWasmContainer$Configure : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure {
+	public fun wasm (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun wasm$default (Lfluxo/conf/dsl/container/target/TargetWasmContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public abstract class fluxo/conf/dsl/container/target/TargetWasmNativeContainer : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native$Wasm {
+	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/TargetWasmNativeContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun wasm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun wasm32$default (Lfluxo/conf/dsl/container/target/TargetWasmNativeContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun wasmNativeAll ()V
 }
 

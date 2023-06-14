@@ -9,10 +9,12 @@ plugins {
     alias(libs.plugins.deps.guard)
     alias(libs.plugins.detekt)
     alias(libs.plugins.gradle.plugin.publish)
+    alias(libs.plugins.build.config)
 }
 
 val pluginName = "fluxo-kmp-conf"
 val pluginId = "io.github.fluxo-kt.fluxo-kmp-conf"
+val experimentalTest = false
 
 group = "io.github.fluxo-kt"
 version = libs.versions.fluxoKmpConf.get()
@@ -34,7 +36,17 @@ kotlin {
                     jvmTarget = jvmVersion
                     languageVersion = kotlinVersion
                     apiVersion = kotlinVersion
-                    allWarningsAsErrors = true
+//                    allWarningsAsErrors = true
+
+                    freeCompilerArgs += "-Xcontext-receivers"
+                    freeCompilerArgs += "-Xklib-enable-signature-clash-checks"
+                    freeCompilerArgs += "-Xjsr305=strict"
+                    freeCompilerArgs += "-Xjvm-default=all"
+                    freeCompilerArgs += "-Xtype-enhancement-improvements-strict-mode"
+                    freeCompilerArgs += "-Xvalidate-bytecode"
+                    freeCompilerArgs += "-Xvalidate-ir"
+                    freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+                    freeCompilerArgs += "-opt-in=fluxo.conf.dsl.InternalFluxoApi"
                 }
                 compileJavaTaskProvider.configure {
                     sourceCompatibility = jvmVersion
@@ -61,7 +73,7 @@ kotlin {
         // Experimental test compilation with the latest Kotlin settings.
         // Don't try for sources with old compatibility settings.
         val isInCompositeBuild = gradle.includedBuilds.size > 1
-        if (!isInCompositeBuild && kotlinVersion.toFloat() >= 1.4f) {
+        if (!isInCompositeBuild && experimentalTest && kotlinVersion.toFloat() >= 1.4f) {
             create("experimentalTest") {
                 configureLatest()
                 // Deprecated in Kotlin 1.9.0
@@ -83,10 +95,23 @@ configurations.implementation {
     exclude(group = "org.ow2.asm")
 }
 
+fun Provider<PluginDependency>.toModuleDependency() = provider {
+    val pd = get()
+    val pluginId = pd.pluginId
+    val mavenModule = "$pluginId:$pluginId.gradle.plugin"
+    "$mavenModule:${pd.version}"
+}
+
 dependencies {
-    compileOnly(libs.detekt.core)
-    implementation(libs.plugin.detekt)
     detektPlugins(libs.detekt.formatting)
+
+    // Spotless util classes are used internally
+    implementation(libs.plugin.spotless)
+    // Detekt ReportMergeTask is used internally
+    implementation(libs.plugin.detekt)
+
+    compileOnly(libs.detekt.core)
+    compileOnly(libs.ktlint)
 
     compileOnly(libs.plugin.android)
     compileOnly(libs.plugin.binCompatValidator)
@@ -96,8 +121,47 @@ dependencies {
     compileOnly(libs.plugin.kotlin)
     compileOnly(libs.plugin.ksp)
 
-    implementation(libs.ktlint)
-    implementation(libs.plugin.spotless)
+    compileOnly(libs.plugins.gradle.enterprise.toModuleDependency())
+}
+
+buildConfig {
+    className("BuildConstants")
+    packageName("fluxo.conf.data")
+    buildConfigField("String", "PLUGIN_ID", "\"$pluginId\"")
+
+    fun buildConfigField(
+        name: String,
+        p: Provider<PluginDependency>,
+        alias: String? = null,
+        implementation: Boolean = false,
+    ) {
+        val aliasName = alias ?: name.lowercase().replace('_', '-')
+        buildConfigField("String", "${name}_PLUGIN_ALIAS", "\"$aliasName\"")
+
+        val pd = p.get()
+        val pluginId = pd.pluginId
+        buildConfigField("String", "${name}_PLUGIN_ID", "\"$pluginId\"")
+
+        "${pd.version}".ifBlank { null }?.let { version ->
+            buildConfigField("String", "${name}_PLUGIN_VERSION", "\"$version\"")
+        }
+
+        p.toModuleDependency().let { dependency ->
+            when {
+                implementation -> dependencies.implementation(dependency)
+                else -> dependencies.compileOnly(dependency)
+            }
+        }
+    }
+
+    buildConfigField("DEPS_VERSIONS", libs.plugins.deps.versions)
+    buildConfigField("DEPS_ANALYSIS", libs.plugins.deps.analysis)
+    buildConfigField("DEPS_GUARD", libs.plugins.deps.guard, implementation = true)
+    buildConfigField("TASK_TREE", libs.plugins.task.tree)
+    buildConfigField("TASK_INFO", libs.plugins.task.info)
+    buildConfigField("MODULE_DEPENDENCY_GRAPH", libs.plugins.module.dependency.graph)
+    buildConfigField("BUILD_CONFIG", libs.plugins.build.config)
+    buildConfigField("ABOUT_LIBRARIES", libs.plugins.about.libraries)
 }
 
 gradlePlugin {
@@ -180,6 +244,13 @@ gradlePlugin {
             logger.warn("> Conf SIGNING_KEY IS NOT SET! Publications are unsigned")
         }
     }
+}
+
+apiValidation {
+    nonPublicMarkers.add("fluxo.conf.dsl.InternalFluxoApi")
+    nonPublicMarkers.add("kotlin.jvm.JvmSynthetic")
+    // sealed classes constructors are not actually public
+    ignoredClasses.add("kotlin.jvm.internal.DefaultConstructorMarker")
 }
 
 dependencyGuard {

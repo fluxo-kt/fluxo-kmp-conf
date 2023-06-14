@@ -1,105 +1,68 @@
 package fluxo.conf
 
-import areComposeMetricsEnabled
-import disableTests
-import ensureUnreachableTasksDisabled
+import fluxo.conf.data.BuildConstants.PLUGIN_ID
+import fluxo.conf.deps.FluxoCache
+import fluxo.conf.dsl.FluxoConfigurationExtension
+import fluxo.conf.dsl.container.Container
+import fluxo.conf.feat.ensureUnreachableTasksDisabled
+import fluxo.conf.feat.prepareBuildScanPlugin
+import fluxo.conf.feat.prepareDependencyAnalysisPlugin
+import fluxo.conf.feat.prepareDependencyAnalysisTasks
+import fluxo.conf.feat.prepareDependencyGuardPlugin
+import fluxo.conf.feat.prepareDependencyPinningBundle
+import fluxo.conf.feat.prepareGradleVersionsPlugin
+import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
+import fluxo.conf.feat.prepareTaskInfoPlugin
+import fluxo.conf.feat.prepareTaskTreePlugin
+import fluxo.conf.impl.checkIsRootProject
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.libsCatalog
 import fluxo.conf.impl.onVersion
-import fluxo.conf.impl.register
 import fluxo.conf.impl.withType
-import getValue
-import isCI
-import isDesugaringEnabled
-import isMaxDebugEnabled
-import isR8Disabled
-import isRelease
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.tasks.diagnostics.DependencyReportTask
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
-import useKotlinDebug
 
 @Suppress("unused", "EmptyFunctionBlock", "ktPropBy")
 public class FluxoKmpConfPlugin : Plugin<Project> {
 
+    // References:
+    // https://docs.gradle.org/current/userguide/custom_gradle_types.html
+    // https://docs.gradle.org/current/userguide/custom_plugins.html
+    // https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/SpotlessPlugin.java
+
     override fun apply(target: Project) {
-        if (!target.isRootProject) {
-            return
+        target.checkIsRootProject("\"$PLUGIN_ID\" plugin")
+        checkLifecycle(target)
+
+        val context = FluxoKmpConfContext.getFor(target)
+
+        // FIXME: Move to context
+        val configureContainers = { containers: Collection<Container> ->
+            // FIXME:
+            /*target.configure(containers)*/
         }
 
-        val logger = target.logger
-
-        val isCI by target.isCI()
-        if (isCI) logger.lifecycle("> Conf CI mode is enabled!")
-
-        val isRelease by target.isRelease()
-        if (isRelease) logger.lifecycle("> Conf RELEASE mode is enabled!")
-
-        val useKotlinDebug by target.useKotlinDebug()
-        if (useKotlinDebug) logger.warn("> Conf USE_KOTLIN_DEBUG mode is enabled!")
-
-        val areComposeMetricsEnabled by target.areComposeMetricsEnabled()
-        if (areComposeMetricsEnabled) {
-            logger.lifecycle("> Conf COMPOSE_METRICS mode is enabled!")
-        }
-
-        val isR8Disabled by target.isR8Disabled()
-        if (isR8Disabled) logger.warn("> Conf DISABLE_R8 mode is enabled!")
-
-        val disableTests by target.disableTests()
-        if (disableTests) logger.warn("> Conf DISABLE_TESTS mode is enabled!")
-
-        val isMaxDebug by target.isMaxDebugEnabled()
-        if (isMaxDebug) logger.warn("> Conf MAX_DEBUG mode is enabled!")
-
-        val isDesugaringEnabled by target.isDesugaringEnabled()
-        if (isDesugaringEnabled) logger.warn("> Conf DESUGARING mode is enabled!")
-
-        // Environment logging
-        run {
-            val gradle = target.gradle.gradleVersion
-            val java = System.getProperty("java.version")
-            val cpus = Runtime.getRuntime().availableProcessors()
-            logger.lifecycle("> Conf Gradle $gradle, JRE $java, $cpus CPUs")
-        }
-
-        target.subprojects {
-            // Convenience task to print full dependencies tree for any module
-            // Use `buildEnvironment` task for the report about plugins
-            // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
-            tasks.register<DependencyReportTask>("allDeps")
-        }
-
-        target.tasks.register<Task>("resolveDependencies") {
-            group = "other"
-            description = "Resolve and prefetch dependencies"
-            doLast {
-                target.allprojects.forEach { p ->
-                    p.configurations.plus(p.buildscript.configurations)
-                        .filter { it.isCanBeResolved }
-                        .forEach {
-                            try {
-                                it.resolve()
-                            } catch (_: Throwable) {
-                            }
-                        }
-                }
-            }
-        }
-
-        // Fix Kotlin/JS incompatibilities by pinning the versions of dependencies.
-        // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
-        // Also see https://github.com/rjaros/kvision/blob/d9044ab/build.gradle.kts#L28
         target.allprojects {
+            extensions.create(
+                FluxoConfigurationExtension.NAME,
+                FluxoConfigurationExtension::class.java,
+                context,
+                configureContainers,
+            )
+
+            // FIXME: Move to Kotlin configuration
+            // Fix Kotlin/JS incompatibilities by pinning the versions of dependencies.
+            // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
+            // Also see https://github.com/rjaros/kvision/blob/d9044ab/build.gradle.kts#L28
             afterEvaluate {
-                plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
+                plugins.withType<YarnPlugin> {
                     val libs = target.libsCatalog
                     target.configureExtension<YarnRootExtension> {
-                        lockFileDirectory = project.rootDir.resolve(".kotlin-js-store")
+                        lockFileDirectory = target.rootDir.resolve(".kotlin-js-store")
                         libs.onVersion("js-engineIo") { resolution("engine.io", it) }
                         libs.onVersion("js-socketIo") { resolution("socket.io", it) }
                         libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
@@ -117,9 +80,27 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             }
         }
 
-        // Run only for CI. Takes time and not so useful locally.
-        if (isCI) {
-            target.ensureUnreachableTasksDisabled()
-        }
+        FluxoCache.bindToProjectLifecycle(target)
+        context.prepareGradleVersionsPlugin()
+        context.prepareDependencyAnalysisPlugin()
+        context.prepareDependencyGuardPlugin()
+        context.prepareDependencyAnalysisTasks()
+        context.prepareDependencyPinningBundle()
+        context.prepareTaskTreePlugin()
+        context.prepareTaskInfoPlugin()
+        context.prepareModuleDependencyGraphPlugin()
+        context.prepareBuildScanPlugin()
+        context.ensureUnreachableTasksDisabled()
+    }
+
+
+    /**
+     * Make sure there's a `clean`, and a `check` tasks in root project.
+     *
+     * @see org.gradle.api.plugins.BasePlugin ('base')
+     * @see org.gradle.language.base.plugins.LifecycleBasePlugin
+     */
+    private fun checkLifecycle(target: Project) {
+        target.pluginManager.apply(LifecycleBasePlugin::class.java)
     }
 }

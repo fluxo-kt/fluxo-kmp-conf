@@ -85,6 +85,48 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 # https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }
 
+# Build scans, data to speed up build and improve build reliability.
+# https://scans.gradle.com/plugin/
+# https://plugins.gradle.org/plugin/com.gradle.enterprise
+gradle-enterprise = { id = "com.gradle.enterprise", version = "3.13.3" }
+
+# Gradle Versions Plugin: provides a task to determine which dependencies have updates
+# https://github.com/ben-manes/gradle-versions-plugin/releases
+# https://plugins.gradle.org/plugin/com.github.ben-manes.versions
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.47.0" }
+
+# Detect unused and misused dependencies. Provides advice for managing dependencies and other applied plugins.
+# https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
+# https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
+# https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.20.0" }
+
 # Plugin that guards against unintentional dependency changes
-# https://github.com/dropbox/dependency-guard/releases
+# https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
+# https://mvnrepository.com/artifact/com.dropbox.dependency-guard/dependency-guard
 deps-guard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
+
+# `taskTree` task that prints the current task graph
+# https://github.com/dorongold/gradle-task-tree/blob/master/CHANGELOG.md#changelog
+# https://plugins.gradle.org/plugin/com.dorongold.task-tree
+task-tree = { id = "com.dorongold.task-tree", version = "2.1.1" }
+
+# Provides task metadata and dependency information, execution queue, and more
+# https://gitlab.com/barfuin/gradle-taskinfo/-/tags
+# https://plugins.gradle.org/plugin/org.barfuin.gradle.taskinfo
+task-info = { id = "org.barfuin.gradle.taskinfo", version = "2.1.0" }
+
+# `graphModules` task to create an image with the graph of how gradle modules depend on each other
+# https://github.com/savvasdalkitsis/module-dependency-graph/releases
+# https://plugins.gradle.org/plugin/com.savvasdalkitsis.module-dependency-graph
+module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", version = "0.12" }
+
+# Generating BuildConstants for any kind of project
+# https://github.com/gmazzo/gradle-buildconfig-plugin
+# https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
+build-config = { id = "com.github.gmazzo.buildconfig", version = "4.0.4" }
+
+# Resolve all dependencies used in a gradle module, with associated license and further information.
+# https://github.com/mikepenz/AboutLibraries
+# https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.7.0" }

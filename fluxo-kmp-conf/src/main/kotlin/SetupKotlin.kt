@@ -10,9 +10,9 @@ import fluxo.conf.impl.libsCatalog
 import fluxo.conf.impl.onBundle
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.onVersion
-import fluxo.conf.impl.optionalVersion
-import fluxo.conf.impl.testImplementation
 import fluxo.conf.impl.v
+import fluxo.conf.impl.testImplementation
+import fluxo.conf.impl.version
 import fluxo.conf.impl.withType
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -175,13 +175,13 @@ internal fun DependencyHandler.setupKotlinDependencies(
     val libs = project.libsCatalog
 
     if (config.addStdlibDependency) {
-        implementation(kotlin("stdlib", libs.optionalVersion("kotlin")))
+        implementation(kotlin("stdlib", libs.v("kotlin")))
     }
 
     compileOnlyWithConstraint(JSR305_DEPENDENCY)
     libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(it) }
 
-    val kotlinBom = enforcedPlatform(kotlin("bom", libs.optionalVersion("kotlin")))
+    val kotlinBom = enforcedPlatform(kotlin("bom", libs.v("kotlin")))
     when {
         config.allowGradlePlatform -> implementation(kotlinBom)
         else -> testImplementation(kotlinBom)
@@ -321,7 +321,7 @@ private fun KotlinCommonCompilerOptions.setupKotlinOptions(
     libs.onVersion(ALIAS_ANDROIDX_COMPOSE_COMPILER) { _ ->
         val p = "plugin:androidx.compose.compiler.plugins.kotlin"
         if (config.suppressKotlinComposeCompatCheck) {
-            val kotlin = libs.v("kotlin")
+            val kotlin = libs.version("kotlin")
             freeCompilerArgs.addAll("-P", "$p:suppressKotlinVersionCompatibilityCheck=$kotlin")
         }
 
@@ -351,14 +351,14 @@ private fun KotlinCommonCompilerOptions.setupKotlinOptions(
 
 internal fun VersionCatalog.getJavaLangTarget(config: KotlinConfigSetup?): String? {
     return config?.javaLangTarget ?: if (config?.setupJvmToolchain == true) {
-        optionalVersion("javaToolchain") ?: optionalVersion("javaLangTarget")
+        v("javaToolchain") ?: v("javaLangTarget")
     } else {
-        optionalVersion("javaLangTarget") ?: optionalVersion("javaToolchain")
+        v("javaLangTarget") ?: v("javaToolchain")
     }
 }
 
 private fun KotlinConfigSetup.getKotlinLangVersion(libs: VersionCatalog): KotlinVersion {
-    val v = kotlinLangVersion ?: libs.v("kotlinLangVersion")
+    val v = kotlinLangVersion ?: libs.version("kotlinLangVersion")
     return when {
         v.equals("last", ignoreCase = true) ||
             v.equals("latest", ignoreCase = true) ||
