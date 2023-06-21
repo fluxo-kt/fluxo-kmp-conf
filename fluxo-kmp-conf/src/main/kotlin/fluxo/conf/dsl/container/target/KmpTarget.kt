@@ -66,6 +66,7 @@ public sealed class KmpTarget<T : KotlinTarget>(
                         d8 {
                             testTimeout(seconds)
                         }
+                        applyBinaryen()
                     }
                 }
 
