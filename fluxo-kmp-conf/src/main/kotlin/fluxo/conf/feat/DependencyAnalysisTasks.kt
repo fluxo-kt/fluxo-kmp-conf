@@ -29,6 +29,10 @@ private fun FluxoKmpConfContext.registerAllDepsTasks() {
 }
 
 private fun Project.registerTaskAllDeps() {
+    /**
+     * @see org.gradle.api.tasks.diagnostics.internal.dependencies.AsciiDependencyReportRenderer
+     * @see org.gradle.internal.graph.GraphRenderer
+     */
     tasks.register<DependencyReportTask>(ALL_DEPS_TASK_NAME) {
         group = TASK_GROUP_NAME
         description = "Report full dependencies details for all configurations"

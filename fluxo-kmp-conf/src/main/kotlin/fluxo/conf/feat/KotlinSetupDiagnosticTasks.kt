@@ -3,7 +3,9 @@
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
+import fluxo.conf.KotlinSourceSetsReportTask
 import fluxo.conf.impl.ifNotEmpty
+import fluxo.conf.impl.register
 import fluxo.conf.impl.withType
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
@@ -19,9 +21,11 @@ import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
-    onProjectInSyncRun(forceIf = hasAnyTaskCalled(TARGETS_TASK, SOURCES_TASK)) {
+    onProjectInSyncRun(forceIf = hasAnyTaskCalled(TARGETS_TASK, SOURCES_TASK, SOURCES_GRAPH_TASK)) {
         rootProject.allprojects {
             plugins.withType<KotlinBasePlugin> {
+                // TODO: @DisableCachingByDefault(because = "Not worth caching")
+
                 tasks.register(TARGETS_TASK) {
                     group = TASK_GROUP
                     description = printTaskDescriptionFor("targets")
@@ -32,6 +36,11 @@ internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
                     description = printTaskDescriptionFor("source sets")
                     doLast { printKotlinSourceSetsInfo() }
                 }
+
+                tasks.register<KotlinSourceSetsReportTask>(SOURCES_GRAPH_TASK) {
+                    group = TASK_GROUP
+                    description = printTaskDescriptionFor("source sets", "graph")
+                }
             }
         }
     }
@@ -39,38 +48,37 @@ internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
 
 private fun Project.printKotlinTargetsInfo() {
     println("Project '$path' Kotlin targets:")
-    val p = "    ->"
     kotlinExtension.targets.forEach { target ->
         println("Target: $target (${target.name}, ${target.platformType})")
         target.attributes.let {
             it.keySet().forEach { attr ->
-                println("    $attr = ${it.getAttribute(attr)}")
+                println("$T $attr = ${it.getAttribute(attr)}")
             }
         }
         if (target is KotlinJsSubTargetContainerDsl) {
-            println("    nodejs: ${target.isNodejsConfigured}")
-            println("    browser: ${target.isBrowserConfigured}")
+            println("$T nodejs: ${target.isNodejsConfigured}")
+            println("$T browser: ${target.isBrowserConfigured}")
         }
         if (target is KotlinWasmSubTargetContainerDsl) {
-            println("    d8: ${target.isD8Configured}")
+            println("$T d8: ${target.isD8Configured}")
         }
         if (target is KotlinJsTargetDsl) {
-            println("    moduleName: ${target.moduleName}")
+            println("$T moduleName: ${target.moduleName}")
         }
         if (target is KotlinJsTarget) {
             println(
-                "    disambiguationClassifierInPlatform:" +
+                "$T disambiguationClassifierInPlatform:" +
                     " ${target.disambiguationClassifierInPlatform}",
             )
         }
         if (target is KotlinJvmTarget) {
-            println("    javaEnabled: ${target.withJavaEnabled}")
+            println("$T javaEnabled: ${target.withJavaEnabled}")
         }
         if (target is KotlinTargetWithBinaries<*, *>) {
             if (target is KotlinNativeTarget) {
                 target.binaries.forEach {
                     println(
-                        "$p binary ${it.name}(${it.outputKind}" +
+                        "$P binary ${it.name}(${it.outputKind}" +
                             ", debuggable=${it.debuggable}, optimized=${it.optimized})",
                     )
                 }
@@ -81,12 +89,12 @@ private fun Project.printKotlinTargetsInfo() {
                     else -> null
                 }
                 binaries?.forEach {
-                    println("$p binary ${it.name}(${it.mode})")
+                    println("$P binary ${it.name}(${it.mode})")
                 }
             }
         }
         target.compilations.forEach { compilation ->
-            println("$p $compilation ${compilation.name}")
+            println("$P $compilation ${compilation.name}")
 
             try {
                 // primary source set used to compile this compilation
@@ -110,37 +118,40 @@ private fun Project.printKotlinTargetsInfo() {
 
 private fun Project.printKotlinSourceSetsInfo() {
     println("Project '$path' Kotlin source sets:")
-    val p = "    ->"
     val projectDir = project.projectDir
     kotlinExtension.sourceSets.forEach { sourceSet ->
-        println("SourceSet: $sourceSet (${sourceSet.name})")
+        println("SourceSet: ${sourceSet.name}")
 
         sourceSet.kotlin.srcDirs.ifNotEmpty {
-            println("$p kotlin.srcDirs: [${joinToString { it.relativeTo(projectDir).path }}]")
+            println("$P kotlin.srcDirs: [${joinToString { it.relativeTo(projectDir).path }}]")
         }
         sourceSet.resources.srcDirs.ifNotEmpty {
-            println("$p resources.srcDirs: [${joinToString { it.relativeTo(projectDir).path }}]")
+            println("$P resources.srcDirs: [${joinToString { it.relativeTo(projectDir).path }}]")
         }
         sourceSet.dependsOn.ifNotEmpty {
-            println("$p dependsOn: [${joinToString { it.name }}]")
+            println("$P dependsOn: [${joinToString { it.name }}]")
         }
         sourceSet.requiresVisibilityOf.ifNotEmpty {
-            println("$p requiresVisibilityOf: [${joinToString { it.name }}]")
+            println("$P requiresVisibilityOf: [${joinToString { it.name }}]")
         }
 
         sourceSet.languageSettings.run {
-            println("$p languageVersion: $languageVersion")
-            println("$p apiVersion: $apiVersion")
-            println("$p progressiveMode: $progressiveMode")
-            println("$p optIns: $optInAnnotationsInUse")
+            println("$P languageVersion: $languageVersion")
+            println("$P apiVersion: $apiVersion")
+            println("$P progressiveMode: $progressiveMode")
+            println("$P optIns: $optInAnnotationsInUse")
         }
     }
 }
 
 
-private fun Project.printTaskDescriptionFor(type: String): String =
-    "Prints detailed information for Kotlin $type in the '$path' project"
+private fun Project.printTaskDescriptionFor(obj: String, type: String = "information"): String =
+    "Prints detailed $type for Kotlin $obj in the '$path' project"
+
+private const val T = "   "
+private const val P = "$T ->"
 
 private const val TASK_GROUP = "group"
 private const val TARGETS_TASK = "printKotlinTargetsInfo"
 private const val SOURCES_TASK = "printKotlinSourceSetsInfo"
+private const val SOURCES_GRAPH_TASK = "printKotlinSourceSetsGraph"
