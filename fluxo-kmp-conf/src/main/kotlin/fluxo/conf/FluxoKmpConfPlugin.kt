@@ -11,6 +11,7 @@ import fluxo.conf.feat.prepareDependencyAnalysisTasks
 import fluxo.conf.feat.prepareDependencyGuardPlugin
 import fluxo.conf.feat.prepareDependencyPinningBundle
 import fluxo.conf.feat.prepareGradleVersionsPlugin
+import fluxo.conf.feat.prepareKotlinSetupDiagnosticTasks
 import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
 import fluxo.conf.feat.prepareTaskInfoPlugin
 import fluxo.conf.feat.prepareTaskTreePlugin
@@ -88,6 +89,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         context.prepareDependencyPinningBundle()
         context.prepareTaskTreePlugin()
         context.prepareTaskInfoPlugin()
+        context.prepareKotlinSetupDiagnosticTasks()
         context.prepareModuleDependencyGraphPlugin()
         context.prepareBuildScanPlugin()
         context.ensureUnreachableTasksDisabled()

@@ -4,7 +4,7 @@ import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
 import fluxo.conf.impl.KOTLIN_1_8
-import fluxo.conf.target.KmpTargetCode.Companion.TARGET_DEPRECTION_MSG
+import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -61,7 +61,7 @@ private constructor(
         }
 
         @Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
-        @Deprecated(message = TARGET_DEPRECTION_MSG)
+        @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun watchosX86(
             targetName: String = "watchosX86",
             action: X86.() -> Unit = EMPTY_FUN,
@@ -103,7 +103,7 @@ private constructor(
     ) : TargetAppleWatchosContainer<KotlinNativeTarget>(context, targetName)
 
     @FluxoKmpConfDsl
-    @Deprecated(message = TARGET_DEPRECTION_MSG)
+    @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class X86 internal constructor(
         context: ContainerContext,
         targetName: String,

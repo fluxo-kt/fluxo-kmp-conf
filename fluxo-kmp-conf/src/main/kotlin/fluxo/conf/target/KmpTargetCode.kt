@@ -59,8 +59,8 @@ internal enum class KmpTargetCode {
 
 
     internal companion object {
-        internal const val TARGET_DEPRECTION_MSG =
-            "Target is deprecated, will be removed soon: see https://kotl.in/native-targets-tiers"
+        internal const val DEPRECATED_TARGET_MSG =
+            org.jetbrains.kotlin.konan.target.DEPRECATED_TARGET_MESSAGE
 
         internal const val KMP_TARGETS_PROP = "KMP_TARGETS"
 

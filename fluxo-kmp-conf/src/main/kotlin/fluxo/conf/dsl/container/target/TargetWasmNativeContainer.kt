@@ -5,7 +5,7 @@ package fluxo.conf.dsl.container.target
 import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.conf.target.KmpTargetCode.Companion.TARGET_DEPRECTION_MSG
+import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
@@ -18,12 +18,12 @@ private constructor(
 
     public sealed interface Configure : ContainerHolderAware {
 
-        @Deprecated(message = TARGET_DEPRECTION_MSG)
+        @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun wasmNativeAll() {
             wasm32()
         }
 
-        @Deprecated(message = TARGET_DEPRECTION_MSG)
+        @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun wasm32(
             targetName: String = "wasm32",
             action: TargetWasmNativeContainer.() -> Unit = EMPTY_FUN,

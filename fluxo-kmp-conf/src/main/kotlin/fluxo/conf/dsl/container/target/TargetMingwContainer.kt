@@ -5,7 +5,7 @@ package fluxo.conf.dsl.container.target
 import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.conf.target.KmpTargetCode.Companion.TARGET_DEPRECTION_MSG
+import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
@@ -29,7 +29,7 @@ private constructor(
             holder.configure(targetName, ::X64, action)
         }
 
-        @Deprecated(message = TARGET_DEPRECTION_MSG)
+        @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun mingwX86(targetName: String = "mingwX86", action: X86.() -> Unit = EMPTY_FUN) {
             holder.configure(targetName, ::X86, action)
         }
@@ -42,7 +42,7 @@ private constructor(
     ) : TargetMingwContainer<KotlinNativeTargetWithHostTests>(context, targetName)
 
     @FluxoKmpConfDsl
-    @Deprecated(message = TARGET_DEPRECTION_MSG)
+    @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class X86 internal constructor(
         context: ContainerContext,
         targetName: String,

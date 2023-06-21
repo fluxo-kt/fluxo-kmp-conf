@@ -162,6 +162,11 @@ buildConfig {
     buildConfigField("MODULE_DEPENDENCY_GRAPH", libs.plugins.module.dependency.graph)
     buildConfigField("BUILD_CONFIG", libs.plugins.build.config)
     buildConfigField("ABOUT_LIBRARIES", libs.plugins.about.libraries)
+
+    // Automatically run task during Gradle sync in IDEA
+    // TODO: Use maybeRegister to avoid unnecessary task creation?
+    tasks.maybeCreate("prepareKotlinIdeaImport")
+        .dependsOn("generateBuildConfig")
 }
 
 gradlePlugin {

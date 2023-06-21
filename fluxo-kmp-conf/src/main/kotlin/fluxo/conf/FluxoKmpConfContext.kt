@@ -6,6 +6,7 @@ import disableTests
 import fluxo.conf.deps.GradleProvisioner
 import fluxo.conf.deps.Provisioner
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
+import fluxo.conf.impl.d
 import fluxo.conf.impl.e
 import fluxo.conf.impl.l
 import fluxo.conf.impl.libsCatalogOptional
@@ -88,6 +89,8 @@ internal abstract class FluxoKmpConfContext
         val isInIde = start.systemPropertiesArgs["idea.active"].tryAsBoolean()
         if (isInIde && startTaskNames.isEmpty()) {
             markProjectInSync()
+        } else {
+            taskGraphBasedProjectSyncDetection()
         }
 
         val isCI by project.isCI()
@@ -136,6 +139,7 @@ internal abstract class FluxoKmpConfContext
      * Runs provided `action` if the project is in sync mode now or will be marked for it later.
      *
      * @see markProjectInSync
+     * @FIXME Allow to use it from any build scripts
      */
     fun onProjectInSyncRun(forceIf: Boolean = false, action: FluxoKmpConfContext.() -> Unit) {
         val context = this
@@ -143,6 +147,25 @@ internal abstract class FluxoKmpConfContext
             forceIf || isProjectInSyncRun -> context.action()
             else -> projectInSyncSet.all {
                 context.action()
+            }
+        }
+    }
+
+    private fun taskGraphBasedProjectSyncDetection() {
+        // TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.
+        //  https://github.com/JetBrains/gradle-idea-ext-plugin
+        val logger = rootProject.logger
+        rootProject.gradle.taskGraph.whenReady {
+            if (!isProjectInSyncRun) {
+                val hasImportTasksInGraph = allTasks.any {
+                    it.path.let { p ->
+                        p.endsWith(KOTLIN_IDEA_IMPORT_TASK) || p.endsWith(KOTLIN_IDEA_BSM_TASK)
+                    }
+                }
+                if (hasImportTasksInGraph && !isProjectInSyncRun) {
+                    logger.d("IDE project sync")
+                    markProjectInSync()
+                }
             }
         }
     }
@@ -174,6 +197,10 @@ internal abstract class FluxoKmpConfContext
         }
 
         private const val NAME = "fluxoInternalConfigurationContext"
+
+        // https://twitter.com/Sellmair/status/1619308362881187840
+        private const val KOTLIN_IDEA_IMPORT_TASK = "prepareKotlinIdeaImport"
+        private const val KOTLIN_IDEA_BSM_TASK = "prepareKotlinBuildScriptModel"
     }
 
     private object ProjectInSyncMarker

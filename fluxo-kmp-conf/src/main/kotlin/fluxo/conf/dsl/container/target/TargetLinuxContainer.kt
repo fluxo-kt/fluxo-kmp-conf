@@ -3,7 +3,7 @@ package fluxo.conf.dsl.container.target
 import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.conf.target.KmpTargetCode.Companion.TARGET_DEPRECTION_MSG
+import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
@@ -35,7 +35,7 @@ private constructor(
 
 
         @Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
-        @Deprecated(message = TARGET_DEPRECTION_MSG)
+        @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun linuxArm32Hfp(
             targetName: String = "linuxArm32Hfp",
             action: Arm32Hfp.() -> Unit = EMPTY_FUN,
@@ -44,7 +44,7 @@ private constructor(
         }
 
         @Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
-        @Deprecated(message = TARGET_DEPRECTION_MSG)
+        @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun linuxMips32(
             targetName: String = "linuxMips32",
             action: Mips32.() -> Unit = EMPTY_FUN,
@@ -53,7 +53,7 @@ private constructor(
         }
 
         @Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
-        @Deprecated(message = TARGET_DEPRECTION_MSG)
+        @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun linuxMipsel32(
             targetName: String = "linuxMipsel32",
             action: Mipsel32.() -> Unit = EMPTY_FUN,
@@ -76,21 +76,21 @@ private constructor(
     ) : TargetLinuxContainer<KotlinNativeTarget>(context, targetName)
 
     @FluxoKmpConfDsl
-    @Deprecated(message = TARGET_DEPRECTION_MSG)
+    @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class Arm32Hfp internal constructor(
         context: ContainerContext,
         targetName: String,
     ) : TargetLinuxContainer<KotlinNativeTarget>(context, targetName)
 
     @FluxoKmpConfDsl
-    @Deprecated(message = TARGET_DEPRECTION_MSG)
+    @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class Mips32 internal constructor(
         context: ContainerContext,
         targetName: String,
     ) : TargetLinuxContainer<KotlinNativeTarget>(context, targetName)
 
     @FluxoKmpConfDsl
-    @Deprecated(message = TARGET_DEPRECTION_MSG)
+    @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class Mipsel32 internal constructor(
         context: ContainerContext,
         targetName: String,

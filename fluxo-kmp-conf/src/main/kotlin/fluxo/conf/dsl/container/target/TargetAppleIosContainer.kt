@@ -5,7 +5,7 @@ package fluxo.conf.dsl.container.target
 import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.conf.target.KmpTargetCode.Companion.TARGET_DEPRECTION_MSG
+import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
@@ -26,7 +26,7 @@ private constructor(
 
 
         @Suppress("DEPRECATION")
-        @Deprecated(message = TARGET_DEPRECTION_MSG)
+        @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun iosArm32(targetName: String = "iosArm32", action: Arm32.() -> Unit = EMPTY_FUN) {
             holder.configure(targetName, ::Arm32, action)
         }
@@ -48,7 +48,7 @@ private constructor(
     }
 
     @FluxoKmpConfDsl
-    @Deprecated(message = TARGET_DEPRECTION_MSG)
+    @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class Arm32 internal constructor(
         context: ContainerContext,
         targetName: String,
