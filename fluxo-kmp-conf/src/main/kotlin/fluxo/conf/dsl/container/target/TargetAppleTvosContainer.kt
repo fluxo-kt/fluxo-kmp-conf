@@ -15,6 +15,12 @@ private constructor(
 
     public sealed interface Configure : ContainerHolderAware {
 
+        /**
+         *
+         * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.tvos
+         * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+         * @see tvosCompat
+         */
         public fun tvosAll() {
             tvosArm64()
             tvosSimulatorArm64()

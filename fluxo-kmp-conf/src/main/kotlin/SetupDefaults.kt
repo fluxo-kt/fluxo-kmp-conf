@@ -1,3 +1,4 @@
+import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.impl.extra
 import org.gradle.api.Project
 
@@ -6,7 +7,7 @@ public fun Project.setupDefaults(
     androidConfig: AndroidConfigSetup? = null,
     kotlinConfig: KotlinConfigSetup? = null,
     binaryCompatibilityValidatorConfig: BinaryCompatibilityValidatorConfig? = null,
-    publicationConfig: PublicationConfig? = null,
+    publicationConfig: FluxoPublicationConfig? = null,
 ) {
     extra.set(
         DEFAULTS_KEY,

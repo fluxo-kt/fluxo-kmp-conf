@@ -18,6 +18,12 @@ private constructor(
 
     public sealed interface Configure : ContainerHolderAware {
 
+        /**
+         *
+         * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.ios
+         * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+         * @see iosCompat
+         */
         public fun iosAll() {
             iosArm64()
             iosSimulatorArm64()

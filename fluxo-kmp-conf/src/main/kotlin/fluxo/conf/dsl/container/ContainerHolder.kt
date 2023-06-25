@@ -44,8 +44,8 @@ internal constructor(
     }
 
 
-    internal fun findKotlinContainer(): KotlinExtensionActionContainer? =
-        findByName(KotlinExtensionActionContainer.NAME)
+    internal fun findKmpContainer(): KmpExtensionActionContainer? =
+        findByName(KmpExtensionActionContainer.NAME)
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : Container> findByName(name: String) = containers.findByName(name) as T?

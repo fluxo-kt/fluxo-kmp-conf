@@ -4,7 +4,7 @@ import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.InternalFluxoApi
 import fluxo.conf.dsl.container.CommonContainer
 import fluxo.conf.dsl.container.ContainerHolder
-import fluxo.conf.dsl.container.KotlinExtensionActionContainer
+import fluxo.conf.dsl.container.KmpExtensionActionContainer
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 @FluxoKmpConfDsl
@@ -34,9 +34,9 @@ internal constructor(
         holder.configure(CommonContainer.NAME, ::CommonContainer, action)
     }
 
-    public fun kotlin(action: KotlinMultiplatformExtension.() -> Unit) {
-        val container = holder.findKotlinContainer() ?: KotlinExtensionActionContainer(holder)
-        container.kotlin(action)
+    public fun kotlinMultiplatform(action: KotlinMultiplatformExtension.() -> Unit) {
+        val container = holder.findKmpContainer() ?: KmpExtensionActionContainer(holder)
+        container.kotlinMultiplatform(action)
         holder.add(container)
     }
 }

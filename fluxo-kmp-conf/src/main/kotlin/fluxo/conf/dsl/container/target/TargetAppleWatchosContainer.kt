@@ -9,6 +9,7 @@ import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+import watchosCompat
 
 public sealed class TargetAppleWatchosContainer<T : KotlinNativeTarget>
 private constructor(
@@ -18,6 +19,12 @@ private constructor(
 
     public sealed interface Configure : ContainerHolderAware {
 
+        /**
+         *
+         * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.watchos
+         * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+         * @see watchosCompat
+         */
         public fun watchosAll() {
             watchosArm32()
             watchosArm64()

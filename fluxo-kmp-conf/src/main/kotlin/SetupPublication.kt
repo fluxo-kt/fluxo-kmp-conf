@@ -1,6 +1,7 @@
 @file:Suppress("TooManyFunctions")
 
 import com.android.build.gradle.LibraryExtension
+import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.create
 import fluxo.conf.impl.get
@@ -50,7 +51,7 @@ private const val USE_DOKKA: Boolean = true
 
 
 public fun Project.setupPublication() {
-    val config = requireDefaults<PublicationConfig>()
+    val config = requireDefaults<FluxoPublicationConfig>()
     when {
         hasExtension<KotlinMultiplatformExtension>() ->
             setupPublicationMultiplatform(config)
@@ -79,7 +80,7 @@ public fun Project.setupPublication() {
     }
 }
 
-private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
+private fun Project.setupPublicationMultiplatform(config: FluxoPublicationConfig) {
     applyMavenPublishPlugin()
 
     group = config.group
@@ -115,7 +116,7 @@ private fun Project.setupPublicationMultiplatform(config: PublicationConfig) {
     }
 }
 
-private fun Project.setupPublicationAndroidLibrary(config: PublicationConfig) {
+private fun Project.setupPublicationAndroidLibrary(config: FluxoPublicationConfig) {
     if (!isGenericCompilationEnabled) {
         return
     }
@@ -154,7 +155,7 @@ private fun Project.setupPublicationAndroidLibrary(config: PublicationConfig) {
     setupPublicationRepository(config)
 }
 
-private fun Project.setupPublicationGradlePlugin(config: PublicationConfig) {
+private fun Project.setupPublicationGradlePlugin(config: FluxoPublicationConfig) {
     applyMavenPublishPlugin()
 
     group = config.group
@@ -174,7 +175,7 @@ private fun Project.setupPublicationGradlePlugin(config: PublicationConfig) {
     setupPublicationRepository(config)
 }
 
-private fun Project.setupPublicationKotlinJvm(config: PublicationConfig) {
+private fun Project.setupPublicationKotlinJvm(config: FluxoPublicationConfig) {
     if (!isGenericCompilationEnabled) {
         return
     }
@@ -195,7 +196,7 @@ private fun Project.setupPublicationKotlinJvm(config: PublicationConfig) {
     setupPublicationRepository(config)
 }
 
-private fun Project.setupPublicationJava(config: PublicationConfig) {
+private fun Project.setupPublicationJava(config: FluxoPublicationConfig) {
     if (!isGenericCompilationEnabled) {
         return
     }
@@ -216,7 +217,10 @@ private fun Project.setupPublicationJava(config: PublicationConfig) {
     setupPublicationRepository(config)
 }
 
-internal fun MavenPublication.setupPublicationPom(project: Project, config: PublicationConfig) {
+internal fun MavenPublication.setupPublicationPom(
+    project: Project,
+    config: FluxoPublicationConfig,
+) {
     // Publish docs with each artifact.
     val useDokka = USE_DOKKA && !config.isSnapshot
     try {
@@ -255,10 +259,15 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
         }
 
         developers {
-            developer {
-                id.set(config.developerId)
-                name.set(config.developerName)
-                email.set(config.developerEmail)
+            if (!config.developerId.isNullOrEmpty() ||
+                !config.developerName.isNullOrEmpty() ||
+                !config.developerEmail.isNullOrEmpty()
+            ) {
+                developer {
+                    config.developerId?.let { id.set(it) }
+                    config.developerName?.let { name.set(it) }
+                    config.developerEmail?.let { email.set(it) }
+                }
             }
         }
 
@@ -275,7 +284,7 @@ internal fun MavenPublication.setupPublicationPom(project: Project, config: Publ
 
 private val signingKeyNotificationLogged = AtomicBoolean()
 
-internal fun Project.setupPublicationRepository(config: PublicationConfig) {
+internal fun Project.setupPublicationRepository(config: FluxoPublicationConfig) {
     val notify = signingKeyNotificationLogged.compareAndSet(false, true)
     if (config.isSigningEnabled) {
         if (notify) logger.lifecycle("> Conf SIGNING_KEY SET, applying signing configuration")
@@ -306,7 +315,7 @@ internal fun Project.setupPublicationRepository(config: PublicationConfig) {
 }
 
 private fun Project.setupPublicationExtension(
-    config: PublicationConfig,
+    config: FluxoPublicationConfig,
     sourceJarTask: Jar? = null,
 ) {
     configureExtension<PublishingExtension> {

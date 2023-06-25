@@ -17,7 +17,7 @@ val pluginId = "io.github.fluxo-kt.fluxo-kmp-conf"
 val experimentalTest = false
 
 group = "io.github.fluxo-kt"
-version = libs.versions.fluxoKmpConf.get()
+version = libs.versions.version.get()
 
 samWithReceiver {
     annotation("org.gradle.api.HasImplicitReceiver")
@@ -128,6 +128,9 @@ buildConfig {
     className("BuildConstants")
     packageName("fluxo.conf.data")
     buildConfigField("String", "PLUGIN_ID", "\"$pluginId\"")
+    buildConfigField("int", "DEFAULT_ANDROID_MIN_SDK", libs.versions.androidMinSdk.get())
+    buildConfigField("int", "DEFAULT_ANDROID_TARGET_SDK", libs.versions.androidTargetSdk.get())
+    buildConfigField("int", "DEFAULT_ANDROID_COMPILE_SDK", libs.versions.androidCompileSdk.get())
 
     fun buildConfigField(
         name: String,

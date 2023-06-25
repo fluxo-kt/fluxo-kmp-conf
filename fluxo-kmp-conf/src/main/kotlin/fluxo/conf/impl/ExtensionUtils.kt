@@ -72,6 +72,9 @@ internal inline fun <reified T : Any> ExtensionContainer.getByTypeStrict(): T =
 internal inline fun <reified T : Any> ExtensionContainer.getByType(type: KClass<T>? = null): T =
     getByType(T::class.java)
 
+internal inline fun <reified T : Any> ExtensionContainer.findByType(type: KClass<T>? = null): T? =
+    findByType(T::class.java)
+
 
 internal inline fun <reified T : Any> ExtensionContainer.configure(
     type: KClass<T>? = null,

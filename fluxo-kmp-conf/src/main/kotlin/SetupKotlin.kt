@@ -118,7 +118,7 @@ internal fun Project.setupKotlinExtension(
                 .forEach(::optIn)
 
             val isLatestKotlinVersion = kotlinLangVersion == KotlinVersion.values().last()
-            if (config.progressive && isLatestKotlinVersion) {
+            if (config.progressiveMode && isLatestKotlinVersion) {
                 progressiveMode = true
             }
         }
@@ -183,14 +183,14 @@ internal fun DependencyHandler.setupKotlinDependencies(
 
     val kotlinBom = enforcedPlatform(kotlin("bom", libs.v("kotlin")))
     when {
-        config.allowGradlePlatform -> implementation(kotlinBom)
+        config.setupKnownBoms -> implementation(kotlinBom)
         else -> testImplementation(kotlinBom)
     }
     testImplementation(kotlin("test-junit"))
 
 
     val hasCoroutinesBom = libs.onLibrary("kotlinx-coroutines-bom") {
-        if (config.allowGradlePlatform) {
+        if (config.setupKnownBoms) {
             implementation(enforcedPlatform(it), excludeAnnotations)
             if (config.setupCoroutines) {
                 implementation(COROUTINES_DEPENDENCY)
@@ -201,7 +201,7 @@ internal fun DependencyHandler.setupKotlinDependencies(
                 testImplementation(COROUTINES_DEPENDENCY)
             }
         }
-    } && config.allowGradlePlatform
+    } && config.setupKnownBoms
     if (config.setupCoroutines) {
         if (!hasCoroutinesBom) {
             libs.onLibrary("kotlinx-coroutines-core") { implementation(it) }
@@ -264,7 +264,7 @@ private fun KotlinCommonCompilerOptions.setupKotlinOptions(
     freeCompilerArgs.addAll(config.getListOfOptIns(isTestTask, optIns).map { "-opt-in=$it" })
 
     val isLatestKotlinVersion = kotlinLangVersion == KotlinVersion.values().last()
-    if (config.progressive && isLatestKotlinVersion) {
+    if (config.progressiveMode && isLatestKotlinVersion) {
         freeCompilerArgs.add("-progressive")
     }
 
@@ -293,7 +293,7 @@ private fun KotlinCommonCompilerOptions.setupKotlinOptions(
 
         // class mode provides lambdas arguments names
         val lambdaType = when {
-            config.alwaysIndyLambdas || isCI || releaseSettings -> "indy"
+            config.useIndyLambdas || isCI || releaseSettings -> "indy"
             else -> "class"
         }
         freeCompilerArgs.addAll(

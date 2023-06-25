@@ -1,5 +1,9 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package fluxo.conf.impl
 
+import kotlin.internal.LowPriorityInOverloadResolution
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependencyBundle
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
@@ -91,6 +95,39 @@ internal fun VersionCatalog.onPlugin(alias: String, body: (PluginDependency) -> 
     return false
 }
 
+
+@JvmName("vIntVararg")
+@LowPriorityInOverloadResolution
+internal fun VersionCatalog?.vInt(vararg aliases: String, force: Boolean = true): Int? =
+    vInt(aliases, force = force)
+
+internal fun VersionCatalog?.vInt(aliases: Array<out String>?, force: Boolean = true): Int? {
+    if (this != null && aliases != null) {
+        for (alias in aliases) {
+            return vInt(alias, force = force) ?: continue
+        }
+    }
+    return null
+}
+
+internal fun VersionCatalog?.vInt(alias: String?, force: Boolean = true): Int? {
+    if (!alias.isNullOrEmpty()) {
+        val v = this?.findVersion(alias)?.getOrNull()?.toString()
+        try {
+            return v?.toInt()
+        } catch (e: Throwable) {
+            if (force) {
+                val msg = "Invalid '$alias' declared in libs.versions.toml, expected int: '$v'"
+                throw GradleException(msg, e)
+            }
+        }
+    }
+    return null
+}
+
+@JvmName("vVararg")
+@LowPriorityInOverloadResolution
+internal fun VersionCatalog?.v(vararg aliases: String) = v(aliases)
 
 internal fun VersionCatalog?.v(aliases: Array<out String>?): String? {
     if (this != null && aliases != null) {

@@ -8,7 +8,7 @@
 
 [versions]
 
-fluxoKmpConf = "0.1.0"
+version = "0.1.0"
 
 # Java/Kotlin compatibility
 javaLangTarget = "11"
@@ -27,8 +27,63 @@ jetbrains-compose = "1.4.0"
 # https://github.com/google/ksp/releases
 ksp = "1.8.20-1.0.11"
 
+# region Android specific
+
+# SDK Versions:
+# 21  -> Android 5.0   (November 2014)  LOLLIPOP
+# 22  -> Android 5.1   (March 2015)     LOLLIPOP_MR1
+# 23  -> Android 6.0   (August 2015)    M
+# 24  -> Android 7.0   (August 2016)    N
+# 25  -> Android 7.1   (October 2016)   N_MR1
+# 26  -> Android 8.0   (August 2017)    O
+# 27  -> Android 8.1   (December 2017)  O_MR1
+# 28  -> Android 9.0   (August 2018)    PIE
+# 29  -> Android 10.0  (September 2019) Q
+# 30  -> Android 11.0  (September 2020) R
+# 31  -> Android 12.0  (October, 2021)  S
+# 32  -> Android 12L   (March, 2022)    S_V2
+# 33  -> Android 13    (August, 2022)   TIRAMISU
+# 34  -> Android 14    (Q3 2023)        UPSIDE_DOWN_CAKE
+#
+# see:
+#  https://apilevels.com
+#  https://en.wikipedia.org/wiki/Android_version_history
+#  https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels
+#  https://play.google.com/console/developer/app/devices/dashboard
+
+# 21 is required for Compose, and covers 99.3% of devices
+# 23 is required for Android Keystore
+# 24 is default for new projects as of June 2023, required for AndroidX Security-Identity-Credential
+# 26 is required for native Java 8 support, e.g. `MethodHandle` usage (signature-polymorphic calls)
+# NOTE: Don't forget to edit related `-assumenosideeffects ... SDK_INT` as well!
+androidMinSdk = "21"
+
+# androidTargetSdk >= 33 is required for Google Play new apps & app updates since August 31, 2023
+# https://support.google.com/googleplay/android-developer/answer/11926878
+# https://support.google.com/googleplay/android-developer/answer/9859152#targetsdk
+# https://developer.android.com/distribute/best-practices/develop/target-sdk
+androidTargetSdk = "33"
+
+# Last version with sources available
+# androidCompileSdk >= 28 is required for Firebase
+androidCompileSdk = "33"
+
+# Last SDK for test builds
+androidLastSdk = "34"
+
+# Preview API for MAX_DEBUG builds
+# Zero value used to ignore this setting
+# E.g., to try out the Android U preview use `androidPreviewSdk = "U"`
+androidPreviewSdk = "0"
+
+# Compilers, packaging, deployment tools for Android apps.
+androidBuildTools = "34.0.0"
+
+# Gradle plug-in to build Android applications.
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 android-gradle-plugin = "8.0.2"
+
+# endregion
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases

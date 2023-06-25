@@ -11,6 +11,8 @@ import org.gradle.api.provider.Provider
 
 public operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNull == true
 
+public operator fun <T : Any> Provider<T?>.getValue(t: Any?, p: Any?): T? = orNull
+
 
 public fun Project.envOrPropValue(name: String): String? =
     envOrPropValueLenient(name)

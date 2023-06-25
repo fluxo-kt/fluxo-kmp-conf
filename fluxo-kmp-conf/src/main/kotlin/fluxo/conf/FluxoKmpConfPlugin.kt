@@ -3,6 +3,7 @@ package fluxo.conf
 import fluxo.conf.data.BuildConstants.PLUGIN_ID
 import fluxo.conf.deps.FluxoCache
 import fluxo.conf.dsl.FluxoConfigurationExtension
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.feat.ensureUnreachableTasksDisabled
 import fluxo.conf.feat.prepareBuildScanPlugin
@@ -49,8 +50,9 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
 
         target.allprojects {
             extensions.create(
-                FluxoConfigurationExtension.NAME,
                 FluxoConfigurationExtension::class.java,
+                FluxoConfigurationExtensionImpl.NAME,
+                FluxoConfigurationExtensionImpl::class.java,
                 context,
                 configureContainers,
             )

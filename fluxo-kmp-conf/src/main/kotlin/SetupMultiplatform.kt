@@ -9,8 +9,9 @@ import fluxo.conf.impl.implementation
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.libsCatalog
 import fluxo.conf.impl.onLibrary
-import fluxo.conf.impl.v
 import fluxo.conf.impl.testImplementation
+import fluxo.conf.impl.v
+import fluxo.conf.impl.withType
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import org.gradle.api.NamedDomainObjectCollection
@@ -21,6 +22,7 @@ import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -29,15 +31,14 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests
 import org.jetbrains.kotlin.konan.target.Family
 
+@Deprecated("")
 public typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 
 internal val Project.multiplatformExtension: KotlinMultiplatformExtension
     get() = kotlinExtension as KotlinMultiplatformExtension
-
-// FIXME: Improve setup, completely remove disabled sources/plugins/tasks. Add everything dynamically, see:
-//  https://github.com/05nelsonm/gradle-kmp-configuration-plugin
 
 @Suppress("LongParameterList")
 public fun Project.setupMultiplatform(
@@ -96,13 +97,13 @@ private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
         val kotlinVersion = libs.v("kotlin")
         project.dependencies.apply {
             enforcedPlatform(kotlin("bom", kotlinVersion)).let {
-                if (config.allowGradlePlatform) implementation(it) else testImplementation(it)
+                if (config.setupKnownBoms) implementation(it) else testImplementation(it)
             }
 
             if (config.setupCoroutines) {
                 libs.onLibrary("kotlinx-coroutines-bom") {
                     val platform = enforcedPlatform(it)
-                    if (config.allowGradlePlatform) {
+                    if (config.setupKnownBoms) {
                         implementation(platform)
                     } else {
                         testImplementation(platform)
@@ -112,7 +113,7 @@ private fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
 
             val platformImplementation: (Provider<MinimalExternalModuleDependency>) -> Unit = {
                 val platform = platform(it)
-                if (config.allowGradlePlatform) {
+                if (config.setupKnownBoms) {
                     implementation(platform)
                 } else {
                     testImplementation(platform)
@@ -260,8 +261,31 @@ private fun KotlinMultiplatformExtension.setupCompose(project: Project, jbCompos
 }
 
 
+/**
+ *
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
+ */
 public fun KotlinMultiplatformExtension.setupSourceSets(block: MultiplatformSourceSets.() -> Unit) {
     MultiplatformSourceSets(targets, sourceSets).block()
+}
+
+/**
+ * Configure a separate Kotlin/Native tests where code runs in worker thread.
+ */
+public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
+    // Configure a separate test where code runs in worker thread
+    // https://kotlinlang.org/docs/compiler-reference.html#generate-worker-test-runner-trw
+    targets.withType<KotlinNativeTargetWithTests<*>>().all {
+        val background = "background"
+        binaries {
+            test(background, listOf(DEBUG)) {
+                freeCompilerArgs += "-trw"
+            }
+        }
+        testRuns.create(background) {
+            setExecutionSourceFrom(binaries.getTest(background, DEBUG))
+        }
+    }
 }
 
 internal enum class Target {
@@ -465,6 +489,11 @@ public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
 
 // region Darwin compat
 
+/**
+ *
+ * @see KotlinTargetContainerWithNativeShortcuts.ios
+ * @see KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+ */
 public fun KotlinMultiplatformExtension.iosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm64: String? = DEFAULT_TARGET_NAME,
@@ -479,6 +508,11 @@ public fun KotlinMultiplatformExtension.iosCompat(
     )
 }
 
+/**
+ *
+ * @see KotlinTargetContainerWithNativeShortcuts.watchos
+ * @see KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+ */
 public fun KotlinMultiplatformExtension.watchosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm32: String? = DEFAULT_TARGET_NAME,
@@ -503,6 +537,11 @@ public fun KotlinMultiplatformExtension.watchosCompat(
     )
 }
 
+/**
+ *
+ * @see KotlinTargetContainerWithNativeShortcuts.tvos
+ * @see KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+ */
 public fun KotlinMultiplatformExtension.tvosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm64: String? = DEFAULT_TARGET_NAME,
@@ -517,6 +556,10 @@ public fun KotlinMultiplatformExtension.tvosCompat(
     )
 }
 
+/**
+ *
+ * @see KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+ */
 public fun KotlinMultiplatformExtension.macosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm64: String? = DEFAULT_TARGET_NAME,
@@ -539,6 +582,6 @@ private fun KotlinMultiplatformExtension.enableTarget(
     }
 }
 
-private const val DEFAULT_TARGET_NAME = "fluxo.DEFAULT_TARGET_NAME"
+private const val DEFAULT_TARGET_NAME = ".DEFAULT_TARGET_NAME"
 
 // endregion

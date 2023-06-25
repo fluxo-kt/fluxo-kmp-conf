@@ -37,7 +37,7 @@ public data class KotlinConfigSetup(
     /**
      * `class` mode provides lambdas arguments names
      */
-    val alwaysIndyLambdas: Boolean = true,
+    val useIndyLambdas: Boolean = true,
 
     /**
      * Using the new faster version of JAR FS should make build faster,
@@ -73,7 +73,7 @@ public data class KotlinConfigSetup(
      *
      * Only applied for the latest [kotlinLangVersion] (otherwise meaningless).
      */
-    val progressive: Boolean = true,
+    val progressiveMode: Boolean = true,
 
     /**
      * Add Kotlin `stdlib` dependency explicitly to the project.
@@ -85,7 +85,7 @@ public data class KotlinConfigSetup(
      *
      * See: https://docs.gradle.org/current/userguide/java_platform_plugin.html
      */
-    val allowGradlePlatform: Boolean = false,
+    val setupKnownBoms: Boolean = false,
 
     /**
      * Kotlin opt-ins to add
