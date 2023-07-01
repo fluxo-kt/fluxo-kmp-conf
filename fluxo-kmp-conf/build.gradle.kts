@@ -95,11 +95,10 @@ configurations.implementation {
     exclude(group = "org.ow2.asm")
 }
 
-fun Provider<PluginDependency>.toModuleDependency() = provider {
-    val pd = get()
-    val pluginId = pd.pluginId
-    val mavenModule = "$pluginId:$pluginId.gradle.plugin"
-    "$mavenModule:${pd.version}"
+fun Provider<PluginDependency>.toModuleDependency() = map { p ->
+    // Convention for the Gradle Plugin Marker Artifact
+    // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_markers
+    p.pluginId.let { "$it:$it.gradle.plugin:${p.version}" }
 }
 
 dependencies {
@@ -163,6 +162,8 @@ buildConfig {
     buildConfigField("TASK_TREE", libs.plugins.task.tree)
     buildConfigField("TASK_INFO", libs.plugins.task.info)
     buildConfigField("MODULE_DEPENDENCY_GRAPH", libs.plugins.module.dependency.graph)
+
+    // FIXME: Add support for plugins:
     buildConfigField("BUILD_CONFIG", libs.plugins.build.config)
     buildConfigField("ABOUT_LIBRARIES", libs.plugins.about.libraries)
 
