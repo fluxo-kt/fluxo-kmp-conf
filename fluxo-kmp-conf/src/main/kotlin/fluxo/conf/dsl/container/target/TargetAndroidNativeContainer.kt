@@ -4,13 +4,12 @@ import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 public sealed class TargetAndroidNativeContainer
 private constructor(
     context: ContainerContext,
     name: String,
-) : KmpTarget.NonJvm.Native.Android<KotlinNativeTarget>(context, name) {
+) : KmpTarget.NonJvm.Native.Android(context, name) {
 
     @Suppress("TooManyFunctions")
     public sealed interface Configure : ContainerHolderAware {
@@ -20,7 +19,7 @@ private constructor(
             androidNativeX64()
         }
 
-        public fun androidNativeAll() {
+        public fun androidNative() {
             androidNativeArm32()
             androidNativeArm64()
             androidNativeX86()

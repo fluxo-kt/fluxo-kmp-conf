@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 
-public sealed class TargetMingwContainer<T : KotlinNativeTarget>
+public sealed class TargetMingwContainer<out T : KotlinNativeTarget>
 private constructor(
     context: ContainerContext,
     targetName: String,
@@ -18,8 +18,8 @@ private constructor(
 
     public sealed interface Configure : ContainerHolderAware {
 
-        public fun mingwAll() {
-            mingwX64()
+        public fun mingw(action: X64.() -> Unit = EMPTY_FUN) {
+            mingwX64(action = action)
         }
 
         public fun mingwX64(

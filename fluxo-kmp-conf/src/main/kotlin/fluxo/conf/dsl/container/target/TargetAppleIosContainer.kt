@@ -6,11 +6,12 @@ import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
 import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
+import iosCompat
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 
-public sealed class TargetAppleIosContainer<T : KotlinNativeTarget>
+public sealed class TargetAppleIosContainer<out T : KNT>
 private constructor(
     context: ContainerContext,
     targetName: String,
@@ -24,10 +25,10 @@ private constructor(
          * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
          * @see iosCompat
          */
-        public fun iosAll() {
-            iosArm64()
-            iosSimulatorArm64()
-            iosX64()
+        public fun ios(action: TargetAppleIosContainer<KNT>.() -> Unit = EMPTY_FUN) {
+            iosArm64(action = action)
+            iosX64(action = action)
+            iosSimulatorArm64(action = action)
         }
 
 
@@ -58,13 +59,13 @@ private constructor(
     public class Arm32 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetAppleIosContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetAppleIosContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     public class Arm64 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetAppleIosContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetAppleIosContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     public class SimulatorArm64 internal constructor(

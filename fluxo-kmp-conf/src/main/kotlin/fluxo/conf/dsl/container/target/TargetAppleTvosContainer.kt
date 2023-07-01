@@ -4,10 +4,11 @@ import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+import tvosCompat
 
-public sealed class TargetAppleTvosContainer<T : KotlinNativeTarget>
+public sealed class TargetAppleTvosContainer<out T : KNT>
 private constructor(
     context: ContainerContext,
     targetName: String,
@@ -21,10 +22,10 @@ private constructor(
          * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
          * @see tvosCompat
          */
-        public fun tvosAll() {
-            tvosArm64()
-            tvosSimulatorArm64()
-            tvosX64()
+        public fun tvos(action: TargetAppleTvosContainer<KNT>.() -> Unit = EMPTY_FUN) {
+            tvosArm64(action = action)
+            tvosSimulatorArm64(action = action)
+            tvosX64(action = action)
         }
 
 
@@ -55,7 +56,7 @@ private constructor(
     public class Arm64 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetAppleTvosContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetAppleTvosContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     public class SimulatorArm64 internal constructor(

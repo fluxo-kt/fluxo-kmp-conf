@@ -1,5 +1,6 @@
 package fluxo.conf.dsl.container.target
 
+import DEFAULT_JS_CONF
 import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -15,16 +16,12 @@ private constructor(
 
     public var compilerType: KotlinJsCompilerType? = null
 
-    public sealed interface Configure : CommonJs.Configure {
+    public sealed interface Configure : ContainerHolderAware {
 
         public fun js(
-            targetName: String = "js",
             compiler: KotlinJsCompilerType? = null,
-            action: TargetJsContainer.() -> Unit = {
-                target {
-                    testTimeout()
-                }
-            },
+            targetName: String = "js",
+            action: TargetJsContainer.() -> Unit = DEFAULT_JS_CONF,
         ) {
             holder.configure(targetName, ::TargetJsContainer) {
                 compiler?.let { compilerType = it }

@@ -6,6 +6,7 @@ import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.InternalFluxoApi
 import fluxo.conf.dsl.container.ContainerContext
+import fluxo.conf.impl.EMPTY_FUN
 import fluxo.conf.impl.KOTLIN_1_8
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.container
@@ -100,12 +101,20 @@ private constructor(
     @FluxoKmpConfDsl
     public sealed interface Configure : ContainerHolderAware {
 
-        public fun androidApp(targetName: String = "android", action: App.() -> Unit) {
+        public fun androidApp(targetName: String = "android", action: App.() -> Unit = EMPTY_FUN) {
             holder.configure(targetName, ::App, action)
         }
 
-        public fun androidLibrary(targetName: String = "android", action: Library.() -> Unit) {
+        public fun androidLibrary(
+            targetName: String = "android",
+            action: Library.() -> Unit = EMPTY_FUN,
+        ) {
             holder.configure(targetName, ::Library, action)
+        }
+
+        /** Alias for [androidLibrary] */
+        public fun android(targetName: String = "android", action: Library.() -> Unit = EMPTY_FUN) {
+            androidLibrary(targetName, action)
         }
     }
 

@@ -5,10 +5,10 @@ import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
 import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 
-public sealed class TargetLinuxContainer<T : KotlinNativeTarget>
+public sealed class TargetLinuxContainer<out T : KNT>
 private constructor(
     context: ContainerContext,
     targetName: String,
@@ -16,9 +16,9 @@ private constructor(
 
     public sealed interface Configure : ContainerHolderAware {
 
-        public fun linuxAll() {
-            linuxX64()
-            linuxArm64()
+        public fun linux(action: TargetLinuxContainer<KNT>.() -> Unit = EMPTY_FUN) {
+            linuxX64(action = action)
+            linuxArm64(action = action)
         }
 
 
@@ -73,28 +73,28 @@ private constructor(
     public class Arm64 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetLinuxContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetLinuxContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class Arm32Hfp internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetLinuxContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetLinuxContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class Mips32 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetLinuxContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetLinuxContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class Mipsel32 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetLinuxContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetLinuxContainer<KNT>(context, targetName)
 
 
     final override fun KotlinMultiplatformExtension.setup() {

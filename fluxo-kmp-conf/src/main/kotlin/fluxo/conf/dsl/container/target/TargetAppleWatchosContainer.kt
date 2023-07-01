@@ -7,11 +7,11 @@ import fluxo.conf.impl.KOTLIN_1_8
 import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 import watchosCompat
 
-public sealed class TargetAppleWatchosContainer<T : KotlinNativeTarget>
+public sealed class TargetAppleWatchosContainer<out T : KNT>
 private constructor(
     context: ContainerContext,
     targetName: String,
@@ -25,14 +25,14 @@ private constructor(
          * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
          * @see watchosCompat
          */
-        public fun watchosAll() {
-            watchosArm32()
-            watchosArm64()
+        public fun watchos(action: TargetAppleWatchosContainer<KNT>.() -> Unit = EMPTY_FUN) {
+            watchosArm32(action = action)
+            watchosArm64(action = action)
             if (holder.kotlinPluginVersion >= KOTLIN_1_8) {
-                watchosDeviceArm64()
+                watchosDeviceArm64(action = action)
             }
-            watchosX64()
-            watchosSimulatorArm64()
+            watchosX64(action = action)
+            watchosSimulatorArm64(action = action)
         }
 
 
@@ -50,6 +50,8 @@ private constructor(
             holder.configure(targetName, ::Arm64, action)
         }
 
+        //@SinceKotlin("1.8.0")
+        //@Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
         public fun watchosDeviceArm64(
             targetName: String = "watchosDeviceArm64",
             action: DeviceArm64.() -> Unit = EMPTY_FUN,
@@ -89,32 +91,32 @@ private constructor(
     public class Arm32 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetAppleWatchosContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetAppleWatchosContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     public class Arm64 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetAppleWatchosContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetAppleWatchosContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     public class DeviceArm64 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetAppleWatchosContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetAppleWatchosContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     public class X64 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetAppleWatchosContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetAppleWatchosContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     @Deprecated(message = DEPRECATED_TARGET_MSG)
     public class X86 internal constructor(
         context: ContainerContext,
         targetName: String,
-    ) : TargetAppleWatchosContainer<KotlinNativeTarget>(context, targetName)
+    ) : TargetAppleWatchosContainer<KNT>(context, targetName)
 
     @FluxoKmpConfDsl
     public class SimulatorArm64 internal constructor(

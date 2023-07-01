@@ -3,20 +3,24 @@ package fluxo.conf.dsl.container.target
 import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.ContainerContext
 import fluxo.conf.impl.EMPTY_FUN
+import macosCompat
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 
 public sealed class TargetAppleMacosContainer
 private constructor(
     context: ContainerContext,
     targetName: String,
-) : KmpTarget.NonJvm.Native.Unix.Apple.Macos<KotlinNativeTargetWithHostTests>(context, targetName) {
+) : KmpTarget.NonJvm.Native.Unix.Apple.Macos(context, targetName) {
 
     public sealed interface Configure : ContainerHolderAware {
 
-        public fun macosAll() {
-            macosArm64()
-            macosX64()
+        /**
+         *
+         * @see macosCompat
+         */
+        public fun macos(action: TargetAppleMacosContainer.() -> Unit = EMPTY_FUN) {
+            macosArm64(action = action)
+            macosX64(action = action)
         }
 
 

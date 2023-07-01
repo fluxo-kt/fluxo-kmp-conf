@@ -241,6 +241,7 @@ public final class SetupMultiplatformKt {
 	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)LSourceSetBundle;
 	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
 	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;ILjava/lang/Object;)Lkotlin/properties/PropertyDelegateProvider;
+	public static final fun defaults (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;)V
 	public static final fun dependencies (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function1;)V
 	public static final fun dependsOn (LSourceSetBundle;LSourceSetBundle;)V
 	public static final fun dependsOn (LSourceSetBundle;Ljava/lang/Iterable;)V
@@ -262,6 +263,10 @@ public final class SetupMultiplatformKt {
 	public static final fun setupMultiplatform (Lorg/gradle/api/Project;LKotlinConfigSetup;Ljava/lang/String;ZLjava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun setupMultiplatform$default (Lorg/gradle/api/Project;LKotlinConfigSetup;Ljava/lang/String;ZLjava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun setupSourceSets (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Lkotlin/jvm/functions/Function1;)V
+	public static final fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;I)V
+	public static final fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;I)V
+	public static synthetic fun testTimeout$default (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;IILjava/lang/Object;)V
+	public static synthetic fun testTimeout$default (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;IILjava/lang/Object;)V
 	public static final fun tvosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun tvosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 	public static final fun watchosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
@@ -515,13 +520,6 @@ public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs 
 	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
-	public fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;I)V
-	public fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;I)V
-	public static synthetic fun testTimeout$default (Lfluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure;Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;IILjava/lang/Object;)V
-	public static synthetic fun testTimeout$default (Lfluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure;Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;IILjava/lang/Object;)V
-}
-
 public abstract class fluxo/conf/dsl/container/target/KmpTarget$NonJvm$Native : fluxo/conf/dsl/container/target/KmpTarget$NonJvm {
 	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
@@ -576,6 +574,8 @@ public final class fluxo/conf/dsl/container/target/TargetAndroidContainer$App : 
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/TargetAndroidContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun android (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun android$default (Lfluxo/conf/dsl/container/target/TargetAndroidContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun androidApp (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun androidApp$default (Lfluxo/conf/dsl/container/target/TargetAndroidContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun androidLibrary (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -596,8 +596,8 @@ public final class fluxo/conf/dsl/container/target/TargetAndroidNativeContainer$
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun androidNative ()V
 	public fun androidNative64 ()V
-	public fun androidNativeAll ()V
 	public fun androidNativeArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun androidNativeArm32$default (Lfluxo/conf/dsl/container/target/TargetAndroidNativeContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun androidNativeArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -625,7 +625,8 @@ public final class fluxo/conf/dsl/container/target/TargetAppleIosContainer$Arm64
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
-	public fun iosAll ()V
+	public fun ios (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun ios$default (Lfluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun iosArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun iosArm32$default (Lfluxo/conf/dsl/container/target/TargetAppleIosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun iosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -650,7 +651,8 @@ public final class fluxo/conf/dsl/container/target/TargetAppleMacosContainer$Arm
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/TargetAppleMacosContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
-	public fun macosAll ()V
+	public fun macos (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun macos$default (Lfluxo/conf/dsl/container/target/TargetAppleMacosContainer$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun macosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun macosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleMacosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun macosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -668,7 +670,8 @@ public final class fluxo/conf/dsl/container/target/TargetAppleTvosContainer$Arm6
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/TargetAppleTvosContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
-	public fun tvosAll ()V
+	public fun tvos (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun tvos$default (Lfluxo/conf/dsl/container/target/TargetAppleTvosContainer$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun tvosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun tvosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleTvosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun tvosSimulatorArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -694,7 +697,8 @@ public final class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$A
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
-	public fun watchosAll ()V
+	public fun watchos (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun watchos$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun watchosArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun watchosArm32$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchosContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun watchosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -727,9 +731,9 @@ public final class fluxo/conf/dsl/container/target/TargetJsContainer : fluxo/con
 	public final fun setCompilerType (Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetJsContainer$Configure : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure {
-	public fun js (Ljava/lang/String;Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun js$default (Lfluxo/conf/dsl/container/target/TargetJsContainer$Configure;Ljava/lang/String;Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+public abstract interface class fluxo/conf/dsl/container/target/TargetJsContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
+	public fun js (Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun js$default (Lfluxo/conf/dsl/container/target/TargetJsContainer$Configure;Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
 public final class fluxo/conf/dsl/container/target/TargetJvmContainer : fluxo/conf/dsl/container/target/KmpTarget$CommonJvm {
@@ -752,7 +756,8 @@ public final class fluxo/conf/dsl/container/target/TargetLinuxContainer$Arm64 : 
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/TargetLinuxContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
-	public fun linuxAll ()V
+	public fun linux (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun linux$default (Lfluxo/conf/dsl/container/target/TargetLinuxContainer$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun linuxArm32Hfp (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun linuxArm32Hfp$default (Lfluxo/conf/dsl/container/target/TargetLinuxContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun linuxArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -779,7 +784,8 @@ public abstract class fluxo/conf/dsl/container/target/TargetMingwContainer : flu
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/TargetMingwContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
-	public fun mingwAll ()V
+	public fun mingw (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun mingw$default (Lfluxo/conf/dsl/container/target/TargetMingwContainer$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun mingwX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun mingwX64$default (Lfluxo/conf/dsl/container/target/TargetMingwContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun mingwX86 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -796,7 +802,7 @@ public final class fluxo/conf/dsl/container/target/TargetWasmContainer : fluxo/c
 	public synthetic fun <init> (Lfluxo/conf/dsl/container/ContainerContext;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetWasmContainer$Configure : fluxo/conf/dsl/container/target/KmpTarget$NonJvm$CommonJs$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/TargetWasmContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
 	public fun wasm (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun wasm$default (Lfluxo/conf/dsl/container/target/TargetWasmContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
@@ -808,6 +814,6 @@ public abstract class fluxo/conf/dsl/container/target/TargetWasmNativeContainer 
 public abstract interface class fluxo/conf/dsl/container/target/TargetWasmNativeContainer$Configure : fluxo/conf/dsl/container/target/ContainerHolderAware {
 	public fun wasm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun wasm32$default (Lfluxo/conf/dsl/container/target/TargetWasmNativeContainer$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public fun wasmNativeAll ()V
+	public fun wasmNative ()V
 }
 
