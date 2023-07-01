@@ -10,17 +10,17 @@ public class CommonContainer
 internal constructor(context: ContainerContext, targetName: String = NAME) :
     Container.ConfigurableTarget(context, targetName) {
 
-    override fun KotlinMultiplatformExtension.setup() {
-        sourceSets.getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
+    override fun setup(k: KotlinMultiplatformExtension) {
+        k.sourceSets.getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
             lazySourceSetMainConf()
         }
-        sourceSets.getByName(KotlinSourceSet.COMMON_TEST_SOURCE_SET_NAME) {
+        k.sourceSets.getByName(KotlinSourceSet.COMMON_TEST_SOURCE_SET_NAME) {
             lazySourceSetTestConf()
         }
 
         // setup is only ever called if at least 1 target is enabled,
         // and is always called after all targets have been configured.
-        applyPlugins(targets.first().project)
+        applyPlugins(k.targets.first().project)
     }
 
     override val sortOrder: Byte = (Byte.MAX_VALUE - 1).toByte()

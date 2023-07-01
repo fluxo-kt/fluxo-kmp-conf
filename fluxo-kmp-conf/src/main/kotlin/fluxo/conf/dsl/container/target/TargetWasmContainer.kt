@@ -33,12 +33,12 @@ private constructor(
     }
 
     @ExperimentalWasmDsl
-    override fun KotlinMultiplatformExtension.setup() {
-        val target = wasm(name, lazyTargetConf)
+    override fun setup(k: KotlinMultiplatformExtension) {
+        val target = k.wasm(name, lazyTargetConf)
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${COMMON_JS}Main"))
                 lazySourceSetMainConf()

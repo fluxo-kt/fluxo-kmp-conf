@@ -30,13 +30,13 @@ private constructor(
         }
     }
 
-    override fun KotlinMultiplatformExtension.setup() {
-        val compilerType = compilerType ?: defaultJsCompilerType
-        val target = js(name, compilerType, lazyTargetConf)
+    override fun setup(k: KotlinMultiplatformExtension) {
+        val compilerType = compilerType ?: k.defaultJsCompilerType
+        val target = k.js(name, compilerType, lazyTargetConf)
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${COMMON_JS}Main"))
                 lazySourceSetMainConf()

@@ -125,20 +125,20 @@ private constructor(
     ) : TargetAppleWatchosContainer<KotlinNativeTargetWithSimulatorTests>(context, targetName)
 
 
-    override fun KotlinMultiplatformExtension.setup() {
+    override fun setup(k: KotlinMultiplatformExtension) {
         @Suppress("DEPRECATION")
-        val target = when (this@TargetAppleWatchosContainer) {
-            is Arm32 -> watchosArm32(name, lazyTargetConf)
-            is Arm64 -> watchosArm64(name, lazyTargetConf)
-            is DeviceArm64 -> watchosDeviceArm64(name, lazyTargetConf)
-            is SimulatorArm64 -> watchosSimulatorArm64(name, lazyTargetConf)
-            is X86 -> watchosX86(name, lazyTargetConf)
-            is X64 -> watchosX64(name, lazyTargetConf)
+        val target = when (this) {
+            is Arm32 -> k.watchosArm32(name, lazyTargetConf)
+            is Arm64 -> k.watchosArm64(name, lazyTargetConf)
+            is DeviceArm64 -> k.watchosDeviceArm64(name, lazyTargetConf)
+            is SimulatorArm64 -> k.watchosSimulatorArm64(name, lazyTargetConf)
+            is X86 -> k.watchosX86(name, lazyTargetConf)
+            is X64 -> k.watchosX64(name, lazyTargetConf)
         }
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${WATCHOS}Main"))
                 lazySourceSetMainConf()
@@ -152,7 +152,7 @@ private constructor(
 
     final override val sortOrder: Byte = 34
 
-    private companion object {
-        private const val WATCHOS = "watchos"
+    internal companion object {
+        internal const val WATCHOS = "watchos"
     }
 }

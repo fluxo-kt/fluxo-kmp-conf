@@ -82,17 +82,17 @@ private constructor(
     ) : TargetAndroidNativeContainer(context, targetName)
 
 
-    final override fun KotlinMultiplatformExtension.setup() {
-        val target = when (this@TargetAndroidNativeContainer) {
-            is Arm32 -> androidNativeArm32(name, lazyTargetConf)
-            is Arm64 -> androidNativeArm64(name, lazyTargetConf)
-            is X64 -> androidNativeX64(name, lazyTargetConf)
-            is X86 -> androidNativeX86(name, lazyTargetConf)
+    final override fun setup(k: KotlinMultiplatformExtension) {
+        val target = when (this) {
+            is Arm32 -> k.androidNativeArm32(name, lazyTargetConf)
+            is Arm64 -> k.androidNativeArm64(name, lazyTargetConf)
+            is X64 -> k.androidNativeX64(name, lazyTargetConf)
+            is X86 -> k.androidNativeX86(name, lazyTargetConf)
         }
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${ANDROID_NATIVE}Main"))
                 lazySourceSetMainConf()
@@ -106,7 +106,7 @@ private constructor(
 
     final override val sortOrder: Byte = 21
 
-    private companion object {
-        private const val ANDROID_NATIVE = "androidNative"
+    internal companion object {
+        internal const val ANDROID_NATIVE = "androidNative"
     }
 }

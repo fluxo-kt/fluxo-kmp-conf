@@ -25,8 +25,8 @@ private constructor(
         }
     }
 
-    override fun KotlinMultiplatformExtension.setup() {
-        val target = jvm(name) {
+    override fun setup(k: KotlinMultiplatformExtension) {
+        val target = k.jvm(name) {
             kotlinJvmTarget?.toString()?.let { version ->
                 compilations.all {
                     kotlinOptions.jvmTarget = version
@@ -57,7 +57,7 @@ private constructor(
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${COMMON_JVM}Main"))
                 lazySourceSetMainConf()

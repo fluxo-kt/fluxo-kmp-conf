@@ -49,15 +49,15 @@ private constructor(
     ) : TargetMingwContainer<KotlinNativeTarget>(context, targetName)
 
 
-    override fun KotlinMultiplatformExtension.setup() {
-        val target = when (this@TargetMingwContainer) {
-            is X64 -> mingwX64(name, lazyTargetConf)
-            is X86 -> mingwX86(name, lazyTargetConf)
+    override fun setup(k: KotlinMultiplatformExtension) {
+        val target = when (this) {
+            is X64 -> k.mingwX64(name, lazyTargetConf)
+            is X86 -> k.mingwX86(name, lazyTargetConf)
         }
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${MINGW}Main"))
                 lazySourceSetMainConf()
@@ -71,7 +71,7 @@ private constructor(
 
     final override val sortOrder: Byte = 51
 
-    private companion object {
-        private const val MINGW = "mingw"
+    internal companion object {
+        internal const val MINGW = "mingw"
     }
 }

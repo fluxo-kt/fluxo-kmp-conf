@@ -3,6 +3,7 @@
 package fluxo.conf.impl
 
 import org.gradle.api.DomainObjectCollection
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
@@ -73,5 +74,18 @@ internal inline fun <reified U : Any> PolymorphicDomainObjectContainer<in U>.may
 ) = maybeCreate(name, U::class.java)
 
 
+/**
+ * Creates a new [NamedDomainObjectContainer] for managing **named** objects of the specified type [T].
+ *
+ * @see org.gradle.api.model.ObjectFactory.domainObjectContainer
+ */
 internal inline fun <reified T : Any> ObjectFactory.container(): NamedDomainObjectContainer<T> =
     domainObjectContainer(T::class.java)
+
+/**
+ * Creates a new [DomainObjectSet] for managing objects of the specified type [T].
+ *
+ * @see org.gradle.api.model.ObjectFactory.domainObjectSet
+ */
+internal inline fun <reified T : Any> ObjectFactory.set(): DomainObjectSet<T> =
+    domainObjectSet(T::class.java)

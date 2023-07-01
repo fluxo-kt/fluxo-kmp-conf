@@ -53,15 +53,15 @@ private constructor(
     ) : TargetAppleMacosContainer(context, targetName)
 
 
-    final override fun KotlinMultiplatformExtension.setup() {
-        val target = when (this@TargetAppleMacosContainer) {
-            is Arm64 -> macosArm64(name, lazyTargetConf)
-            is X64 -> macosX64(name, lazyTargetConf)
+    final override fun setup(k: KotlinMultiplatformExtension) {
+        val target = when (this) {
+            is Arm64 -> k.macosArm64(name, lazyTargetConf)
+            is X64 -> k.macosX64(name, lazyTargetConf)
         }
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${MACOS}Main"))
                 lazySourceSetMainConf()
@@ -75,7 +75,7 @@ private constructor(
 
     final override val sortOrder: Byte = 32
 
-    private companion object {
-        private const val MACOS = "macos"
+    internal companion object {
+        internal const val MACOS = "macos"
     }
 }

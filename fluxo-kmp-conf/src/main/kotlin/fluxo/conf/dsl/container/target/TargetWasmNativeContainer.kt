@@ -31,12 +31,12 @@ private constructor(
         }
     }
 
-    final override fun KotlinMultiplatformExtension.setup() {
-        val target = wasm32(name, lazyTargetConf)
+    final override fun setup(k: KotlinMultiplatformExtension) {
+        val target = k.wasm32(name, lazyTargetConf)
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${WASM_NATIVE}Main"))
                 lazySourceSetMainConf()
@@ -50,7 +50,7 @@ private constructor(
 
     final override val sortOrder: Byte = 61
 
-    private companion object {
-        private const val WASM_NATIVE = "wasmNative"
+    internal companion object {
+        internal const val WASM_NATIVE = "wasmNative"
     }
 }

@@ -37,8 +37,8 @@ private constructor(
 
     internal abstract fun setupAndroid(project: Project)
 
-    final override fun KotlinMultiplatformExtension.setup() {
-        val target = android(name) {
+    final override fun setup(k: KotlinMultiplatformExtension) {
+        val target = k.android(this.name) {
             kotlinJvmTarget?.toString()?.let { version ->
                 compilations.all {
                     kotlinOptions.jvmTarget = version
@@ -49,7 +49,7 @@ private constructor(
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${COMMON_JVM}Main"))
                 lazySourceSetMainConf()
@@ -114,6 +114,7 @@ private constructor(
 
         /** Alias for [androidLibrary] */
         public fun android(targetName: String = "android", action: Library.() -> Unit = EMPTY_FUN) {
+            // FIXME: Detect applied plugin (lib/app) and use appropriate container.
             androidLibrary(targetName, action)
         }
     }

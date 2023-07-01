@@ -21,7 +21,7 @@ protected constructor(
         17 * 31 + T::class.java.name.hashCode()
 
 
-    internal abstract fun KotlinMultiplatformExtension.setup()
+    internal abstract fun setup(k: KotlinMultiplatformExtension)
 
 
     public abstract class ConfigurableTarget

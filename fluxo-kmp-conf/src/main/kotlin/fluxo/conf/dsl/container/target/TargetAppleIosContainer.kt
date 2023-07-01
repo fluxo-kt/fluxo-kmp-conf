@@ -79,18 +79,18 @@ private constructor(
         targetName: String,
     ) : TargetAppleIosContainer<KotlinNativeTargetWithSimulatorTests>(context, targetName)
 
-    final override fun KotlinMultiplatformExtension.setup() {
+    final override fun setup(k: KotlinMultiplatformExtension) {
         @Suppress("DEPRECATION")
-        val target = when (this@TargetAppleIosContainer) {
-            is Arm32 -> iosArm32(name, lazyTargetConf)
-            is Arm64 -> iosArm64(name, lazyTargetConf)
-            is SimulatorArm64 -> iosSimulatorArm64(name, lazyTargetConf)
-            is X64 -> iosX64(name, lazyTargetConf)
+        val target = when (this) {
+            is Arm32 -> k.iosArm32(name, lazyTargetConf)
+            is Arm64 -> k.iosArm64(name, lazyTargetConf)
+            is SimulatorArm64 -> k.iosSimulatorArm64(name, lazyTargetConf)
+            is X64 -> k.iosX64(name, lazyTargetConf)
         }
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${IOS}Main"))
                 lazySourceSetMainConf()
@@ -104,7 +104,7 @@ private constructor(
 
     final override val sortOrder: Byte = 31
 
-    private companion object {
-        private const val IOS = "ios"
+    internal companion object {
+        internal const val IOS = "ios"
     }
 }

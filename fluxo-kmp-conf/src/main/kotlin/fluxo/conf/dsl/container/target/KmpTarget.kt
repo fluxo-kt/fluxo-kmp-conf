@@ -1,17 +1,14 @@
 package fluxo.conf.dsl.container.target
 
-import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.container.ContainerContext
-import fluxo.conf.impl.container
+import fluxo.conf.impl.set
 import org.gradle.api.JavaVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 
 public sealed class KmpTarget<out T : KotlinTarget>(
     context: ContainerContext,
@@ -21,7 +18,7 @@ public sealed class KmpTarget<out T : KotlinTarget>(
     internal val lazyTargetConf: (@UnsafeVariance T).() -> Unit
         get() = { lazyTarget.all { this() } }
 
-    private val lazyTarget = context.objects.container<T.() -> Unit>()
+    private val lazyTarget = context.objects.set<T.() -> Unit>()
 
     public fun target(action: T.() -> Unit) {
         lazyTarget.add(action)

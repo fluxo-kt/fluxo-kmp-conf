@@ -71,16 +71,16 @@ private constructor(
     ) : TargetAppleTvosContainer<KotlinNativeTargetWithSimulatorTests>(context, targetName)
 
 
-    override fun KotlinMultiplatformExtension.setup() {
-        val target = when (this@TargetAppleTvosContainer) {
-            is Arm64 -> tvosArm64(name, lazyTargetConf)
-            is SimulatorArm64 -> tvosSimulatorArm64(name, lazyTargetConf)
-            is X64 -> tvosX64(name, lazyTargetConf)
+    override fun setup(k: KotlinMultiplatformExtension) {
+        val target = when (this) {
+            is Arm64 -> k.tvosArm64(name, lazyTargetConf)
+            is SimulatorArm64 -> k.tvosSimulatorArm64(name, lazyTargetConf)
+            is X64 -> k.tvosX64(name, lazyTargetConf)
         }
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${TVOS}Main"))
                 lazySourceSetMainConf()
@@ -95,7 +95,7 @@ private constructor(
 
     final override val sortOrder: Byte = 33
 
-    private companion object {
-        private const val TVOS = "tvos"
+    internal companion object {
+        internal const val TVOS = "tvos"
     }
 }

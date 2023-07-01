@@ -97,19 +97,19 @@ private constructor(
     ) : TargetLinuxContainer<KNT>(context, targetName)
 
 
-    final override fun KotlinMultiplatformExtension.setup() {
+    final override fun setup(k: KotlinMultiplatformExtension) {
         @Suppress("DEPRECATION")
-        val target = when (this@TargetLinuxContainer) {
-            is X64 -> linuxX64(name, lazyTargetConf)
-            is Arm64 -> linuxArm64(name, lazyTargetConf)
-            is Arm32Hfp -> linuxArm32Hfp(name, lazyTargetConf)
-            is Mips32 -> linuxMips32(name, lazyTargetConf)
-            is Mipsel32 -> linuxMipsel32(name, lazyTargetConf)
+        val target = when (this) {
+            is X64 -> k.linuxX64(name, lazyTargetConf)
+            is Arm64 -> k.linuxArm64(name, lazyTargetConf)
+            is Arm32Hfp -> k.linuxArm32Hfp(name, lazyTargetConf)
+            is Mips32 -> k.linuxMips32(name, lazyTargetConf)
+            is Mipsel32 -> k.linuxMipsel32(name, lazyTargetConf)
         }
 
         applyPlugins(target.project)
 
-        with(sourceSets) {
+        with(k.sourceSets) {
             getByName("${name}Main") {
                 dependsOn(getByName("${LINUX}Main"))
                 lazySourceSetMainConf()
@@ -123,7 +123,7 @@ private constructor(
 
     final override val sortOrder: Byte = 41
 
-    private companion object {
-        private const val LINUX = "linux"
+    internal companion object {
+        internal const val LINUX = "linux"
     }
 }
