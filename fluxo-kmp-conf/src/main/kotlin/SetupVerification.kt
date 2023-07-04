@@ -165,7 +165,7 @@ public fun Project.setupVerification(
             libs?.onLibrary("detekt-compose") { detektPlugins(it) }
         }
 
-        withAnyPlugin("com.android.library", "com.android.application") {
+        withAnyPlugin(ANDROID_LIB_PLUGIN_ID, ANDROID_APP_PLUGIN_ID) {
             project.setupLint(mergeLint, ignoredBuildTypes, ignoredFlavors)
         }
     }

@@ -30,12 +30,14 @@ kotlin {
 
     target.compilations {
         val kotlinVersion = libs.versions.kotlinLangVersion.get()
+        val kotlinApiVersion = libs.versions.kotlinApiVersion.get()
         val main by getting {
             libs.versions.javaLangTarget.get().let { jvmVersion ->
                 kotlinOptions {
                     jvmTarget = jvmVersion
                     languageVersion = kotlinVersion
-                    apiVersion = kotlinVersion
+                    // Note: apiVersion can't be greater than languageVersion!
+                    apiVersion = kotlinApiVersion
 //                    allWarningsAsErrors = true
 
                     freeCompilerArgs += "-Xcontext-receivers"
@@ -52,7 +54,11 @@ kotlin {
                     sourceCompatibility = jvmVersion
                     targetCompatibility = jvmVersion
                 }
-                logger.lifecycle("> Conf compatibility for Kotlin $kotlinVersion, JVM $jvmVersion")
+                var kv = kotlinVersion
+                if (kotlinApiVersion != kotlinVersion) {
+                    kv += " (API $kotlinApiVersion)"
+                }
+                logger.lifecycle("> Conf compatibility for Kotlin $kv, JVM $jvmVersion")
             }
         }
 

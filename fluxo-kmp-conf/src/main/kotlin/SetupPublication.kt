@@ -126,7 +126,7 @@ private fun Project.setupPublicationAndroidLibrary(config: FluxoPublicationConfi
     val androidExtension = the<LibraryExtension>()
 
     val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
-        from(androidExtension.sourceSets.getByName("main").java.srcDirs)
+        from(androidExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).java.srcDirs)
         archiveClassifier.set("source")
     }
 
@@ -188,7 +188,7 @@ private fun Project.setupPublicationKotlinJvm(config: FluxoPublicationConfig) {
     val kotlinPluginExtension = the<KotlinJvmProjectExtension>()
 
     val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
-        from(kotlinPluginExtension.sourceSets.getByName("main").kotlin.srcDirs)
+        from(kotlinPluginExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).kotlin.srcDirs)
         archiveClassifier.set("sources")
     }
 
@@ -209,7 +209,7 @@ private fun Project.setupPublicationJava(config: FluxoPublicationConfig) {
     val javaPluginExtension = the<JavaPluginExtension>()
 
     val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
-        from(javaPluginExtension.sourceSets.getByName("main").java.srcDirs)
+        from(javaPluginExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).java.srcDirs)
         archiveClassifier.set("sources")
     }
 

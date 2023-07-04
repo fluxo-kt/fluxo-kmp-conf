@@ -1,7 +1,7 @@
 @file:Suppress("TooManyFunctions")
 
 import com.android.build.gradle.LibraryExtension
-import fluxo.conf.dsl.container.target.KmpTarget
+import fluxo.conf.dsl.container.KotlinTargetContainer
 import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.getOrNull
@@ -22,12 +22,15 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.Companion.COMMON_MAIN_SOURCE_SET_NAME
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.Companion.COMMON_TEST_SOURCE_SET_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
@@ -292,6 +295,47 @@ public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
     }
 }
 
+/**
+ *
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension.targetHierarchy
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetHierarchyDsl.default
+ */
+@SinceKotlin("1.8.20")
+@Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
+@Deprecated("Fails with NoClassDefFoundError: org/jetbrains/kotlin/gradle/plugin/KotlinTargetHierarchyBuilder\$Root")
+@ExperimentalKotlinGradlePluginApi
+public fun KotlinMultiplatformExtension.setupTargetHierarchy() {
+    // Fails with NoClassDefFoundError:
+    //    org/jetbrains/kotlin/gradle/plugin/KotlinTargetHierarchyBuilder$Root
+    //  when called in plugin code!
+
+    // https://kotlinlang.org/docs/multiplatform-hierarchy.html#default-hierarchy
+    targetHierarchy.default {
+        group("commonJvm") {
+            withJvm()
+            // FIXME: withAndroidTarget
+            //  https://kotl.in/android-target-dsl
+            withAndroid()
+        }
+        group("nonJvm") {
+            group("commonJs") {
+                withCompilations { it.target.platformType == KotlinPlatformType.wasm }
+                withJs()
+            }
+            group("native") {
+                group("unix") {
+                    withLinux()
+                    withApple()
+                }
+                @Suppress("DEPRECATION")
+                group("wasmNative") {
+                    withWasm32()
+                }
+            }
+        }
+    }
+}
+
 internal enum class Target {
     ANDROID,
     JVM,
@@ -314,74 +358,90 @@ internal fun KotlinTargetsContainer.isMultiplatformTargetEnabled(target: Target)
         }
     }
 
+
+// TODO: Split to KotlinMultiplatformExtension extensions?
 public class MultiplatformSourceSets
 internal constructor(
     private val targets: NamedDomainObjectCollection<KotlinTarget>,
     private val sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
 ) : NamedDomainObjectContainer<KotlinSourceSet> by sourceSets {
 
-    public val common: SourceSetBundle by bundle()
+    public val common: SourceSetBundle = SourceSetBundle(
+        getByName(COMMON_MAIN_SOURCE_SET_NAME),
+        getByName(COMMON_TEST_SOURCE_SET_NAME),
+    )
 
     /** All enabled targets */
-    public val allSet: Set<SourceSetBundle> = targets.toSourceSetBundles()
+    public val allSet: Set<SourceSetBundle> get() = targets.toSourceSetBundles()
 
     /** androidJvm, jvm */
-    public val javaSet: Set<SourceSetBundle> = targets
-        .filter { it.platformType in setOf(KotlinPlatformType.androidJvm, KotlinPlatformType.jvm) }
-        .toSourceSetBundles()
+    public val javaSet: Set<SourceSetBundle>
+        get() = targets.matching {
+            when (it.platformType) {
+                KotlinPlatformType.androidJvm,
+                KotlinPlatformType.jvm,
+                -> true
+
+                else -> false
+            }
+        }.toSourceSetBundles()
 
     /** androidJvm */
-    public val androidSet: Set<SourceSetBundle> = targets
-        .filter { it.platformType == KotlinPlatformType.androidJvm }
-        .toSourceSetBundles()
+    public val androidSet: Set<SourceSetBundle>
+        get() = targets.matching { it.platformType == KotlinPlatformType.androidJvm }
+            .toSourceSetBundles()
 
     /** js */
-    public val jsSet: Set<SourceSetBundle> = targets
-        .filter { it.platformType == KotlinPlatformType.js }
-        .toSourceSetBundles()
+    public val jsSet: Set<SourceSetBundle>
+        get() = targets.matching { it.platformType == KotlinPlatformType.js }
+            .toSourceSetBundles()
 
     /** All Kotlin/Native targets */
-    public val nativeSet: Set<SourceSetBundle> = nativeSourceSets()
-    public val linuxSet: Set<SourceSetBundle> = nativeSourceSets(Family.LINUX)
-    public val mingwSet: Set<SourceSetBundle> = nativeSourceSets(Family.MINGW)
-    public val androidNativeSet: Set<SourceSetBundle> = nativeSourceSets(Family.ANDROID)
-    public val wasmSet: Set<SourceSetBundle> = nativeSourceSets(Family.WASM)
+    public val nativeSet: Set<SourceSetBundle> get() = nativeSourceSets()
+    public val linuxSet: Set<SourceSetBundle> get() = nativeSourceSets(Family.LINUX)
+    public val mingwSet: Set<SourceSetBundle> get() = nativeSourceSets(Family.MINGW)
+    public val androidNativeSet: Set<SourceSetBundle> get() = nativeSourceSets(Family.ANDROID)
+    public val wasmSet: Set<SourceSetBundle> get() = nativeSourceSets(Family.WASM)
 
     /** All Darwin targets */
-    public val darwinSet: Set<SourceSetBundle> =
-        nativeSourceSets(Family.IOS, Family.OSX, Family.WATCHOS, Family.TVOS)
-    public val iosSet: Set<SourceSetBundle> = nativeSourceSets(Family.IOS)
-    public val watchosSet: Set<SourceSetBundle> = nativeSourceSets(Family.WATCHOS)
-    public val tvosSet: Set<SourceSetBundle> = nativeSourceSets(Family.TVOS)
-    public val macosSet: Set<SourceSetBundle> = nativeSourceSets(Family.OSX)
+    public val darwinSet: Set<SourceSetBundle>
+        get() = nativeSourceSets(Family.IOS, Family.OSX, Family.WATCHOS, Family.TVOS)
+    public val iosSet: Set<SourceSetBundle> get() = nativeSourceSets(Family.IOS)
+    public val watchosSet: Set<SourceSetBundle> get() = nativeSourceSets(Family.WATCHOS)
+    public val tvosSet: Set<SourceSetBundle> get() = nativeSourceSets(Family.TVOS)
+    public val macosSet: Set<SourceSetBundle> get() = nativeSourceSets(Family.OSX)
 
     private fun nativeSourceSets(vararg families: Family = Family.values()): Set<SourceSetBundle> =
-        targets.filterIsInstance<KotlinNativeTarget>()
-            .filter { it.konanTarget.family in families }
+        targets.filter { it is KotlinNativeTarget && it.konanTarget.family in families }
             .toSourceSetBundles()
 
     private fun Iterable<KotlinTarget>.toSourceSetBundles(): Set<SourceSetBundle> {
-        return filter { it.platformType != KotlinPlatformType.common }
-            .map { it.getSourceSetBundle() }
-            .toSet()
+        return mapNotNullTo(LinkedHashSet()) {
+            when (it.platformType) {
+                KotlinPlatformType.common -> null
+                else -> it.getSourceSetBundle()
+            }
+        }
     }
 
-    private fun KotlinTarget.getSourceSetBundle(): SourceSetBundle = if (compilations.isEmpty()) {
-        bundle(name)
-    } else {
-        SourceSetBundle(
-            main = compilations.getByName("main").defaultSourceSet,
-            test = compilations.getByName("test").defaultSourceSet,
+    private fun KotlinTarget.getSourceSetBundle(): SourceSetBundle = when {
+        compilations.isEmpty() -> bundle(name)
+        else -> SourceSetBundle(
+            main = compilations.getByName(MAIN_SOURCE_SET_NAME).defaultSourceSet,
+            test = compilations.getByName(TEST_SOURCE_SET_NAME).defaultSourceSet,
         )
     }
 
 
+    // TODO: Make it available for KotlinMultiplatformExtension
     public fun commonCompileOnly(dependencyNotation: Any) {
         // A compileOnly dependencies aren't applicable for Kotlin/Native.
         // Use 'implementation' or 'api' dependency type instead.
         common.main.dependencies {
             compileOnly(dependencyNotation)
         }
+
+        // FIXME: Set in the shared "native" target instead
         nativeSet.main.dependencies {
             implementation(dependencyNotation)
         }
@@ -392,6 +452,8 @@ public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String):
     return SourceSetBundle(
         main = maybeCreate("${name}Main"),
         // Support for androidSourceSetLayout v2
+        // FIXME: Check actual usage of the layout v2
+        //  see `TargetAndroidContainer.setup`
         // https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema
         test = maybeCreate(if (name == "android") "${name}UnitTest" else "${name}Test"),
     )
@@ -410,14 +472,18 @@ public data class SourceSetBundle(
     val test: KotlinSourceSet,
 )
 
+internal const val MAIN_SOURCE_SET_NAME = "main"
+internal const val TEST_SOURCE_SET_NAME = "test"
+
 
 // region Kotlin/JS convenience
 
-internal val DEFAULT_JS_CONF: KmpTarget.NonJvm.CommonJs<KotlinJsTargetDsl>.() -> Unit = {
-    target {
-        defaults()
+internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinJsTargetDsl>.() -> Unit =
+    {
+        target {
+            defaults()
+        }
     }
-}
 
 
 public fun KotlinJsTargetDsl.defaults() {
@@ -527,7 +593,9 @@ public val Iterable<SourceSetBundle>.main: List<KotlinSourceSet> get() = map { i
 
 public val Iterable<SourceSetBundle>.test: List<KotlinSourceSet> get() = map { it.test }
 
-public infix fun Iterable<KotlinSourceSet>.dependencies(configure: KotlinDependencyHandler.() -> Unit) {
+public infix fun Iterable<KotlinSourceSet>.dependencies(
+    configure: KotlinDependencyHandler.() -> Unit,
+) {
     forEach { left ->
         left.dependencies(configure)
     }

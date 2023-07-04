@@ -9,6 +9,12 @@ internal val EMPTY_FUN: (Any?) -> Unit = {}
 @Suppress("MagicNumber")
 internal val KOTLIN_1_8 = KotlinVersion(1, 8)
 
+@Suppress("MagicNumber")
+internal val KOTLIN_1_8_20 = KotlinVersion(1, 8, 20)
+
+@Suppress("MagicNumber")
+internal val KOTLIN_1_9 = KotlinVersion(1, 9)
+
 
 /** @see org.jetbrains.kotlin.cli.common.toBooleanLenient */
 internal fun String?.tryAsBoolean(): Boolean {

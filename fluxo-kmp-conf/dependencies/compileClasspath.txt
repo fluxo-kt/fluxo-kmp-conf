@@ -17,8 +17,8 @@ com.dropbox.dependency-guard:com.dropbox.dependency-guard.gradle.plugin:0.4.3
 com.dropbox.dependency-guard:dependency-guard:0.4.3
 com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.47.0
 com.github.ben-manes:gradle-versions-plugin:0.47.0
-com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin:4.1.0
-com.github.gmazzo.buildconfig:plugin:4.1.0
+com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin:4.1.1
+com.github.gmazzo.buildconfig:plugin:4.1.1
 com.google.devtools.ksp:symbol-processing-gradle-plugin:1.9.0-RC-1.0.11
 com.gradle.enterprise:com.gradle.enterprise.gradle.plugin:3.13.4
 com.gradle:gradle-enterprise-gradle-plugin:3.13.4

@@ -338,11 +338,12 @@ private fun CommonExtension<*, *, *, *>.setupDefaultConfig(
 
     // KSP generated sources
     if (setupKsp || setupRoom) {
-        sourceSets["main"].apply {
+        // FIXME: Duplicated in setupKotlinExtension
+        sourceSets[MAIN_SOURCE_SET_NAME].apply {
             kotlin.srcDir("build/generated/ksp/main/kotlin")
             resources.srcDir("build/generated/ksp/main/resources")
         }
-        sourceSets["test"].kotlin.srcDir("build/generated/ksp/test/kotlin")
+        sourceSets[TEST_SOURCE_SET_NAME].kotlin.srcDir("build/generated/ksp/test/kotlin")
     }
 }
 
@@ -693,6 +694,9 @@ private fun Project.configureMonkeyLauncherTasks() {
         }
     }
 }
+
+internal const val ANDROID_APP_PLUGIN_ID = "com.android.application"
+internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
 
 internal const val ALIAS_ANDROIDX_COMPOSE_COMPILER = "androidx-compose-compiler"
 

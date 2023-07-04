@@ -1,5 +1,7 @@
 package fluxo.conf.dsl
 
+import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
+
 @Suppress("LongParameterList")
 public class FluxoPublicationConfig(
     public var group: String,
@@ -23,7 +25,7 @@ public class FluxoPublicationConfig(
     public var publicationUrl: String? = projectUrl,
     public var isSnapshot: Boolean = version.contains("SNAPSHOT", ignoreCase = true),
 
-    public var scmTag: String? = if (isSnapshot) "main" else "v$version",
+    public var scmTag: String? = if (isSnapshot) DEFAULT_BRANCH_NAME else "v$version",
 
     public var repositoryUrl: String = when {
         isSnapshot -> "https://s01.oss.sonatype.org/content/repositories/snapshots/"

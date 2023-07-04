@@ -3,17 +3,17 @@ package fluxo.conf
 import fluxo.conf.data.BuildConstants.PLUGIN_ID
 import fluxo.conf.deps.FluxoCache
 import fluxo.conf.dsl.FluxoConfigurationExtension
-import fluxo.conf.dsl.container.Container
-import fluxo.conf.dsl.container.target.KmpTarget
-import fluxo.conf.dsl.container.target.TargetAndroidContainer
-import fluxo.conf.dsl.container.target.TargetAndroidNativeContainer
-import fluxo.conf.dsl.container.target.TargetAppleIosContainer
-import fluxo.conf.dsl.container.target.TargetAppleMacosContainer
-import fluxo.conf.dsl.container.target.TargetAppleTvosContainer
-import fluxo.conf.dsl.container.target.TargetAppleWatchosContainer
-import fluxo.conf.dsl.container.target.TargetLinuxContainer
-import fluxo.conf.dsl.container.target.TargetMingwContainer
-import fluxo.conf.dsl.container.target.TargetWasmNativeContainer
+import fluxo.conf.dsl.container.impl.ContainerImpl
+import fluxo.conf.dsl.container.impl.ContainerKotlinMultiplatformAware
+import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.target.TargetAndroidNativeContainer
+import fluxo.conf.dsl.container.impl.target.TargetAppleIosContainer
+import fluxo.conf.dsl.container.impl.target.TargetAppleMacosContainer
+import fluxo.conf.dsl.container.impl.target.TargetAppleTvosContainer
+import fluxo.conf.dsl.container.impl.target.TargetAppleWatchosContainer
+import fluxo.conf.dsl.container.impl.target.TargetLinuxContainer
+import fluxo.conf.dsl.container.impl.target.TargetMingwContainer
+import fluxo.conf.dsl.container.impl.target.TargetWasmNativeContainer
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.ensureUnreachableTasksDisabled
 import fluxo.conf.feat.prepareBuildScanPlugin
@@ -40,6 +40,8 @@ import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.Companion.COMMON_MAIN_SOURCE_SET_NAME
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.Companion.COMMON_TEST_SOURCE_SET_NAME
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
@@ -59,8 +61,8 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         val context = FluxoKmpConfContext.getFor(target)
 
         target.allprojects {
-            val configureContainers = { containers: Collection<Container> ->
-                configure(containers)
+            val configureContainers = { containers: Collection<ContainerImpl> ->
+                configure(this, containers, context)
             }
             extensions.create(
                 FluxoConfigurationExtension::class.java,
@@ -111,139 +113,167 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
     }
 
 
-    private fun Project.configure(containers: Collection<Container>) {
-        val targets = containers.filterIsInstance<KmpTarget<*>>()
+    private fun configure(
+        project: Project,
+        containers: Collection<ContainerImpl>,
+        context: FluxoKmpConfContext,
+    ) {
+        val targets = containers.filterIsInstance<KotlinTargetContainerImpl<*>>()
+        val logger = project.logger
         if (targets.isEmpty()) {
             logger.d("No applicable setup found, skipping module configuration")
             return
         }
 
-        val pluginManager = pluginManager
+        val pluginManager = project.pluginManager
         pluginManager.apply("org.jetbrains.kotlin.multiplatform")
         logger.d("Applied KMP plugin!")
 
-        extensions.configure<KotlinMultiplatformExtension> {
-            sourceSets.setupIntermediateSourceSets(targets)
+        project.extensions.configure<KotlinMultiplatformExtension> {
+            this.targets.all {
+                logger.v("target added: $name")
+            }
+            this.sourceSets.all {
+                logger.v("sourceSet added: $name")
+            }
+
+            // TODO: Allow configuration to opt-out of this
+//            if (context.kotlinPluginVersion >= KOTLIN_1_8_20) {
+//                @OptIn(ExperimentalKotlinGradlePluginApi::class)
+//                setupTargetHierarchy()
+//            } else {
+//                sourceSets.setupIntermediateSourceSets(targets)
+//            }
 
             for (container in containers) {
                 logger.v("container: ${container.name}")
 
-                if (container is TargetAndroidContainer<*>) {
-                    if (container is TargetAndroidContainer.App) {
-                        pluginManager.apply("com.android.application")
-                    } else {
-                        pluginManager.apply("com.android.library")
-                    }
-                }
+                container.applyPluginsWith(pluginManager)
 
-                container.setup(this)
+                if (container is ContainerKotlinMultiplatformAware) {
+                    container.setup(this)
+                }
             }
         }
     }
 
-    private fun NamedDomainObjectContainer<KotlinSourceSet>.setupIntermediateSourceSets(targets: List<KmpTarget<*>>) {
-        val commonMain = getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
-        val commonTest = getByName(KotlinSourceSet.COMMON_TEST_SOURCE_SET_NAME)
+    private fun NamedDomainObjectContainer<KotlinSourceSet>.setupIntermediateSourceSets(targets: List<KotlinTargetContainerImpl<*>>) {
+        val commonMain = getByName(COMMON_MAIN_SOURCE_SET_NAME)
+        val commonTest = getByName(COMMON_TEST_SOURCE_SET_NAME)
 
-        val jvmTargets = targets.filterIsInstance<KmpTarget.CommonJvm<*>>()
+        val jvmTargets = targets.filterIsInstance<KotlinTargetContainerImpl.CommonJvm<*>>()
         if (jvmTargets.isNotEmpty()) {
-            maybeCreate("${KmpTarget.CommonJvm.COMMON_JVM}Main").apply {
+            maybeCreate("${KotlinTargetContainerImpl.CommonJvm.COMMON_JVM}Main").apply {
                 dependsOn(commonMain)
             }
-            maybeCreate("${KmpTarget.CommonJvm.COMMON_JVM}Test").apply {
+            maybeCreate("${KotlinTargetContainerImpl.CommonJvm.COMMON_JVM}Test").apply {
                 dependsOn(commonTest)
             }
         }
 
-        val nonJvmTargets = targets.filterIsInstance<KmpTarget.NonJvm<*>>()
+        val nonJvmTargets = targets.filterIsInstance<KotlinTargetContainerImpl.NonJvm<*>>()
         if (nonJvmTargets.isEmpty()) return
-        val nonJvmMain = maybeCreate("${KmpTarget.NonJvm.NON_JVM}Main").apply {
+        val nonJvmMain = maybeCreate("${KotlinTargetContainerImpl.NonJvm.NON_JVM}Main").apply {
             dependsOn(commonMain)
         }
-        val nonJvmTest = maybeCreate("${KmpTarget.NonJvm.NON_JVM}Test").apply {
+        val nonJvmTest = maybeCreate("${KotlinTargetContainerImpl.NonJvm.NON_JVM}Test").apply {
             dependsOn(commonTest)
         }
 
-        val nativeTargets = nonJvmTargets.filterIsInstance<KmpTarget.NonJvm.Native<*>>()
+        val nativeTargets =
+            nonJvmTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native<*>>()
         if (nativeTargets.isEmpty()) return
-        val nativeMain = maybeCreate("${KmpTarget.NonJvm.Native.NATIVE}Main").apply {
-            dependsOn(nonJvmMain)
-        }
-        val nativeTest = maybeCreate("${KmpTarget.NonJvm.Native.NATIVE}Test").apply {
-            dependsOn(nonJvmTest)
-        }
+        val nativeMain =
+            maybeCreate("${KotlinTargetContainerImpl.NonJvm.Native.NATIVE}Main").apply {
+                dependsOn(nonJvmMain)
+            }
+        val nativeTest =
+            maybeCreate("${KotlinTargetContainerImpl.NonJvm.Native.NATIVE}Test").apply {
+                dependsOn(nonJvmTest)
+            }
 
         val androidNativeTargets =
-            nativeTargets.filterIsInstance<KmpTarget.NonJvm.Native.Android>()
+            nativeTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.AndroidNative>()
         if (androidNativeTargets.isNotEmpty()) {
-            maybeCreate("${TargetAndroidNativeContainer.ANDROID_NATIVE}Main").dependsOn(
-                nativeMain,
-            )
-            maybeCreate("${TargetAndroidNativeContainer.ANDROID_NATIVE}Test").dependsOn(
-                nativeTest,
-            )
-        }
-
-        val unixTargets = nativeTargets.filterIsInstance<KmpTarget.NonJvm.Native.Unix<*>>()
-        if (unixTargets.isNotEmpty()) {
-            val unixMain = maybeCreate("${KmpTarget.NonJvm.Native.Unix.UNIX}Main").apply {
+            maybeCreate("${TargetAndroidNativeContainer.ANDROID_NATIVE}Main").apply {
                 dependsOn(nativeMain)
             }
-            val unixTest = maybeCreate("${KmpTarget.NonJvm.Native.Unix.UNIX}Test").apply {
+            maybeCreate("${TargetAndroidNativeContainer.ANDROID_NATIVE}Test").apply {
                 dependsOn(nativeTest)
             }
+        }
+
+        val unixTargets =
+            nativeTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.Unix<*>>()
+        if (unixTargets.isNotEmpty()) {
+            val unixMain =
+                maybeCreate("${KotlinTargetContainerImpl.NonJvm.Native.Unix.UNIX}Main").apply {
+                    dependsOn(nativeMain)
+                }
+            val unixTest =
+                maybeCreate("${KotlinTargetContainerImpl.NonJvm.Native.Unix.UNIX}Test").apply {
+                    dependsOn(nativeTest)
+                }
 
             val appleTargets =
-                unixTargets.filterIsInstance<KmpTarget.NonJvm.Native.Unix.Apple<*>>()
+                unixTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple<*>>()
             if (appleTargets.isNotEmpty()) {
                 val darwinMain =
-                    maybeCreate("${KmpTarget.NonJvm.Native.Unix.Apple.APPLE}Main").apply {
+                    maybeCreate("${KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.APPLE}Main").apply {
                         dependsOn(unixMain)
                     }
                 val darwinTest =
-                    maybeCreate("${KmpTarget.NonJvm.Native.Unix.Apple.APPLE}Test").apply {
+                    maybeCreate("${KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.APPLE}Test").apply {
                         dependsOn(unixTest)
                     }
 
                 val iosTargets =
-                    appleTargets.filterIsInstance<KmpTarget.NonJvm.Native.Unix.Apple.Ios<*>>()
+                    appleTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.Ios<*>>()
                 if (iosTargets.isNotEmpty()) {
-                    maybeCreate("${TargetAppleIosContainer.IOS}Main").dependsOn(darwinMain)
-                    maybeCreate("${TargetAppleIosContainer.IOS}Test").dependsOn(darwinTest)
+                    maybeCreate("${TargetAppleIosContainer.IOS}Main").apply {
+                        dependsOn(darwinMain)
+                    }
+                    maybeCreate("${TargetAppleIosContainer.IOS}Test").apply {
+                        dependsOn(darwinTest)
+                    }
                 }
 
                 val macosTargets =
-                    appleTargets.filterIsInstance<KmpTarget.NonJvm.Native.Unix.Apple.Macos>()
+                    appleTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.Macos>()
                 if (macosTargets.isNotEmpty()) {
-                    maybeCreate("${TargetAppleMacosContainer.MACOS}Main").dependsOn(
-                        darwinMain,
-                    )
-                    maybeCreate("${TargetAppleMacosContainer.MACOS}Test").dependsOn(
-                        darwinTest,
-                    )
+                    maybeCreate("${TargetAppleMacosContainer.MACOS}Main").apply {
+                        dependsOn(darwinMain)
+                    }
+                    maybeCreate("${TargetAppleMacosContainer.MACOS}Test").apply {
+                        dependsOn(darwinTest)
+                    }
                 }
 
                 val tvosTargets =
-                    appleTargets.filterIsInstance<KmpTarget.NonJvm.Native.Unix.Apple.Tvos<*>>()
+                    appleTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.Tvos<*>>()
                 if (tvosTargets.isNotEmpty()) {
-                    maybeCreate("${TargetAppleTvosContainer.TVOS}Main").dependsOn(darwinMain)
-                    maybeCreate("${TargetAppleTvosContainer.TVOS}Test").dependsOn(darwinTest)
+                    maybeCreate("${TargetAppleTvosContainer.TVOS}Main").apply {
+                        dependsOn(darwinMain)
+                    }
+                    maybeCreate("${TargetAppleTvosContainer.TVOS}Test").apply {
+                        dependsOn(darwinTest)
+                    }
                 }
 
                 val watchosTargets =
-                    appleTargets.filterIsInstance<KmpTarget.NonJvm.Native.Unix.Apple.Watchos<*>>()
+                    appleTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.Watchos<*>>()
                 if (watchosTargets.isNotEmpty()) {
-                    maybeCreate("${TargetAppleWatchosContainer.WATCHOS}Main").dependsOn(
-                        darwinMain,
-                    )
-                    maybeCreate("${TargetAppleWatchosContainer.WATCHOS}Test").dependsOn(
-                        darwinTest,
-                    )
+                    maybeCreate("${TargetAppleWatchosContainer.WATCHOS}Main").apply {
+                        dependsOn(darwinMain)
+                    }
+                    maybeCreate("${TargetAppleWatchosContainer.WATCHOS}Test").apply {
+                        dependsOn(darwinTest)
+                    }
                 }
             }
 
             val linuxTargets =
-                unixTargets.filterIsInstance<KmpTarget.NonJvm.Native.Unix.Linux<*>>()
+                unixTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.Unix.Linux<*>>()
             if (linuxTargets.isNotEmpty()) {
                 maybeCreate("${TargetLinuxContainer.LINUX}Main").dependsOn(unixMain)
                 maybeCreate("${TargetLinuxContainer.LINUX}Test").dependsOn(unixTest)
@@ -251,14 +281,14 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         }
 
         val mingwTargets =
-            nativeTargets.filterIsInstance<KmpTarget.NonJvm.Native.Mingw<*>>()
+            nativeTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.Mingw<*>>()
         if (mingwTargets.isNotEmpty()) {
             maybeCreate("${TargetMingwContainer.MINGW}Main").dependsOn(nativeMain)
             maybeCreate("${TargetMingwContainer.MINGW}Test").dependsOn(nativeTest)
         }
 
         val wasmNativeTargets =
-            nativeTargets.filterIsInstance<KmpTarget.NonJvm.Native.Wasm>()
+            nativeTargets.filterIsInstance<KotlinTargetContainerImpl.NonJvm.Native.WasmNative>()
         if (wasmNativeTargets.isNotEmpty()) {
             maybeCreate("${TargetWasmNativeContainer.WASM_NATIVE}Main").dependsOn(nativeMain)
             maybeCreate("${TargetWasmNativeContainer.WASM_NATIVE}Test").dependsOn(nativeTest)

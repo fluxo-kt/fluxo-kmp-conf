@@ -11,8 +11,10 @@
 version = "0.1.0"
 
 # Java/Kotlin compatibility
+# WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
 javaLangTarget = "11"
 kotlinLangVersion = "1.5"
+kotlinApiVersion = "1.5"
 kotlinCoreLibraries = "1.5.32"
 
 # Kotlin version, aligned with Compose Multiplatform
@@ -179,7 +181,7 @@ module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", 
 # Generating BuildConstants for any kind of project
 # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
-build-config = { id = "com.github.gmazzo.buildconfig", version = "4.1.0" }
+build-config = { id = "com.github.gmazzo.buildconfig", version = "4.1.1" }
 
 # Resolve all dependencies used in a gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases

@@ -3,9 +3,10 @@ package fluxo.conf.dsl.impl
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoKmpConfDsl
-import fluxo.conf.dsl.container.Container
-import fluxo.conf.dsl.container.ContainerHolder
-import fluxo.conf.dsl.container.target.KmpConfigurationContainerDsl as KmpConfDsl
+import fluxo.conf.dsl.container.KmpConfigurationContainerDsl as KmpConfDsl
+import fluxo.conf.dsl.container.impl.ContainerHolder
+import fluxo.conf.dsl.container.impl.ContainerImpl
+import fluxo.conf.dsl.container.impl.KmpConfigurationContainerDslImpl
 import fluxo.conf.impl.findByType
 import javax.inject.Inject
 import org.gradle.api.GradleException
@@ -17,7 +18,7 @@ import org.gradle.api.tasks.Input
 internal abstract class FluxoConfigurationExtensionImpl
 @Inject internal constructor(
     override val context: FluxoKmpConfContext,
-    private val configureContainers: (Collection<Container>) -> Unit,
+    private val configureContainers: (Collection<ContainerImpl>) -> Unit,
 ) : FluxoConfigurationExtension,
     FluxoConfigurationExtensionKotlinImpl,
     FluxoConfigurationExtensionAndroidImpl,
@@ -63,13 +64,13 @@ internal abstract class FluxoConfigurationExtensionImpl
         hasConfigurationAction.set(true)
 
         val holder = ContainerHolder(context, project)
-        val dsl = KmpConfDsl(holder)
+        val dsl = KmpConfigurationContainerDslImpl(holder)
         applyDefaultConfigurations(dsl)
         action(dsl)
-        configureContainers(holder.containers.sortedBy { it.sortOrder })
+        configureContainers(holder.containers.sorted())
     }
 
-    private fun applyDefaultConfigurations(dsl: KmpConfDsl) {
+    private fun applyDefaultConfigurations(dsl: KmpConfigurationContainerDslImpl) {
         // Collect all defaults
         val defaults = mutableListOf<FluxoConfigurationExtension>()
         var p: Project? = project

@@ -10,8 +10,8 @@ import fluxo.conf.impl.libsCatalog
 import fluxo.conf.impl.onBundle
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.onVersion
-import fluxo.conf.impl.v
 import fluxo.conf.impl.testImplementation
+import fluxo.conf.impl.v
 import fluxo.conf.impl.version
 import fluxo.conf.impl.withType
 import org.gradle.api.JavaVersion
@@ -125,11 +125,11 @@ internal fun Project.setupKotlinExtension(
     }
 
     if (setupKsp && kotlin is KotlinJvmProjectExtension) {
-        sourceSets["main"].apply {
+        sourceSets[MAIN_SOURCE_SET_NAME].apply {
             this.kotlin.srcDir("build/generated/ksp/main/kotlin")
             resources.srcDir("build/generated/ksp/main/resources")
         }
-        sourceSets["test"].kotlin.srcDir("build/generated/ksp/test/kotlin")
+        sourceSets[TEST_SOURCE_SET_NAME].kotlin.srcDir("build/generated/ksp/test/kotlin")
     }
 
     setupKotlinTasks(config, optIns)
