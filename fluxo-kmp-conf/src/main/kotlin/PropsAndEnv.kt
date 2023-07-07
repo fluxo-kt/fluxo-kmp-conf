@@ -3,7 +3,7 @@
 import fluxo.conf.impl.envOrProp
 import fluxo.conf.impl.envOrPropFlag
 import fluxo.conf.impl.envOrPropValueLenient
-import fluxo.conf.target.KmpTargetCode.Companion.KMP_TARGETS_PROP
+import fluxo.conf.kmp.KmpTargetCode.Companion.KMP_TARGETS_PROP
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
 import org.gradle.api.Project

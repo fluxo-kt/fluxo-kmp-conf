@@ -2,7 +2,7 @@ package fluxo.conf.dsl.container.target
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.conf.target.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 import watchosCompat

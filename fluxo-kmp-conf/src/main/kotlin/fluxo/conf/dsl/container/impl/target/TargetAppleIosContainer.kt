@@ -4,20 +4,19 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
-import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetAppleIos
-import fluxo.conf.target.KmpTargetCode
-import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
-import iosCompat
+import fluxo.conf.kmp.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests as KNTS
 
 internal abstract class TargetAppleIosContainer<T : KNT>(
     context: ContainerContext, name: String, code: KmpTargetCode,
-) : KotlinTargetContainerImpl<T>(
+) : KmpTargetContainerImpl<T>(
     context, name, code, APPLE_IOS_SORT_ORDER,
-), KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.Ios<T>, TargetAppleIos<T> {
+), KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Ios<T>, TargetAppleIos<T> {
 
     interface Configure : TargetAppleIos.Configure, ContainerHolderAware {
 

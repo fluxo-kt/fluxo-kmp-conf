@@ -22,23 +22,17 @@ internal operator fun <T : Any> NamedDomainObjectCollection<T>.get(name: String)
     getByName(name)
 
 
-internal fun <T> NamedDomainObjectContainer<T>.getOrCreate(
+internal fun <T : Any> NamedDomainObjectContainer<T>.getOrCreate(
     name: String,
-    invokeWhenCreated: (T.() -> Unit)? = null,
-    configure: (T.() -> Unit)? = null,
+    onCreated: (T.() -> Unit)? = null,
 ): T {
-    return if (name in names) {
-        named(name).also { provider ->
-            if (configure != null) provider.configure(configure)
-        }.get()
-    } else {
-        (if (configure != null) create(name, configure) else create(name)).also { value ->
-            if (invokeWhenCreated != null) invokeWhenCreated(value)
-        }
+    findByName(name)?.let { return it }
+    return create(name).also {
+        onCreated?.invoke(it)
     }
 }
 
-internal fun <T> NamedDomainObjectContainer<T>.maybeRegister(
+internal fun <T : Any> NamedDomainObjectContainer<T>.maybeRegister(
     name: String,
     configure: (T.() -> Unit)? = null,
 ): NamedDomainObjectProvider<T> {

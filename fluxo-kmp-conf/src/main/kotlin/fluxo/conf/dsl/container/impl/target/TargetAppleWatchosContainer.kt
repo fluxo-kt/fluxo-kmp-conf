@@ -2,12 +2,12 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
-import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetAppleWatchos
 import fluxo.conf.impl.KOTLIN_1_8
-import fluxo.conf.target.KmpTargetCode
-import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
-import fluxo.conf.target.KmpTargetCode.WATCHOS_SIMULATOR_ARM64
+import fluxo.conf.kmp.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
+import fluxo.conf.kmp.KmpTargetCode.WATCHOS_SIMULATOR_ARM64
 import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
@@ -16,9 +16,9 @@ import watchosCompat
 
 internal abstract class TargetAppleWatchosContainer<T : KNT>(
     context: ContainerContext, name: String, code: KmpTargetCode,
-) : KotlinTargetContainerImpl<T>(
+) : KmpTargetContainerImpl<T>(
     context, name, code, APPLE_WATCHOS_SORT_ORDER,
-), KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.Watchos<T>, TargetAppleWatchos<T> {
+), KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Watchos<T>, TargetAppleWatchos<T> {
 
     interface Configure : TargetAppleWatchos.Configure, ContainerHolderAware {
 

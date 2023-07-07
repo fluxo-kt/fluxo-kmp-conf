@@ -1,7 +1,7 @@
 package fluxo.conf.dsl.container.impl
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.target.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode
 import org.gradle.api.Project
 
 internal class ContainerHolder(
@@ -15,7 +15,7 @@ internal class ContainerHolder(
     val containers = objects.namedDomainObjectSet(ContainerImpl::class.java)
 
     fun add(container: ContainerImpl): Boolean {
-        return if (container !is KotlinTargetContainerImpl<*>
+        return if (container !is KmpTargetContainerImpl<*>
             || allKmpTargetsEnabled
             || container.code in requestedKmpTargets
         ) {

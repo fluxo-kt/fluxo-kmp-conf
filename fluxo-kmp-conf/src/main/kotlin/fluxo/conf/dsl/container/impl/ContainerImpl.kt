@@ -1,6 +1,6 @@
 package fluxo.conf.dsl.container.impl
 
-import fluxo.conf.dsl.InternalFluxoApi
+import fluxo.annotation.InternalFluxoApi
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.impl.set
 import org.gradle.api.Named

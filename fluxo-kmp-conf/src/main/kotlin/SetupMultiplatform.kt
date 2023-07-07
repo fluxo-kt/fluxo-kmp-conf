@@ -13,10 +13,11 @@ import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.testImplementation
 import fluxo.conf.impl.v
 import fluxo.conf.impl.withType
+import fluxo.conf.kmp.SourceSetBundle
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import org.gradle.api.NamedDomainObjectCollection
-import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.NamedDomainObjectContainer as NDOC
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
@@ -24,6 +25,7 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
@@ -363,13 +365,8 @@ internal fun KotlinTargetsContainer.isMultiplatformTargetEnabled(target: Target)
 public class MultiplatformSourceSets
 internal constructor(
     private val targets: NamedDomainObjectCollection<KotlinTarget>,
-    private val sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
-) : NamedDomainObjectContainer<KotlinSourceSet> by sourceSets {
-
-    public val common: SourceSetBundle = SourceSetBundle(
-        getByName(COMMON_MAIN_SOURCE_SET_NAME),
-        getByName(COMMON_TEST_SOURCE_SET_NAME),
-    )
+    private val sourceSets: NDOC<KotlinSourceSet>,
+) : NDOC<KotlinSourceSet> by sourceSets {
 
     /** All enabled targets */
     public val allSet: Set<SourceSetBundle> get() = targets.toSourceSetBundles()
@@ -419,17 +416,9 @@ internal constructor(
         return mapNotNullTo(LinkedHashSet()) {
             when (it.platformType) {
                 KotlinPlatformType.common -> null
-                else -> it.getSourceSetBundle()
+                else -> bundleFor(it)
             }
         }
-    }
-
-    private fun KotlinTarget.getSourceSetBundle(): SourceSetBundle = when {
-        compilations.isEmpty() -> bundle(name)
-        else -> SourceSetBundle(
-            main = compilations.getByName(MAIN_SOURCE_SET_NAME).defaultSourceSet,
-            test = compilations.getByName(TEST_SOURCE_SET_NAME).defaultSourceSet,
-        )
     }
 
 
@@ -448,18 +437,66 @@ internal constructor(
     }
 }
 
-public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(name: String): SourceSetBundle {
+
+public val NamedDomainObjectCollection<out KotlinSourceSet>.common: SourceSetBundle
+    get() = SourceSetBundle(
+        getByName(COMMON_MAIN_SOURCE_SET_NAME),
+        getByName(COMMON_TEST_SOURCE_SET_NAME),
+    )
+
+internal fun KotlinProjectExtension.bundleFor(target: KotlinTarget) = sourceSets.bundleFor(target)
+
+internal fun NDOC<out KotlinSourceSet>.bundleFor(
+    target: KotlinTarget,
+    androidLayoutV2: Boolean? = null,
+): SourceSetBundle {
+    val compilations = target.compilations
+    return when {
+        compilations.isEmpty() || androidLayoutV2 != null ->
+            bundle(target.name, androidLayoutV2 = androidLayoutV2)
+
+        else -> SourceSetBundle(
+            main = compilations.getByName(MAIN_SOURCE_SET_NAME).defaultSourceSet,
+            test = compilations.getByName(TEST_SOURCE_SET_NAME).defaultSourceSet,
+        )
+    }
+}
+
+public fun NDOC<out KotlinSourceSet>.bundle(
+    name: String,
+    androidLayoutV2: Boolean? = null,
+): SourceSetBundle {
+    val mainSourceSet = maybeCreate("${name}Main")
+
+    // region Support for androidSourceSetLayout v2
+    // https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema
+    /** @see fluxo.conf.dsl.container.impl.target.TargetAndroidContainer.setup */
+    val isAndroid = name == "android"
+    if (isAndroid) {
+        val useV1 = androidLayoutV2?.not()
+            ?: names.let { "androidAndroidTest" in it || "androidTest" in it }
+        val instrumentedTest =
+            maybeCreate(if (!useV1) "androidInstrumentedTest" else "androidAndroidTest")
+        return SourceSetBundle(
+            main = mainSourceSet,
+            test = maybeCreate(if (!useV1) "androidUnitTest" else "androidTest"),
+            otherTests = arrayOf(instrumentedTest),
+        )
+    }
+    // endregion
+
     return SourceSetBundle(
-        main = maybeCreate("${name}Main"),
-        // Support for androidSourceSetLayout v2
-        // FIXME: Check actual usage of the layout v2
-        //  see `TargetAndroidContainer.setup`
-        // https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema
-        test = maybeCreate(if (name == "android") "${name}UnitTest" else "${name}Test"),
+        main = mainSourceSet,
+        test = maybeCreate("${name}Test"),
     )
 }
 
-public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
+/**
+ *
+ * @see kotlin.properties.PropertyDelegateProvider
+ * @see kotlin.properties.ReadOnlyProperty
+ */
+public fun NDOC<out KotlinSourceSet>.bundle(
     name: String? = null,
 ): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, SourceSetBundle>> =
     PropertyDelegateProvider { _, property ->
@@ -467,13 +504,9 @@ public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
         ReadOnlyProperty { _, _ -> bundle }
     }
 
-public data class SourceSetBundle(
-    val main: KotlinSourceSet,
-    val test: KotlinSourceSet,
-)
-
 internal const val MAIN_SOURCE_SET_NAME = "main"
 internal const val TEST_SOURCE_SET_NAME = "test"
+internal const val MAIN_SOURCE_SET_POSTFIX = "Main"
 
 
 // region Kotlin/JS convenience
@@ -552,6 +585,9 @@ public operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<Sourc
 public infix fun SourceSetBundle.dependsOn(other: SourceSetBundle) {
     main.dependsOn(other.main)
     test.dependsOn(other.test)
+    otherTests?.forEach {
+        it.dependsOn(other.test)
+    }
 }
 
 public infix fun Iterable<SourceSetBundle>.dependsOn(other: Iterable<SourceSetBundle>) {
@@ -610,10 +646,11 @@ public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
     val parent = (this as DefaultKotlinDependencyHandler).parent
     var configurationName =
         parent.compileOnlyConfigurationName.replace("compileOnly", "", ignoreCase = true)
-    if (configurationName.startsWith("commonMain", ignoreCase = true)) {
+    if (configurationName.startsWith(COMMON_MAIN_SOURCE_SET_NAME, ignoreCase = true)) {
         configurationName += "Metadata"
     } else {
-        configurationName = configurationName.replace("Main", "", ignoreCase = true)
+        configurationName =
+            configurationName.replace(MAIN_SOURCE_SET_POSTFIX, "", ignoreCase = true)
     }
     configurationName = "ksp${configurationName.capitalizeAsciiOnly()}"
     project.logger.lifecycle(">>> ksp configurationName: $configurationName")

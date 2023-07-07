@@ -2,18 +2,18 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
-import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetJs
-import fluxo.conf.target.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
 internal class TargetJsContainer(
     context: ContainerContext, name: String,
-) : KotlinTargetContainerImpl<KotlinJsTargetDsl>(
+) : KmpTargetContainerImpl<KotlinJsTargetDsl>(
     context, name, KmpTargetCode.JS, JS_SORT_ORDER,
-), KotlinTargetContainerImpl.NonJvm.CommonJs<KotlinJsTargetDsl>, TargetJs {
+), KmpTargetContainerImpl.NonJvm.CommonJs<KotlinJsTargetDsl>, TargetJs {
 
     override var compilerType: KotlinJsCompilerType? = null
 

@@ -2,9 +2,12 @@ package fluxo.conf
 
 import allKmpTargetsEnabled
 import areComposeMetricsEnabled
+import bundle
 import disableTests
 import fluxo.conf.deps.GradleProvisioner
 import fluxo.conf.deps.Provisioner
+import fluxo.conf.impl.KOTLIN_1_8
+import fluxo.conf.impl.KOTLIN_1_9
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.d
 import fluxo.conf.impl.e
@@ -13,8 +16,8 @@ import fluxo.conf.impl.libsCatalogOptional
 import fluxo.conf.impl.tryAsBoolean
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
-import fluxo.conf.target.KmpTargetCode
-import fluxo.conf.target.KmpTargetCode.Companion.getSetOfRequestedKmpTargets
+import fluxo.conf.kmp.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode.Companion.getSetOfRequestedKmpTargets
 import getValue
 import isCI
 import isDesugaringEnabled
@@ -26,6 +29,7 @@ import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.PluginAware
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
@@ -47,6 +51,14 @@ internal abstract class FluxoKmpConfContext
     val libs: VersionCatalog? = rootProject.libsCatalogOptional
 
     val kotlinPluginVersion: KotlinVersion = kotlinPluginVersion()
+
+    /**
+     * [Kotlin 1.8](https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema)
+     * introduced a new source set layout for Android projects.
+     * It's the default since
+     * [Kotlin 1.9](https://kotlinlang.org/docs/whatsnew19.html#new-android-source-set-layout-enabled-by-default)
+     */
+    val androidLayoutV2: Boolean = mppAndroidSourceSetLayoutVersion()
 
     val requestedKmpTargets: Set<KmpTargetCode> = rootProject.getSetOfRequestedKmpTargets()
 
@@ -82,9 +94,15 @@ internal abstract class FluxoKmpConfContext
         if (SHOW_DEBUG_LOGS) onProjectInSyncRun { logger.v("onProjectInSyncRun") }
 
         val start = gradle.startParameter
-        startTaskNames = start.taskNames.map {
-            it.substringAfterLast(":")
-        }.toSet()
+        startTaskNames = start.taskNames.let { taskNames ->
+            LinkedHashSet<String>(taskNames.size).apply {
+                for (name in taskNames) {
+                    if (name.isNotEmpty() && name[0] != '-') {
+                        add(name.substringAfterLast(':'))
+                    }
+                }
+            }
+        }
 
         val isInIde = start.systemPropertiesArgs["idea.active"].tryAsBoolean()
         if (isInIde && startTaskNames.isEmpty()) {
@@ -188,6 +206,29 @@ internal abstract class FluxoKmpConfContext
         }
         return KotlinVersion.CURRENT
     }
+
+    /**
+     * Detect the androidSourceSetLayout v2
+     *
+     * @see org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.PropertyNames.KOTLIN_MPP_ANDROID_SOURCE_SET_LAYOUT_VERSION
+     * @see bundle
+     */
+    private fun mppAndroidSourceSetLayoutVersion(): Boolean {
+        // https://kotlinlang.org/docs/whatsnew19.html#new-android-source-set-layout-enabled-by-default
+        // https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema
+        val project = rootProject
+        val kotlinVersion = kotlinPluginVersion
+        val layoutVersion = when {
+            kotlinVersion >= KOTLIN_1_9 -> project.mppAndroidSourceSetLayoutVersionProp ?: 2
+            kotlinVersion >= KOTLIN_1_8 -> project.mppAndroidSourceSetLayoutVersionProp ?: 1
+            else -> 1
+        }
+        return layoutVersion == 2
+    }
+
+    private val ExtensionAware.mppAndroidSourceSetLayoutVersionProp: Int?
+        get() = extensions.extraProperties.properties["kotlin.mpp.androidSourceSetLayoutVersion"]
+            ?.toString()?.toIntOrNull()
 
 
     internal companion object {

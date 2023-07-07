@@ -48,7 +48,7 @@ kotlin {
                     freeCompilerArgs += "-Xvalidate-bytecode"
                     freeCompilerArgs += "-Xvalidate-ir"
                     freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-                    freeCompilerArgs += "-opt-in=fluxo.conf.dsl.InternalFluxoApi"
+                    freeCompilerArgs += "-opt-in=fluxo.annotation.InternalFluxoApi"
                 }
                 compileJavaTaskProvider.configure {
                     sourceCompatibility = jvmVersion
@@ -262,7 +262,7 @@ gradlePlugin {
 }
 
 apiValidation {
-    nonPublicMarkers.add("fluxo.conf.dsl.InternalFluxoApi")
+    nonPublicMarkers.add("fluxo.annotation.InternalFluxoApi")
     nonPublicMarkers.add("kotlin.jvm.JvmSynthetic")
     // sealed classes constructors are not actually public
     ignoredClasses.add("kotlin.jvm.internal.DefaultConstructorMarker")

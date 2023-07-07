@@ -2,9 +2,9 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
-import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetWasm
-import fluxo.conf.target.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode
 import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
@@ -12,9 +12,9 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 
 internal class TargetWasmContainer(
     context: ContainerContext, name: String,
-) : KotlinTargetContainerImpl<KotlinWasmTargetDsl>(
+) : KmpTargetContainerImpl<KotlinWasmTargetDsl>(
     context, name, KmpTargetCode.WASM, WASM_SORT_ORDER,
-), KotlinTargetContainerImpl.NonJvm.CommonJs<KotlinWasmTargetDsl>, TargetWasm {
+), KmpTargetContainerImpl.NonJvm.CommonJs<KotlinWasmTargetDsl>, TargetWasm {
 
     interface Configure : TargetWasm.Configure, ContainerHolderAware {
 

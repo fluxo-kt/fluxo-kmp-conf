@@ -2,17 +2,17 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
-import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetAndroidNative
-import fluxo.conf.target.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 internal abstract class TargetAndroidNativeContainer(
     context: ContainerContext, name: String, code: KmpTargetCode,
-) : KotlinTargetContainerImpl<KotlinNativeTarget>(
+) : KmpTargetContainerImpl<KotlinNativeTarget>(
     context, name, code, ANDROID_NATIVE_SORT_ORDER,
-), KotlinTargetContainerImpl.NonJvm.Native.AndroidNative, TargetAndroidNative {
+), KmpTargetContainerImpl.NonJvm.Native.AndroidNative, TargetAndroidNative {
 
     interface Configure : TargetAndroidNative.Configure, ContainerHolderAware {
 

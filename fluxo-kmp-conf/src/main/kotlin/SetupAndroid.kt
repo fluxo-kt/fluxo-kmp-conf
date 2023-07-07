@@ -695,6 +695,10 @@ private fun Project.configureMonkeyLauncherTasks() {
     }
 }
 
+/**
+ * @see org.jetbrains.kotlin.gradle.utils.androidPluginIds
+ * @see org.jetbrains.kotlin.gradle.utils.findAppliedAndroidPluginIdOrNull
+ */
 internal const val ANDROID_APP_PLUGIN_ID = "com.android.application"
 internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
 

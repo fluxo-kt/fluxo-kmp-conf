@@ -1,6 +1,7 @@
 package fluxo.conf.impl
 
 import Compilations
+import MAIN_SOURCE_SET_POSTFIX
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import isGenericCompilationEnabled
@@ -50,7 +51,7 @@ private fun getTaskDetailsFromName(
 
     val last = parts.lastOrNull()
     val isTest = last.equals("Test", ignoreCase = true)
-    val isMain = !isTest && last.equals("Main", ignoreCase = true)
+    val isMain = !isTest && last.equals(MAIN_SOURCE_SET_POSTFIX, ignoreCase = true)
     if (isTest || isMain) {
         list = list.dropLast(1)
     }

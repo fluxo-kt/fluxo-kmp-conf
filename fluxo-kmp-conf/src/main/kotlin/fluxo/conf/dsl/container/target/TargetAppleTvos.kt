@@ -2,10 +2,9 @@ package fluxo.conf.dsl.container.target
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
-import tvosCompat
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+import tvosCompat
 
 public interface TargetAppleTvos<out T : KotlinNativeTarget> : KotlinTargetContainer<T> {
 

@@ -2,18 +2,17 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
-import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetAppleMacos
-import fluxo.conf.target.KmpTargetCode
-import macosCompat
+import fluxo.conf.kmp.KmpTargetCode
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 
 internal abstract class TargetAppleMacosContainer(
     context: ContainerContext, name: String, code: KmpTargetCode,
-) : KotlinTargetContainerImpl<KotlinNativeTargetWithHostTests>(
+) : KmpTargetContainerImpl<KotlinNativeTargetWithHostTests>(
     context, name, code, APPLE_MACOS_SORT_ORDER,
-), KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.Macos, TargetAppleMacos {
+), KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Macos, TargetAppleMacos {
 
     interface Configure : TargetAppleMacos.Configure, ContainerHolderAware {
 

@@ -2,19 +2,19 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
-import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetJvm
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.target.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode
 import org.gradle.api.plugins.JavaPluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal class TargetJvmContainer(
     context: ContainerContext, name: String,
-) : KotlinTargetContainerImpl<KotlinJvmTarget>(
+) : KmpTargetContainerImpl<KotlinJvmTarget>(
     context, name, KmpTargetCode.JVM, JVM_SORT_ORDER,
-), KotlinTargetContainerImpl.CommonJvm<KotlinJvmTarget>, TargetJvm {
+), KmpTargetContainerImpl.CommonJvm<KotlinJvmTarget>, TargetJvm {
 
     interface Configure : TargetJvm.Configure, ContainerHolderAware {
 

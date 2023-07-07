@@ -2,19 +2,18 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
-import fluxo.conf.dsl.container.impl.KotlinTargetContainerImpl
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetAppleTvos
-import fluxo.conf.target.KmpTargetCode
+import fluxo.conf.kmp.KmpTargetCode
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests as KNTS
-import tvosCompat
 
 internal abstract class TargetAppleTvosContainer<T : KNT>(
     context: ContainerContext, name: String, code: KmpTargetCode,
-) : KotlinTargetContainerImpl<T>(
+) : KmpTargetContainerImpl<T>(
     context, name, code, APPLE_TVOS_SORT_ORDER,
-), KotlinTargetContainerImpl.NonJvm.Native.Unix.Apple.Tvos<T>, TargetAppleTvos<T> {
+), KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Tvos<T>, TargetAppleTvos<T> {
 
     interface Configure : TargetAppleTvos.Configure, ContainerHolderAware {
 

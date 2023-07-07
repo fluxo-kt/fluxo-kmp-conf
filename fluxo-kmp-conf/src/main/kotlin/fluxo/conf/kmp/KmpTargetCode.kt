@@ -1,4 +1,4 @@
-package fluxo.conf.target
+package fluxo.conf.kmp
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project

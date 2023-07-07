@@ -2,7 +2,7 @@ package fluxo.conf.dsl.container.target
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.conf.target.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
+import fluxo.conf.kmp.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 public interface TargetWasmNative : KotlinTargetContainer<KotlinNativeTarget> {
