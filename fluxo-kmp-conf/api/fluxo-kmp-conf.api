@@ -480,6 +480,7 @@ public abstract interface class fluxo/conf/dsl/container/Container {
 
 public abstract interface class fluxo/conf/dsl/container/KmpConfigurationContainerDsl : fluxo/conf/dsl/container/target/TargetAndroid$Configure, fluxo/conf/dsl/container/target/TargetAndroidNative$Configure, fluxo/conf/dsl/container/target/TargetAppleIos$Configure, fluxo/conf/dsl/container/target/TargetAppleMacos$Configure, fluxo/conf/dsl/container/target/TargetAppleTvos$Configure, fluxo/conf/dsl/container/target/TargetAppleWatchos$Configure, fluxo/conf/dsl/container/target/TargetJs$Configure, fluxo/conf/dsl/container/target/TargetJvm$Configure, fluxo/conf/dsl/container/target/TargetLinux$Configure, fluxo/conf/dsl/container/target/TargetMingw$Configure, fluxo/conf/dsl/container/target/TargetWasm$Configure, fluxo/conf/dsl/container/target/TargetWasmNative$Configure {
 	public abstract fun allDefaultTargets ()V
+	public abstract fun kotlin (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun kotlinMultiplatform (Lkotlin/jvm/functions/Function1;)V
 }
 

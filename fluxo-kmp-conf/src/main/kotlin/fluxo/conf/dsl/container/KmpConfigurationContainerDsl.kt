@@ -13,6 +13,7 @@ import fluxo.conf.dsl.container.target.TargetMingw
 import fluxo.conf.dsl.container.target.TargetWasm
 import fluxo.conf.dsl.container.target.TargetWasmNative
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 public interface KmpConfigurationContainerDsl :
     TargetJvm.Configure,
@@ -27,6 +28,8 @@ public interface KmpConfigurationContainerDsl :
     TargetWasm.Configure,
     TargetAndroidNative.Configure,
     TargetWasmNative.Configure {
+
+    public fun kotlin(action: KotlinProjectExtension.() -> Unit)
 
     public fun kotlinMultiplatform(action: KotlinMultiplatformExtension.() -> Unit)
 

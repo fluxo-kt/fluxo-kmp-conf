@@ -15,6 +15,7 @@ import fluxo.conf.dsl.container.impl.target.TargetWasmContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmNativeContainer
 import fluxo.conf.impl.KOTLIN_1_8_20
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 internal class KmpConfigurationContainerDslImpl(
     override val holder: ContainerHolder,
@@ -32,12 +33,15 @@ internal class KmpConfigurationContainerDslImpl(
     TargetAndroidNativeContainer.Configure,
     TargetWasmNativeContainer.Configure {
 
+    override fun kotlin(action: KotlinProjectExtension.() -> Unit) {
+        holder.configureCustom(
+            KotlinProjectActionContainer.NAME, ::KotlinProjectActionContainer, action,
+        )
+    }
 
     override fun kotlinMultiplatform(action: KotlinMultiplatformExtension.() -> Unit) {
         holder.configureCustom(
-            KotlinMultiplatformActionContainer.NAME,
-            ::KotlinMultiplatformActionContainer,
-            action,
+            KotlinMultiplatformActionContainer.NAME, ::KotlinMultiplatformActionContainer, action,
         )
     }
 

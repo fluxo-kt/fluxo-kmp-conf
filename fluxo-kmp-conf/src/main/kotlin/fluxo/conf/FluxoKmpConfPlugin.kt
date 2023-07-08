@@ -4,6 +4,7 @@ import fluxo.conf.data.BuildConstants.PLUGIN_ID
 import fluxo.conf.deps.FluxoCache
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.impl.ContainerImpl
+import fluxo.conf.dsl.container.impl.ContainerKotlinAware
 import fluxo.conf.dsl.container.impl.ContainerKotlinMultiplatformAware
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
@@ -30,6 +31,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
@@ -121,8 +123,14 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             for (container in containers) {
                 container.applyPluginsWith(pluginManager)
 
-                if (container is ContainerKotlinMultiplatformAware) {
-                    container.setup(this)
+                when (container) {
+                    is ContainerKotlinMultiplatformAware ->
+                        container.setup(this)
+
+                    is ContainerKotlinAware<*> ->
+                        @Suppress("UNCHECKED_CAST")
+                        (container as ContainerKotlinAware<KotlinProjectExtension>)
+                            .setup(this)
                 }
             }
         }
