@@ -11,23 +11,23 @@ internal fun <T> Provider<T>.memoize(): Provider<T> = when (this) {
     // ValueSource instances already memoize their value
     is DefaultValueSourceProviderFactory.ValueSourceProvider<*, *> -> this
 
-    // cannot memoize something that isn't a ProviderInternal; pretty much everything *must*
-    // be a ProviderInternal, as this is how internal state (dependencies, etc) are carried.
+    // Can't memoize something that isn't a ProviderInternal.
+    // Pretty much everything *must* be a ProviderInternal,
+    // as this is how internal state (dependencies, etc) are carried.
     !is ProviderInternal<T> -> error("Expected ProviderInternal, got $this")
 
     else -> MemoizedProvider(this)
 }
 
 /** @see org.jetbrains.intellij.MemoizedProvider */
-@Suppress("HasPlatformType")
 private class MemoizedProvider<T>(private val delegate: ProviderInternal<T>) :
     AbstractMinimalProvider<T>() {
 
-    // guarantee at-most-once execution of original provider
+    // guarantee at-most-once execution of the original provider
     private val memoizedValue =
         lazy { delegate.calculateValue(ValueSupplier.ValueConsumer.IgnoreUnsafeRead) }
 
-    // always the same type as Provider value we are memoizing
+    // always the same type as Provider value
     override fun getType(): Class<T>? = delegate.type
 
     // the producer is from the source provider

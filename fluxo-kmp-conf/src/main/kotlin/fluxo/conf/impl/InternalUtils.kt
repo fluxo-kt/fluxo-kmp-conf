@@ -24,49 +24,40 @@ internal fun String?.tryAsBoolean(): Boolean {
 private val TRUE_VALUES = arrayOf("true", "1", "on", "y", "yes")
 
 
-@Suppress("unused")
-private fun Project.booleanProperty(name: String): Provider<Boolean> {
-    val provider = stringProperty(name)
-    return provider {
-        provider.orNull.tryAsBoolean()
+private fun Project.stringPropValue(name: String): String? {
+    // Exclude extensions, look only for regular props
+    val filter: (Any) -> Boolean = { it is CharSequence || it is Number }
+    var value = findProperty(name)?.takeIf(filter)?.toString()
+    if (value.isNullOrEmpty() && '.' !in name) {
+        value = findProperty("org.gradle.project.$name")?.takeIf(filter)?.toString()
     }
+    return value
 }
 
-private fun Project.stringProperty(name: String): Provider<String> {
-    return provider {
-        // Exclude extensions, look only for regular props
-        val filter: (Any) -> Boolean = { it is CharSequence || it is Number }
-        var value = findProperty(name)?.takeIf(filter)?.toString()
-        if (value.isNullOrEmpty() && '.' !in name) {
-            value = findProperty("org.gradle.project.$name")?.takeIf(filter)?.toString()
-        }
-        value
-    }
-}
-
-private fun Project.envVar(name: String): Provider<String?> {
-    return provider {
-        providers.environmentVariable(name).orNull ?: System.getProperty(name)
-    }
+private fun Project.envVarValue(name: String): String? {
+    return providers.environmentVariable(name).orNull ?: System.getProperty(name)
 }
 
 
 internal fun Project.envOrPropFlag(name: String): Provider<Boolean> {
-    return provider {
-        envVar(name).orNull != null || stringProperty(name).orNull.tryAsBoolean()
-    }.memoize()
+    return provider { envOrPropFlagValue(name) }.memoize()
 }
+
+internal fun Project.envOrPropFlagValue(name: String): Boolean {
+    return envVarValue(name) != null || stringPropValue(name).tryAsBoolean()
+}
+
 
 internal fun Project.envOrProp(name: String): Provider<String?> {
-    return provider { envOrPropRaw(name) }.memoize()
+    return provider { envOrPropValue(name) }.memoize()
 }
 
-internal fun Project.envOrPropRaw(name: String): String? {
-    return envVar(name).orNull?.takeIf { it.isNotEmpty() }
-        ?: stringProperty(name).orNull?.takeIf { it.isNotEmpty() }
+internal fun Project.envOrPropValue(name: String): String? {
+    return envVarValue(name)?.takeIf { it.isNotEmpty() }
+        ?: stringPropValue(name)?.takeIf { it.isNotEmpty() }
 }
 
 internal fun Project?.envOrPropValueLenient(name: String): String? {
     // Check environment variable even if no project provided
-    return if (this != null) envOrPropRaw(name) else System.getProperty(name)
+    return if (this != null) envOrPropValue(name) else System.getProperty(name)
 }

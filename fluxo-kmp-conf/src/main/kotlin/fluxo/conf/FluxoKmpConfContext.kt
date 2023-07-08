@@ -31,6 +31,7 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.PluginAware
+import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import useKotlinDebug
@@ -46,6 +47,9 @@ internal abstract class FluxoKmpConfContext
     internal val provisioner: Provisioner = GradleProvisioner.DedupingProvisioner(
         GradleProvisioner.forRootProjectBuildscript(rootProject),
     )
+
+    @get:Inject
+    internal abstract val eventsListenerRegistry: BuildEventsListenerRegistry
 
 
     val libs: VersionCatalog? = rootProject.libsCatalogOptional
@@ -66,6 +70,9 @@ internal abstract class FluxoKmpConfContext
         rootProject.allKmpTargetsEnabled() || requestedKmpTargets.isEmpty()
 
     val testsDisabled: Boolean
+
+
+    val isCI by rootProject.isCI()
 
 
     val startTaskNames: Set<String>
@@ -111,7 +118,6 @@ internal abstract class FluxoKmpConfContext
             taskGraphBasedProjectSyncDetection()
         }
 
-        val isCI by project.isCI()
         if (isCI) logger.l("CI mode is enabled!")
         if (project.isRelease().get()) logger.l("RELEASE mode is enabled!")
         if (project.areComposeMetricsEnabled().get()) logger.l("COMPOSE_METRICS mode is enabled!")

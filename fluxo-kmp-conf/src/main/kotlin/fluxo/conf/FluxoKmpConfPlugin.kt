@@ -9,6 +9,7 @@ import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.ensureUnreachableTasksDisabled
 import fluxo.conf.feat.prepareBuildScanPlugin
+import fluxo.conf.feat.prepareCompleteKotlinPlugin
 import fluxo.conf.feat.prepareDependencyAnalysisPlugin
 import fluxo.conf.feat.prepareDependencyAnalysisTasks
 import fluxo.conf.feat.prepareDependencyGuardPlugin
@@ -86,6 +87,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         }
 
         FluxoCache.bindToProjectLifecycle(target)
+        context.prepareCompleteKotlinPlugin()
         context.prepareGradleVersionsPlugin()
         context.prepareDependencyAnalysisPlugin()
         context.prepareDependencyGuardPlugin()

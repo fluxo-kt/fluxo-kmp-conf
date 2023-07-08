@@ -1,7 +1,9 @@
 @file:Suppress("TooManyFunctions", "ktPropBy")
 
+import fluxo.conf.feat.LOAD_KMM_CODE_COMPLETION_FLAG
 import fluxo.conf.impl.envOrProp
 import fluxo.conf.impl.envOrPropFlag
+import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.conf.impl.envOrPropValueLenient
 import fluxo.conf.kmp.KmpTargetCode.Companion.KMP_TARGETS_PROP
 import java.util.regex.Pattern
@@ -42,9 +44,12 @@ public fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8
 
 public fun Project?.buildNumber(): String? = envOrPropValueLenient("BUILD_NUMBER")
 
-internal fun Project.allKmpTargetsEnabled(): Boolean = envOrPropFlag("KMP_TARGETS_ALL").get()
+internal fun Project.allKmpTargetsEnabled(): Boolean = envOrPropFlagValue("KMP_TARGETS_ALL")
 
 internal fun Project.requestedKmpTargets(): String? = envOrPropValueLenient(KMP_TARGETS_PROP)
+
+internal fun Project.loadKmmCodeCompletion(): Boolean =
+    envOrPropFlagValue(LOAD_KMM_CODE_COMPLETION_FLAG)
 
 
 public fun Project.signingKey(): String? =

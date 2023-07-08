@@ -22,6 +22,8 @@ com.github.gmazzo.buildconfig:plugin:4.1.1
 com.google.devtools.ksp:symbol-processing-gradle-plugin:1.9.0-1.0.11
 com.gradle.enterprise:com.gradle.enterprise.gradle.plugin:3.13.4
 com.gradle:gradle-enterprise-gradle-plugin:3.13.4
+com.louiscad.complete-kotlin:com.louiscad.complete-kotlin.gradle.plugin:1.1.0
+com.louiscad.complete-kotlin:plugin:1.1.0
 com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.8.0
 com.mikepenz.aboutlibraries.plugin:com.mikepenz.aboutlibraries.plugin.gradle.plugin:10.8.0
 com.pinterest:ktlint:0.50.0

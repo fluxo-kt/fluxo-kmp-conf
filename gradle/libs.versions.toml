@@ -139,6 +139,11 @@ kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
+# Auto-completion and symbol resolution for all Kotlin/Native platforms on any OS.
+# https://github.com/LouisCAD/CompleteKotlin/releases
+# https://plugins.gradle.org/plugin/com.louiscad.complete-kotlin
+complete-kotlin = { id = "com.louiscad.complete-kotlin", version = "1.1.0" }
+
 # Publish plugins to the Gradle Plugin Portal
 # https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }

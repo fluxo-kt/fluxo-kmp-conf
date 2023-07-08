@@ -162,6 +162,7 @@ buildConfig {
         }
     }
 
+    buildConfigField("COMPLETE_KOTLIN", libs.plugins.complete.kotlin)
     buildConfigField("DEPS_VERSIONS", libs.plugins.deps.versions)
     buildConfigField("DEPS_ANALYSIS", libs.plugins.deps.analysis)
     buildConfigField("DEPS_GUARD", libs.plugins.deps.guard, implementation = true)

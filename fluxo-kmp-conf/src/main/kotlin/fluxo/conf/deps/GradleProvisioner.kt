@@ -1,7 +1,9 @@
 package fluxo.conf.deps
 
+import fluxo.conf.impl.w
 import java.io.File
 import org.gradle.api.GradleException
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -36,8 +38,19 @@ internal object GradleProvisioner {
                 )
                 mavenCoords.map { dependencies.create(it) }
                     .forEach {
-                        // Note in classpath configuration
-                        classpathConf?.dependencies?.add(it)
+                        // Note in the classpath configuration
+                        try {
+                            classpathConf?.dependencies?.add(it)
+                        } catch (_: InvalidUserDataException) {
+                            // Can't change dependencies of dependency configuration ':classpath'
+                            // after it has been resolved.
+                        } catch (e: Throwable) {
+                            project.logger.w(
+                                "Failed to add dependency '$it' to classpath configuration: $e",
+                                e,
+                            )
+                        }
+
                         config.dependencies.add(it)
                     }
                 config.setDescription(mavenCoords.toString())
