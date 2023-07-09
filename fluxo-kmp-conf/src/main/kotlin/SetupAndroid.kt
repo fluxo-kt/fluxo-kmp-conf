@@ -436,7 +436,9 @@ private fun CommonExtension<*, *, *, *>.kotlinOptions(
 internal fun Project.ksp(action: KspExtension.() -> Unit) =
     configureExtension("ksp", action = action)
 
-internal val PluginAware.hasKsp: Boolean get() = plugins.hasPlugin("com.google.devtools.ksp")
+internal val PluginAware.hasKsp: Boolean get() = plugins.hasPlugin(KSP_PLUGIN_ID)
+
+internal val PluginAware.hasKapt: Boolean get() = plugins.hasPlugin(KAPT_PLUGIN_ID)
 
 private fun Project.setupSigning(appExtension: BaseAppModuleExtension) {
     // Configured signing dynamically with signing.properties file

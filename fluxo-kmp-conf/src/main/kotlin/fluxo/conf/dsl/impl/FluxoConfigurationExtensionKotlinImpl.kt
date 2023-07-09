@@ -20,19 +20,36 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     override var kotlinLangVersion: String?
         get() {
             return kotlinLangVersionProp.orNull ?: parent?.kotlinLangVersion ?: context.libs
-                .v("kotlinLangVersion", "kotlinApiVersion", "kotlinLang", "kotlinApi")
+                .v("kotlinLangVersion", "kotlinLang", "kotlinLanguage")
         }
         set(value) = kotlinLangVersionProp.set(value)
 
+    @get:Input
+    val kotlinApiVersionProp: Property<String?>
+    override var kotlinApiVersion: String?
+        get() {
+            return kotlinApiVersionProp.orNull ?: parent?.kotlinApiVersion ?: context.libs
+                .v("kotlinApiVersion", "kotlinApi") ?: kotlinLangVersion
+        }
+        set(value) = kotlinApiVersionProp.set(value)
+
+    @get:Input
+    val kotlinTestsLangVersionProp: Property<String?>
+    override var kotlinTestsLangVersion: String?
+        get() {
+            return kotlinTestsLangVersionProp.orNull
+                ?: parent?.kotlinTestsLangVersion
+                ?: context.libs.v("testsKotlinLangVersion", "testsKotlinLang")
+        }
+        set(value) = kotlinTestsLangVersionProp.set(value)
 
     @get:Input
     val kotlinCoreLibrariesProp: Property<String?>
-    override var kotlinCoreLibraries: String
+    override var kotlinCoreLibraries: String?
         get() {
             return kotlinCoreLibrariesProp.orNull
                 ?: parent?.kotlinCoreLibraries
                 ?: context.libs.v("kotlinCoreLibraries", "kotlinCoreLibrariesVersion", "kotlin")
-                ?: context.kotlinPluginVersion.toString()
         }
         set(value) = kotlinCoreLibrariesProp.set(value)
 
@@ -41,10 +58,21 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     val javaLangTargetProp: Property<String?>
     override var javaLangTarget: String?
         get() {
-            return javaLangTargetProp.orNull ?: parent?.javaLangTarget ?: context.libs
-                .v("javaLangTarget", "jvmTarget", "sourceCompatibility", "targetCompatibility")
+            return javaLangTargetProp.orNull ?: parent?.javaLangTarget ?: context.libs.v(
+                "jvmTarget", "javaLangTarget", "javaLangSource", "javaToolchain",
+                "sourceCompatibility", "targetCompatibility",
+            )
         }
         set(value) = javaLangTargetProp.set(value)
+
+    @get:Input
+    val javaTestsLangTargetProp: Property<String?>
+    override var javaTestsLangTarget: String?
+        get() {
+            return javaTestsLangTargetProp.orNull ?: parent?.javaTestsLangTarget ?: context.libs
+                .v("jvmTestsTarget", "javaTestsLangTarget")
+        }
+        set(value) = javaTestsLangTargetProp.set(value)
 
     @get:Input
     val setupJvmToolchainProp: Property<Boolean?>
@@ -54,9 +82,23 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
 
 
     @get:Input
+    val setupKspProp: Property<Boolean?>
+    override var setupKsp: Boolean?
+        get() = setupKspProp.orNull ?: parent?.setupKsp
+        set(value) = setupKspProp.set(value)
+
+
+    @get:Input
+    val setupKaptProp: Property<Boolean?>
+    override var setupKapt: Boolean?
+        get() = setupKaptProp.orNull ?: parent?.setupKapt
+        set(value) = setupKaptProp.set(value)
+
+
+    @get:Input
     val optInProp: ListProperty<String>
     override var optIns: List<String>
-        get() = optInProp.orNull ?: parent?.optIns.orEmpty()
+        get() = optInProp.orNull.orEmpty() + parent?.optIns.orEmpty()
         set(value) = optInProp.set(value)
 
     @get:Input
@@ -89,6 +131,18 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     override var progressiveMode: Boolean?
         get() = progressiveModeProp.orNull ?: parent?.progressiveMode
         set(value) = progressiveModeProp.set(value)
+
+    @get:Input
+    val latestSettingsForTestProp: Property<Boolean?>
+    override var latestSettingsForTests: Boolean?
+        get() = latestSettingsForTestProp.orNull ?: parent?.latestSettingsForTests
+        set(value) = latestSettingsForTestProp.set(value)
+
+    @get:Input
+    val experimentalLatestCompilationProp: Property<Boolean?>
+    override var experimentalLatestCompilation: Boolean?
+        get() = experimentalLatestCompilationProp.orNull ?: parent?.experimentalLatestCompilation
+        set(value) = experimentalLatestCompilationProp.set(value)
 
     @get:Input
     val removeAssertionsInReleaseProp: Property<Boolean?>
@@ -147,4 +201,10 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     override var setupVerification: Boolean?
         get() = setupVerificationProp.orNull ?: parent?.setupVerification
         set(value) = setupVerificationProp.set(value)
+
+    @get:Input
+    val enableSpotlessProp: Property<Boolean?>
+    override var enableSpotless: Boolean?
+        get() = enableSpotlessProp.orNull ?: parent?.enableSpotless
+        set(value) = enableSpotlessProp.set(value)
 }

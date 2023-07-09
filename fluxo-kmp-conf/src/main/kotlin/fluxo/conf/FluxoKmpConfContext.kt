@@ -2,15 +2,14 @@ package fluxo.conf
 
 import allKmpTargetsEnabled
 import areComposeMetricsEnabled
-import bundle
 import disableTests
 import fluxo.conf.deps.GradleProvisioner
 import fluxo.conf.deps.Provisioner
-import fluxo.conf.impl.KOTLIN_1_8
-import fluxo.conf.impl.KOTLIN_1_9
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.d
 import fluxo.conf.impl.e
+import fluxo.conf.impl.kotlin.kotlinPluginVersion
+import fluxo.conf.impl.kotlin.mppAndroidSourceSetLayoutVersion
 import fluxo.conf.impl.l
 import fluxo.conf.impl.libsCatalogOptional
 import fluxo.conf.impl.tryAsBoolean
@@ -29,11 +28,9 @@ import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.PluginAware
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
-import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import useKotlinDebug
 
 internal abstract class FluxoKmpConfContext
@@ -54,20 +51,26 @@ internal abstract class FluxoKmpConfContext
 
     val libs: VersionCatalog? = rootProject.libsCatalogOptional
 
-    val kotlinPluginVersion: KotlinVersion = kotlinPluginVersion()
+    val kotlinPluginVersion: KotlinVersion = rootProject.logger.kotlinPluginVersion()
 
     /**
      * [Kotlin 1.8](https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema)
-     * introduced a new source set layout for Android projects.
+     * added a new source set layout for Android projects.
      * It's the default since
      * [Kotlin 1.9](https://kotlinlang.org/docs/whatsnew19.html#new-android-source-set-layout-enabled-by-default)
      */
-    val androidLayoutV2: Boolean = mppAndroidSourceSetLayoutVersion()
+    val androidLayoutV2: Boolean = rootProject.mppAndroidSourceSetLayoutVersion(kotlinPluginVersion)
 
     val testsDisabled: Boolean
 
 
+    val isInCompositeBuild get() = rootProject.gradle.includedBuilds.size > 1
+
     val isCI by rootProject.isCI()
+    val isRelease by rootProject.isRelease()
+    val isMaxDebug by rootProject.isMaxDebugEnabled()
+    val useKotlinDebug by rootProject.useKotlinDebug()
+    val composeMetricsEnabled by rootProject.areComposeMetricsEnabled()
 
     val requestedKmpTargets: Set<KmpTargetCode> = getSetOfRequestedKmpTargets()
 
@@ -119,11 +122,11 @@ internal abstract class FluxoKmpConfContext
         }
 
         if (isCI) logger.l("CI mode is enabled!")
-        if (project.isRelease().get()) logger.l("RELEASE mode is enabled!")
-        if (project.areComposeMetricsEnabled().get()) logger.l("COMPOSE_METRICS mode is enabled!")
+        if (isRelease) logger.l("RELEASE mode is enabled!")
+        if (composeMetricsEnabled) logger.l("COMPOSE_METRICS mode is enabled!")
 
-        if (project.useKotlinDebug().get()) logger.w("USE_KOTLIN_DEBUG mode is enabled!")
-        if (project.isMaxDebugEnabled().get()) logger.w("MAX_DEBUG mode is enabled!")
+        if (useKotlinDebug) logger.w("USE_KOTLIN_DEBUG mode is enabled!")
+        if (isMaxDebug) logger.w("MAX_DEBUG mode is enabled!")
         if (project.isDesugaringEnabled().get()) logger.w("DESUGARING mode is enabled!")
         if (project.isR8Disabled().get()) logger.w("DISABLE_R8 mode is enabled!")
 
@@ -193,48 +196,6 @@ internal abstract class FluxoKmpConfContext
             }
         }
     }
-
-
-    private fun kotlinPluginVersion(): KotlinVersion {
-        val logger = rootProject.logger
-        try {
-            getKotlinPluginVersion(logger).let { versionString ->
-                val baseVersion = versionString.split("-", limit = 2)[0]
-                val parts = baseVersion.split(".")
-                return KotlinVersion(
-                    major = parts[0].toInt(),
-                    minor = parts[1].toInt(),
-                    patch = parts.getOrNull(2)?.toInt() ?: 0,
-                )
-            }
-        } catch (e: Throwable) {
-            logger.e("Failed to get Kotlin plugin version: $e", e)
-        }
-        return KotlinVersion.CURRENT
-    }
-
-    /**
-     * Detect the androidSourceSetLayout v2
-     *
-     * @see org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.PropertyNames.KOTLIN_MPP_ANDROID_SOURCE_SET_LAYOUT_VERSION
-     * @see bundle
-     */
-    private fun mppAndroidSourceSetLayoutVersion(): Boolean {
-        // https://kotlinlang.org/docs/whatsnew19.html#new-android-source-set-layout-enabled-by-default
-        // https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema
-        val project = rootProject
-        val kotlinVersion = kotlinPluginVersion
-        val layoutVersion = when {
-            kotlinVersion >= KOTLIN_1_9 -> project.mppAndroidSourceSetLayoutVersionProp ?: 2
-            kotlinVersion >= KOTLIN_1_8 -> project.mppAndroidSourceSetLayoutVersionProp ?: 1
-            else -> 1
-        }
-        return layoutVersion == 2
-    }
-
-    private val ExtensionAware.mppAndroidSourceSetLayoutVersionProp: Int?
-        get() = extensions.extraProperties.properties["kotlin.mpp.androidSourceSetLayoutVersion"]
-            ?.toString()?.toIntOrNull()
 
 
     internal companion object {

@@ -13,7 +13,7 @@ import fluxo.conf.dsl.container.impl.target.TargetLinuxContainer
 import fluxo.conf.dsl.container.impl.target.TargetMingwContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmNativeContainer
-import fluxo.conf.impl.KOTLIN_1_8_20
+import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 

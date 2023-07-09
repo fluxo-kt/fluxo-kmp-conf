@@ -7,6 +7,8 @@ import fluxo.conf.dsl.container.KmpConfigurationContainerDsl as KmpConfDsl
 import fluxo.conf.dsl.container.impl.ContainerHolder
 import fluxo.conf.dsl.container.impl.ContainerImpl
 import fluxo.conf.dsl.container.impl.KmpConfigurationContainerDslImpl
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.impl.findByType
 import javax.inject.Inject
 import org.gradle.api.GradleException
@@ -14,11 +16,14 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 
+internal typealias ConfigureContainers =
+    (ConfigurationType, FluxoConfigurationExtensionImpl, Collection<ContainerImpl>) -> Unit
+
 @FluxoKmpConfDsl
 internal abstract class FluxoConfigurationExtensionImpl
 @Inject internal constructor(
     override val context: FluxoKmpConfContext,
-    private val configureContainers: (Collection<ContainerImpl>) -> Unit,
+    private val configureContainers: ConfigureContainers,
 ) : FluxoConfigurationExtension,
     FluxoConfigurationExtensionKotlinImpl,
     FluxoConfigurationExtensionAndroidImpl,
@@ -27,16 +32,16 @@ internal abstract class FluxoConfigurationExtensionImpl
     @Volatile
     private var parentCache: FluxoConfigurationExtension? = null
 
+
+    @get:Inject
+    abstract override val project: Project
+
     override val parent: FluxoConfigurationExtension?
         get() {
             return parentCache
                 ?: project.parent?.extensions?.findByType<FluxoConfigurationExtension>()
                     ?.also { parentCache = it }
         }
-
-
-    @get:Inject
-    abstract override val project: Project
 
     @get:Input
     protected abstract val hasConfigurationAction: Property<Boolean?>
@@ -65,12 +70,12 @@ internal abstract class FluxoConfigurationExtensionImpl
 
         val holder = ContainerHolder(context, project)
         val dsl = KmpConfigurationContainerDslImpl(holder)
-        applyDefaultConfigurations(dsl)
+        applyDefaultKmpConfigurations(dsl)
         action(dsl)
-        configureContainers(holder.containers.sorted())
+        configureContainers(KOTLIN_MULTIPLATFORM, this, holder.containers.sorted())
     }
 
-    private fun applyDefaultConfigurations(dsl: KmpConfigurationContainerDslImpl) {
+    private fun applyDefaultKmpConfigurations(dsl: KmpConfigurationContainerDslImpl) {
         // Collect all defaults
         val defaults = mutableListOf<FluxoConfigurationExtension>()
         var p: Project? = project
@@ -93,6 +98,14 @@ internal abstract class FluxoConfigurationExtensionImpl
         }
     }
 
+
+    internal enum class ConfigurationType {
+        KOTLIN_MULTIPLATFORM,
+        ANDROID_LIB,
+        ANDROID_APP,
+        KOTLIN_JVM,
+        IDEA_PLUGIN,
+    }
 
     internal companion object {
         internal const val NAME = "fluxoConfiguration"

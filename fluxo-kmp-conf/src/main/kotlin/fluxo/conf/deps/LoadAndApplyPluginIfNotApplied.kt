@@ -19,12 +19,12 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     catalogVersionId: String? = catalogPluginId,
     catalogVersionIds: Array<out String>? = null,
     vararg catalogPluginIds: String,
+    project: Project = rootProject,
 ): Boolean {
-    val project = rootProject
     val logger = project.logger
     val pluginManager = project.pluginManager
     if (pluginManager.hasPlugin(id)) {
-        logger.v("Root project has plugin '$id' already applied")
+        logger.v("Project has plugin '$id' already applied")
         return true
     }
 

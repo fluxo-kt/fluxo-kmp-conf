@@ -10,9 +10,10 @@ import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetAndroid
-import fluxo.conf.impl.KOTLIN_1_9
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.container
+import fluxo.conf.impl.isTestRelated
+import fluxo.conf.impl.kotlin.KOTLIN_1_9
 import fluxo.conf.impl.set
 import fluxo.conf.kmp.KmpTargetCode
 import fluxo.conf.kmp.SourceSetBundle
@@ -49,12 +50,8 @@ internal abstract class TargetAndroidContainer<T : TestedExtension>(
         // Set before executing action so that they may be overridden if desired.
         compileOptions {
             // FIXME: Replace with full-fledged context-based target configuration
-            compileSourceCompatibility?.let { compatibility ->
-                sourceCompatibility = compatibility
-            }
-            compileTargetCompatibility?.let { compatibility ->
-                targetCompatibility = compatibility
-            }
+            // sourceCompatibility = compatibility
+            // targetCompatibility = compatibility
         }
     }
 
@@ -71,8 +68,6 @@ internal abstract class TargetAndroidContainer<T : TestedExtension>(
         val project = target.project
         setupAndroid(project)
         val layoutV2 = context.context.androidLayoutV2
-        // FIXME: Wait for android variants to be created before configuring source sets,
-        //  setup bundle for each variant.
         val bundle = k.sourceSets.bundleFor(target, androidLayoutV2 = layoutV2)
         setupParentSourceSet(k, bundle)
 
@@ -88,7 +83,7 @@ internal abstract class TargetAndroidContainer<T : TestedExtension>(
                 // TODO: should androidUnitTestDebug depend on androidUnitTest?
                 // TODO: provide a `setupParentSourceSet` with a single SourceSet arg
                 val variantBundle = when {
-                    "Test" in name -> SourceSetBundle(main = bundle.main, test = this)
+                    isTestRelated() -> SourceSetBundle(main = bundle.main, test = this)
                     else -> SourceSetBundle(main = this, test = bundle.test)
                 }
                 setupParentSourceSet(k, variantBundle)
@@ -99,7 +94,6 @@ internal abstract class TargetAndroidContainer<T : TestedExtension>(
 
     interface Configure : TargetAndroid.Configure, ContainerHolderAware {
 
-        // TODO: Is it ok to have an android app target in the KMP module?
         override fun androidApp(
             targetName: String,
             action: TargetAndroid<BaseAppModuleExtension>.() -> Unit,

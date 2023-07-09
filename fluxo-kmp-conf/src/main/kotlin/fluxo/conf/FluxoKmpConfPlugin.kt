@@ -1,13 +1,17 @@
 package fluxo.conf
 
+import KMP_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.PLUGIN_ID
 import fluxo.conf.deps.FluxoCache
+import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.impl.ContainerImpl
 import fluxo.conf.dsl.container.impl.ContainerKotlinAware
 import fluxo.conf.dsl.container.impl.ContainerKotlinMultiplatformAware
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
+import fluxo.conf.dsl.impl.ConfigureContainers
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType
 import fluxo.conf.feat.ensureUnreachableTasksDisabled
 import fluxo.conf.feat.prepareBuildScanPlugin
 import fluxo.conf.feat.prepareCompleteKotlinPlugin
@@ -23,7 +27,8 @@ import fluxo.conf.feat.prepareTaskTreePlugin
 import fluxo.conf.impl.checkIsRootProject
 import fluxo.conf.impl.configure
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.d
+import fluxo.conf.impl.i
+import fluxo.conf.impl.kotlin.setupKotlinExtension
 import fluxo.conf.impl.libsCatalog
 import fluxo.conf.impl.onVersion
 import fluxo.conf.impl.withType
@@ -51,9 +56,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         val context = FluxoKmpConfContext.getFor(target)
 
         target.allprojects {
-            val configureContainers = { containers: Collection<ContainerImpl> ->
-                configure(this, containers)
-            }
+            val configureContainers: ConfigureContainers = ::configureContainers
             extensions.create(
                 FluxoConfigurationExtension::class.java,
                 FluxoConfigurationExtensionImpl.NAME,
@@ -104,22 +107,44 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
     }
 
 
-    private fun configure(
-        project: Project,
+    private fun configureContainers(
+        type: ConfigurationType,
+        configuration: FluxoConfigurationExtensionImpl,
+        containers: Collection<ContainerImpl>,
+    ) {
+        when (type) {
+            ConfigurationType.KOTLIN_MULTIPLATFORM ->
+                configureKotlinMultiplatform(configuration, containers)
+
+            ConfigurationType.ANDROID_LIB -> TODO()
+            ConfigurationType.ANDROID_APP -> TODO()
+            ConfigurationType.KOTLIN_JVM -> TODO()
+            ConfigurationType.IDEA_PLUGIN -> TODO()
+        }
+    }
+
+    private fun configureKotlinMultiplatform(
+        configuration: FluxoConfigurationExtensionImpl,
         containers: Collection<ContainerImpl>,
     ) {
         val targets = containers.filterIsInstance<KmpTargetContainerImpl<*>>()
+        val project = configuration.project
         val logger = project.logger
+        val label = ":setupMultiplatform"
         if (targets.isEmpty()) {
-            logger.d("No applicable setup found, skipping module configuration")
+            logger.i("$label - no applicable targets found, skipping module configuration")
             return
+        } else {
+            logger.i(label)
         }
 
         val pluginManager = project.pluginManager
-        pluginManager.apply("org.jetbrains.kotlin.multiplatform")
-        logger.d("Applied KMP plugin!")
+        configuration.context.loadAndApplyPluginIfNotApplied(id = KMP_PLUGIN_ID, project = project)
 
         project.extensions.configure<KotlinMultiplatformExtension> {
+            // Set settings before the containers so that they may be overridden if desired.
+            setupKotlinExtension(configuration)
+
             for (container in containers) {
                 container.applyPluginsWith(pluginManager)
 

@@ -1,5 +1,7 @@
 package fluxo.conf.dsl
 
+import com.android.build.api.variant.VariantBuilder
+
 public interface FluxoConfigurationExtensionAndroid : FluxoConfigurationExtensionCommon {
 
     /**
@@ -98,4 +100,32 @@ public interface FluxoConfigurationExtensionAndroid : FluxoConfigurationExtensio
      * @see com.android.build.api.dsl.BaseFlavor.resourceConfigurations
      */
     public var androidResourceConfigurations: Set<String>
+
+
+    /**
+     * Disables Android build variants not matching the given [predicate][filterVariants].
+     *
+     * @see com.android.build.api.variant.AndroidComponentsExtension.beforeVariants
+     */
+    public var filterVariants: ((VariantBuilder) -> Boolean)?
+
+    /**
+     * Disables Android build variants not matching the given [predicate].
+     *
+     * @see com.android.build.api.variant.AndroidComponentsExtension.beforeVariants
+     */
+    public fun filterVariants(predicate: (VariantBuilder) -> Boolean) {
+        filterVariants = predicate
+    }
+
+
+    /**
+     * List of Android build types for which no verification setup needed.
+     */
+    public var noVerificationBuildTypes: List<String>
+
+    /**
+     * List of Android build flavors for which no verification setup needed.
+     */
+    public var noVerificationFlavors: List<String>
 }

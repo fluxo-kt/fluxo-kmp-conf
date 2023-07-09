@@ -4,7 +4,7 @@ import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.TargetAppleWatchos
-import fluxo.conf.impl.KOTLIN_1_8
+import fluxo.conf.impl.kotlin.KOTLIN_1_8
 import fluxo.conf.kmp.KmpTargetCode
 import fluxo.conf.kmp.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import fluxo.conf.kmp.KmpTargetCode.WATCHOS_SIMULATOR_ARM64

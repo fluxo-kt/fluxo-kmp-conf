@@ -1,6 +1,6 @@
 package fluxo.conf.dsl
 
-import fluxo.conf.dsl.container.KmpConfigurationContainerDsl
+import fluxo.conf.dsl.container.KmpConfigurationContainerDsl as KmpDsl
 import fluxo.conf.impl.EMPTY_FUN
 
 public interface FluxoConfigurationExtension :
@@ -14,20 +14,20 @@ public interface FluxoConfigurationExtension :
     /**
      * Configures the current project as a Kotlin Multiplatform module.
      */
-    public fun configure(action: KmpConfigurationContainerDsl.() -> Unit = EMPTY_FUN)
+    public fun configure(action: KmpDsl.() -> Unit = EMPTY_FUN)
 
     /** Alias for [configure] */
-    public fun configuration(action: KmpConfigurationContainerDsl.() -> Unit = EMPTY_FUN): Unit =
+    public fun configureMultiplatform(action: KmpDsl.() -> Unit = EMPTY_FUN): Unit =
         configure(action)
+
+    /** Alias for [configure] */
+    public fun configuration(action: KmpDsl.() -> Unit = EMPTY_FUN): Unit = configure(action)
 
 
     /**
      * Declares default configuration for the current project and all subprojects.
      */
-    public fun defaultConfiguration(action: KmpConfigurationContainerDsl.() -> Unit)
-
-
-    public fun setupMultiplatform() {}
+    public fun defaultConfiguration(action: KmpDsl.() -> Unit)
 
 
     /*
@@ -35,9 +35,9 @@ public interface FluxoConfigurationExtension :
     setupAndroidLibrary
     setupAndroidApp
     setupKotlin
-    setupBinaryCompatibilityValidator
-    setupJsApp
     setupIdeaPlugin
+
+    setupBinaryCompatibilityValidator
     setupPublication
     setupVerification
     setupTestsReport

@@ -1,5 +1,6 @@
 package fluxo.conf.graph
 
+import fluxo.conf.impl.isTestRelated
 import org.gradle.api.Named
 
 /**
@@ -12,7 +13,7 @@ internal interface RenderableNode : Named, Comparable<RenderableNode> {
     val isConstraint: Boolean get() = false
     val isUnresolvableResult: Boolean get() = false
 
-    val isTest: Boolean get() = name.contains("Test", ignoreCase = true)
+    val isTest: Boolean get() = isTestRelated()
 
     override fun getName(): String = id.toString()
 

@@ -3,20 +3,77 @@ package fluxo.conf.dsl
 public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtensionCommon {
 
     /**
-     * The Kotlin language/api version.
-     * Set "latest" for the latest possible value.
+     * The Kotlin language version.
+     * Provide source compatibility with the specified version of Kotlin.
+     *
+     * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
+     * '2.0 (experimental)', '2.1 (experimental)'.
+     * Set 'latest' for the latest possible value.
      *
      * Inherited from the parent project if not set.
+     * Default value: `null`.
      *
      * Auto set using the version names in the toml version catalog:
-     * `kotlinLangVersion`, `kotlinApiVersion`, `kotlinLang`, `kotlinApi`.
+     * `kotlinLangVersion`, `kotlinLang`.
      *
+     * Note: can't be lower than [kotlinApiVersion]!
+     *
+     * @see org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder.languageVersion
+     * @see org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions.languageVersion
+     * @see kotlinApiVersion
+     * @see kotlinCoreLibraries
+     * @see kotlinTestsLangVersion
+     */
+    public var kotlinLangVersion: String?
+
+    /**
+     * The Kotlin api version.
+     * Allow using declarations only from the specified version of the bundled libraries.
+     *
+     * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
+     * '2.0 (experimental)', '2.1 (experimental)'.
+     * Set 'latest' for the latest possible value.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: [kotlinLangVersion].
+     *
+     * Auto set using the version names in the toml version catalog:
+     * `kotlinApiVersion`, `kotlinApi`.
+     *
+     * Note: can't be greater than [kotlinLangVersion]!
+     *
+     * @see org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder.apiVersion
+     * @see org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions.apiVersion
+     * @see kotlinLangVersion
+     * @see kotlinCoreLibraries
+     * @see kotlinTestsLangVersion
+     */
+    public var kotlinApiVersion: String?
+
+    /**
+     * Override the Kotlin language/api version for tests.
+     * Provide source compatibility with the specified version of Kotlin.
+     *
+     * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
+     * '2.0 (experimental)', '2.1 (experimental)'.
+     * Set 'latest' for the latest possible value.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `null`.
+     *
+     * Auto set using the version names in the toml version catalog:
+     * `testsKotlinLangVersion`, `testsKotlinLang`.
+     *
+     * Note: can't be lower than [kotlinApiVersion] or [kotlinLangVersion]!
+     *
+     * @see kotlinApiVersion
+     * @see kotlinLangVersion
      * @see org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder.languageVersion
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions.languageVersion
      * @see org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder.apiVersion
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions.apiVersion
      */
-    public var kotlinLangVersion: String?
+    public var kotlinTestsLangVersion: String?
 
     /**
      * Version of the core Kotlin libraries added to Kotlin compile classpath,
@@ -29,18 +86,25 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * `kotlinCoreLibraries`, `kotlinCoreLibrariesVersion`, `kotlin`.
      *
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension.coreLibrariesVersion
+     * @see kotlinLangVersion
+     * @see kotlinApiVersion
      */
-    public var kotlinCoreLibraries: String
+    public var kotlinCoreLibraries: String?
 
 
     /**
-     * The Java lang target version.
-     * @TODO: Set "latest" for the latest possible value.
+     * The Java lang target (and source) version.
+     * Configures to generate class files suitable for the specified Java SE release.
+     * And compiles source code according to the rules of the Java programming language
+     * for the specified Java SE release.
      *
      * Inherited from the parent project if not set.
      *
      * Auto set using the version names in the toml version catalog:
-     * `javaLangTarget`, `jvmTarget`, `sourceCompatibility`, `targetCompatibility`.
+     * `jvmTarget`, `javaLangTarget`, `javaLangSource`, `javaToolchain`,
+     * `sourceCompatibility`, `targetCompatibility`.
+     *
+     * Note: the Java lang target must not be lower than the source release.
      *
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions.jvmTarget
      * @see org.gradle.api.plugins.JavaPluginExtension.setSourceCompatibility
@@ -48,8 +112,38 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * @see org.gradle.api.tasks.compile.AbstractCompile.setSourceCompatibility
      * @see org.gradle.api.tasks.compile.AbstractCompile.setTargetCompatibility
      * @see org.gradle.jvm.toolchain.JavaToolchainSpec.getLanguageVersion
+     * @see javaTestsLangTarget
+     *
+     * @TODO: support "latest" for the current JRE version or the latest known LTS (with toolchain).
      */
     public var javaLangTarget: String?
+
+    /**
+     * Override the [Java lang target (and source) version][javaLangTarget] for tests.
+     *
+     * Inherited from the parent project if not set.
+     *
+     * Auto set using the version names in the toml version catalog:
+     * `jvmTestsTarget`, `javaTestsLangTarget`
+     *
+     * Note: can't be lower than [javaLangTarget]!
+     *
+     * @see javaLangTarget
+     * @see org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions.jvmTarget
+     * @see org.gradle.api.plugins.JavaPluginExtension.setSourceCompatibility
+     * @see org.gradle.api.plugins.JavaPluginExtension.setTargetCompatibility
+     * @see org.gradle.api.tasks.compile.AbstractCompile.setSourceCompatibility
+     * @see org.gradle.api.tasks.compile.AbstractCompile.setTargetCompatibility
+     * @see org.gradle.jvm.toolchain.JavaToolchainSpec.getLanguageVersion
+     */
+    public var javaTestsLangTarget: String?
+
+    /** Alias for [javaLangTarget] */
+    public var jvmTarget: String?
+        get() = javaLangTarget
+        set(value) {
+            javaLangTarget = value
+        }
 
     /**
      * Flag to configure [Java toolchain](https://docs.gradle.org/current/userguide/toolchains.html)
@@ -147,6 +241,16 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     public var progressiveMode: Boolean?
 
     /**
+     * Flag to create an experimental compilation with the latest language features.
+     */
+    public var latestSettingsForTests: Boolean?
+
+    /**
+     * Flag to create an experimental compilation with the latest language features.
+     */
+    public var experimentalLatestCompilation: Boolean?
+
+    /**
      * Flag to remove utility bytecode, eliminating names/data leaks in release artifacts
      * (better for minification and obfuscation).
      *
@@ -219,6 +323,9 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     public var useExperimentalFastJarFs: Boolean?
 
 
+    /**
+     * Flag to turn on the KotlinX BinaryCompatibilityValidator plugin
+     */
     public var enableApiValidation: Boolean?
 
     public var apiValidation: BinaryCompatibilityValidatorConfig?
@@ -226,6 +333,13 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     public fun apiValidation(configure: BinaryCompatibilityValidatorConfig.() -> Unit) {
         apiValidation = BinaryCompatibilityValidatorConfig().apply(configure)
     }
+
+
+    /**
+     * Flag to turn on the Spotless setup.
+     * Can be disabled by the [setupVerification] flag.
+     */
+    public var enableSpotless: Boolean?
 
 
     // FIXME: koverReport settings

@@ -4,13 +4,13 @@ import fluxo.conf.impl.EnvParams
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.isTaskAllowedBasedByName
 import fluxo.conf.impl.isTestRelated
+import fluxo.conf.impl.kotlin.disableCompilation
 import fluxo.conf.impl.splitCamelCase
 import fluxo.conf.impl.withType
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -109,14 +109,6 @@ private fun KotlinTarget.disableCompilations(testOnly: Boolean = false) {
         if (!testOnly || isTestRelated()) {
             disableCompilation()
         }
-    }
-}
-
-internal fun KotlinCompilation<*>.disableCompilation() {
-    val task = compileTaskProvider.get()
-    if (task.enabled) {
-        task.enabled = false
-        project.logger.lifecycle("task ':{}:{}' disabled, {}", project.name, task.name, this)
     }
 }
 

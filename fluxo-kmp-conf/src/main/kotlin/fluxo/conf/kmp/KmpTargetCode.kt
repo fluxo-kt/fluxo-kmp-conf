@@ -57,6 +57,8 @@ internal enum class KmpTargetCode {
             org.jetbrains.kotlin.konan.target.DEPRECATED_TARGET_MESSAGE
 
         internal const val KMP_TARGETS_PROP = "KMP_TARGETS"
+        internal const val KMP_TARGETS_ALL_PROP = "KMP_TARGETS_ALL"
+        internal const val SPLIT_TARGETS_PROP = "split_targets"
 
 
         private val ALL = KmpTargetCode.values()
@@ -109,6 +111,8 @@ internal enum class KmpTargetCode {
             ::PLATFORM.name to PLATFORM,
         )
 
+        private val POSSIBLE_KEYS = ALIASES.keys.toList() + SPLIT_TARGETS_PROP.uppercase()
+
 
         @Throws(GradleException::class)
         @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
@@ -117,24 +121,28 @@ internal enum class KmpTargetCode {
             val targets = project.requestedKmpTargets()
             val sequence = targets?.splitToSequence(',')
 
-            // TODO: Support for EnvParams.metadataOnly ("metadata_only" property)?
-            if ((sequence == null || targets.isEmpty()) && !project.isSplitTargetsEnabled()) {
+            // TODO: Support "metadata_only"/metadataOnly mode
+            val isSplitTargetsEnabled = project.isSplitTargetsEnabled()
+                || SPLIT_TARGETS_PROP.equals(targets, ignoreCase = true)
+            if ((sequence == null || targets.isEmpty()) && !isSplitTargetsEnabled) {
                 return emptySet()
             }
 
             val set = HashSet<KmpTargetCode>(mapCapacity(ALL.size))
-            if (sequence == null) {
-                // "split_targets" mode compatibility
-                set.addAll(PLATFORM)
+            when {
+                // old "split_targets"/splitTargets mode compatibility
+                sequence == null || isSplitTargetsEnabled -> {
+                    set.addAll(PLATFORM)
 
-                // On CI Mac is the target platform for generic builds, Linux for local builds.
-                val isGenericEnabled = PLATFORM === if (isCI) APPLE else LINUX
-                if (isGenericEnabled) {
-                    set.addAll(COMMON_JVM)
-                    set.addAll(COMMON_JS)
+                    // On CI Mac is the target platform for generic builds, Linux for local builds.
+                    val isGenericEnabled = PLATFORM === if (isCI) APPLE else LINUX
+                    if (isGenericEnabled) {
+                        set.addAll(COMMON_JVM)
+                        set.addAll(COMMON_JS)
+                    }
                 }
-            } else {
-                for (v in sequence) {
+
+                else -> for (v in sequence) {
                     val target = v.uppercase().trim()
                     val group = ALIASES[target]
                     if (group != null) {
@@ -144,7 +152,9 @@ internal enum class KmpTargetCode {
                             set.add(valueOf(target))
                         } catch (e: IllegalArgumentException) {
                             throw GradleException(
-                                "$KMP_TARGETS_PROP property of '$target' not recognized", e,
+                                "$KMP_TARGETS_PROP property of '$target' not recognized. \n" +
+                                    "Known options are: $POSSIBLE_KEYS",
+                                e,
                             )
                         }
                     }

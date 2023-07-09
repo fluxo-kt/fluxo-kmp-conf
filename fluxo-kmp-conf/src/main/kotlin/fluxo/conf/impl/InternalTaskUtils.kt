@@ -18,8 +18,15 @@ internal fun Task.isTaskAllowedBasedByName(): Boolean {
 }
 
 internal fun Named.isTestRelated(): Boolean {
-    return getTaskDetailsFromName(name, allowNonDetekt = true).isTest
+    // return getTaskDetailsFromName(name, allowNonDetekt = true).isTest
+    return name.contains("Test", ignoreCase = true)
 }
+
+internal fun Task.isTestRelated(): Boolean {
+    // return getTaskDetailsFromName(name, allowNonDetekt = true).isTest
+    return name.contains("Test", ignoreCase = true)
+}
+
 
 private fun DetectedTaskPlatform?.isTaskAllowed(project: Project): Boolean = when (this) {
     DetectedTaskPlatform.WIN -> Compilations.isWindowsEnabled

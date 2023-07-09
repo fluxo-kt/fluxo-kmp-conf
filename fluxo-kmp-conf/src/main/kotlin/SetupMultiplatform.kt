@@ -7,6 +7,7 @@ import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.getOrNull
 import fluxo.conf.impl.ifNotEmpty
 import fluxo.conf.impl.implementation
+import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.libsCatalog
 import fluxo.conf.impl.onLibrary
@@ -608,7 +609,7 @@ public infix fun Iterable<SourceSetBundle>.dependsOn(other: SourceSetBundle) {
 
 
 public infix fun KotlinSourceSet.dependsOn(other: SourceSetBundle) {
-    dependsOn(if ("Test" in name) other.test else other.main)
+    dependsOn(if (isTestRelated()) other.test else other.main)
 }
 
 @JvmName("dependsOnBundles")

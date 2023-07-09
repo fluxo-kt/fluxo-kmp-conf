@@ -105,7 +105,7 @@ detekt = "1.23.0"
 ktlint = "0.50.0"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "6.19.0"
+spotless = "6.20.0"
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij
@@ -151,7 +151,7 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }
 # Build scans, data to speed up build and improve build reliability.
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.enterprise
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.13.4" }
+gradle-enterprise = { id = "com.gradle.enterprise", version = "3.14" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin/releases
@@ -187,9 +187,9 @@ module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", 
 # Generating BuildConstants for any kind of project
 # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
-build-config = { id = "com.github.gmazzo.buildconfig", version = "4.1.1" }
+build-config = { id = "com.github.gmazzo.buildconfig", version = "4.1.2" }
 
 # Resolve all dependencies used in a gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases
 # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
-about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.8.0" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.8.3" }

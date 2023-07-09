@@ -6,15 +6,6 @@ import org.gradle.api.provider.Provider
 
 internal val EMPTY_FUN: (Any?) -> Unit = {}
 
-@Suppress("MagicNumber")
-internal val KOTLIN_1_8 = KotlinVersion(1, 8)
-
-@Suppress("MagicNumber")
-internal val KOTLIN_1_8_20 = KotlinVersion(1, 8, 20)
-
-@Suppress("MagicNumber")
-internal val KOTLIN_1_9 = KotlinVersion(1, 9)
-
 
 /** @see org.jetbrains.kotlin.cli.common.toBooleanLenient */
 internal fun String?.tryAsBoolean(): Boolean {
@@ -61,3 +52,9 @@ internal fun Project?.envOrPropValueLenient(name: String): String? {
     // Check environment variable even if no project provided
     return if (this != null) envOrPropValue(name) else System.getProperty(name)
 }
+
+
+/**
+ * Adds all elements of the given [elements] array to this [MutableCollection].
+ */
+internal fun <T> MutableCollection<in T>.addAll(vararg elements: T) = addAll(elements)

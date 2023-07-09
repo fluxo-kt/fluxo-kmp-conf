@@ -1,5 +1,6 @@
 package fluxo.conf.dsl.impl
 
+import com.android.build.api.variant.VariantBuilder
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_COMPILE_SDK
 import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_MIN_SDK
@@ -9,6 +10,7 @@ import fluxo.conf.dsl.FluxoConfigurationExtensionAndroid
 import fluxo.conf.impl.v
 import fluxo.conf.impl.vInt
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Input
@@ -109,4 +111,24 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
         get() = suppressKotlinComposeCompatibilityCheckProp.orNull
             ?: parent?.suppressKotlinComposeCompatibilityCheck
         set(value) = suppressKotlinComposeCompatibilityCheckProp.set(value)
+
+
+    @get:Input
+    val filterVariantsProp: Property<((VariantBuilder) -> Boolean)?>
+    override var filterVariants: ((VariantBuilder) -> Boolean)?
+        get() = filterVariantsProp.orNull ?: parent?.filterVariants
+        set(value) = filterVariantsProp.set(value)
+
+
+    @get:Input
+    val noVerifyBuildTypesProp: ListProperty<String>
+    override var noVerificationBuildTypes: List<String>
+        get() = noVerifyBuildTypesProp.orNull.orEmpty() + parent?.noVerificationBuildTypes.orEmpty()
+        set(value) = noVerifyBuildTypesProp.set(value)
+
+    @get:Input
+    val noVerifyFlavorsProp: ListProperty<String>
+    override var noVerificationFlavors: List<String>
+        get() = noVerifyFlavorsProp.orNull.orEmpty() + parent?.noVerificationFlavors.orEmpty()
+        set(value) = noVerifyFlavorsProp.set(value)
 }

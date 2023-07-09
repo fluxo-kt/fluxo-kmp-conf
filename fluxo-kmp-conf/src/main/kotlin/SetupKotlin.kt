@@ -1,11 +1,13 @@
 @file:Suppress("ktPropBy")
 
 import fluxo.conf.impl.compileOnlyWithConstraint
-import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.exclude
 import fluxo.conf.impl.get
 import fluxo.conf.impl.implementation
+import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.kotlin
+import fluxo.conf.impl.kotlin.disableCompilation
+import fluxo.conf.impl.kotlin.setupJvmCompatibility
 import fluxo.conf.impl.libsCatalog
 import fluxo.conf.impl.onBundle
 import fluxo.conf.impl.onLibrary
@@ -14,13 +16,10 @@ import fluxo.conf.impl.testImplementation
 import fluxo.conf.impl.v
 import fluxo.conf.impl.version
 import fluxo.conf.impl.withType
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.Kotlin2JsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -68,6 +67,11 @@ internal fun Project.setupKotlin0(
     body?.invoke(kotlin as KotlinSingleTargetExtension<*>)
 }
 
+/**
+ *
+ * @see fluxo.conf.impl.setupKotlinExtension
+ */
+@Deprecated(message = "see fluxo.conf.impl.setupKotlinExtension")
 internal fun Project.setupKotlinExtension(
     kotlin: KotlinProjectExtension,
     setupKsp: Boolean = hasKsp,
@@ -75,27 +79,11 @@ internal fun Project.setupKotlinExtension(
     optIns: List<String> = emptyList(),
 ) {
     val libs = libsCatalog
-    val javaLangTarget = libs.getJavaLangTarget(config)
-    if (!javaLangTarget.isNullOrEmpty()) {
-        if (config.setupJvmToolchain) {
-            logger.lifecycle("> Conf JVM toolchain $javaLangTarget")
-            kotlin.jvmToolchain(javaLangTarget.substringAfter('.').toInt())
-        } else {
-            logger.lifecycle("> Conf Java compatibility $javaLangTarget")
-            configureExtensionIfAvailable<JavaPluginExtension> {
-                JavaVersion.toVersion(javaLangTarget).let { v ->
-                    sourceCompatibility = v
-                    targetCompatibility = v
-                }
-            }
-            tasks.withType<JavaCompile> {
-                sourceCompatibility = javaLangTarget
-                targetCompatibility = javaLangTarget
-            }
-        }
-    } else {
-        logger.lifecycle("> Conf Java compatibility is not set explicitely")
-    }
+    kotlin.setupJvmCompatibility(
+        project = this,
+        jvmTarget = libs.getJavaLangTarget(config),
+        jvmToolchain = config.setupJvmToolchain,
+    )
 
     // Duplicate languageSettings here as the IDE doesn't catch settings from compile tasks.
     val disableTests by disableTests()
@@ -103,7 +91,7 @@ internal fun Project.setupKotlinExtension(
     logger.lifecycle("> Conf Kotlin language and API ${kotlinLangVersion.version}")
     val sourceSets = kotlin.sourceSets
     sourceSets.all {
-        val isTestSet = "Test" in name
+        val isTestSet = isTestRelated()
 
         if (isTestSet && disableTests && this is AbstractKotlinSourceSet) {
             compilations.forEach { it.disableCompilation() }
@@ -143,7 +131,7 @@ private fun Project.setupKotlinTasks(config: KotlinConfigSetup, optIns: List<Str
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>> {
             val taskName = name
             val isJsTask = "Js" in taskName
-            val isTestTask = "Test" in taskName
+            val isTestTask = isTestRelated()
             val isReleaseTask = "Release" in taskName
             val warningsAsErrors = config.warningsAsErrors &&
                 !isJsTask && !isTestTask && (isCI || isRelease)
@@ -391,5 +379,9 @@ private fun KotlinConfigSetup.getListOfOptIns(isTest: Boolean, optIns: List<Stri
 internal val excludeAnnotations: ExternalModuleDependency.() -> Unit = {
     exclude(group = "org.jetbrains", module = "annotations")
 }
+
+internal const val KMP_PLUGIN_ID = "org.jetbrains.kotlin.multiplatform"
+internal const val KAPT_PLUGIN_ID = "org.jetbrains.kotlin.kapt"
+internal const val KSP_PLUGIN_ID = "com.google.devtools.ksp"
 
 internal const val COROUTINES_DEPENDENCY = "org.jetbrains.kotlinx:kotlinx-coroutines-core"

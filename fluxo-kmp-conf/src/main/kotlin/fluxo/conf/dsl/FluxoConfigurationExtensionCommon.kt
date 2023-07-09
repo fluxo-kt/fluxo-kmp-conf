@@ -15,6 +15,17 @@ public interface FluxoConfigurationExtensionCommon {
 
 
     /**
+     * Flag to set up the KSP plugin.
+     */
+    public var setupKsp: Boolean?
+
+    /**
+     * Flag to set up the Kapt plugin.
+     */
+    public var setupKapt: Boolean?
+
+
+    /**
      * Flag to enable the Compose feature.
      * Uses native capability for Android modules, multiplatform JetBrains Compose otherwise.
      *
@@ -38,7 +49,16 @@ public interface FluxoConfigurationExtensionCommon {
 
 
     /**
-     * Flag to enable verification features.
+     * Flag to turn on the set of verification features, like Detekt, Spotless, and so on.
      */
     public var setupVerification: Boolean?
+
+    /**
+     * Alias for [setupVerification]
+     */
+    public var enableVerification: Boolean?
+        get() = setupVerification
+        set(value) {
+            setupVerification = value
+        }
 }

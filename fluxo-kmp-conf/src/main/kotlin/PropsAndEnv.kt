@@ -6,7 +6,9 @@ import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.conf.impl.envOrPropValue
 import fluxo.conf.impl.envOrPropValueLenient
 import fluxo.conf.impl.memoize
+import fluxo.conf.kmp.KmpTargetCode.Companion.KMP_TARGETS_ALL_PROP
 import fluxo.conf.kmp.KmpTargetCode.Companion.KMP_TARGETS_PROP
+import fluxo.conf.kmp.KmpTargetCode.Companion.SPLIT_TARGETS_PROP
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
 import org.gradle.api.Project
@@ -43,9 +45,10 @@ public fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8
 
 public fun Project?.buildNumber(): String? = envOrPropValueLenient("BUILD_NUMBER")
 
-internal fun Project.allKmpTargetsEnabled(): Boolean = envOrPropFlagValue("KMP_TARGETS_ALL")
+internal fun Project.allKmpTargetsEnabled(): Boolean = envOrPropFlagValue(KMP_TARGETS_ALL_PROP)
 
-internal fun Project.isSplitTargetsEnabled(): Boolean = envOrPropFlagValue("split_targets")
+internal fun Project.isSplitTargetsEnabled(): Boolean =
+    envOrPropFlagValue(SPLIT_TARGETS_PROP) || envOrPropFlagValue(SPLIT_TARGETS_PROP.uppercase())
 
 internal fun Project.requestedKmpTargets(): String? = envOrPropValue(KMP_TARGETS_PROP)
 

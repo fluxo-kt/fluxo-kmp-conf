@@ -59,16 +59,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
             child dependsOn bundle
             super.setupParentSourceSet(k, bundle)
         }
-
-
-        @Deprecated("Replace with full-fledged context-based target configuration")
-        var kotlinJvmTarget: JavaVersion? get() = null; set(value) {}
-
-        @Deprecated("Replace with full-fledged context-based target configuration")
-        var compileSourceCompatibility: JavaVersion? get() = null; set(value) {}
-
-        @Deprecated("Replace with full-fledged context-based target configuration")
-        var compileTargetCompatibility: JavaVersion? get() = null; set(value) {}
     }
 
 
