@@ -1,10 +1,11 @@
 @file:Suppress("TooManyFunctions", "ktPropBy")
 
 import fluxo.conf.feat.LOAD_KMM_CODE_COMPLETION_FLAG
-import fluxo.conf.impl.envOrProp
 import fluxo.conf.impl.envOrPropFlag
 import fluxo.conf.impl.envOrPropFlagValue
+import fluxo.conf.impl.envOrPropValue
 import fluxo.conf.impl.envOrPropValueLenient
+import fluxo.conf.impl.memoize
 import fluxo.conf.kmp.KmpTargetCode.Companion.KMP_TARGETS_PROP
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
@@ -16,14 +17,12 @@ public operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNu
 public operator fun <T : Any> Provider<T?>.getValue(t: Any?, p: Any?): T? = orNull
 
 
-public fun Project.envOrPropValue(name: String): String? =
-    envOrPropValueLenient(name)
+public fun Project.envOrPropValue(name: String): String? = envOrPropValue(name)
 
-public fun Project.envOrPropInt(name: String): Int? =
-    envOrPropValueLenient(name)?.toIntOrNull()
+public fun Project.envOrPropInt(name: String): Int? = envOrPropValue(name)?.toIntOrNull()
 
 public fun Project.envOrPropList(name: String): List<String> =
-    envOrPropValueLenient(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
+    envOrPropValue(name)?.split(Pattern.compile("\\s*,\\s*")).orEmpty()
 
 
 public fun Project.isCI(): Provider<Boolean> = envOrPropFlag("CI")
@@ -46,14 +45,16 @@ public fun Project?.buildNumber(): String? = envOrPropValueLenient("BUILD_NUMBER
 
 internal fun Project.allKmpTargetsEnabled(): Boolean = envOrPropFlagValue("KMP_TARGETS_ALL")
 
-internal fun Project.requestedKmpTargets(): String? = envOrPropValueLenient(KMP_TARGETS_PROP)
+internal fun Project.isSplitTargetsEnabled(): Boolean = envOrPropFlagValue("split_targets")
+
+internal fun Project.requestedKmpTargets(): String? = envOrPropValue(KMP_TARGETS_PROP)
 
 internal fun Project.loadKmmCodeCompletion(): Boolean =
     envOrPropFlagValue(LOAD_KMM_CODE_COMPLETION_FLAG)
 
 
 public fun Project.signingKey(): String? =
-    envOrPropValueLenient("SIGNING_KEY")?.replace("\\n", "\n")
+    envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
 
 public fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): String {
     val n = buildNumber()
@@ -68,9 +69,8 @@ public fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
     //  see com.diffplug.gradle.spotless.GitRatchetGradle
     //  com.diffplug.gradle.spotless.SpotlessTask.getRatchet
 
-    val envOrProp = envOrProp("SCM_TAG")
     return provider {
-        var result = envOrProp.orNull
+        var result = envOrPropValue("SCM_TAG")
         if (result.isNullOrBlank()) {
             // current tag name
             var tagName = runCommand("git tag -l --points-at HEAD")
@@ -88,7 +88,7 @@ public fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
             result = result.substring(0, 7)
         }
         result
-    }
+    }.memoize()
 }
 
 @Suppress("UnstableApiUsage")

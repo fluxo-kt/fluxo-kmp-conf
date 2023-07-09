@@ -64,15 +64,15 @@ internal abstract class FluxoKmpConfContext
      */
     val androidLayoutV2: Boolean = mppAndroidSourceSetLayoutVersion()
 
-    val requestedKmpTargets: Set<KmpTargetCode> = rootProject.getSetOfRequestedKmpTargets()
-
-    val allKmpTargetsEnabled: Boolean =
-        rootProject.allKmpTargetsEnabled() || requestedKmpTargets.isEmpty()
-
     val testsDisabled: Boolean
 
 
     val isCI by rootProject.isCI()
+
+    val requestedKmpTargets: Set<KmpTargetCode> = getSetOfRequestedKmpTargets()
+
+    val allKmpTargetsEnabled: Boolean =
+        rootProject.allKmpTargetsEnabled() || requestedKmpTargets.isEmpty()
 
 
     val startTaskNames: Set<String>

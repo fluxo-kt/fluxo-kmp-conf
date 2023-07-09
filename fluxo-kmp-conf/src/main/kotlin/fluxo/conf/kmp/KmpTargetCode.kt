@@ -1,10 +1,17 @@
 package fluxo.conf.kmp
 
+import fluxo.conf.FluxoKmpConfContext
+import isSplitTargetsEnabled
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.internal.os.OperatingSystem
 import requestedKmpTargets
 
+/**
+ *
+ * @see org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+ * @see org.jetbrains.kotlin.konan.target.Family
+ * @see org.jetbrains.kotlin.konan.target.KonanTarget
+ */
 internal enum class KmpTargetCode {
     JVM,
     ANDROID,
@@ -105,23 +112,41 @@ internal enum class KmpTargetCode {
 
         @Throws(GradleException::class)
         @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-        internal fun Project.getSetOfRequestedKmpTargets(): Set<KmpTargetCode> {
-            val sequence = requestedKmpTargets()?.splitToSequence(',')
-                ?: return emptySet()
+        internal fun FluxoKmpConfContext.getSetOfRequestedKmpTargets(): Set<KmpTargetCode> {
+            val project = rootProject
+            val targets = project.requestedKmpTargets()
+            val sequence = targets?.splitToSequence(',')
+
+            // TODO: Support for EnvParams.metadataOnly ("metadata_only" property)?
+            if ((sequence == null || targets.isEmpty()) && !project.isSplitTargetsEnabled()) {
+                return emptySet()
+            }
 
             val set = HashSet<KmpTargetCode>(mapCapacity(ALL.size))
-            for (v in sequence) {
-                val target = v.uppercase().trim()
-                val group = ALIASES[target]
-                if (group != null) {
-                    set.addAll(group)
-                } else {
-                    try {
-                        set.add(valueOf(target))
-                    } catch (e: IllegalArgumentException) {
-                        throw GradleException(
-                            "$KMP_TARGETS_PROP property of '$target' not recognized", e,
-                        )
+            if (sequence == null) {
+                // "split_targets" mode compatibility
+                set.addAll(PLATFORM)
+
+                // On CI Mac is the target platform for generic builds, Linux for local builds.
+                val isGenericEnabled = PLATFORM === if (isCI) APPLE else LINUX
+                if (isGenericEnabled) {
+                    set.addAll(COMMON_JVM)
+                    set.addAll(COMMON_JS)
+                }
+            } else {
+                for (v in sequence) {
+                    val target = v.uppercase().trim()
+                    val group = ALIASES[target]
+                    if (group != null) {
+                        set.addAll(group)
+                    } else {
+                        try {
+                            set.add(valueOf(target))
+                        } catch (e: IllegalArgumentException) {
+                            throw GradleException(
+                                "$KMP_TARGETS_PROP property of '$target' not recognized", e,
+                            )
+                        }
                     }
                 }
             }

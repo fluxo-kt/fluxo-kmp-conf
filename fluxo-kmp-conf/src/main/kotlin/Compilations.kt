@@ -1,3 +1,5 @@
+@file:Suppress("DeprecatedCallableAddReplaceWith")
+
 import fluxo.conf.impl.EnvParams
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.isTaskAllowedBasedByName
@@ -20,17 +22,13 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family
 
-// TODO: JS is still initialized on MINGW64 when splitTargets enabled
-//  https://github.com/fluxo-kt/fluxo/actions/runs/3831771108/jobs/6521297773
-
+@Deprecated("Use FluxoKmpConfContext.requestedKmpTargets instead")
 public object Compilations {
 
     public val isGenericEnabled: Boolean get() = isValidOs { it.isLinux }
     public val isDarwinEnabled: Boolean get() = isValidOs { it.isMacOsX }
     public val isWindowsEnabled: Boolean get() = isValidOs { it.isWindows }
 
-    // Try to overcome the Gradle livelock issue
-    // https://github.com/gradle/gradle/issues/20455#issuecomment-1327259045
     public fun isGenericEnabledForProject(project: Project): Boolean = when {
         project.isCI().get() -> isDarwinEnabled
         else -> isGenericEnabled
@@ -40,9 +38,11 @@ public object Compilations {
         !EnvParams.splitTargets || predicate(OperatingSystem.current())
 }
 
+// FIXME: replace implementation with FluxoKmpConfContext usage
 public val Project.isGenericCompilationEnabled: Boolean
     get() = Compilations.isGenericEnabledForProject(this)
 
+// FIXME: update implementation with FluxoKmpConfContext usage
 internal fun KotlinProjectExtension.disableCompilationsOfNeeded(project: Project) {
     val disableTests by project.disableTests()
     targets.forEach {
@@ -120,6 +120,7 @@ internal fun KotlinCompilation<*>.disableCompilation() {
     }
 }
 
+// FIXME: update implementation with FluxoKmpConfContext usage
 private fun KotlinTarget.isCompilationAllowed(): Boolean = when (platformType) {
     KotlinPlatformType.common -> true
 
@@ -133,6 +134,7 @@ private fun KotlinTarget.isCompilationAllowed(): Boolean = when (platformType) {
         (this as KotlinNativeTarget).konanTarget.family.isCompilationAllowed(project)
 }
 
+// FIXME: update implementation with FluxoKmpConfContext usage
 private fun Family.isCompilationAllowed(project: Project): Boolean = when (this) {
     Family.OSX,
     Family.IOS,
@@ -151,6 +153,7 @@ private fun Family.isCompilationAllowed(project: Project): Boolean = when (this)
     Family.ZEPHYR -> error("Unsupported family: $this")
 }
 
+// FIXME: update implementation with FluxoKmpConfContext usage
 internal fun AbstractTestTask.isTestTaskAllowed(): Boolean {
     return when (this) {
         is KotlinJsTest ->
