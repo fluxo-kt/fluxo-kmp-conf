@@ -1,21 +1,24 @@
 package fluxo.conf.dsl.container.impl
 
-import fluxo.annotation.InternalFluxoApi
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.impl.set
 import org.gradle.api.Named
 import org.gradle.api.plugins.PluginManager
+import org.gradle.api.provider.Provider
+import org.gradle.plugin.use.PluginDependency
 
-@InternalFluxoApi
 internal abstract class ContainerImpl(
     val context: ContainerContext,
-) : Container, Named, Comparable<ContainerImpl> {
+) : Container, Named {
 
     // region utility
 
     abstract val sortOrder: Byte
 
-    final override fun compareTo(other: ContainerImpl): Int = sortOrder.compareTo(other.sortOrder)
+    final override fun compareTo(other: Container): Int {
+        if (this === other || other !is ContainerImpl) return 0
+        return sortOrder.compareTo(other.sortOrder)
+    }
 
     final override fun hashCode(): Int = name.hashCode()
 
@@ -36,14 +39,15 @@ internal abstract class ContainerImpl(
         }
     }
 
-    /**
-     * Adds plugins by ID to the project along with the configuration.
-     *
-     * @see org.gradle.api.plugins.PluginManager.apply
-     * @see org.gradle.api.plugins.PluginContainer.apply
-     */
     override fun applyPlugins(vararg pluginIds: String) {
         this.pluginIds.addAll(pluginIds)
+    }
+
+    override fun applyPlugins(vararg plugins: Provider<PluginDependency>) {
+        plugins.forEach { provider ->
+            // TODO: Utilize version available from PluginDependency
+            pluginIds.add(provider.get().pluginId)
+        }
     }
 
     // endregion

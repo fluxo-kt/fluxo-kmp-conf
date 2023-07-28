@@ -1,37 +1,67 @@
 package fluxo.conf.dsl.container
 
-import fluxo.conf.dsl.container.target.TargetAndroid
-import fluxo.conf.dsl.container.target.TargetAndroidNative
-import fluxo.conf.dsl.container.target.TargetAppleIos
-import fluxo.conf.dsl.container.target.TargetAppleMacos
-import fluxo.conf.dsl.container.target.TargetAppleTvos
-import fluxo.conf.dsl.container.target.TargetAppleWatchos
-import fluxo.conf.dsl.container.target.TargetJs
-import fluxo.conf.dsl.container.target.TargetJvm
-import fluxo.conf.dsl.container.target.TargetLinux
-import fluxo.conf.dsl.container.target.TargetMingw
-import fluxo.conf.dsl.container.target.TargetWasm
-import fluxo.conf.dsl.container.target.TargetWasmNative
+import fluxo.conf.dsl.container.target.AndroidNativeTarget
+import fluxo.conf.dsl.container.target.AndroidTarget
+import fluxo.conf.dsl.container.target.AppleIosTarget
+import fluxo.conf.dsl.container.target.AppleMacosTarget
+import fluxo.conf.dsl.container.target.AppleTvosTarget
+import fluxo.conf.dsl.container.target.AppleWatchosTarget
+import fluxo.conf.dsl.container.target.JsTarget
+import fluxo.conf.dsl.container.target.JvmTarget
+import fluxo.conf.dsl.container.target.LinuxTarget
+import fluxo.conf.dsl.container.target.MingwTarget
+import fluxo.conf.dsl.container.target.WasmNativeTarget
+import fluxo.conf.dsl.container.target.WasmTarget
+import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
 public interface KmpConfigurationContainerDsl :
-    TargetJvm.Configure,
-    TargetAndroid.Configure,
-    TargetJs.Configure,
-    TargetAppleIos.Configure,
-    TargetAppleMacos.Configure,
-    TargetAppleTvos.Configure,
-    TargetAppleWatchos.Configure,
-    TargetLinux.Configure,
-    TargetMingw.Configure,
-    TargetWasm.Configure,
-    TargetAndroidNative.Configure,
-    TargetWasmNative.Configure {
+    JvmTarget.Configure,
+    AndroidTarget.Configure,
+    JsTarget.Configure,
+    AppleIosTarget.Configure,
+    AppleMacosTarget.Configure,
+    AppleTvosTarget.Configure,
+    AppleWatchosTarget.Configure,
+    LinuxTarget.Configure,
+    MingwTarget.Configure,
+    WasmTarget.Configure,
+    AndroidNativeTarget.Configure,
+    WasmNativeTarget.Configure {
 
+    /**
+     * Executes the given [action] for all [KotlinTarget]s of the given [type].
+     */
+    public fun <T : KotlinTargetContainer<KotlinTarget>> onTarget(
+        type: Class<T>,
+        action: Action<in T>,
+    )
+
+    /**
+     * Executes the given [action] for all [AndroidTarget]s.
+     */
+    public fun onAndroidTarget(action: Action<in AndroidTarget<*>>): Unit =
+        onTarget(AndroidTarget::class.java, action)
+
+
+    /**
+     * Executes the given [action] for the Kotlin module with any target enabled.
+     * [action] can apply plugins via [Container.applyPlugins] and configure common settings.
+     */
+    public fun common(action: Container.() -> Unit)
+
+    /**
+     * Executes the given [action] for the Kotlin module with any target enabled.
+     */
     public fun kotlin(action: KotlinProjectExtension.() -> Unit)
 
+    /**
+     * Executes the given [action] for the KMP module with any target enabled.
+     */
     public fun kotlinMultiplatform(action: KotlinMultiplatformExtension.() -> Unit)
+
 
     /**
      *

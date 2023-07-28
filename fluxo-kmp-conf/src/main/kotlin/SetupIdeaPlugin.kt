@@ -1,48 +1,37 @@
+import fluxo.conf.dsl.FluxoConfigurationExtension
+import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.withType
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginExtension
 import org.jetbrains.intellij.IntelliJPluginExtension
-import org.jetbrains.intellij.tasks.BuildSearchableOptionsTask
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
-import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+@Suppress("LongParameterList")
 public fun Project.setupIdeaPlugin(
+    config: (FluxoConfigurationExtension.() -> Unit)? = null,
     group: String,
     version: String,
     sinceBuild: String,
     intellijVersion: String,
-) {
-    this.group = group
-    this.version = version
+    body: (KotlinSingleTarget.() -> Unit)? = null,
+): Unit = fluxoConfiguration {
+    if (group.isNotEmpty()) this.group = group
+    if (version.isNotEmpty()) this.version = version
+    config?.invoke(this)
 
-    setupKotlin0 {
-        tasks.withType<BuildSearchableOptionsTask> {
-            enabled = project.isGenericCompilationEnabled
+    configureAsIdeaPlugin {
+        kotlin {
+            @Suppress("UNCHECKED_CAST")
+            body?.invoke(this as KotlinSingleTarget)
+
+            tasks.withType<PatchPluginXmlTask> {
+                this.sinceBuild.set(sinceBuild)
+            }
+
+            configureExtension<IntelliJPluginExtension> {
+                this.version.set(intellijVersion)
+                this.updateSinceUntilBuild.set(false)
+            }
         }
     }
-
-    configureExtension<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-        }
-    }
-
-    tasks.withType<PatchPluginXmlTask> {
-        this.sinceBuild.set(sinceBuild)
-    }
-
-    configureExtension<IntelliJPluginExtension> {
-        this.version.set(intellijVersion)
-        this.updateSinceUntilBuild.set(false)
-    }
-
-    kotlinExtension.disableCompilationsOfNeeded(project)
 }

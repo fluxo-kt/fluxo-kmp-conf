@@ -1,4 +1,4 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "TooManyFunctions")
 
 package fluxo.conf.impl
 
@@ -15,11 +15,9 @@ import org.gradle.plugin.use.PluginDependency
 
 private const val DEFAULT_VERSION_CATALOG = "libs"
 
-internal val Project.catalogs: VersionCatalogsExtension
-    get() = the<VersionCatalogsExtension>()
-
+@Deprecated("")
 internal val Project.libsCatalog: VersionCatalog
-    get() = catalogs.named(DEFAULT_VERSION_CATALOG)
+    get() = the<VersionCatalogsExtension>().named(DEFAULT_VERSION_CATALOG)
 
 internal val Project.libsCatalogOptional: VersionCatalog?
     get() = try {
@@ -86,7 +84,9 @@ internal fun VersionCatalog.plugin(alias: String): Provider<PluginDependency> {
     return findPlugin(alias).get()
 }
 
-internal fun VersionCatalog.onPlugin(alias: String, body: (PluginDependency) -> Unit): Boolean {
+internal inline fun VersionCatalog.onPlugin(
+    alias: String, body: (PluginDependency) -> Unit,
+): Boolean {
     val opt = findPlugin(alias)
     if (opt.isPresent) {
         body(opt.get().get())
@@ -146,7 +146,7 @@ internal fun VersionCatalog.version(alias: String): String {
     return findVersion(alias).get().toString()
 }
 
-internal fun VersionCatalog.onVersion(alias: String, body: (String) -> Unit): Boolean {
+internal inline fun VersionCatalog.onVersion(alias: String, body: (String) -> Unit): Boolean {
     val opt = findVersion(alias)
     if (opt.isPresent) {
         body(opt.get().toString())

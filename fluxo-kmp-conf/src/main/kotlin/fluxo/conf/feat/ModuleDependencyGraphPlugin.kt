@@ -10,7 +10,7 @@ import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 // https://github.com/savvasdalkitsis/module-dependency-graph/releases
 // https://plugins.gradle.org/plugin/com.savvasdalkitsis.module-dependency-graph
 internal fun FluxoKmpConfContext.prepareModuleDependencyGraphPlugin() {
-    if (hasAnyTaskCalled(MODULE_DEPENDENCY_GRAPH_TASK_NAME)) {
+    if (hasStartTaskCalled(MODULE_DEPENDENCY_GRAPH_TASK_NAME)) {
         loadAndApplyPluginIfNotApplied(
             id = MODULE_DEPENDENCY_GRAPH_PLUGIN_ID,
             className = MODULE_DEPENDENCY_GRAPH_CLASS_NAME,

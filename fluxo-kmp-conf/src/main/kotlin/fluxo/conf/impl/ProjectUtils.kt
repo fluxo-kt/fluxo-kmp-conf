@@ -6,6 +6,10 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.AppliedPlugin
 import org.gradle.api.plugins.PluginAware
 
+
+internal val CPUs = Runtime.getRuntime().availableProcessors()
+
+
 internal val Project.isRootProject: Boolean
     get() = rootProject === this
 

@@ -2,7 +2,9 @@ package fluxo.conf.dsl
 
 import com.android.build.api.variant.VariantBuilder
 
-public interface FluxoConfigurationExtensionAndroid : FluxoConfigurationExtensionCommon {
+public interface FluxoConfigurationExtensionAndroid :
+    FluxoConfigurationExtensionCommon,
+    FluxoConfigurationExtensionPublication {
 
     /**
      * Prefix for the auto generated [androidNamespace].
@@ -18,13 +20,48 @@ public interface FluxoConfigurationExtensionAndroid : FluxoConfigurationExtensio
      * The namespace for the Android target.
      * Used for the generated `R` and `BuildConfig` classes.
      * Also, to resolve any relative class names in the `AndroidManifest.xml`.
+     * Additionally, it's used for the `applicationId` value.
      *
-     * If not set, the default is the [androidNamespacePrefix] (if set) + the project path.
+     * If not set, the default is the [androidNamespacePrefix] (if set) + the project name.
+     * Or [group] if [androidNamespacePrefix] isn't set.
      *
      * @see com.android.build.api.dsl.CommonExtension.namespace
      * @see com.android.build.gradle.BaseExtension.namespace
+     * @see com.android.build.api.dsl.ApplicationBaseFlavor.applicationId
+     * @see com.android.build.api.dsl.ApplicationBaseFlavor.applicationIdSuffix
+     * @see group
      */
     public var androidNamespace: String
+
+    /**
+     * The app ID.
+     * Inherited from the parent project if not set.
+     * [androidNamespace] is used as a fallback.
+     *
+     * See [Set the Application ID](https://developer.android.com/studio/build/application-id.html)
+     *
+     * @see com.android.build.api.dsl.ApplicationBaseFlavor.applicationId
+     * @see com.android.build.api.dsl.ApplicationBaseFlavor.applicationIdSuffix
+     * @see androidNamespace
+     */
+    public var androidApplicationId: String
+
+
+    /**
+     * Android app version code.
+     * Inherited from the parent project if not set.
+     *
+     * Auto set using the version names in toml version catalog:
+     * `versionCode` or `androidVersionCode`.
+     *
+     * Defaults to `0`.
+     *
+     * See [Versioning Your Application](http://developer.android.com/tools/publishing/versioning.html)
+     *
+     * @see com.android.build.api.dsl.ApplicationBaseFlavor.versionCode
+     * @see version
+     */
+    public var androidVersionCode: Int
 
 
     /**
@@ -128,4 +165,19 @@ public interface FluxoConfigurationExtensionAndroid : FluxoConfigurationExtensio
      * List of Android build flavors for which no verification setup needed.
      */
     public var noVerificationFlavors: List<String>
+
+
+    /**
+     * Flag to set up Room for the module.
+     *
+     * Inherited from the parent project if not set.
+     */
+    public var setupRoom: Boolean?
+
+    /**
+     * Flag to remove kotlin metadata from the resulting APK or bundle.
+     *
+     * Inherited from the parent project if not set.
+     */
+    public var removeKotlinMetadata: Boolean
 }

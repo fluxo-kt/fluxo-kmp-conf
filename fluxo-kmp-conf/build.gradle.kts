@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.gradle.plugin.publish)
     alias(libs.plugins.build.config)
+    alias(libs.plugins.deps.versions)
 }
 
 val pluginName = "fluxo-kmp-conf"
@@ -19,6 +20,7 @@ val experimentalTest = false
 group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
 
+// TODO: Auto set for Gradle plugins!
 samWithReceiver {
     annotation("org.gradle.api.HasImplicitReceiver")
 }

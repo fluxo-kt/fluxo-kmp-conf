@@ -13,7 +13,7 @@ import fluxo.conf.impl.withType
 // https://plugins.gradle.org/plugin/com.github.ben-manes.versions
 internal fun FluxoKmpConfContext.prepareGradleVersionsPlugin() {
     // The plugin itself does register the task only on call.
-    if (!hasAnyTaskCalled(DEPS_VERSIONS_TASK_NAME)) {
+    if (!hasStartTaskCalled(DEPS_VERSIONS_TASK_NAME)) {
         return
     }
 

@@ -18,6 +18,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 
 /**
  * Exports merged JUnit-like XML tests report for all tests in all projects.
+ *
+ * @see org.jetbrains.kotlin.gradle.testing.internal.KotlinTestReport
+ * @see org.jetbrains.kotlin.gradle.testing.internal.UsesTestReportService
+ * @see org.gradle.api.tasks.testing.TestReport
  */
 @DisableCachingByDefault(because = "Not cacheable")
 internal abstract class TestsReportsMergeTask : DefaultTask() {

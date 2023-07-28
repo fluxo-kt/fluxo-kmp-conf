@@ -1,14 +1,21 @@
 @file:Suppress("TooManyFunctions")
 
+package fluxo.conf.feat
+
+import MAIN_SOURCE_SET_NAME
 import com.android.build.gradle.LibraryExtension
 import fluxo.conf.dsl.FluxoPublicationConfig
+import fluxo.conf.impl.android.DEBUG
+import fluxo.conf.impl.android.RELEASE
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.create
 import fluxo.conf.impl.get
 import fluxo.conf.impl.hasExtension
+import fluxo.conf.impl.kotlin.multiplatformExtension
 import fluxo.conf.impl.named
 import fluxo.conf.impl.the
 import fluxo.conf.impl.withType
+import isGenericCompilationEnabled
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -45,13 +52,12 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 //  https://github.com/gradle/gradle/issues/20016
 
 // TODO: Protect publication tasks from invalid GIT state (dirty, untracked files, etc.)
-//  https://github.com/tbroyer/gradle-errorprone-plugin/blob/0f91e78/build.gradle.kts#L24
+//  https://github.com/tbroyer/gradle-errorprone-plugin/blob/5d83185/build.gradle.kts#L24
 
 private const val USE_DOKKA: Boolean = true
 
 
-public fun Project.setupPublication() {
-    val config = requireDefaults<FluxoPublicationConfig>()
+internal fun Project.setupPublication(config: FluxoPublicationConfig) {
     when {
         hasExtension<KotlinMultiplatformExtension>() ->
             setupPublicationMultiplatform(config)
@@ -72,8 +78,9 @@ public fun Project.setupPublication() {
             error("Unsupported project type for publication")
     }
 
-    // Reproducible builds setup
+    // Reproducible builds setup, produce deterministic output.
     // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
+    // https://github.com/JetBrains/kotlin/commit/68fdeaf
     tasks.withType<AbstractArchiveTask> {
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
@@ -95,7 +102,7 @@ private fun Project.setupPublicationMultiplatform(config: FluxoPublicationConfig
             try {
                 // Kotlin before 1.9
                 @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
-                android().publishLibraryVariants("release", "debug")
+                android().publishLibraryVariants(RELEASE, DEBUG)
             } catch (e: Throwable) {
                 logger.error("android.publishLibraryVariants error: $e", e)
             }
@@ -146,8 +153,8 @@ private fun Project.setupPublicationAndroidLibrary(config: FluxoPublicationConfi
     afterEvaluate {
         configureExtension<PublishingExtension> {
             publications {
-                createMavenPublication(name = "debug", artifactIdSuffix = "-debug")
-                createMavenPublication(name = "release", artifactIdSuffix = "")
+                createMavenPublication(name = DEBUG, artifactIdSuffix = "-$DEBUG")
+                createMavenPublication(name = RELEASE, artifactIdSuffix = "")
             }
         }
     }

@@ -8,7 +8,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
      * '2.0 (experimental)', '2.1 (experimental)'.
-     * Set 'latest' for the latest possible value.
+     * Set 'latest' or 'last' for the latest possible value.
      *
      * Inherited from the parent project if not set.
      * Default value: `null`.
@@ -83,7 +83,8 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * By default, this version is the same as the version of the used Kotlin Gradle plugin.
      *
      * Auto set using the version names in the toml version catalog:
-     * `kotlinCoreLibraries`, `kotlinCoreLibrariesVersion`, `kotlin`.
+     * `kotlinCoreLibraries`, `kotlinCoreLibrariesVersion`, `kotlinStdlib`,
+     * `kotlin`, `kotlinVersion`.
      *
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension.coreLibrariesVersion
      * @see kotlinLangVersion
@@ -276,7 +277,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * [More info](https://kotlinlang.org/docs/gradle-configure-project.html#dependency-on-the-standard-library)
      */
-    public var addStdlibDependency: Boolean?
+    public var addStdlibDependency: Boolean
 
     /**
      * Flag to configure [Kotlin coroutines](https://github.com/Kotlin/kotlinx.coroutines)
@@ -294,7 +295,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * Inherited from the parent project if not set. Default value: `false`
      */
-    public var setupSerializationKotlinX: Boolean?
+    public var setupKotlinXSerialization: Boolean
 
     /**
      * Flag to add the supported BOM dependencies automatically from the
@@ -308,7 +309,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * @TODO: Document list of supported BOMs
      */
-    public var setupKnownBoms: Boolean?
+    public var setupKnownBoms: Boolean
 
 
     /**
@@ -334,6 +335,11 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
         apiValidation = BinaryCompatibilityValidatorConfig().apply(configure)
     }
 
+
+    /**
+     * Flag to turn on the Detekt compiler plugin
+     */
+    public var enableDetektCompilerPlugin: Boolean?
 
     /**
      * Flag to turn on the Spotless setup.

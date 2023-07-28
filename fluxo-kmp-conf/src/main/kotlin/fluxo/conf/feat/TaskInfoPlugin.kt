@@ -12,7 +12,7 @@ import org.barfuin.gradle.taskinfo.GradleTaskInfoPlugin
 // https://gitlab.com/barfuin/gradle-taskinfo/-/tags
 // https://plugins.gradle.org/plugin/org.barfuin.gradle.taskinfo
 internal fun FluxoKmpConfContext.prepareTaskInfoPlugin() {
-    if (hasAnyTaskCalled(TASK_INFO_TASK_NAMES)) {
+    if (hasStartTaskCalled(TASK_INFO_TASK_NAMES)) {
         if (SHOW_DEBUG_LOGS) {
             check(TASK_INFO_PLUGIN_ID == GradleTaskInfoPlugin.PLUGIN_ID) {
                 "TASK_INFO_PLUGIN_ID($TASK_INFO_PLUGIN_ID) != ${GradleTaskInfoPlugin.PLUGIN_ID}"

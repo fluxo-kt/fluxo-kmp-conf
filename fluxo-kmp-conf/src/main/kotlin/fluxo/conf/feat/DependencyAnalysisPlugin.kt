@@ -21,7 +21,7 @@ import org.gradle.api.provider.Provider
 // https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
 // https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
-    if (!hasAnyTaskCalled(DEPS_ANALYSIS_TASK_NAMES)) {
+    if (!hasStartTaskCalled(DEPS_ANALYSIS_TASK_NAMES)) {
         return
     }
 

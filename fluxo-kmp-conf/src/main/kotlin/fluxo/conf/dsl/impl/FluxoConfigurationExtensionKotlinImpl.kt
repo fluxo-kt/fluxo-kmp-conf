@@ -47,9 +47,10 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     val kotlinCoreLibrariesProp: Property<String?>
     override var kotlinCoreLibraries: String?
         get() {
-            return kotlinCoreLibrariesProp.orNull
-                ?: parent?.kotlinCoreLibraries
-                ?: context.libs.v("kotlinCoreLibraries", "kotlinCoreLibrariesVersion", "kotlin")
+            return kotlinCoreLibrariesProp.orNull ?: parent?.kotlinCoreLibraries ?: context.libs.v(
+                "kotlinCoreLibraries", "kotlinCoreLibrariesVersion",
+                "kotlinStdlib", "kotlin", "kotlinVersion",
+            )
         }
         set(value) = kotlinCoreLibrariesProp.set(value)
 
@@ -152,9 +153,9 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
 
 
     @get:Input
-    val addStdlibDependencyProp: Property<Boolean?>
-    override var addStdlibDependency: Boolean?
-        get() = addStdlibDependencyProp.orNull ?: parent?.addStdlibDependency
+    val addStdlibDependencyProp: Property<Boolean>
+    override var addStdlibDependency: Boolean
+        get() = addStdlibDependencyProp.orNull ?: parent?.addStdlibDependency ?: false
         set(value) = addStdlibDependencyProp.set(value)
 
     @get:Input
@@ -164,15 +165,15 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
         set(value) = setupCoroutinesProp.set(value)
 
     @get:Input
-    val setupSerializationKotlinXProp: Property<Boolean?>
-    override var setupSerializationKotlinX: Boolean?
-        get() = setupSerializationKotlinXProp.orNull ?: parent?.setupSerializationKotlinX
-        set(value) = setupSerializationKotlinXProp.set(value)
+    val setupKotlinXSerializationProp: Property<Boolean>
+    override var setupKotlinXSerialization: Boolean
+        get() = setupKotlinXSerializationProp.orNull ?: parent?.setupKotlinXSerialization ?: false
+        set(value) = setupKotlinXSerializationProp.set(value)
 
     @get:Input
-    val setupKnownBomsProp: Property<Boolean?>
-    override var setupKnownBoms: Boolean?
-        get() = setupKnownBomsProp.orNull ?: parent?.setupKnownBoms
+    val setupKnownBomsProp: Property<Boolean>
+    override var setupKnownBoms: Boolean
+        get() = setupKnownBomsProp.orNull ?: parent?.setupKnownBoms ?: false
         set(value) = setupKnownBomsProp.set(value)
 
 
@@ -201,6 +202,12 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     override var setupVerification: Boolean?
         get() = setupVerificationProp.orNull ?: parent?.setupVerification
         set(value) = setupVerificationProp.set(value)
+
+    @get:Input
+    val enableDetektCompilerPluginProp: Property<Boolean?>
+    override var enableDetektCompilerPlugin: Boolean?
+        get() = enableDetektCompilerPluginProp.orNull ?: parent?.enableDetektCompilerPlugin
+        set(value) = enableDetektCompilerPluginProp.set(value)
 
     @get:Input
     val enableSpotlessProp: Property<Boolean?>

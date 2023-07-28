@@ -1,5 +1,6 @@
 package fluxo.conf.feat
 
+import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardConfiguration
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPlugin
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import fluxo.conf.FluxoKmpConfContext
@@ -8,13 +9,15 @@ import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.impl.configureExtension
+import org.gradle.api.Action
+import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 // Plugin that guards against unintentional dependency changes
 // https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
 // https://mvnrepository.com/artifact/com.dropbox.dependency-guard/dependency-guard
 internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
-    val isCalled = hasAnyTaskCalled(DEPS_GUARD_TASK_NAMES)
+    val isCalled = hasStartTaskCalled(DEPS_GUARD_TASK_NAMES)
     if (isCalled) {
         markProjectInSync()
     }
@@ -26,15 +29,33 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
             catalogPluginId = DEPS_GUARD_PLUGIN_ALIAS,
         )
 
-        // FIXME: configure non-root modules automatically
-        rootProject.configureExtension<DependencyGuardPluginExtension>(DEPS_GUARD_EXTENSION_NAME) {
+        rootProject.dependencyGuard {
             configuration("classpath")
-
-            // FIXME: configure allowedFilter
         }
+
+        // FIXME: configure non-root modules automatically
+        // FIXME: configure allowedFilter
+        // configuration("flavorReleaseCompileClasspath", RELEASE_CONFIGURATION)
+        // configuration("flavorReleaseRuntimeClasspath", RELEASE_CONFIGURATION)
+
+        // configuration("androidReleaseCompileClasspath", RELEASE_CONFIGURATION)
+        // configuration("androidReleaseRuntimeClasspath", RELEASE_CONFIGURATION)
     }
 }
 
+internal fun Project.dependencyGuard(action: Action<in DependencyGuardPluginExtension>) {
+    extensions.configure(DEPS_GUARD_EXTENSION_NAME, action)
+}
+
+private val RELEASE_CONFIGURATION: DependencyGuardConfiguration.() -> Unit = {
+    allowedFilter = { dependency ->
+        dependency.lowercase().let { d -> RELEASE_BLOCK_LIST.all { it !in d } }
+    }
+}
+
+private val RELEASE_BLOCK_LIST = arrayOf(
+    "junit", "test", "mock", "truth", "assert", "turbine", "robolectric"
+)
 
 /** @see DependencyGuardPlugin.DEPENDENCY_GUARD_EXTENSION_NAME */
 private const val DEPS_GUARD_EXTENSION_NAME = "dependencyGuard"
@@ -45,7 +66,7 @@ private const val DEPS_GUARD_EXTENSION_NAME = "dependencyGuard"
  */
 private val DEPS_GUARD_TASK_NAMES = arrayOf(
     DEPS_GUARD_EXTENSION_NAME,
-    "dependencyGuardBaseline",
+    DEPS_GUARD_EXTENSION_NAME + "Baseline",
     CHECK_TASK_NAME,
 )
 

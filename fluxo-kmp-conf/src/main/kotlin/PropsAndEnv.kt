@@ -1,14 +1,14 @@
 @file:Suppress("TooManyFunctions", "ktPropBy")
 
+import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.KMP_TARGETS_ALL_PROP
+import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.KMP_TARGETS_PROP
+import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.SPLIT_TARGETS_PROP
 import fluxo.conf.feat.LOAD_KMM_CODE_COMPLETION_FLAG
 import fluxo.conf.impl.envOrPropFlag
 import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.conf.impl.envOrPropValue
 import fluxo.conf.impl.envOrPropValueLenient
 import fluxo.conf.impl.memoize
-import fluxo.conf.kmp.KmpTargetCode.Companion.KMP_TARGETS_ALL_PROP
-import fluxo.conf.kmp.KmpTargetCode.Companion.KMP_TARGETS_PROP
-import fluxo.conf.kmp.KmpTargetCode.Companion.SPLIT_TARGETS_PROP
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
 import org.gradle.api.Project
@@ -16,7 +16,10 @@ import org.gradle.api.provider.Provider
 
 public operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNull == true
 
+@JvmName("getValueOrNull")
 public operator fun <T : Any> Provider<T?>.getValue(t: Any?, p: Any?): T? = orNull
+
+public operator fun <T> Provider<T>.getValue(t: Any?, p: Any?): T = get()
 
 
 public fun Project.envOrPropValue(name: String): String? = envOrPropValue(name)

@@ -5,8 +5,6 @@ import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.d
 import fluxo.conf.impl.l
 import fluxo.conf.impl.v
-import getValue
-import isCI
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
@@ -24,15 +22,16 @@ internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
 
     // Run only for CI.
     // Takes time and not so useful during local development.
+    if (!(isCI || SHOW_DEBUG_LOGS) || isProjectInSyncRun) {
+        return
+    }
+
     val project = rootProject
-    val isCI by project.isCI()
-    if ((isCI || SHOW_DEBUG_LOGS) && !isProjectInSyncRun) {
-        val logger = project.logger
-        project.gradle.taskGraph.whenReady {
-            if (!isProjectInSyncRun) {
-                DisableUnreachableTasks(graph = this, logger = logger)
-                    .apply()
-            }
+    val logger = project.logger
+    project.gradle.taskGraph.whenReady {
+        if (!isProjectInSyncRun) {
+            DisableUnreachableTasks(graph = this, logger = logger)
+                .apply()
         }
     }
 }

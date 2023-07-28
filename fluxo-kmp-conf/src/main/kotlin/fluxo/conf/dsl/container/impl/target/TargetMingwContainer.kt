@@ -4,48 +4,42 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
+import fluxo.conf.dsl.container.impl.KmpTargetCode
+import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
-import fluxo.conf.dsl.container.target.TargetMingw
-import fluxo.conf.kmp.KmpTargetCode
-import fluxo.conf.kmp.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
+import fluxo.conf.dsl.container.target.MingwTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests as KNTHT
 
 internal abstract class TargetMingwContainer<T : KNT>(
-    context: ContainerContext, name: String, code: KmpTargetCode,
-) : KmpTargetContainerImpl<T>(
-    context, name, code, MINGW_SORT_ORDER,
-), KmpTargetContainerImpl.NonJvm.Native.Mingw<T>, TargetMingw<T> {
+    context: ContainerContext, name: String,
+) : KmpTargetContainerImpl<T>(context, name, MINGW_SORT_ORDER),
+    KmpTargetContainerImpl.NonJvm.Native.Mingw<T>, MingwTarget<T> {
 
-    interface Configure : TargetMingw.Configure, ContainerHolderAware {
+    interface Configure : MingwTarget.Configure, ContainerHolderAware {
 
-        override fun mingwX64(targetName: String, action: TargetMingw<KNTHT>.() -> Unit) {
-            holder.configure(targetName, ::X64, action)
+        override fun mingwX64(targetName: String, action: MingwTarget<KNTHT>.() -> Unit) {
+            holder.configure(targetName, ::X64, KmpTargetCode.MINGW_X64, action)
         }
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun mingwX86(targetName: String, action: TargetMingw<KNT>.() -> Unit) {
-            holder.configure(targetName, ::X86, action)
+        override fun mingwX86(targetName: String, action: MingwTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::X86, KmpTargetCode.MINGW_X86, action)
         }
     }
 
     class X64(context: ContainerContext, targetName: String) :
-        TargetMingwContainer<KNTHT>(context, targetName, KmpTargetCode.MINGW_X64) {
+        TargetMingwContainer<KNTHT>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::mingwX64)
     }
 
     @Deprecated(DEPRECATED_TARGET_MSG)
     class X86(context: ContainerContext, targetName: String) :
-        TargetMingwContainer<KNT>(context, targetName, KmpTargetCode.MINGW_X86) {
+        TargetMingwContainer<KNT>(context, targetName) {
 
         @Suppress("DEPRECATION")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::mingwX86)
-    }
-
-
-    internal companion object {
-        internal const val MINGW = "mingw"
     }
 }

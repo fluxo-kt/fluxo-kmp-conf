@@ -11,7 +11,7 @@ public interface FluxoConfigurationExtensionCommon {
      * @see com.android.build.api.dsl.BuildFeatures.buildConfig
      * @FIXME: implement support for gradle plugin (support defaults property?)
      */
-    public var enableBuildConfig: Boolean?
+    public var enableBuildConfig: Boolean
 
 
     /**

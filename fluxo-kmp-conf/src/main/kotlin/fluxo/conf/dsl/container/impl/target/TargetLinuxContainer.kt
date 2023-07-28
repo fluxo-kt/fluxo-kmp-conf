@@ -2,63 +2,62 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
+import fluxo.conf.dsl.container.impl.KmpTargetCode
+import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
-import fluxo.conf.dsl.container.target.TargetLinux
-import fluxo.conf.kmp.KmpTargetCode
-import fluxo.conf.kmp.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
+import fluxo.conf.dsl.container.target.LinuxTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests as KNTHT
 
 internal abstract class TargetLinuxContainer<T : KNT>(
-    context: ContainerContext, name: String, code: KmpTargetCode,
-) : KmpTargetContainerImpl<T>(
-    context, name, code, LINUX_SORT_ORDER,
-), KmpTargetContainerImpl.NonJvm.Native.Unix.Linux<T>, TargetLinux<T> {
+    context: ContainerContext, name: String,
+) : KmpTargetContainerImpl<T>(context, name, LINUX_SORT_ORDER),
+    KmpTargetContainerImpl.NonJvm.Native.Unix.Linux<T>, LinuxTarget<T> {
 
-    interface Configure : TargetLinux.Configure, ContainerHolderAware {
+    interface Configure : LinuxTarget.Configure, ContainerHolderAware {
 
-        override fun linuxX64(targetName: String, action: TargetLinux<KNTHT>.() -> Unit) {
-            holder.configure(targetName, ::X64, action)
+        override fun linuxX64(targetName: String, action: LinuxTarget<KNTHT>.() -> Unit) {
+            holder.configure(targetName, ::X64, KmpTargetCode.LINUX_X64, action)
         }
 
-        override fun linuxArm64(targetName: String, action: TargetLinux<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm64, action)
+        override fun linuxArm64(targetName: String, action: LinuxTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm64, KmpTargetCode.LINUX_ARM64, action)
         }
 
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun linuxArm32Hfp(targetName: String, action: TargetLinux<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm32Hfp, action)
+        override fun linuxArm32Hfp(targetName: String, action: LinuxTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm32Hfp, KmpTargetCode.LINUX_ARM32_HFP, action)
         }
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun linuxMips32(targetName: String, action: TargetLinux<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Mips32, action)
+        override fun linuxMips32(targetName: String, action: LinuxTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Mips32, KmpTargetCode.LINUX_MIPS32, action)
         }
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun linuxMipsel32(targetName: String, action: TargetLinux<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Mipsel32, action)
+        override fun linuxMipsel32(targetName: String, action: LinuxTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Mipsel32, KmpTargetCode.LINUX_MIPSEL32, action)
         }
     }
 
 
     class X64(context: ContainerContext, targetName: String) :
-        TargetLinuxContainer<KNTHT>(context, targetName, KmpTargetCode.LINUX_X64) {
+        TargetLinuxContainer<KNTHT>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxX64)
     }
 
     class Arm64(context: ContainerContext, targetName: String) :
-        TargetLinuxContainer<KNT>(context, targetName, KmpTargetCode.LINUX_ARM64) {
+        TargetLinuxContainer<KNT>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxArm64)
     }
 
     @Deprecated(DEPRECATED_TARGET_MSG)
     class Arm32Hfp(context: ContainerContext, targetName: String) :
-        TargetLinuxContainer<KNT>(context, targetName, KmpTargetCode.LINUX_ARM32HFP) {
+        TargetLinuxContainer<KNT>(context, targetName) {
 
         @Suppress("DEPRECATION")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxArm32Hfp)
@@ -66,7 +65,7 @@ internal abstract class TargetLinuxContainer<T : KNT>(
 
     @Deprecated(DEPRECATED_TARGET_MSG)
     class Mips32(context: ContainerContext, targetName: String) :
-        TargetLinuxContainer<KNT>(context, targetName, KmpTargetCode.LINUX_MIPS32) {
+        TargetLinuxContainer<KNT>(context, targetName) {
 
         @Suppress("DEPRECATION")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxMips32)
@@ -74,14 +73,9 @@ internal abstract class TargetLinuxContainer<T : KNT>(
 
     @Deprecated(DEPRECATED_TARGET_MSG)
     class Mipsel32(context: ContainerContext, targetName: String) :
-        TargetLinuxContainer<KNT>(context, targetName, KmpTargetCode.LINUX_MIPSEL32) {
+        TargetLinuxContainer<KNT>(context, targetName) {
 
         @Suppress("DEPRECATION")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxMipsel32)
-    }
-
-
-    internal companion object {
-        internal const val LINUX = "linux"
     }
 }

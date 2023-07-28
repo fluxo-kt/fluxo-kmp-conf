@@ -2,12 +2,12 @@ package fluxo.conf.dsl.container.impl.target
 
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
+import fluxo.conf.dsl.container.impl.KmpTargetCode
+import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
+import fluxo.conf.dsl.container.impl.KmpTargetCode.WATCHOS_SIMULATOR_ARM64
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
-import fluxo.conf.dsl.container.target.TargetAppleWatchos
+import fluxo.conf.dsl.container.target.AppleWatchosTarget
 import fluxo.conf.impl.kotlin.KOTLIN_1_8
-import fluxo.conf.kmp.KmpTargetCode
-import fluxo.conf.kmp.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
-import fluxo.conf.kmp.KmpTargetCode.WATCHOS_SIMULATOR_ARM64
 import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
@@ -15,12 +15,11 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTes
 import watchosCompat
 
 internal abstract class TargetAppleWatchosContainer<T : KNT>(
-    context: ContainerContext, name: String, code: KmpTargetCode,
-) : KmpTargetContainerImpl<T>(
-    context, name, code, APPLE_WATCHOS_SORT_ORDER,
-), KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Watchos<T>, TargetAppleWatchos<T> {
+    context: ContainerContext, name: String,
+) : KmpTargetContainerImpl<T>(context, name, APPLE_WATCHOS_SORT_ORDER),
+    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Watchos<T>, AppleWatchosTarget<T> {
 
-    interface Configure : TargetAppleWatchos.Configure, ContainerHolderAware {
+    interface Configure : AppleWatchosTarget.Configure, ContainerHolderAware {
 
         /**
          *
@@ -29,7 +28,7 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
          * @see watchosCompat
          */
         @Suppress("MaxLineLength")
-        override fun watchos(action: TargetAppleWatchos<KNT>.() -> Unit) {
+        override fun watchos(action: AppleWatchosTarget<KNT>.() -> Unit) {
             watchosArm32(action = action)
             watchosArm64(action = action)
             if (holder.kotlinPluginVersion >= KOTLIN_1_8) {
@@ -40,84 +39,79 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
         }
 
 
-        override fun watchosArm32(targetName: String, action: TargetAppleWatchos<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm32, action)
+        override fun watchosArm32(targetName: String, action: AppleWatchosTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm32, KmpTargetCode.WATCHOS_ARM32, action)
         }
 
-        override fun watchosArm64(targetName: String, action: TargetAppleWatchos<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm64, action)
+        override fun watchosArm64(targetName: String, action: AppleWatchosTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm64, KmpTargetCode.WATCHOS_ARM64, action)
         }
 
         override fun watchosDeviceArm64(
             targetName: String,
-            action: TargetAppleWatchos<KNT>.() -> Unit,
+            action: AppleWatchosTarget<KNT>.() -> Unit,
         ) {
             if (holder.kotlinPluginVersion < KOTLIN_1_8) {
                 throw GradleException("watchosDeviceArm64 requires Kotlin 1.8 or greater")
             }
-            holder.configure(targetName, ::DeviceArm64, action)
+            holder.configure(targetName, ::DeviceArm64, KmpTargetCode.WATCHOS_DEVICE_ARM64, action)
         }
 
-        override fun watchosX64(targetName: String, action: TargetAppleWatchos<KNTS>.() -> Unit) {
-            holder.configure(targetName, ::X64, action)
+        override fun watchosX64(targetName: String, action: AppleWatchosTarget<KNTS>.() -> Unit) {
+            holder.configure(targetName, ::X64, KmpTargetCode.WATCHOS_X64, action)
         }
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun watchosX86(targetName: String, action: TargetAppleWatchos<KNTS>.() -> Unit) {
-            holder.configure(targetName, ::X86, action)
+        override fun watchosX86(targetName: String, action: AppleWatchosTarget<KNTS>.() -> Unit) {
+            holder.configure(targetName, ::X86, KmpTargetCode.WATCHOS_X86, action)
         }
 
         override fun watchosSimulatorArm64(
             targetName: String,
-            action: TargetAppleWatchos<KNTS>.() -> Unit,
+            action: AppleWatchosTarget<KNTS>.() -> Unit,
         ) {
-            holder.configure(targetName, ::SimulatorArm64, action)
+            holder.configure(targetName, ::SimulatorArm64, WATCHOS_SIMULATOR_ARM64, action)
         }
     }
 
 
     class Arm32(context: ContainerContext, targetName: String) :
-        TargetAppleWatchosContainer<KNT>(context, targetName, KmpTargetCode.WATCHOS_ARM32) {
+        TargetAppleWatchosContainer<KNT>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::watchosArm32)
     }
 
     class Arm64(context: ContainerContext, targetName: String) :
-        TargetAppleWatchosContainer<KNT>(context, targetName, KmpTargetCode.WATCHOS_ARM64) {
+        TargetAppleWatchosContainer<KNT>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::watchosArm64)
     }
 
     class DeviceArm64(context: ContainerContext, targetName: String) :
-        TargetAppleWatchosContainer<KNT>(context, targetName, KmpTargetCode.WATCHOS_DEVICE_ARM64) {
+        TargetAppleWatchosContainer<KNT>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() =
             createTarget(::watchosDeviceArm64)
     }
 
     class X64(context: ContainerContext, targetName: String) :
-        TargetAppleWatchosContainer<KNTS>(context, targetName, KmpTargetCode.WATCHOS_X64) {
+        TargetAppleWatchosContainer<KNTS>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::watchosX64)
     }
 
     @Deprecated(DEPRECATED_TARGET_MSG)
     class X86(context: ContainerContext, targetName: String) :
-        TargetAppleWatchosContainer<KNTS>(context, targetName, KmpTargetCode.WATCHOS_X86) {
+        TargetAppleWatchosContainer<KNTS>(context, targetName) {
 
         @Suppress("DEPRECATION")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::watchosX86)
     }
 
     class SimulatorArm64(context: ContainerContext, targetName: String) :
-        TargetAppleWatchosContainer<KNTS>(context, targetName, WATCHOS_SIMULATOR_ARM64) {
+        TargetAppleWatchosContainer<KNTS>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() =
             createTarget(::watchosSimulatorArm64)
-    }
-
-
-    internal companion object {
-        internal const val WATCHOS = "watchos"
     }
 }

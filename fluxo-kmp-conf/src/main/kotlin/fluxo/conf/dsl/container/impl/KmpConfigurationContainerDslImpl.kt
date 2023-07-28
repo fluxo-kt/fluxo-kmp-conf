@@ -1,6 +1,11 @@
 package fluxo.conf.dsl.container.impl
 
+import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.container.KmpConfigurationContainerDsl
+import fluxo.conf.dsl.container.KotlinTargetContainer
+import fluxo.conf.dsl.container.impl.custom.CommonActionContainer
+import fluxo.conf.dsl.container.impl.custom.KotlinMultiplatformActionContainer
+import fluxo.conf.dsl.container.impl.custom.KotlinProjectActionContainer
 import fluxo.conf.dsl.container.impl.target.TargetAndroidContainer
 import fluxo.conf.dsl.container.impl.target.TargetAndroidNativeContainer
 import fluxo.conf.dsl.container.impl.target.TargetAppleIosContainer
@@ -14,8 +19,11 @@ import fluxo.conf.dsl.container.impl.target.TargetMingwContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmNativeContainer
 import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
+import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import setupBackgroundNativeTests
 
 internal class KmpConfigurationContainerDslImpl(
     override val holder: ContainerHolder,
@@ -32,6 +40,20 @@ internal class KmpConfigurationContainerDslImpl(
     TargetWasmContainer.Configure,
     TargetAndroidNativeContainer.Configure,
     TargetWasmNativeContainer.Configure {
+
+    override fun <T : KotlinTargetContainer<KotlinTarget>> onTarget(
+        type: Class<T>,
+        action: Action<in T>,
+    ) {
+        holder.containers.withType(type, action)
+    }
+
+
+    override fun common(action: Container.() -> Unit) {
+        holder.configureCustom(
+            CommonActionContainer.NAME, ::CommonActionContainer, action,
+        )
+    }
 
     override fun kotlin(action: KotlinProjectExtension.() -> Unit) {
         holder.configureCustom(
@@ -51,17 +73,11 @@ internal class KmpConfigurationContainerDslImpl(
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetHierarchyDsl.default
      */
     override fun allDefaultTargets() {
-        // Note KotlinMultiplatformExtension.targetHierarchy
-        //  https://kotlinlang.org/docs/whatsnew1820.html#new-approach-to-source-set-hierarchy
+        // KotlinMultiplatformExtension.targetHierarchy
+        // https://kotlinlang.org/docs/whatsnew1820.html#new-approach-to-source-set-hierarchy
 
         jvm()
-        android {
-            android {
-                // FIXME: proper smart setup based on the configuration
-                compileSdk = 33
-                namespace = "test.test"
-            }
-        }
+        androidLibrary()
         js()
 
         ios()
@@ -72,9 +88,13 @@ internal class KmpConfigurationContainerDslImpl(
         linux()
         mingw()
 
-        @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
         if (holder.kotlinPluginVersion >= KOTLIN_1_8_20) {
+            @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
             wasm()
+        }
+
+        kotlinMultiplatform {
+            setupBackgroundNativeTests()
         }
     }
 }

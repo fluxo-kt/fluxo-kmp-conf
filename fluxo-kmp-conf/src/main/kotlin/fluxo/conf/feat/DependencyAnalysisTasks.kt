@@ -18,7 +18,7 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisTasks() {
 // Use `buildEnvironment` task for the report about plugins
 // https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
 private fun FluxoKmpConfContext.registerAllDepsTasks() {
-    val isCalled = hasAnyTaskCalled(ALL_DEPS_TASK_NAME)
+    val isCalled = hasStartTaskCalled(ALL_DEPS_TASK_NAME)
     if (isCalled) {
         markProjectInSync()
         rootProject.subprojects { registerTaskAllDeps() }
@@ -47,7 +47,7 @@ private const val ALL_DEPS_TASK_NAME = "allDeps"
 // region resolveDependencies
 
 private fun FluxoKmpConfContext.registerResolveDependenciesTasks() {
-    onProjectInSyncRun(forceIf = hasAnyTaskCalled(RESOLVE_DEPENDENCIES_TASK_NAME)) {
+    onProjectInSyncRun(forceIf = hasStartTaskCalled(RESOLVE_DEPENDENCIES_TASK_NAME)) {
         rootProject.tasks.register<Task>(RESOLVE_DEPENDENCIES_TASK_NAME) {
             group = TASK_GROUP_NAME
             description = "Resolve and prefetch dependencies"

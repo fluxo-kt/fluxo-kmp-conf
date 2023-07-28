@@ -33,14 +33,20 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
 
     @get:Input
     val versionProp: Property<String?>
-    override var version: String?
-        get() = versionProp.orNull ?: parent?.version ?: context.libs.v("version", "v")
+    override var version: String
+        get() = versionProp.orNull
+            ?: parent?.version
+            ?: context.libs.v("version", "versionName", "app", "appVersion", "v")
+            ?: project.version.toString()
         set(value) = versionProp.set(value)
 
     @get:Input
     val groupProp: Property<String?>
-    override var group: String?
-        get() = groupProp.orNull ?: parent?.group ?: context.libs.v("group", "package")
+    override var group: String
+        get() = groupProp.orNull
+            ?: parent?.group
+            ?: context.libs.v("group", "package")
+            ?: project.group.toString()
         set(value) = groupProp.set(value)
 
     @get:Input
@@ -81,14 +87,31 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     @get:Input
     val publicationConfigProp: Property<FluxoPublicationConfig?>
     override var publicationConfig: FluxoPublicationConfig?
-        get() = publicationConfigProp.orNull ?: parent?.publicationConfig
+        get() = publicationConfigProp.orNull ?: parent?.publicationConfig?.updateForCurrentProject()
         set(value) = publicationConfigProp.set(value)
 
+    private fun FluxoPublicationConfig.updateForCurrentProject(): FluxoPublicationConfig {
+        val conf = this@FluxoConfigurationExtensionPublicationImpl
+        return this.copy(
+            projectName = projectNamePrep().ifEmpty { projectName },
+            projectDescription = conf.description.orEmpty().ifEmpty { projectDescription },
+            group = conf.group.ifEmpty { group },
+        )
+    }
+
+    private fun projectNamePrep(): String {
+        return projectName ?: project.rootProject.name.let {
+            when {
+                it.length <= 1 -> it.uppercase()
+                else -> it[0].uppercase() + it.substring(1)
+            }
+        }
+    }
 
     override fun publicationConfig(configure: FluxoPublicationConfig.() -> Unit) {
         val project = project
-        var version = version ?: project.version.toString()
-        val group = group ?: project.group.toString()
+        var version = version
+        val group = group
         val description = description
         val isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
         var url: String? = null
@@ -104,13 +127,6 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
             url = "https://github.com/$githubProject"
             publicationUrl = "$url/tree/$scmTag"
             scmUrl = "scm:git:git://github.com/$githubProject.git"
-        }
-
-        val name = projectName ?: project.rootProject.name.let {
-            when {
-                it.length <= 1 -> it.uppercase()
-                else -> it[0].uppercase() + it.substring(1)
-            }
         }
 
         // Make snapshot builds safe and reproducible for usage
@@ -136,7 +152,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         publicationConfig = FluxoPublicationConfig(
             group = group,
             version = version,
-            projectName = name,
+            projectName = projectNamePrep(),
             projectDescription = description.orEmpty(),
             projectUrl = url,
             publicationUrl = publicationUrl,

@@ -3,7 +3,7 @@ package fluxo.conf.dsl
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 
 @Suppress("LongParameterList")
-public class FluxoPublicationConfig(
+public data class FluxoPublicationConfig(
     public var group: String,
     public var version: String,
     public var projectName: String? = null,

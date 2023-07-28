@@ -11,6 +11,7 @@ internal val DEFAULT_OPT_INS = listOf(
 private val DELICATE_COROUTINES_API_OPT_INS = listOf(
     "kotlinx.coroutines.DelicateCoroutinesApi",
     "kotlinx.coroutines.ExperimentalCoroutinesApi",
+    "kotlinx.coroutines.FlowPreview",
     "kotlinx.coroutines.InternalCoroutinesApi",
 )
 

@@ -18,7 +18,9 @@ import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
+import org.jetbrains.kotlin.konan.target.KonanTarget.Companion.deprecatedTargets
 
 // TODO: Mark source sets with deprectaed or 3rd tier targets
 
@@ -92,6 +94,7 @@ internal abstract class KotlinSourceSetsReportTask :
 
         private val androidMain = items.find { it.name == "androidMain" }
 
+        @Suppress("CyclomaticComplexMethod", "NestedBlockDepth")
         private fun fillNode(
             node: KotlinSourceSetGraphNode,
             s: KotlinSourceSet,
@@ -109,7 +112,12 @@ internal abstract class KotlinSourceSetsReportTask :
             val dependencies = s.run {
                 val set = LinkedHashSet<KotlinSourceSet>()
                 set.addAll(dependsOn)
-                set.addAll(requiresVisibilityOf)
+                try {
+                    // Scheduled for removal with Kotlin 2.0
+                    @Suppress("DEPRECATION")
+                    set.addAll(requiresVisibilityOf)
+                } catch (_: Throwable) {
+                }
                 set
             }
             if (s is DefaultKotlinSourceSet) {
@@ -129,6 +137,12 @@ internal abstract class KotlinSourceSetsReportTask :
                     targets.first().run {
                         node.targetName = name
                         node.platformType = platformType.name
+                        try {
+                            if (this is KotlinNativeTarget && konanTarget in deprecatedTargets) {
+                                node.isDeprecatedTarget = true
+                            }
+                        } catch (_: Throwable) {
+                        }
                     }
                 }
             }
@@ -230,11 +244,13 @@ internal abstract class KotlinSourceSetsReportTask :
         var progressiveMode: Boolean by attrs
         var targetName: String? by attrs
         var platformType: String? by attrs
+        var isDeprecatedTarget: Boolean by attrs
     }
 
     internal class SourceSetNodeRenderer(showTests: Boolean) : SimpleNodeRenderer(showTests) {
 
         context(StyledTextOutput)
+        @Suppress("CyclomaticComplexMethod")
         override fun renderAttrs(node: RenderableNode, parent: RenderableNode?) {
             if (node.attrs.isEmpty() || node !is KotlinSourceSetGraphNode) {
                 return
@@ -243,6 +259,7 @@ internal abstract class KotlinSourceSetsReportTask :
                 return
             }
 
+            var hasWarning = false
             val items = mutableListOf<String>()
 
             val lang = node.languageVersion
@@ -262,12 +279,23 @@ internal abstract class KotlinSourceSetsReportTask :
                 items.add("progressive")
             }
 
-            if (items.isNotEmpty()) {
-                val output = withStyle(StyledTextOutput.Style.Info)
-                output.append(" (")
-                items.joinTo(output, ", ")
-                output.append(")")
+            val isDeprecatedTarget = node.isDeprecatedTarget
+            if (isDeprecatedTarget && parent?.isDeprecatedTarget != true) {
+                hasWarning = true
+                items.add("deprecated target")
             }
+
+            if (items.isEmpty()) {
+                return
+            }
+            val style = when {
+                hasWarning -> StyledTextOutput.Style.Error
+                else -> StyledTextOutput.Style.Info
+            }
+            val output = withStyle(style)
+            output.append(" (")
+            items.joinTo(output, ", ")
+            output.append(")")
         }
     }
 }

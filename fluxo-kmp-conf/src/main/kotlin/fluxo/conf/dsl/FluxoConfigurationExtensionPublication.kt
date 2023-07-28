@@ -21,17 +21,29 @@ public interface FluxoConfigurationExtensionPublication {
 
     /**
      * The version for publication of this project.
+     * Inherited from the parent project if not set.
+     *
+     * Auto set using the version names in toml version catalog:
+     * `version`, `versionName`, `app`, `appVersion` or `v`.
+     *
+     * Defaults to `"unspecified"`.
      *
      * @see org.gradle.api.Project.getVersion
      */
-    public var version: String?
+    public var version: String
 
     /**
      * The group for publication of this project.
+     * Inherited from the parent project if not set.
+     *
+     * Auto set using the version names in toml version catalog:
+     * `group`, or `package`.
+     *
+     * Defaults to the project path with dots as separators.
      *
      * @see org.gradle.api.Project.getGroup
      */
-    public var group: String?
+    public var group: String
 
     /**
      * Description of this project, if any.
@@ -54,6 +66,10 @@ public interface FluxoConfigurationExtensionPublication {
 
     public var publicationConfig: FluxoPublicationConfig?
 
+
+    /**
+     * Reasonably configures the [FluxoPublicationConfig] with provided values.
+     */
     public fun publicationConfig(configure: FluxoPublicationConfig.() -> Unit)
 
 

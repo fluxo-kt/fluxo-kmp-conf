@@ -31,12 +31,31 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
     @get:Input
     val androidNamespaceProp: Property<String?>
     override var androidNamespace: String
-        get() = androidNamespaceProp.orNull ?: let {
-            val prefix = androidNamespacePrefix
-            val path = project.path.replace(":", ".")
-            if (prefix != null) "$prefix.$path" else path
-        }
+        get() = (androidNamespaceProp.orNull
+            ?: let {
+                val prefix = androidNamespacePrefix
+                val ns = if (prefix.isNullOrEmpty()) group else project.name
+                if (prefix.isNullOrEmpty()) ns else "$prefix.$ns"
+            })
+            .replace(':', '.')
+            .replace('-', '_')
         set(value) = androidNamespaceProp.set(value)
+
+    @get:Input
+    val androidApplicationIdProp: Property<String?>
+    override var androidApplicationId: String
+        get() = androidApplicationIdProp.orNull ?: parent?.androidApplicationId ?: androidNamespace
+        set(value) = androidApplicationIdProp.set(value)
+
+
+    @get:Input
+    val androidVersionCodeProp: Property<Int?>
+    override var androidVersionCode: Int
+        get() = androidVersionCodeProp.orNull
+            ?: parent?.androidVersionCode
+            ?: context.libs.vInt("versionCode", "androidVersionCode")
+            ?: 0
+        set(value) = androidVersionCodeProp.set(value)
 
 
     @get:Input
@@ -45,7 +64,12 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
         get() = androidMinSdkProp.orNull
             ?: parent?.androidMinSdk
             ?: av("Min", DEFAULT_ANDROID_MIN_SDK)
-        set(value) = androidMinSdkProp.set(value)
+        set(value) {
+            require(value is Int || value is String) {
+                "androidMinSdk must be an Int or String"
+            }
+            androidMinSdkProp.set(value)
+        }
 
     @get:Input
     val androidTargetSdkProp: Property<Any?>
@@ -53,7 +77,12 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
         get() = androidTargetSdkProp.orNull
             ?: parent?.androidTargetSdk
             ?: av("Target", DEFAULT_ANDROID_TARGET_SDK)
-        set(value) = androidTargetSdkProp.set(value)
+        set(value) {
+            require(value is Int || value is String) {
+                "androidTargetSdk must be an Int or String"
+            }
+            androidTargetSdkProp.set(value)
+        }
 
     @get:Input
     val androidCompileSdkProp: Property<Any?>
@@ -61,7 +90,12 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
         get() = androidCompileSdkProp.orNull
             ?: parent?.androidCompileSdk
             ?: av("Compile", DEFAULT_ANDROID_COMPILE_SDK)
-        set(value) = androidCompileSdkProp.set(value)
+        set(value) {
+            require(value is Int || value is String) {
+                "androidCompileSdk must be an Int or String"
+            }
+            androidCompileSdkProp.set(value)
+        }
 
     private fun av(type: String, default: Int): Any {
         val lType = type[0].lowercaseChar() + type.substring(1)
@@ -93,9 +127,9 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
 
 
     @get:Input
-    val enableBuildConfigProp: Property<Boolean?>
-    override var enableBuildConfig: Boolean?
-        get() = enableBuildConfigProp.orNull ?: parent?.enableBuildConfig
+    val enableBuildConfigProp: Property<Boolean>
+    override var enableBuildConfig: Boolean
+        get() = enableBuildConfigProp.orNull ?: parent?.enableBuildConfig ?: false
         set(value) = enableBuildConfigProp.set(value)
 
 
@@ -131,4 +165,18 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
     override var noVerificationFlavors: List<String>
         get() = noVerifyFlavorsProp.orNull.orEmpty() + parent?.noVerificationFlavors.orEmpty()
         set(value) = noVerifyFlavorsProp.set(value)
+
+
+    @get:Input
+    val setupRoomProp: Property<Boolean?>
+    override var setupRoom: Boolean?
+        get() = setupRoomProp.orNull ?: parent?.setupRoom
+        set(value) = setupRoomProp.set(value)
+
+
+    @get:Input
+    val removeKotlinMetadataProp: Property<Boolean>
+    override var removeKotlinMetadata: Boolean
+        get() = removeKotlinMetadataProp.orNull ?: parent?.removeKotlinMetadata ?: false
+        set(value) = removeKotlinMetadataProp.set(value)
 }

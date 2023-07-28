@@ -1,19 +1,13 @@
 import com.android.build.gradle.LibraryExtension
-import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.hasExtension
-import fluxo.conf.impl.libsCatalog
-import fluxo.conf.impl.onPlugin
-import fluxo.conf.impl.withType
+import fluxo.conf.impl.*
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-private const val PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-validator"
+private const val BCV_PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-validator"
 
-public fun Project.setupBinaryCompatibilityValidator(
-    config: BinaryCompatibilityValidatorConfig? = getDefaults<BinaryCompatibilityValidatorConfig>(),
-) {
+public fun Project.setupBinaryCompatibilityValidator(config: BinaryCompatibilityValidatorConfig?) {
     val calledExplicitly = gradle.startParameter.taskNames
         .any { it.endsWith("apiCheck", ignoreCase = true) }
 
@@ -65,9 +59,9 @@ private fun Project.setupBinaryCompatibilityValidatorAndroidLibrary(
 }
 
 private fun Project.applyBinaryCompatibilityValidator(config: BinaryCompatibilityValidatorConfig?) {
-    plugins.apply(PLUGIN_ID)
+    plugins.apply(BCV_PLUGIN_ID)
     config ?: return
-    configureExtension<ApiValidationExtension> {
+    configureExtension<ApiValidationExtension>("apiValidation") {
         ignoredPackages += config.ignoredPackages
         nonPublicMarkers += config.nonPublicMarkers
         ignoredClasses += config.ignoredClasses

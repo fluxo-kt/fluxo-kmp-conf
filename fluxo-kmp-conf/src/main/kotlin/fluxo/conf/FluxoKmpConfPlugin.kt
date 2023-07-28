@@ -1,14 +1,9 @@
 package fluxo.conf
 
-import KMP_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.PLUGIN_ID
 import fluxo.conf.deps.FluxoCache
-import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.FluxoConfigurationExtension
-import fluxo.conf.dsl.container.impl.ContainerImpl
-import fluxo.conf.dsl.container.impl.ContainerKotlinAware
-import fluxo.conf.dsl.container.impl.ContainerKotlinMultiplatformAware
-import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
+import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.impl.ConfigureContainers
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType
@@ -24,22 +19,17 @@ import fluxo.conf.feat.prepareKotlinSetupDiagnosticTasks
 import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
 import fluxo.conf.feat.prepareTaskInfoPlugin
 import fluxo.conf.feat.prepareTaskTreePlugin
+import fluxo.conf.feat.setupSpotless
+import fluxo.conf.feat.setupTestsReport
+import fluxo.conf.feat.setupVerificationRoot
 import fluxo.conf.impl.checkIsRootProject
-import fluxo.conf.impl.configure
-import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.i
-import fluxo.conf.impl.kotlin.setupKotlinExtension
-import fluxo.conf.impl.libsCatalog
-import fluxo.conf.impl.onVersion
-import fluxo.conf.impl.withType
+import fluxo.conf.impl.isRootProject
+import fluxo.conf.impl.kotlin.configureKotlinJvm
+import fluxo.conf.impl.kotlin.configureKotlinMultiplatform
+import fluxo.conf.impl.kotlin.setupKmpYarnPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
-import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
-import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 
 @Suppress("unused", "EmptyFunctionBlock", "ktPropBy")
 public class FluxoKmpConfPlugin : Plugin<Project> {
@@ -51,116 +41,66 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.checkIsRootProject("\"$PLUGIN_ID\" plugin")
-        checkLifecycle(target)
+        checkGradleLifecycleBase(target)
 
         val context = FluxoKmpConfContext.getFor(target)
 
         target.allprojects {
             val configureContainers: ConfigureContainers = ::configureContainers
-            extensions.create(
+            val conf = extensions.create(
                 FluxoConfigurationExtension::class.java,
-                FluxoConfigurationExtensionImpl.NAME,
+                FluxoConfigurationExtension.NAME,
                 FluxoConfigurationExtensionImpl::class.java,
                 context,
                 configureContainers,
             )
 
-            // FIXME: Move to Kotlin configuration
-            // Fix Kotlin/JS incompatibilities by pinning the versions of dependencies.
-            // Workaround for https://youtrack.jetbrains.com/issue/KT-52776
-            // Also see https://github.com/rjaros/kvision/blob/d9044ab/build.gradle.kts#L28
-            afterEvaluate {
-                plugins.withType<YarnPlugin> {
-                    val libs = target.libsCatalog
-                    target.configureExtension<YarnRootExtension> {
-                        lockFileDirectory = target.rootDir.resolve(".kotlin-js-store")
-                        libs.onVersion("js-engineIo") { resolution("engine.io", it) }
-                        libs.onVersion("js-socketIo") { resolution("socket.io", it) }
-                        libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
-                    }
-                    target.configureExtension<NodeJsRootExtension> {
-                        libs.onVersion("js-karma") { versions.karma.version = it }
-                        libs.onVersion("js-mocha") { versions.mocha.version = it }
-                        libs.onVersion("js-webpack") { versions.webpack.version = it }
-                        libs.onVersion("js-webpackCli") { versions.webpackCli.version = it }
-                        libs.onVersion("js-webpackDevServer") {
-                            versions.webpackDevServer.version = it
-                        }
-                    }
+            if (isRootProject && !context.testsDisabled) afterEvaluate {
+                val enableVerification = conf.enableVerification == true
+                if (enableVerification && conf.enableSpotless == true) {
+                    target.setupSpotless(context)
                 }
             }
         }
 
+        target.setupKmpYarnPlugin(context)
+
         FluxoCache.bindToProjectLifecycle(target)
+        context.prepareDependencyPinningBundle()
+        context.prepareBuildScanPlugin()
+        context.ensureUnreachableTasksDisabled()
+
+        if (context.testsDisabled) {
+            return
+        }
+
         context.prepareCompleteKotlinPlugin()
         context.prepareGradleVersionsPlugin()
         context.prepareDependencyAnalysisPlugin()
         context.prepareDependencyGuardPlugin()
         context.prepareDependencyAnalysisTasks()
-        context.prepareDependencyPinningBundle()
         context.prepareTaskTreePlugin()
         context.prepareTaskInfoPlugin()
         context.prepareKotlinSetupDiagnosticTasks()
         context.prepareModuleDependencyGraphPlugin()
-        context.prepareBuildScanPlugin()
-        context.ensureUnreachableTasksDisabled()
+        context.setupTestsReport()
+        context.setupVerificationRoot()
     }
-
 
     private fun configureContainers(
         type: ConfigurationType,
         configuration: FluxoConfigurationExtensionImpl,
-        containers: Collection<ContainerImpl>,
+        containers: Collection<Container>,
     ) {
+        val containerArray = containers.toTypedArray()
         when (type) {
             ConfigurationType.KOTLIN_MULTIPLATFORM ->
-                configureKotlinMultiplatform(configuration, containers)
+                configureKotlinMultiplatform(configuration, containerArray)
 
-            ConfigurationType.ANDROID_LIB -> TODO()
-            ConfigurationType.ANDROID_APP -> TODO()
-            ConfigurationType.KOTLIN_JVM -> TODO()
-            ConfigurationType.IDEA_PLUGIN -> TODO()
+            else ->
+                configureKotlinJvm(type, configuration, containerArray)
         }
     }
-
-    private fun configureKotlinMultiplatform(
-        configuration: FluxoConfigurationExtensionImpl,
-        containers: Collection<ContainerImpl>,
-    ) {
-        val targets = containers.filterIsInstance<KmpTargetContainerImpl<*>>()
-        val project = configuration.project
-        val logger = project.logger
-        val label = ":setupMultiplatform"
-        if (targets.isEmpty()) {
-            logger.i("$label - no applicable targets found, skipping module configuration")
-            return
-        } else {
-            logger.i(label)
-        }
-
-        val pluginManager = project.pluginManager
-        configuration.context.loadAndApplyPluginIfNotApplied(id = KMP_PLUGIN_ID, project = project)
-
-        project.extensions.configure<KotlinMultiplatformExtension> {
-            // Set settings before the containers so that they may be overridden if desired.
-            setupKotlinExtension(configuration)
-
-            for (container in containers) {
-                container.applyPluginsWith(pluginManager)
-
-                when (container) {
-                    is ContainerKotlinMultiplatformAware ->
-                        container.setup(this)
-
-                    is ContainerKotlinAware<*> ->
-                        @Suppress("UNCHECKED_CAST")
-                        (container as ContainerKotlinAware<KotlinProjectExtension>)
-                            .setup(this)
-                }
-            }
-        }
-    }
-
 
     /**
      * Make sure there's a `clean`, and a `check` tasks in root project.
@@ -168,7 +108,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
      * @see org.gradle.api.plugins.BasePlugin ('base')
      * @see org.gradle.language.base.plugins.LifecycleBasePlugin
      */
-    private fun checkLifecycle(target: Project) {
+    private fun checkGradleLifecycleBase(target: Project) {
         target.pluginManager.apply(LifecycleBasePlugin::class.java)
     }
 }

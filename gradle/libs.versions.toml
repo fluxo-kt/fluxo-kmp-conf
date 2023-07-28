@@ -12,7 +12,7 @@ version = "0.1.0"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
-# javaLangTarget 11 is required for Android Gradle Plugin
+# javaLangTarget 11 is required for Android Gradle Plugin and Android Lint
 javaLangTarget = "11"
 kotlinLangVersion = "1.5"
 kotlinApiVersion = "1.5"
@@ -25,10 +25,10 @@ kotlin = "1.9.0"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.4.1"
+jetbrains-compose = "1.5.0-beta01"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.0-1.0.11"
+ksp = "1.9.0-1.0.13"
 
 # region Android specific
 
@@ -84,7 +84,7 @@ androidBuildTools = "34.0.0"
 
 # Gradle plug-in to build Android applications.
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
-android-gradle-plugin = "8.0.2"
+android-gradle-plugin = "8.1.0"
 
 # endregion
 
@@ -99,7 +99,7 @@ bcv = "0.13.2"
 dokka = "1.8.20"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.23.0"
+detekt = "1.23.1"
 
 # https://github.com/pinterest/ktlint/releases
 ktlint = "0.50.0"
@@ -151,7 +151,7 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }
 # Build scans, data to speed up build and improve build reliability.
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.enterprise
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.14" }
+gradle-enterprise = { id = "com.gradle.enterprise", version = "3.14.1" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin/releases

@@ -4,9 +4,10 @@ import org.gradle.api.logging.Logger
 
 
 private const val TAG = "FluxoKmpConf"
+private const val CONF = "> Conf"
 
 @Volatile
-internal var SHOW_DEBUG_LOGS = true
+internal var SHOW_DEBUG_LOGS = false
 
 
 internal fun Logger.t(message: String, e: Throwable? = null) {
@@ -44,12 +45,13 @@ internal fun Logger.d(message: String, arg1: Any?, arg2: Any?, arg3: Any?) {
     }
 }
 
-internal fun Logger.l(message: String) = lifecycle("> Conf $message")
+internal fun Logger.l(message: String) = lifecycle("$CONF $message")
 
 internal fun Logger.i(message: String) = l(message)
 
 
-internal fun Logger.w(message: String, e: Throwable? = null) = warn("> Conf! $message", e)
+internal fun Logger.w(message: String, e: Throwable? = null) = warn("$CONF! $message", e)
 
-internal fun Logger.e(message: String, e: Throwable? = null) = error("> Conf! $message", e)
+internal fun Logger.e(message: String, e: Throwable? = null) = error("$CONF! $message", e)
 
+internal fun Logger.e(message: String, arg1: Any?) = error("{}! $message", CONF, arg1)

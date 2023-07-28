@@ -1,4 +1,4 @@
-@file:Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+@file:Suppress("EXTENSION_SHADOWED_BY_MEMBER", "TooManyFunctions")
 
 package fluxo.conf.impl
 

@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
-    onProjectInSyncRun(forceIf = hasAnyTaskCalled(TARGETS_TASK, SOURCES_TASK, SOURCES_GRAPH_TASK)) {
+    onProjectInSyncRun(forceIf = hasStartTaskCalled(DIAGNOSTIC_TASKS)) {
         rootProject.allprojects {
             plugins.withType<KotlinBasePlugin> {
                 // TODO: @DisableCachingByDefault(because = "Not worth caching")
@@ -68,7 +68,7 @@ private fun Project.printKotlinTargetsInfo() {
         if (target is KotlinJsTarget) {
             println(
                 "$T disambiguationClassifierInPlatform:" +
-                    " ${target.disambiguationClassifierInPlatform}",
+                        " ${target.disambiguationClassifierInPlatform}",
             )
         }
         if (target is KotlinJvmTarget) {
@@ -79,7 +79,7 @@ private fun Project.printKotlinTargetsInfo() {
                 target.binaries.forEach {
                     println(
                         "$P binary ${it.name}(${it.outputKind}" +
-                            ", debuggable=${it.debuggable}, optimized=${it.optimized})",
+                                ", debuggable=${it.debuggable}, optimized=${it.optimized})",
                     )
                 }
             } else {
@@ -131,8 +131,14 @@ private fun Project.printKotlinSourceSetsInfo() {
         sourceSet.dependsOn.ifNotEmpty {
             println("$P dependsOn: [${joinToString { it.name }}]")
         }
-        sourceSet.requiresVisibilityOf.ifNotEmpty {
-            println("$P requiresVisibilityOf: [${joinToString { it.name }}]")
+
+        try {
+            // Scheduled for removal with Kotlin 2.0
+            @Suppress("DEPRECATION")
+            sourceSet.requiresVisibilityOf.ifNotEmpty {
+                println("$P requiresVisibilityOf: [${joinToString { it.name }}]")
+            }
+        } catch (_: Throwable) {
         }
 
         sourceSet.languageSettings.run {
@@ -155,3 +161,4 @@ private const val TASK_GROUP = "group"
 private const val TARGETS_TASK = "printKotlinTargetsInfo"
 private const val SOURCES_TASK = "printKotlinSourceSetsInfo"
 private const val SOURCES_GRAPH_TASK = "printKotlinSourceSetsGraph"
+private val DIAGNOSTIC_TASKS = arrayOf(TARGETS_TASK, SOURCES_TASK, SOURCES_GRAPH_TASK)

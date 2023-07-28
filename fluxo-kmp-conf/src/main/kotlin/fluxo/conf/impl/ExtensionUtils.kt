@@ -1,12 +1,17 @@
-@file:Suppress("UNUSED_PARAMETER")
+@file:Suppress("UNUSED_PARAMETER", "TooManyFunctions")
 
 package fluxo.conf.impl
 
 import kotlin.reflect.KClass
+import org.gradle.api.Action
+import org.gradle.api.UnknownDomainObjectException
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.reflect.TypeOf
+
+internal fun ExtensionAware.hasExtension(name: String): Boolean =
+    extensions.findByName(name) != null
 
 internal inline fun <reified T : Any> ExtensionAware.hasExtension(): Boolean {
     return try {
@@ -30,6 +35,7 @@ internal inline fun ExtensionAware.hasExtension(clazz: () -> KClass<*>): Boolean
  * Throws an exception if none found.
  *
  * @see org.gradle.api.plugins.ExtensionContainer.getByType
+ * @throws UnknownDomainObjectException When the given extension isn't found.
  */
 internal inline fun <reified T : Any> ExtensionAware.the(type: KClass<T>? = null): T =
     extensions.getByType<T>()
@@ -49,12 +55,12 @@ internal inline fun <reified T : Any> ExtensionAware.configureExtensionIfAvailab
 internal inline fun <reified T : Any> ExtensionAware.configureExtension(
     type: KClass<T>? = null,
     noinline action: T.() -> Unit,
-) = extensions.configure<T>(type, action)
+) = extensions.configure(T::class.java, actionOf(action))
 
 internal fun <T : Any> ExtensionAware.configureExtension(
     name: String,
     type: KClass<T>? = null,
-    action: T.() -> Unit,
+    action: Action<in T>,
 ) = extensions.configure(name, action)
 
 
@@ -75,18 +81,7 @@ internal inline fun <reified T : Any> ExtensionContainer.getByType(type: KClass<
 internal inline fun <reified T : Any> ExtensionContainer.findByType(type: KClass<T>? = null): T? =
     findByType(T::class.java)
 
-
-internal inline fun <reified T : Any> ExtensionContainer.configure(
-    type: KClass<T>? = null,
-    noinline action: T.() -> Unit,
-) {
-    configure(T::class.java, actionOf(action))
-}
-
-internal fun <T : Any> ExtensionContainer.conf(
+internal inline fun <reified T : Any> ExtensionContainer.find(
     name: String,
     type: KClass<T>? = null,
-    action: T.() -> Unit,
-) {
-    configure(name, action)
-}
+): T? = findByName(name) as? T

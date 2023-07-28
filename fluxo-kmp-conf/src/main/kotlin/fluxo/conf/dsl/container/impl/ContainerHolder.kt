@@ -1,44 +1,39 @@
 package fluxo.conf.dsl.container.impl
 
-import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.kmp.KmpTargetCode
-import org.gradle.api.Project
+import fluxo.conf.dsl.container.Container
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import org.gradle.api.NamedDomainObjectSet
 
 internal class ContainerHolder(
-    context: FluxoKmpConfContext,
-    project: Project,
-) : ContainerContext(context, project) {
+    configuration: FluxoConfigurationExtensionImpl,
+    private val onlyTarget: KmpTargetCode?,
+) : ContainerContext(configuration) {
 
-    private val allKmpTargetsEnabled: Boolean = context.allKmpTargetsEnabled
-    private val requestedKmpTargets: Set<KmpTargetCode> = context.requestedKmpTargets
+    private val KmpTargetCode.isEnabled: Boolean
+        get() = context.isTargetEnabled(this)
 
-    val containers = objects.namedDomainObjectSet(ContainerImpl::class.java)
+    val containers: NamedDomainObjectSet<Container> =
+        objects.namedDomainObjectSet(Container::class.java)
 
-    fun add(container: ContainerImpl): Boolean {
-        return if (container !is KmpTargetContainerImpl<*>
-            || allKmpTargetsEnabled
-            || container.code in requestedKmpTargets
-        ) {
-            containers.add(container)
-            true
-        } else {
-            false
-        }
-    }
-
-    fun <T : ContainerImpl> configure(
+    fun <T : KmpTargetContainerImpl<*>> configure(
         targetName: String,
         contruct: (ContainerContext, targetName: String) -> T,
+        code: KmpTargetCode,
         action: T.() -> Unit,
     ) {
+        if (onlyTarget != null && onlyTarget != code) {
+            // Return early if configuring only a single target.
+            return
+        }
+
         var container = findByName<T>(targetName)
         if (container == null) {
-            // FIXME: Avoid contructing the container for disabled targets
-            container = contruct(this, targetName)
-            if (!add(container)) {
-                // Avoid calling the action for disabled targets
+            // Don't contruct the container for turned-off targets.
+            if (!code.isEnabled) {
                 return
             }
+            container = contruct(this, targetName)
+            require(containers.add(container)) { "Couldn't add container for target '$targetName'" }
         }
         action(container)
     }

@@ -1,190 +1,63 @@
-public final class AndroidConfigSetup {
-	public fun <init> (IIIILjava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ZLjava/util/List;Lkotlin/jvm/functions/Function2;)V
-	public synthetic fun <init> (IIIILjava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ZLjava/util/List;Lkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()I
-	public final fun component10 ()Lkotlin/jvm/functions/Function2;
-	public final fun component2 ()I
-	public final fun component3 ()I
-	public final fun component4 ()I
-	public final fun component5 ()Ljava/lang/String;
-	public final fun component6 ()Ljava/lang/String;
-	public final fun component7 ()Ljava/lang/Boolean;
-	public final fun component8 ()Z
-	public final fun component9 ()Ljava/util/List;
-	public final fun copy (IIIILjava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ZLjava/util/List;Lkotlin/jvm/functions/Function2;)LAndroidConfigSetup;
-	public static synthetic fun copy$default (LAndroidConfigSetup;IIIILjava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ZLjava/util/List;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)LAndroidConfigSetup;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getBuildToolsVersion ()Ljava/lang/String;
-	public final fun getCompileSdkVersion ()I
-	public final fun getConfigurator ()Lkotlin/jvm/functions/Function2;
-	public final fun getEnableBuildConfig ()Ljava/lang/Boolean;
-	public final fun getLanguages ()Ljava/util/List;
-	public final fun getLastSdkVersion ()I
-	public final fun getMinSdkVersion ()I
-	public final fun getPreviewSdkVersion ()Ljava/lang/String;
-	public final fun getSetupCompose ()Z
-	public final fun getTargetSdkVersion ()I
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class AndroidConfigSetupKt {
-	public static final fun requireDefaultAndroidConfigSetup (Lorg/gradle/api/Project;)LAndroidConfigSetup;
-}
-
-public final class Compilations {
-	public static final field INSTANCE LCompilations;
-	public final fun isDarwinEnabled ()Z
-	public final fun isGenericEnabled ()Z
-	public final fun isGenericEnabledForProject (Lorg/gradle/api/Project;)Z
-	public final fun isWindowsEnabled ()Z
-}
-
 public final class CompilationsKt {
 	public static final fun isGenericCompilationEnabled (Lorg/gradle/api/Project;)Z
 }
 
-public final class KotlinConfigSetup {
-	public fun <init> ()V
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component10 ()Z
-	public final fun component11 ()Z
-	public final fun component12 ()Z
-	public final fun component13 ()Z
-	public final fun component14 ()Z
-	public final fun component15 ()Z
-	public final fun component16 ()Ljava/util/List;
-	public final fun component17 ()Lkotlin/jvm/functions/Function1;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Z
-	public final fun component4 ()Z
-	public final fun component5 ()Z
-	public final fun component6 ()Z
-	public final fun component7 ()Z
-	public final fun component8 ()Z
-	public final fun component9 ()Z
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;)LKotlinConfigSetup;
-	public static synthetic fun copy$default (LKotlinConfigSetup;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZLjava/util/List;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)LKotlinConfigSetup;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getAddStdlibDependency ()Z
-	public final fun getConfigurator ()Lkotlin/jvm/functions/Function1;
-	public final fun getJavaLangTarget ()Ljava/lang/String;
-	public final fun getJavaParameters ()Z
-	public final fun getKotlinLangVersion ()Ljava/lang/String;
-	public final fun getOptInInternal ()Z
-	public final fun getOptIns ()Ljava/util/List;
-	public final fun getProgressiveMode ()Z
-	public final fun getRemoveAssertionsInRelease ()Z
-	public final fun getSetupCoroutines ()Z
-	public final fun getSetupJvmToolchain ()Z
-	public final fun getSetupKnownBoms ()Z
-	public final fun getSetupSerialization ()Z
-	public final fun getSuppressKotlinComposeCompatCheck ()Z
-	public final fun getUseExperimentalFastJarFs ()Z
-	public final fun getUseIndyLambdas ()Z
-	public final fun getWarningsAsErrors ()Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class KotlinConfigSetupKt {
-	public static final fun requireDefaultKotlinConfigSetup (Lorg/gradle/api/Project;)LKotlinConfigSetup;
-}
-
-public final class MultiplatformSourceSets : org/gradle/api/NamedDomainObjectContainer {
-	public synthetic fun add (Ljava/lang/Object;)Z
-	public fun add (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Z
-	public fun addAll (Ljava/util/Collection;)Z
-	public fun addAllLater (Lorg/gradle/api/provider/Provider;)V
-	public fun addLater (Lorg/gradle/api/provider/Provider;)V
-	public fun addRule (Ljava/lang/String;Lgroovy/lang/Closure;)Lorg/gradle/api/Rule;
-	public fun addRule (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/Rule;
-	public fun addRule (Lorg/gradle/api/Rule;)Lorg/gradle/api/Rule;
-	public fun all (Lgroovy/lang/Closure;)V
-	public fun all (Lorg/gradle/api/Action;)V
-	public fun clear ()V
-	public final fun commonCompileOnly (Ljava/lang/Object;)V
-	public synthetic fun configure (Lgroovy/lang/Closure;)Ljava/lang/Object;
-	public fun configure (Lgroovy/lang/Closure;)Lorg/gradle/api/NamedDomainObjectContainer;
-	public fun configureEach (Lorg/gradle/api/Action;)V
-	public final fun contains (Ljava/lang/Object;)Z
-	public fun contains (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Z
-	public fun containsAll (Ljava/util/Collection;)Z
-	public synthetic fun create (Ljava/lang/String;)Ljava/lang/Object;
-	public fun create (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public synthetic fun create (Ljava/lang/String;Lgroovy/lang/Closure;)Ljava/lang/Object;
-	public fun create (Ljava/lang/String;Lgroovy/lang/Closure;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public synthetic fun create (Ljava/lang/String;Lorg/gradle/api/Action;)Ljava/lang/Object;
-	public fun create (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public synthetic fun findAll (Lgroovy/lang/Closure;)Ljava/util/Collection;
-	public fun findAll (Lgroovy/lang/Closure;)Ljava/util/Set;
-	public synthetic fun findByName (Ljava/lang/String;)Ljava/lang/Object;
-	public fun findByName (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public final fun getAllSet ()Ljava/util/Set;
-	public final fun getAndroidNativeSet ()Ljava/util/Set;
-	public final fun getAndroidSet ()Ljava/util/Set;
-	public fun getAsMap ()Ljava/util/SortedMap;
-	public synthetic fun getAt (Ljava/lang/String;)Ljava/lang/Object;
-	public fun getAt (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public synthetic fun getByName (Ljava/lang/String;)Ljava/lang/Object;
-	public fun getByName (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public synthetic fun getByName (Ljava/lang/String;Lgroovy/lang/Closure;)Ljava/lang/Object;
-	public fun getByName (Ljava/lang/String;Lgroovy/lang/Closure;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public synthetic fun getByName (Ljava/lang/String;Lorg/gradle/api/Action;)Ljava/lang/Object;
-	public fun getByName (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public fun getCollectionSchema ()Lorg/gradle/api/NamedDomainObjectCollectionSchema;
-	public final fun getDarwinSet ()Ljava/util/Set;
-	public final fun getIosSet ()Ljava/util/Set;
-	public final fun getJavaSet ()Ljava/util/Set;
-	public final fun getJsSet ()Ljava/util/Set;
-	public final fun getLinuxSet ()Ljava/util/Set;
-	public final fun getMacosSet ()Ljava/util/Set;
-	public final fun getMingwSet ()Ljava/util/Set;
-	public fun getNamer ()Lorg/gradle/api/Namer;
-	public fun getNames ()Ljava/util/SortedSet;
-	public final fun getNativeSet ()Ljava/util/Set;
-	public fun getRules ()Ljava/util/List;
-	public fun getSize ()I
-	public final fun getTvosSet ()Ljava/util/Set;
-	public final fun getWasmSet ()Ljava/util/Set;
-	public final fun getWatchosSet ()Ljava/util/Set;
-	public fun isEmpty ()Z
-	public fun iterator ()Ljava/util/Iterator;
-	public synthetic fun matching (Lgroovy/lang/Closure;)Lorg/gradle/api/DomainObjectCollection;
-	public synthetic fun matching (Lgroovy/lang/Closure;)Lorg/gradle/api/DomainObjectSet;
-	public synthetic fun matching (Lgroovy/lang/Closure;)Lorg/gradle/api/NamedDomainObjectCollection;
-	public fun matching (Lgroovy/lang/Closure;)Lorg/gradle/api/NamedDomainObjectSet;
-	public synthetic fun matching (Lorg/gradle/api/specs/Spec;)Lorg/gradle/api/DomainObjectCollection;
-	public synthetic fun matching (Lorg/gradle/api/specs/Spec;)Lorg/gradle/api/DomainObjectSet;
-	public synthetic fun matching (Lorg/gradle/api/specs/Spec;)Lorg/gradle/api/NamedDomainObjectCollection;
-	public fun matching (Lorg/gradle/api/specs/Spec;)Lorg/gradle/api/NamedDomainObjectSet;
-	public synthetic fun maybeCreate (Ljava/lang/String;)Ljava/lang/Object;
-	public fun maybeCreate (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public fun named (Ljava/lang/String;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public fun named (Ljava/lang/String;Ljava/lang/Class;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public fun named (Ljava/lang/String;Ljava/lang/Class;Lorg/gradle/api/Action;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public fun named (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public fun register (Ljava/lang/String;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public fun register (Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public final fun remove (Ljava/lang/Object;)Z
-	public fun remove (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Z
-	public fun removeAll (Ljava/util/Collection;)Z
-	public fun retainAll (Ljava/util/Collection;)Z
-	public final fun size ()I
-	public fun toArray ()[Ljava/lang/Object;
-	public fun toArray ([Ljava/lang/Object;)[Ljava/lang/Object;
-	public fun whenObjectAdded (Lgroovy/lang/Closure;)V
-	public fun whenObjectAdded (Lorg/gradle/api/Action;)Lorg/gradle/api/Action;
-	public fun whenObjectRemoved (Lgroovy/lang/Closure;)V
-	public fun whenObjectRemoved (Lorg/gradle/api/Action;)Lorg/gradle/api/Action;
-	public synthetic fun withType (Ljava/lang/Class;)Lorg/gradle/api/DomainObjectCollection;
-	public synthetic fun withType (Ljava/lang/Class;)Lorg/gradle/api/DomainObjectSet;
-	public synthetic fun withType (Ljava/lang/Class;)Lorg/gradle/api/NamedDomainObjectCollection;
-	public fun withType (Ljava/lang/Class;)Lorg/gradle/api/NamedDomainObjectSet;
-	public fun withType (Ljava/lang/Class;Lgroovy/lang/Closure;)Lorg/gradle/api/DomainObjectCollection;
-	public fun withType (Ljava/lang/Class;Lorg/gradle/api/Action;)Lorg/gradle/api/DomainObjectCollection;
+public final class MultiplatformSourceSetUtilsKt {
+	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
+	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun bundle (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
+	public static final fun bundle (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;Ljava/lang/Boolean;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;ILjava/lang/Object;)Lkotlin/properties/PropertyDelegateProvider;
+	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static synthetic fun bundle$default (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;ILjava/lang/Object;)Lkotlin/properties/PropertyDelegateProvider;
+	public static synthetic fun bundle$default (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun commonCompileOnly (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/Object;Lorg/gradle/api/Project;Z)V
+	public static synthetic fun commonCompileOnly$default (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/Object;Lorg/gradle/api/Project;ZILjava/lang/Object;)V
+	public static final fun dependencies (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function1;)V
+	public static final fun dependsOn (Lfluxo/conf/kmp/SourceSetBundle;Lfluxo/conf/kmp/SourceSetBundle;)V
+	public static final fun dependsOn (Lfluxo/conf/kmp/SourceSetBundle;Ljava/lang/Iterable;)V
+	public static final fun dependsOn (Ljava/lang/Iterable;Lfluxo/conf/kmp/SourceSetBundle;)V
+	public static final fun dependsOn (Ljava/lang/Iterable;Ljava/lang/Iterable;)V
+	public static final fun dependsOn (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lfluxo/conf/kmp/SourceSetBundle;)V
+	public static final fun dependsOn (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Ljava/lang/Iterable;)V
+	public static final fun dependsOnBundles (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Ljava/lang/Iterable;)V
+	public static final fun getAllSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getAllTargetsSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getAndroidNativeSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getAndroidSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getAppleSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getCommon (Lorg/gradle/api/NamedDomainObjectCollection;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommon (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonApple (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonIos (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonJava (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonJs (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonJvm (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonLinux (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonMacos (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonMingw (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonNative (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonNonJvm (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonTvos (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonUnix (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonWasmNative (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonWatchos (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getDarwinSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getIosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getJavaSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getJsSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getLinuxSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getMacosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getMain (Ljava/lang/Iterable;)Ljava/util/List;
+	public static final fun getMingwSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getNativeSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getTest (Ljava/lang/Iterable;)Ljava/util/List;
+	public static final fun getTvosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getWasmNativeSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getWatchosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun ksp (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Lfluxo/conf/kmp/SourceSetBundle;)Ljava/util/Set;
+	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Ljava/util/Set;)Ljava/util/Set;
 }
 
 public final class PropsAndEnvKt {
@@ -198,6 +71,7 @@ public final class PropsAndEnvKt {
 	public static final fun envOrPropValue (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Z
+	public static final fun getValueOrNull (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 	public static final fun isCI (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isDesugaringEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isMaxDebugEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
@@ -210,10 +84,10 @@ public final class PropsAndEnvKt {
 }
 
 public final class SetupAndroidKt {
-	public static final fun setupAndroidApp (Lorg/gradle/api/Project;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupAndroidApp$default (Lorg/gradle/api/Project;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public static final fun setupAndroidLibrary (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupAndroidLibrary$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/Boolean;ZZZLAndroidConfigSetup;LKotlinConfigSetup;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupAndroidApp (Lorg/gradle/api/Project;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupAndroidApp$default (Lorg/gradle/api/Project;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupAndroidLibrary (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupAndroidLibrary$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
 public final class SetupBinaryCompatibilityValidatorKt {
@@ -221,57 +95,32 @@ public final class SetupBinaryCompatibilityValidatorKt {
 	public static synthetic fun setupBinaryCompatibilityValidator$default (Lorg/gradle/api/Project;Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;ILjava/lang/Object;)V
 }
 
-public final class SetupDefaultsKt {
-	public static final fun setupDefaults (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;LAndroidConfigSetup;LKotlinConfigSetup;Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;Lfluxo/conf/dsl/FluxoPublicationConfig;)V
-	public static synthetic fun setupDefaults$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;LAndroidConfigSetup;LKotlinConfigSetup;Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;Lfluxo/conf/dsl/FluxoPublicationConfig;ILjava/lang/Object;)V
-}
-
 public final class SetupIdeaPluginKt {
-	public static final fun setupIdeaPlugin (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun setupIdeaPlugin (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupIdeaPlugin$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public final class SetupJsAppKt {
-	public static final fun setupJsApp (Lorg/gradle/api/Project;)V
-}
-
-public final class SetupKotlinKt {
-	public static final fun setupKotlin (Lorg/gradle/api/Project;LKotlinConfigSetup;ZLjava/util/List;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupKotlin$default (Lorg/gradle/api/Project;LKotlinConfigSetup;ZLjava/util/List;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-}
-
-public final class SetupMultiplatformKt {
-	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
-	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;)Lfluxo/conf/kmp/SourceSetBundle;
-	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;ILjava/lang/Object;)Lkotlin/properties/PropertyDelegateProvider;
-	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lfluxo/conf/kmp/SourceSetBundle;
+public final class SetupKotlinJsKt {
 	public static final fun defaults (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;)V
-	public static final fun dependencies (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function1;)V
-	public static final fun dependsOn (Lfluxo/conf/kmp/SourceSetBundle;Lfluxo/conf/kmp/SourceSetBundle;)V
-	public static final fun dependsOn (Lfluxo/conf/kmp/SourceSetBundle;Ljava/lang/Iterable;)V
-	public static final fun dependsOn (Ljava/lang/Iterable;Lfluxo/conf/kmp/SourceSetBundle;)V
-	public static final fun dependsOn (Ljava/lang/Iterable;Ljava/lang/Iterable;)V
-	public static final fun dependsOn (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lfluxo/conf/kmp/SourceSetBundle;)V
-	public static final fun dependsOn (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Ljava/lang/Iterable;)V
-	public static final fun dependsOnBundles (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Ljava/lang/Iterable;)V
-	public static final fun getCommon (Lorg/gradle/api/NamedDomainObjectCollection;)Lfluxo/conf/kmp/SourceSetBundle;
-	public static final fun getMain (Ljava/lang/Iterable;)Ljava/util/List;
-	public static final fun getTest (Ljava/lang/Iterable;)Ljava/util/List;
-	public static final fun iosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public static synthetic fun iosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
-	public static final fun ksp (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
-	public static final fun macosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;)V
-	public static synthetic fun macosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
-	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Lfluxo/conf/kmp/SourceSetBundle;)Ljava/util/Set;
-	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Ljava/util/Set;)Ljava/util/Set;
-	public static final fun setupBackgroundNativeTests (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;)V
-	public static final fun setupMultiplatform (Lorg/gradle/api/Project;LKotlinConfigSetup;Ljava/lang/String;ZLjava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupMultiplatform$default (Lorg/gradle/api/Project;LKotlinConfigSetup;Ljava/lang/String;ZLjava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public static final fun setupSourceSets (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Lkotlin/jvm/functions/Function1;)V
-	public static final fun setupTargetHierarchy (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;)V
 	public static final fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;I)V
 	public static final fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;I)V
 	public static synthetic fun testTimeout$default (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;IILjava/lang/Object;)V
 	public static synthetic fun testTimeout$default (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;IILjava/lang/Object;)V
+}
+
+public final class SetupKotlinKt {
+	public static final fun setupKotlin (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupKotlin$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class SetupMultiplatformKt {
+	public static final fun iosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun iosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun macosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun macosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun setupBackgroundNativeTests (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;)V
+	public static final fun setupMultiplatform (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupMultiplatform$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun tvosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun tvosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 	public static final fun watchosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
@@ -280,15 +129,6 @@ public final class SetupMultiplatformKt {
 
 public final class SetupPublicationKt {
 	public static final fun setupPublication (Lorg/gradle/api/Project;)V
-}
-
-public final class SetupTestsReportKt {
-	public static final fun setupTestsReport (Lorg/gradle/api/Project;)V
-}
-
-public final class SetupVerificationKt {
-	public static final fun setupVerification (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;Z)V
-	public static synthetic fun setupVerification$default (Lorg/gradle/api/Project;Ljava/util/List;Ljava/util/List;LKotlinConfigSetup;ZILjava/lang/Object;)V
 }
 
 public final class fluxo/conf/FluxoKmpConfPlugin : org/gradle/api/Plugin {
@@ -324,17 +164,34 @@ public final class fluxo/conf/dsl/BinaryCompatibilityValidatorConfig {
 }
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtension : fluxo/conf/dsl/FluxoConfigurationExtensionAndroid, fluxo/conf/dsl/FluxoConfigurationExtensionKotlin, fluxo/conf/dsl/FluxoConfigurationExtensionPublication {
+	public static final field Companion Lfluxo/conf/dsl/FluxoConfigurationExtension$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun configuration (Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun configuration$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun configure (Lkotlin/jvm/functions/Function1;)V
+	public fun configure (Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun configure$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun configureAsAndroid (ZLkotlin/jvm/functions/Function1;)V
+	public static synthetic fun configureAsAndroid$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun configureAsGradlePlugin (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun configureAsGradlePlugin$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun configureAsIdeaPlugin (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun configureAsIdeaPlugin$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun configureAsKotlinJvm (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun configureAsKotlinJvm$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun configureAsMultiplatform (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun configureAsMultiplatform$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun defaultConfiguration (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun getSkipDefaultConfigurations ()Z
 	public abstract fun setSkipDefaultConfigurations (Z)V
-	public fun setupMultiplatform ()V
 }
 
-public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionAndroid : fluxo/conf/dsl/FluxoConfigurationExtensionCommon {
+public final class fluxo/conf/dsl/FluxoConfigurationExtension$Companion {
+	public static final field NAME Ljava/lang/String;
+}
+
+public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionAndroid : fluxo/conf/dsl/FluxoConfigurationExtensionCommon, fluxo/conf/dsl/FluxoConfigurationExtensionPublication {
+	public fun filterVariants (Lkotlin/jvm/functions/Function1;)V
+	public abstract fun getAndroidApplicationId ()Ljava/lang/String;
 	public abstract fun getAndroidBuildToolsVersion ()Ljava/lang/String;
 	public abstract fun getAndroidCompileSdk ()Ljava/lang/Object;
 	public abstract fun getAndroidMinSdk ()Ljava/lang/Object;
@@ -342,6 +199,13 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionAndroi
 	public abstract fun getAndroidNamespacePrefix ()Ljava/lang/String;
 	public abstract fun getAndroidResourceConfigurations ()Ljava/util/Set;
 	public abstract fun getAndroidTargetSdk ()Ljava/lang/Object;
+	public abstract fun getAndroidVersionCode ()I
+	public abstract fun getFilterVariants ()Lkotlin/jvm/functions/Function1;
+	public abstract fun getNoVerificationBuildTypes ()Ljava/util/List;
+	public abstract fun getNoVerificationFlavors ()Ljava/util/List;
+	public abstract fun getRemoveKotlinMetadata ()Z
+	public abstract fun getSetupRoom ()Ljava/lang/Boolean;
+	public abstract fun setAndroidApplicationId (Ljava/lang/String;)V
 	public abstract fun setAndroidBuildToolsVersion (Ljava/lang/String;)V
 	public abstract fun setAndroidCompileSdk (Ljava/lang/Object;)V
 	public abstract fun setAndroidMinSdk (Ljava/lang/Object;)V
@@ -349,54 +213,82 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionAndroi
 	public abstract fun setAndroidNamespacePrefix (Ljava/lang/String;)V
 	public abstract fun setAndroidResourceConfigurations (Ljava/util/Set;)V
 	public abstract fun setAndroidTargetSdk (Ljava/lang/Object;)V
+	public abstract fun setAndroidVersionCode (I)V
+	public abstract fun setFilterVariants (Lkotlin/jvm/functions/Function1;)V
+	public abstract fun setNoVerificationBuildTypes (Ljava/util/List;)V
+	public abstract fun setNoVerificationFlavors (Ljava/util/List;)V
+	public abstract fun setRemoveKotlinMetadata (Z)V
+	public abstract fun setSetupRoom (Ljava/lang/Boolean;)V
 }
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon {
-	public abstract fun getEnableBuildConfig ()Ljava/lang/Boolean;
+	public abstract fun getEnableBuildConfig ()Z
 	public abstract fun getEnableCompose ()Ljava/lang/Boolean;
+	public fun getEnableVerification ()Ljava/lang/Boolean;
+	public abstract fun getSetupKapt ()Ljava/lang/Boolean;
+	public abstract fun getSetupKsp ()Ljava/lang/Boolean;
 	public abstract fun getSetupVerification ()Ljava/lang/Boolean;
 	public abstract fun getSuppressKotlinComposeCompatibilityCheck ()Ljava/lang/Boolean;
-	public abstract fun setEnableBuildConfig (Ljava/lang/Boolean;)V
+	public abstract fun setEnableBuildConfig (Z)V
 	public abstract fun setEnableCompose (Ljava/lang/Boolean;)V
+	public fun setEnableVerification (Ljava/lang/Boolean;)V
+	public abstract fun setSetupKapt (Ljava/lang/Boolean;)V
+	public abstract fun setSetupKsp (Ljava/lang/Boolean;)V
 	public abstract fun setSetupVerification (Ljava/lang/Boolean;)V
 	public abstract fun setSuppressKotlinComposeCompatibilityCheck (Ljava/lang/Boolean;)V
 }
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin : fluxo/conf/dsl/FluxoConfigurationExtensionCommon {
 	public fun apiValidation (Lkotlin/jvm/functions/Function1;)V
-	public abstract fun getAddStdlibDependency ()Ljava/lang/Boolean;
+	public abstract fun getAddStdlibDependency ()Z
 	public abstract fun getApiValidation ()Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;
 	public abstract fun getEnableApiValidation ()Ljava/lang/Boolean;
+	public abstract fun getEnableDetektCompilerPlugin ()Ljava/lang/Boolean;
+	public abstract fun getEnableSpotless ()Ljava/lang/Boolean;
+	public abstract fun getExperimentalLatestCompilation ()Ljava/lang/Boolean;
 	public abstract fun getJavaLangTarget ()Ljava/lang/String;
 	public abstract fun getJavaParameters ()Ljava/lang/Boolean;
+	public abstract fun getJavaTestsLangTarget ()Ljava/lang/String;
+	public fun getJvmTarget ()Ljava/lang/String;
+	public abstract fun getKotlinApiVersion ()Ljava/lang/String;
 	public abstract fun getKotlinCoreLibraries ()Ljava/lang/String;
 	public abstract fun getKotlinLangVersion ()Ljava/lang/String;
+	public abstract fun getKotlinTestsLangVersion ()Ljava/lang/String;
+	public abstract fun getLatestSettingsForTests ()Ljava/lang/Boolean;
 	public abstract fun getOptInInternal ()Ljava/lang/Boolean;
 	public abstract fun getOptIns ()Ljava/util/List;
 	public abstract fun getProgressiveMode ()Ljava/lang/Boolean;
 	public abstract fun getRemoveAssertionsInRelease ()Ljava/lang/Boolean;
 	public abstract fun getSetupCoroutines ()Ljava/lang/Boolean;
 	public abstract fun getSetupJvmToolchain ()Ljava/lang/Boolean;
-	public abstract fun getSetupKnownBoms ()Ljava/lang/Boolean;
-	public abstract fun getSetupSerializationKotlinX ()Ljava/lang/Boolean;
+	public abstract fun getSetupKnownBoms ()Z
+	public abstract fun getSetupKotlinXSerialization ()Z
 	public abstract fun getUseExperimentalFastJarFs ()Ljava/lang/Boolean;
 	public abstract fun getUseIndyLambdas ()Ljava/lang/Boolean;
 	public abstract fun getWarningsAsErrors ()Ljava/lang/Boolean;
-	public abstract fun setAddStdlibDependency (Ljava/lang/Boolean;)V
+	public abstract fun setAddStdlibDependency (Z)V
 	public abstract fun setApiValidation (Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;)V
 	public abstract fun setEnableApiValidation (Ljava/lang/Boolean;)V
+	public abstract fun setEnableDetektCompilerPlugin (Ljava/lang/Boolean;)V
+	public abstract fun setEnableSpotless (Ljava/lang/Boolean;)V
+	public abstract fun setExperimentalLatestCompilation (Ljava/lang/Boolean;)V
 	public abstract fun setJavaLangTarget (Ljava/lang/String;)V
 	public abstract fun setJavaParameters (Ljava/lang/Boolean;)V
+	public abstract fun setJavaTestsLangTarget (Ljava/lang/String;)V
+	public fun setJvmTarget (Ljava/lang/String;)V
+	public abstract fun setKotlinApiVersion (Ljava/lang/String;)V
 	public abstract fun setKotlinCoreLibraries (Ljava/lang/String;)V
 	public abstract fun setKotlinLangVersion (Ljava/lang/String;)V
+	public abstract fun setKotlinTestsLangVersion (Ljava/lang/String;)V
+	public abstract fun setLatestSettingsForTests (Ljava/lang/Boolean;)V
 	public abstract fun setOptInInternal (Ljava/lang/Boolean;)V
 	public abstract fun setOptIns (Ljava/util/List;)V
 	public abstract fun setProgressiveMode (Ljava/lang/Boolean;)V
 	public abstract fun setRemoveAssertionsInRelease (Ljava/lang/Boolean;)V
 	public abstract fun setSetupCoroutines (Ljava/lang/Boolean;)V
 	public abstract fun setSetupJvmToolchain (Ljava/lang/Boolean;)V
-	public abstract fun setSetupKnownBoms (Ljava/lang/Boolean;)V
-	public abstract fun setSetupSerializationKotlinX (Ljava/lang/Boolean;)V
+	public abstract fun setSetupKnownBoms (Z)V
+	public abstract fun setSetupKotlinXSerialization (Z)V
 	public abstract fun setUseExperimentalFastJarFs (Ljava/lang/Boolean;)V
 	public abstract fun setUseIndyLambdas (Ljava/lang/Boolean;)V
 	public abstract fun setWarningsAsErrors (Ljava/lang/Boolean;)V
@@ -474,192 +366,188 @@ public final class fluxo/conf/dsl/FluxoPublicationConfig {
 	public final fun setVersion (Ljava/lang/String;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/Container {
+public abstract interface class fluxo/conf/dsl/container/Container : java/lang/Comparable {
 	public abstract fun applyPlugins ([Ljava/lang/String;)V
+	public abstract fun applyPlugins ([Lorg/gradle/api/provider/Provider;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/KmpConfigurationContainerDsl : fluxo/conf/dsl/container/target/TargetAndroid$Configure, fluxo/conf/dsl/container/target/TargetAndroidNative$Configure, fluxo/conf/dsl/container/target/TargetAppleIos$Configure, fluxo/conf/dsl/container/target/TargetAppleMacos$Configure, fluxo/conf/dsl/container/target/TargetAppleTvos$Configure, fluxo/conf/dsl/container/target/TargetAppleWatchos$Configure, fluxo/conf/dsl/container/target/TargetJs$Configure, fluxo/conf/dsl/container/target/TargetJvm$Configure, fluxo/conf/dsl/container/target/TargetLinux$Configure, fluxo/conf/dsl/container/target/TargetMingw$Configure, fluxo/conf/dsl/container/target/TargetWasm$Configure, fluxo/conf/dsl/container/target/TargetWasmNative$Configure {
+public abstract interface class fluxo/conf/dsl/container/KmpConfigurationContainerDsl : fluxo/conf/dsl/container/target/AndroidNativeTarget$Configure, fluxo/conf/dsl/container/target/AndroidTarget$Configure, fluxo/conf/dsl/container/target/AppleIosTarget$Configure, fluxo/conf/dsl/container/target/AppleMacosTarget$Configure, fluxo/conf/dsl/container/target/AppleTvosTarget$Configure, fluxo/conf/dsl/container/target/AppleWatchosTarget$Configure, fluxo/conf/dsl/container/target/JsTarget$Configure, fluxo/conf/dsl/container/target/JvmTarget$Configure, fluxo/conf/dsl/container/target/LinuxTarget$Configure, fluxo/conf/dsl/container/target/MingwTarget$Configure, fluxo/conf/dsl/container/target/WasmNativeTarget$Configure, fluxo/conf/dsl/container/target/WasmTarget$Configure {
 	public abstract fun allDefaultTargets ()V
+	public abstract fun common (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun kotlin (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun kotlinMultiplatform (Lkotlin/jvm/functions/Function1;)V
+	public fun onAndroidTarget (Lorg/gradle/api/Action;)V
+	public abstract fun onTarget (Ljava/lang/Class;Lorg/gradle/api/Action;)V
 }
 
 public abstract interface class fluxo/conf/dsl/container/KotlinTargetContainer : fluxo/conf/dsl/container/Container {
 	public abstract fun target (Lkotlin/jvm/functions/Function1;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAndroid : fluxo/conf/dsl/container/KotlinTargetContainer {
-	public abstract fun android (Lkotlin/jvm/functions/Function1;)V
+public abstract interface class fluxo/conf/dsl/container/target/AndroidNativeTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/AndroidNativeTarget$Configure {
+	public fun androidNative (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNative$default (Lfluxo/conf/dsl/container/target/AndroidNativeTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun androidNative64 (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNative64$default (Lfluxo/conf/dsl/container/target/AndroidNativeTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun androidNativeArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNativeArm32$default (Lfluxo/conf/dsl/container/target/AndroidNativeTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun androidNativeArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNativeArm64$default (Lfluxo/conf/dsl/container/target/AndroidNativeTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun androidNativeX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNativeX64$default (Lfluxo/conf/dsl/container/target/AndroidNativeTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun androidNativeX86 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun androidNativeX86$default (Lfluxo/conf/dsl/container/target/AndroidNativeTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/AndroidTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
+	public fun android (Lkotlin/jvm/functions/Function1;)V
+	public abstract fun onAndroidExtension (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun sourceSetTestInstrumented (Lkotlin/jvm/functions/Function1;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAndroid$Configure {
-	public fun android (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun android$default (Lfluxo/conf/dsl/container/target/TargetAndroid$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+public abstract interface class fluxo/conf/dsl/container/target/AndroidTarget$Configure {
+	public fun android (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun androidApp (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun androidApp$default (Lfluxo/conf/dsl/container/target/TargetAndroid$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun androidApp$default (Lfluxo/conf/dsl/container/target/AndroidTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun androidLibrary (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun androidLibrary$default (Lfluxo/conf/dsl/container/target/TargetAndroid$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun androidLibrary$default (Lfluxo/conf/dsl/container/target/AndroidTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAndroidNative : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/AppleIosTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAndroidNative$Configure {
-	public fun androidNative (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun androidNative$default (Lfluxo/conf/dsl/container/target/TargetAndroidNative$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public fun androidNative64 (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun androidNative64$default (Lfluxo/conf/dsl/container/target/TargetAndroidNative$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun androidNativeArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun androidNativeArm32$default (Lfluxo/conf/dsl/container/target/TargetAndroidNative$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun androidNativeArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun androidNativeArm64$default (Lfluxo/conf/dsl/container/target/TargetAndroidNative$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun androidNativeX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun androidNativeX64$default (Lfluxo/conf/dsl/container/target/TargetAndroidNative$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun androidNativeX86 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun androidNativeX86$default (Lfluxo/conf/dsl/container/target/TargetAndroidNative$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-}
-
-public abstract interface class fluxo/conf/dsl/container/target/TargetAppleIos : fluxo/conf/dsl/container/KotlinTargetContainer {
-}
-
-public abstract interface class fluxo/conf/dsl/container/target/TargetAppleIos$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/AppleIosTarget$Configure {
 	public fun ios (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun ios$default (Lfluxo/conf/dsl/container/target/TargetAppleIos$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun ios$default (Lfluxo/conf/dsl/container/target/AppleIosTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun iosArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun iosArm32$default (Lfluxo/conf/dsl/container/target/TargetAppleIos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun iosArm32$default (Lfluxo/conf/dsl/container/target/AppleIosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun iosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun iosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleIos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun iosArm64$default (Lfluxo/conf/dsl/container/target/AppleIosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun iosSimulatorArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun iosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleIos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun iosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/AppleIosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun iosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun iosX64$default (Lfluxo/conf/dsl/container/target/TargetAppleIos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun iosX64$default (Lfluxo/conf/dsl/container/target/AppleIosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAppleMacos : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/AppleMacosTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAppleMacos$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/AppleMacosTarget$Configure {
 	public fun macos (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun macos$default (Lfluxo/conf/dsl/container/target/TargetAppleMacos$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun macos$default (Lfluxo/conf/dsl/container/target/AppleMacosTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun macosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun macosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleMacos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun macosArm64$default (Lfluxo/conf/dsl/container/target/AppleMacosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun macosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun macosX64$default (Lfluxo/conf/dsl/container/target/TargetAppleMacos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun macosX64$default (Lfluxo/conf/dsl/container/target/AppleMacosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAppleTvos : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/AppleTvosTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAppleTvos$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/AppleTvosTarget$Configure {
 	public fun tvos (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun tvos$default (Lfluxo/conf/dsl/container/target/TargetAppleTvos$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun tvos$default (Lfluxo/conf/dsl/container/target/AppleTvosTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun tvosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun tvosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleTvos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun tvosArm64$default (Lfluxo/conf/dsl/container/target/AppleTvosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun tvosSimulatorArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun tvosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleTvos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun tvosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/AppleTvosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun tvosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun tvosX64$default (Lfluxo/conf/dsl/container/target/TargetAppleTvos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun tvosX64$default (Lfluxo/conf/dsl/container/target/AppleTvosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAppleWatchos : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/AppleWatchosTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetAppleWatchos$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/AppleWatchosTarget$Configure {
 	public abstract fun watchos (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun watchos$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchos$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun watchos$default (Lfluxo/conf/dsl/container/target/AppleWatchosTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun watchosArm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun watchosArm32$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun watchosArm32$default (Lfluxo/conf/dsl/container/target/AppleWatchosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun watchosArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun watchosArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun watchosArm64$default (Lfluxo/conf/dsl/container/target/AppleWatchosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun watchosDeviceArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun watchosDeviceArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun watchosDeviceArm64$default (Lfluxo/conf/dsl/container/target/AppleWatchosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun watchosSimulatorArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun watchosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun watchosSimulatorArm64$default (Lfluxo/conf/dsl/container/target/AppleWatchosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun watchosX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun watchosX64$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun watchosX64$default (Lfluxo/conf/dsl/container/target/AppleWatchosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun watchosX86 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun watchosX86$default (Lfluxo/conf/dsl/container/target/TargetAppleWatchos$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun watchosX86$default (Lfluxo/conf/dsl/container/target/AppleWatchosTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetJs : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/JsTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 	public abstract fun getCompilerType ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;
 	public abstract fun setCompilerType (Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetJs$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/JsTarget$Configure {
 	public abstract fun js (Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun js$default (Lfluxo/conf/dsl/container/target/TargetJs$Configure;Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun js$default (Lfluxo/conf/dsl/container/target/JsTarget$Configure;Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetJvm : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/JvmTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetJvm$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/JvmTarget$Configure {
 	public abstract fun jvm (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun jvm$default (Lfluxo/conf/dsl/container/target/TargetJvm$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun jvm$default (Lfluxo/conf/dsl/container/target/JvmTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetLinux : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/LinuxTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetLinux$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/LinuxTarget$Configure {
 	public fun linux (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun linux$default (Lfluxo/conf/dsl/container/target/TargetLinux$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun linux$default (Lfluxo/conf/dsl/container/target/LinuxTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun linuxArm32Hfp (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun linuxArm32Hfp$default (Lfluxo/conf/dsl/container/target/TargetLinux$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun linuxArm32Hfp$default (Lfluxo/conf/dsl/container/target/LinuxTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun linuxArm64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun linuxArm64$default (Lfluxo/conf/dsl/container/target/TargetLinux$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun linuxArm64$default (Lfluxo/conf/dsl/container/target/LinuxTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun linuxMips32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun linuxMips32$default (Lfluxo/conf/dsl/container/target/TargetLinux$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun linuxMips32$default (Lfluxo/conf/dsl/container/target/LinuxTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun linuxMipsel32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun linuxMipsel32$default (Lfluxo/conf/dsl/container/target/TargetLinux$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun linuxMipsel32$default (Lfluxo/conf/dsl/container/target/LinuxTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun linuxX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun linuxX64$default (Lfluxo/conf/dsl/container/target/TargetLinux$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun linuxX64$default (Lfluxo/conf/dsl/container/target/LinuxTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetMingw : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/MingwTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetMingw$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/MingwTarget$Configure {
 	public fun mingw (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun mingw$default (Lfluxo/conf/dsl/container/target/TargetMingw$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun mingw$default (Lfluxo/conf/dsl/container/target/MingwTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun mingwX64 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun mingwX64$default (Lfluxo/conf/dsl/container/target/TargetMingw$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun mingwX64$default (Lfluxo/conf/dsl/container/target/MingwTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun mingwX86 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun mingwX86$default (Lfluxo/conf/dsl/container/target/TargetMingw$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun mingwX86$default (Lfluxo/conf/dsl/container/target/MingwTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetWasm : fluxo/conf/dsl/container/KotlinTargetContainer {
+public abstract interface class fluxo/conf/dsl/container/target/WasmNativeTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
 }
 
-public abstract interface class fluxo/conf/dsl/container/target/TargetWasm$Configure {
-	public abstract fun wasm (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun wasm$default (Lfluxo/conf/dsl/container/target/TargetWasm$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-}
-
-public abstract interface class fluxo/conf/dsl/container/target/TargetWasmNative : fluxo/conf/dsl/container/KotlinTargetContainer {
-}
-
-public abstract interface class fluxo/conf/dsl/container/target/TargetWasmNative$Configure {
+public abstract interface class fluxo/conf/dsl/container/target/WasmNativeTarget$Configure {
 	public abstract fun wasm32 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun wasm32$default (Lfluxo/conf/dsl/container/target/TargetWasmNative$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun wasm32$default (Lfluxo/conf/dsl/container/target/WasmNativeTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun wasmNative (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun wasmNative$default (Lfluxo/conf/dsl/container/target/TargetWasmNative$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun wasmNative$default (Lfluxo/conf/dsl/container/target/WasmNativeTarget$Configure;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
-public final class fluxo/conf/kmp/SourceSetBundle {
-	public fun <init> (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;[Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)V
-	public synthetic fun <init> (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;[Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final synthetic fun component0 ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public final synthetic fun component1 ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public final synthetic fun component2 ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public final synthetic fun component3 ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public final synthetic fun contains (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Z
-	public synthetic fun equals (Ljava/lang/Object;)Z
-	public final fun getMain ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public final fun getOtherTests ()[Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public final fun getTest ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public synthetic fun toString ()Ljava/lang/String;
+public abstract interface class fluxo/conf/dsl/container/target/WasmTarget : fluxo/conf/dsl/container/KotlinTargetContainer {
+}
+
+public abstract interface class fluxo/conf/dsl/container/target/WasmTarget$Configure {
+	public abstract fun wasm (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun wasm$default (Lfluxo/conf/dsl/container/target/WasmTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public abstract interface class fluxo/conf/kmp/SourceSetBundle {
+	public synthetic fun contains (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Z
+	public abstract fun getMain ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public fun getMoreTests ()[Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public abstract fun getTest ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 }
 

@@ -5,18 +5,24 @@ import areComposeMetricsEnabled
 import disableTests
 import fluxo.conf.deps.GradleProvisioner
 import fluxo.conf.deps.Provisioner
+import fluxo.conf.dsl.container.impl.KmpTargetCode
+import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.getSetOfRequestedKmpTargets
+import fluxo.conf.impl.CPUs
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.d
 import fluxo.conf.impl.e
+import fluxo.conf.impl.kotlin.JRE_VERSION
+import fluxo.conf.impl.kotlin.KotlinConfig
+import fluxo.conf.impl.kotlin.asJvmTargetVersion
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
 import fluxo.conf.impl.kotlin.mppAndroidSourceSetLayoutVersion
 import fluxo.conf.impl.l
 import fluxo.conf.impl.libsCatalogOptional
+import fluxo.conf.feat.registerDetektMergeRootTask
+import fluxo.conf.feat.registerLintMergeRootTask
 import fluxo.conf.impl.tryAsBoolean
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
-import fluxo.conf.kmp.KmpTargetCode
-import fluxo.conf.kmp.KmpTargetCode.Companion.getSetOfRequestedKmpTargets
 import getValue
 import isCI
 import isDesugaringEnabled
@@ -53,6 +59,9 @@ internal abstract class FluxoKmpConfContext
 
     val kotlinPluginVersion: KotlinVersion = rootProject.logger.kotlinPluginVersion()
 
+    lateinit var kotlinConfig: KotlinConfig
+        internal set
+
     /**
      * [Kotlin 1.8](https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema)
      * added a new source set layout for Android projects.
@@ -66,26 +75,26 @@ internal abstract class FluxoKmpConfContext
 
     val isInCompositeBuild get() = rootProject.gradle.includedBuilds.size > 1
 
-    val isCI by rootProject.isCI()
-    val isRelease by rootProject.isRelease()
-    val isMaxDebug by rootProject.isMaxDebugEnabled()
+    val isCI: Boolean = rootProject.isCI().get()
+    val isRelease: Boolean = rootProject.isRelease().get()
+    val isMaxDebug: Boolean = rootProject.isMaxDebugEnabled().get()
+    val isDesugaringEnabled by rootProject.isDesugaringEnabled()
     val useKotlinDebug by rootProject.useKotlinDebug()
     val composeMetricsEnabled by rootProject.areComposeMetricsEnabled()
 
-    val requestedKmpTargets: Set<KmpTargetCode> = getSetOfRequestedKmpTargets()
-
-    val allKmpTargetsEnabled: Boolean =
-        rootProject.allKmpTargetsEnabled() || requestedKmpTargets.isEmpty()
+    private val kmpTargets: Set<KmpTargetCode> = getSetOfRequestedKmpTargets()
+    private val allTargetsEnabled = rootProject.allKmpTargetsEnabled() || kmpTargets.isEmpty()
+    fun isTargetEnabled(code: KmpTargetCode): Boolean = allTargetsEnabled || code in kmpTargets
 
 
     val startTaskNames: Set<String>
 
-    fun hasAnyTaskCalled(name: String) = name in startTaskNames
+    fun hasStartTaskCalled(name: String) = name in startTaskNames
 
-    @JvmName("hasAnyTaskCalledVararg")
-    fun hasAnyTaskCalled(vararg name: String) = hasAnyTaskCalled(name)
+    @JvmName("hasStartTaskCalledVararg")
+    fun hasStartTaskCalled(vararg name: String) = hasStartTaskCalled(name)
 
-    fun hasAnyTaskCalled(names: Array<out String>) = names.any { it in startTaskNames }
+    fun hasStartTaskCalled(names: Array<out String>) = names.any { it in startTaskNames }
 
 
     init {
@@ -93,12 +102,22 @@ internal abstract class FluxoKmpConfContext
         val gradle = project.gradle
         val logger = project.logger
 
+        if (isMaxDebug) SHOW_DEBUG_LOGS = true
+
         // Log environment
         run {
             val gradleVersion = gradle.gradleVersion
-            val java = System.getProperty("java.version")
-            val cpus = Runtime.getRuntime().availableProcessors()
-            logger.l("Gradle $gradleVersion, JRE $java, $cpus CPUs")
+            val java = JRE_VERSION.asJvmTargetVersion()
+            var m = "Gradle $gradleVersion, JRE $java, $CPUs CPUs"
+            try {
+                // https://r8.googlesource.com/r8/+refs
+                // https://issuetracker.google.com/issues/193543616#comment4
+                // https://mvnrepository.com/artifact/com.android.tools/r8
+                val r8 = com.android.tools.r8.Version.getVersionString().substringBefore(" (")
+                m += ", R8 $r8"
+            } catch (_: Throwable) {
+            }
+            logger.l(m)
         }
 
         if (SHOW_DEBUG_LOGS) onProjectInSyncRun { logger.v("onProjectInSyncRun") }
@@ -123,12 +142,12 @@ internal abstract class FluxoKmpConfContext
 
         if (isCI) logger.l("CI mode is enabled!")
         if (isRelease) logger.l("RELEASE mode is enabled!")
-        if (composeMetricsEnabled) logger.l("COMPOSE_METRICS mode is enabled!")
+        if (composeMetricsEnabled) logger.l("COMPOSE_METRICS are enabled!")
 
-        if (useKotlinDebug) logger.w("USE_KOTLIN_DEBUG mode is enabled!")
-        if (isMaxDebug) logger.w("MAX_DEBUG mode is enabled!")
-        if (project.isDesugaringEnabled().get()) logger.w("DESUGARING mode is enabled!")
-        if (project.isR8Disabled().get()) logger.w("DISABLE_R8 mode is enabled!")
+        if (useKotlinDebug) logger.w("USE_KOTLIN_DEBUG is enabled!")
+        if (isMaxDebug) logger.w("MAX_DEBUG is enabled!")
+        if (isDesugaringEnabled) logger.w("DESUGARING is enabled!")
+        if (project.isR8Disabled().get()) logger.w("R8 is disabled! (DISABLE_R8)")
 
         testsDisabled = project.disableTests().get() || start.excludedTaskNames.let {
             CHECK_TASK_NAME in it || TEST_TASK_NAME in it
@@ -142,14 +161,20 @@ internal abstract class FluxoKmpConfContext
                     break
                 }
             }
-            if (!reported) logger.w("DISABLE_TESTS mode is enabled!")
+            if (!reported) logger.w("Tests are disabled! (DISABLE_TESTS)")
         }
 
-        if (SHOW_DEBUG_LOGS) logger.v("Cleaned start task names: $startTaskNames")
+        logger.v("Cleaned start task names: $startTaskNames")
         logger.v("kotlinPluginVersion: $kotlinPluginVersion")
         logger.v("isInIde: $isInIde")
     }
 
+
+    val mergeLintTask = registerLintMergeRootTask()
+    val mergeDetektTask = registerDetektMergeRootTask()
+
+
+    // region Project IDE synchronization detection
 
     internal val isProjectInSyncRun: Boolean
         get() = projectInSyncSet.isNotEmpty()
@@ -196,6 +221,8 @@ internal abstract class FluxoKmpConfContext
             }
         }
     }
+
+    // endregion
 
 
     internal companion object {

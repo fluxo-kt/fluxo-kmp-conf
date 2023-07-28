@@ -5,7 +5,7 @@ import fluxo.conf.dsl.container.KotlinTargetContainer
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 
-public interface TargetWasm : KotlinTargetContainer<KotlinWasmTargetDsl> {
+public interface WasmTarget : KotlinTargetContainer<KotlinWasmTargetDsl> {
 
     public interface Configure {
 
@@ -14,7 +14,7 @@ public interface TargetWasm : KotlinTargetContainer<KotlinWasmTargetDsl> {
         @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
         public fun wasm(
             targetName: String = "wasm",
-            action: TargetWasm.() -> Unit = DEFAULT_COMMON_JS_CONFIGURATION,
+            action: WasmTarget.() -> Unit = DEFAULT_COMMON_JS_CONFIGURATION,
         )
     }
 }

@@ -1,12 +1,22 @@
 package fluxo.conf.dsl.container.impl
 
-import bundle
 import bundleFor
+import commonApple
+import commonIos
+import commonJs
+import commonJvm
+import commonLinux
+import commonMacos
+import commonMingw
+import commonNative
+import commonNonJvm
+import commonTvos
+import commonUnix
+import commonWasmNative
+import commonWatchos
 import dependsOn
 import fluxo.conf.impl.set
-import fluxo.conf.kmp.KmpTargetCode
 import fluxo.conf.kmp.SourceSetBundle
-import org.gradle.api.JavaVersion
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinTarget
@@ -17,7 +27,6 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
     context: ContainerContext,
     private val name: String,
-    val code: KmpTargetCode,
     final override val sortOrder: Byte,
 ) : ContainerImpl(context), KmpTargetContainer<T> {
 
@@ -26,7 +35,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 
     private val lazyTarget = context.objects.set<T.() -> Unit>()
 
-    protected val lazyTargetConf: T.() -> Unit = { lazyTarget.all { this() } }
+    internal val lazyTargetConf: T.() -> Unit = { lazyTarget.all { this() } }
 
     override fun target(action: T.() -> Unit) {
         lazyTarget.add(action)
@@ -51,11 +60,11 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 
         companion object {
             const val COMMON_JVM = "commonJvm"
+            const val ANDROID = "android"
         }
 
         override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
-            // TODO: Create bundle once and reuse
-            val bundle = k.sourceSets.bundle(COMMON_JVM)
+            val bundle = k.commonJvm
             child dependsOn bundle
             super.setupParentSourceSet(k, bundle)
         }
@@ -69,8 +78,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
         }
 
         override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
-            // TODO: Create bundle once and reuse
-            val bundle = k.sourceSets.bundle(NON_JVM)
+            val bundle = k.commonNonJvm
             child dependsOn bundle
             super.setupParentSourceSet(k, bundle)
         }
@@ -86,8 +94,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                 k: KotlinMultiplatformExtension,
                 child: SourceSetBundle,
             ) {
-                // TODO: Create bundle once and reuse
-                val bundle = k.sourceSets.bundle(COMMON_JS)
+                val bundle = k.commonJs
                 child dependsOn bundle
                 super.setupParentSourceSet(k, bundle)
             }
@@ -104,8 +111,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                 k: KotlinMultiplatformExtension,
                 child: SourceSetBundle,
             ) {
-                // TODO: Create bundle once and reuse
-                val bundle = k.sourceSets.bundle(NATIVE)
+                val bundle = k.commonNative
                 child dependsOn bundle
                 super.setupParentSourceSet(k, bundle)
             }
@@ -123,8 +129,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     k: KotlinMultiplatformExtension,
                     child: SourceSetBundle,
                 ) {
-                    // TODO: Create bundle once and reuse
-                    val bundle = k.sourceSets.bundle(UNIX)
+                    val bundle = k.commonUnix
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)
                 }
@@ -140,8 +145,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                         k: KotlinMultiplatformExtension,
                         child: SourceSetBundle,
                     ) {
-                        // TODO: Create bundle once and reuse
-                        val bundle = k.sourceSets.bundle(APPLE)
+                        val bundle = k.commonApple
                         child dependsOn bundle
                         super.setupParentSourceSet(k, bundle)
                     }
@@ -156,8 +160,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                             k: KotlinMultiplatformExtension,
                             child: SourceSetBundle,
                         ) {
-                            // TODO: Create bundle once and reuse
-                            val bundle = k.sourceSets.bundle(IOS)
+                            val bundle = k.commonIos
                             child dependsOn bundle
                             super.setupParentSourceSet(k, bundle)
                         }
@@ -172,8 +175,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                             k: KotlinMultiplatformExtension,
                             child: SourceSetBundle,
                         ) {
-                            // TODO: Create bundle once and reuse
-                            val bundle = k.sourceSets.bundle(MACOS)
+                            val bundle = k.commonMacos
                             child dependsOn bundle
                             super.setupParentSourceSet(k, bundle)
                         }
@@ -188,8 +190,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                             k: KotlinMultiplatformExtension,
                             child: SourceSetBundle,
                         ) {
-                            // TODO: Create bundle once and reuse
-                            val bundle = k.sourceSets.bundle(TVOS)
+                            val bundle = k.commonTvos
                             child dependsOn bundle
                             super.setupParentSourceSet(k, bundle)
                         }
@@ -204,8 +205,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                             k: KotlinMultiplatformExtension,
                             child: SourceSetBundle,
                         ) {
-                            // TODO: Create bundle once and reuse
-                            val bundle = k.sourceSets.bundle(WATCHOS)
+                            val bundle = k.commonWatchos
                             child dependsOn bundle
                             super.setupParentSourceSet(k, bundle)
                         }
@@ -221,8 +221,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                         k: KotlinMultiplatformExtension,
                         child: SourceSetBundle,
                     ) {
-                        // TODO: Create bundle once and reuse
-                        val bundle = k.sourceSets.bundle(LINUX)
+                        val bundle = k.commonLinux
                         child dependsOn bundle
                         super.setupParentSourceSet(k, bundle)
                     }
@@ -238,8 +237,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     k: KotlinMultiplatformExtension,
                     child: SourceSetBundle,
                 ) {
-                    // TODO: Create bundle once and reuse
-                    val bundle = k.sourceSets.bundle(MINGW)
+                    val bundle = k.commonMingw
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)
                 }
@@ -254,8 +252,8 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     k: KotlinMultiplatformExtension,
                     child: SourceSetBundle,
                 ) {
-                    // TODO: Create bundle once and reuse
-                    val bundle = k.sourceSets.bundle(WASM_NATIVE)
+                    @Suppress("DEPRECATION")
+                    val bundle = k.commonWasmNative
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)
                 }
