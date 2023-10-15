@@ -147,12 +147,18 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
         set(value) = suppressKotlinComposeCompatibilityCheckProp.set(value)
 
 
+    // Mask android VariantBuilder with Any
+    // to avoid runtime error when Android plugin isn't present
     @get:Input
-    val filterVariantsProp: Property<((VariantBuilder) -> Boolean)?>
-    override var filterVariants: ((VariantBuilder) -> Boolean)?
-        get() = filterVariantsProp.orNull ?: parent?.filterVariants
-        set(value) = filterVariantsProp.set(value)
+    val filterVariantsProp: Property<((Any) -> Boolean)?>
+    val filterVariants: ((Any) -> Boolean)?
+        get() = filterVariantsProp.orNull
+            ?: (parent as? FluxoConfigurationExtensionAndroidImpl)?.filterVariants
 
+    override fun filterVariants(predicate: (VariantBuilder) -> Boolean) {
+        @Suppress("UNCHECKED_CAST")
+        filterVariantsProp.set(predicate as (Any) -> Boolean)
+    }
 
     @get:Input
     val noVerifyBuildTypesProp: ListProperty<String>

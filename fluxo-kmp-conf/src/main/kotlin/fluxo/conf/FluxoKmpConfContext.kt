@@ -7,19 +7,18 @@ import fluxo.conf.deps.GradleProvisioner
 import fluxo.conf.deps.Provisioner
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.getSetOfRequestedKmpTargets
+import fluxo.conf.feat.registerDetektMergeRootTask
+import fluxo.conf.feat.registerLintMergeRootTask
 import fluxo.conf.impl.CPUs
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.d
 import fluxo.conf.impl.e
-import fluxo.conf.impl.kotlin.JRE_VERSION
+import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
 import fluxo.conf.impl.kotlin.KotlinConfig
-import fluxo.conf.impl.kotlin.asJvmTargetVersion
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
 import fluxo.conf.impl.kotlin.mppAndroidSourceSetLayoutVersion
 import fluxo.conf.impl.l
 import fluxo.conf.impl.libsCatalogOptional
-import fluxo.conf.feat.registerDetektMergeRootTask
-import fluxo.conf.feat.registerLintMergeRootTask
 import fluxo.conf.impl.tryAsBoolean
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
@@ -106,9 +105,10 @@ internal abstract class FluxoKmpConfContext
 
         // Log environment
         run {
-            val gradleVersion = gradle.gradleVersion
-            val java = JRE_VERSION.asJvmTargetVersion()
-            var m = "Gradle $gradleVersion, JRE $java, $CPUs CPUs"
+            var m = "Gradle ${gradle.gradleVersion}, " +
+                "JRE $JRE_VERSION_STRING, " +
+                "Kotlin $kotlinPluginVersion, " +
+                "$CPUs CPUs"
             try {
                 // https://r8.googlesource.com/r8/+refs
                 // https://issuetracker.google.com/issues/193543616#comment4

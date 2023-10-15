@@ -27,9 +27,11 @@ import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.kotlin.configureKotlinJvm
 import fluxo.conf.impl.kotlin.configureKotlinMultiplatform
 import fluxo.conf.impl.kotlin.setupKmpYarnPlugin
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 @Suppress("unused", "EmptyFunctionBlock", "ktPropBy")
 public class FluxoKmpConfPlugin : Plugin<Project> {
@@ -42,6 +44,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.checkIsRootProject("\"$PLUGIN_ID\" plugin")
         checkGradleLifecycleBase(target)
+        checkKotlinPlugin()
 
         val context = FluxoKmpConfContext.getFor(target)
 
@@ -55,10 +58,12 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
                 configureContainers,
             )
 
-            if (isRootProject && !context.testsDisabled) afterEvaluate {
-                val enableVerification = conf.enableVerification == true
-                if (enableVerification && conf.enableSpotless == true) {
-                    target.setupSpotless(context)
+            if (isRootProject && !context.testsDisabled) {
+                afterEvaluate {
+                    val enableVerification = conf.enableVerification == true
+                    if (enableVerification && conf.enableSpotless == true) {
+                        target.setupSpotless(context)
+                    }
                 }
             }
         }
@@ -110,5 +115,30 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
      */
     private fun checkGradleLifecycleBase(target: Project) {
         target.pluginManager.apply(LifecycleBasePlugin::class.java)
+    }
+
+    /**
+     * Make sure there's a Kotlin plugin in the classpath.
+     *
+     * @see org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
+     * @see org.jetbrains.kotlin.gradle.plugin.AbstractKotlinPlugin
+     */
+    private fun checkKotlinPlugin() {
+        try {
+            KotlinVersion.DEFAULT
+        } catch (e: Throwable) {
+            val msg = """
+                Kotlin plugin not found in classpath.
+                Please apply any Kotlin plugin before applying the "$PLUGIN_ID" plugin.
+                Example:
+                ```
+                plugins {
+                    id("org.jetbrains.kotlin.multiplatform") apply false
+                    id("$PLUGIN_ID")
+                }
+                ```
+            """.trimIndent()
+            throw GradleException(msg, e)
+        }
     }
 }

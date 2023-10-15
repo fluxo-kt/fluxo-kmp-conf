@@ -140,20 +140,12 @@ public interface FluxoConfigurationExtensionAndroid :
 
 
     /**
-     * Disables Android build variants not matching the given [predicate][filterVariants].
-     *
-     * @see com.android.build.api.variant.AndroidComponentsExtension.beforeVariants
-     */
-    public var filterVariants: ((VariantBuilder) -> Boolean)?
-
-    /**
      * Disables Android build variants not matching the given [predicate].
      *
      * @see com.android.build.api.variant.AndroidComponentsExtension.beforeVariants
+     * @see com.android.build.api.variant.VariantBuilder
      */
-    public fun filterVariants(predicate: (VariantBuilder) -> Boolean) {
-        filterVariants = predicate
-    }
+    public fun filterVariants(predicate: (VariantBuilder) -> Boolean)
 
 
     /**

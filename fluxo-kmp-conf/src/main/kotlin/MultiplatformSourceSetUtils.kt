@@ -29,16 +29,24 @@ import org.jetbrains.kotlin.konan.target.Family
 
 // region Named source sets and bundles
 
-/** No need to make public, Kotlin plugin already covers it. */
+/**
+ * No need to make public, Kotlin plugin already covers it.
+ *
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformSourceSetConventions.commonMain
+ */
 internal val NamedDomainObjectCollection<out KotlinSourceSet>.commonMain: KotlinSourceSet
     get() = getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
 
-/** No need to make public, Kotlin plugin already covers it. */
+/**
+ * No need to make public, Kotlin plugin already covers it.
+ *
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformSourceSetConventions.commonTest
+ */
 internal val NamedDomainObjectCollection<out KotlinSourceSet>.commonTest: KotlinSourceSet
     get() = getByName(KotlinSourceSet.COMMON_TEST_SOURCE_SET_NAME)
 
 public val KotlinSourceSetContainer.common: SourceSetBundle
-    get() = sourceSets.run { SourceSetBundle(commonMain, commonTest) }
+    get() = sourceSets.let { SourceSetBundle(it.commonMain, it.commonTest) }
 
 public val NamedDomainObjectCollection<out KotlinSourceSet>.common: SourceSetBundle
     get() = SourceSetBundle(commonMain, commonTest)

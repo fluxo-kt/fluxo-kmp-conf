@@ -122,6 +122,15 @@ private const val LTS_JDK_VERSION = 17
  */
 internal const val ANDROID_SAFE_JVM_TARGET = JRE_1_8
 
+internal val JRE_VERSION_STRING: String = run {
+    try {
+        // For 9+
+        Runtime.version().toString()
+    } catch (_: Throwable) {
+        System.getProperty("java.version")
+    }
+}
+
 internal val JRE_VERSION: Int = run {
     try {
         // For 9+
