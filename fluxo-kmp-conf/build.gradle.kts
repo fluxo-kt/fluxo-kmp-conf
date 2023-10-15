@@ -189,7 +189,7 @@ gradlePlugin {
     vcsUrl.set("$projectUrl/tree/main")
 
     val shortDescr =
-        "Convenience Gradle plugin for reliable configuration of Kotlin projects by Fluxo"
+        "Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects. Made by Fluxo"
     plugins.create(pluginName) {
         id = pluginId
         implementationClass = "fluxo.conf.FluxoKmpConfPlugin"

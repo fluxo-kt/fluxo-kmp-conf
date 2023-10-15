@@ -9,7 +9,7 @@
 [![Gradle](http://img.shields.io/badge/Gradle-8.4-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
 [![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.1.2-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
 
-Convenience Gradle plugin for reliable configuration of Kotlin projects.
+Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects.
 
 - Completely lazy on-demand project configuration framework with many nice-to-have things out-of-the-box.
 - Automatically configures hierarchical source sets, proveds convenience DSL for them.
@@ -18,7 +18,7 @@ Convenience Gradle plugin for reliable configuration of Kotlin projects.
 - Allows configuring verification tasks (Detekt, Lint, BinaryCompatibilityValidator with JS support!).
   - Provides merged Sarif reports for the whole project.
   - Provides baseline configuration tasks.
-- Adds convenience console tests report in the end of the build along with merged xml report for the whole project.
+- Adds the convenience console tests report at the end of the build along with merged XML report for the whole project.
 - Enables passing of build targets via command line to control what gets configured (great for CI).
 
 Initially made for the [Fluxo][fluxo] state management framework and other libraries, then published for general use.
@@ -30,7 +30,7 @@ Initially made for the [Fluxo][fluxo] state management framework and other libra
 ```kotlin
 // in the `build.gradle.kts` of the target module
 plugins {
-  kotlin("multiplatform") version "1.8.21"
+  kotlin("multiplatform") version "1.9.20"
   id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.1.0" // <-- add here
 }
 ```
@@ -43,7 +43,7 @@ plugins {
 ```kotlin
 // in the `build.gradle.kts` of the target module
 plugins {
-  kotlin("multiplatform") version "1.8.21"
+  kotlin("multiplatform") version "1.9.20"
   id("io.github.fluxo-kt.fluxo-kmp-conf") // <-- add here, no version needed for jitpack usage
 }
 ```
@@ -57,7 +57,7 @@ pluginManagement {
   }
   resolutionStrategy.eachPlugin {
     if (requested.id.toString() == "io.github.fluxo-kt.fluxo-kmp-conf")
-      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:d29a9564b4") // <-- specify version or commit
+      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:8521cd7e0a") // <-- specify version or commit
   }
 }
 ```
