@@ -2,7 +2,7 @@ import fluxo.conf.dsl.container.KotlinTargetContainer
 import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 
 
 internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinJsTargetDsl>.() -> Unit =
@@ -15,7 +15,7 @@ internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinJsTarg
 public fun KotlinJsTargetDsl.defaults() {
     testTimeout()
 
-    if (this is KotlinWasmTargetDsl) {
+    if (this is KotlinWasmJsTargetDsl) {
         applyBinaryen()
     }
 
@@ -41,7 +41,7 @@ public fun KotlinJsTargetDsl.testTimeout(seconds: Int = TEST_TIMEOUT) {
     nodejs {
         testTimeout(seconds)
     }
-    if (this is KotlinWasmTargetDsl) {
+    if (this is KotlinWasmJsTargetDsl) {
         d8 {
             testTimeout(seconds)
         }

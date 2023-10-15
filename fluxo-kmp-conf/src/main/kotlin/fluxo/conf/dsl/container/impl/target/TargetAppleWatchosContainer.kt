@@ -104,7 +104,7 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
     class X86(context: ContainerContext, targetName: String) :
         TargetAppleWatchosContainer<KNTS>(context, targetName) {
 
-        @Suppress("DEPRECATION")
+        @Suppress("DEPRECATION", "DEPRECATION_ERROR")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::watchosX86)
     }
 

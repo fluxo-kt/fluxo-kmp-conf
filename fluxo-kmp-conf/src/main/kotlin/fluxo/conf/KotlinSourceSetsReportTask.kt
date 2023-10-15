@@ -109,17 +109,7 @@ internal abstract class KotlinSourceSetsReportTask :
                 node.optIns = optInAnnotationsInUse.sorted()
             }
 
-            val dependencies = s.run {
-                val set = LinkedHashSet<KotlinSourceSet>()
-                set.addAll(dependsOn)
-                try {
-                    // Scheduled for removal with Kotlin 2.0
-                    @Suppress("DEPRECATION")
-                    set.addAll(requiresVisibilityOf)
-                } catch (_: Throwable) {
-                }
-                set
-            }
+            val dependencies = LinkedHashSet(s.dependsOn)
             if (s is DefaultKotlinSourceSet) {
                 dependencies.addAll(s.dependsOnClosure)
                 /** @see org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.associateWith */

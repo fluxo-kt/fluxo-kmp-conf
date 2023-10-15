@@ -16,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@beefd8c500e5f70ce4fc69e314d454dcf8822f4b
+        uses: step-security/harden-runner@bf4cac97a49476daf40896c7ba9e4c1ffbc530f5
         with:
           disable-sudo: true
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Prepare release settings
         run: |

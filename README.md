@@ -5,9 +5,9 @@
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![Common Changelog](https://common-changelog.org/badge.svg)](CHANGELOG.md)
 
-[![Kotlin](http://img.shields.io/badge/Kotlin-1.8.20-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
-[![Gradle](http://img.shields.io/badge/Gradle-8.1.1-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
-[![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.0.2-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
+[![Kotlin](http://img.shields.io/badge/Kotlin-1.9.20-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
+[![Gradle](http://img.shields.io/badge/Gradle-8.4-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
+[![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.1.2-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
 
 Convenience Gradle plugin for reliable configuration of Kotlin projects.
 
