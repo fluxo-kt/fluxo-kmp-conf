@@ -22,6 +22,6 @@ internal class TargetWasmNativeContainer(
     }
 
 
-    @Suppress("DEPRECATION")
+    @Suppress("DEPRECATION", "DEPRECATION_ERROR")
     override fun KotlinMultiplatformExtension.createTarget() = createTarget(::wasm32)
 }

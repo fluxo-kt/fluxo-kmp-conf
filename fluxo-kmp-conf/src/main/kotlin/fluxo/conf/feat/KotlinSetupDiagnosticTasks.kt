@@ -104,12 +104,15 @@ private fun Project.printKotlinTargetsInfo() {
                 // source set specific to this compilation
                 compilation.kotlinSourceSets
 
+                compilation.compilerOptions.options
+                compilation.kotlinOptions
+
                 // List of compilation, which compiled outputs are used.
                 // Associating compilations establishes internal visibility between them.
                 compilation.associateWith
 
-                compilation.compilerOptions.options
-                compilation.kotlinOptions
+                // TODO: Use associatedCompilations
+                compilation.associatedCompilations
             } catch (_: Throwable) {
             }
         }
@@ -130,15 +133,6 @@ private fun Project.printKotlinSourceSetsInfo() {
         }
         sourceSet.dependsOn.ifNotEmpty {
             println("$P dependsOn: [${joinToString { it.name }}]")
-        }
-
-        try {
-            // Scheduled for removal with Kotlin 2.0
-            @Suppress("DEPRECATION")
-            sourceSet.requiresVisibilityOf.ifNotEmpty {
-                println("$P requiresVisibilityOf: [${joinToString { it.name }}]")
-            }
-        } catch (_: Throwable) {
         }
 
         sourceSet.languageSettings.run {

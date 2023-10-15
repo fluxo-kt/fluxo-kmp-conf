@@ -14,18 +14,18 @@ version = "0.1.0"
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
 # javaLangTarget 11 is required for Android Gradle Plugin and Android Lint
 javaLangTarget = "11"
-kotlinLangVersion = "1.5"
-kotlinApiVersion = "1.5"
-kotlinCoreLibraries = "1.5.32"
+kotlinLangVersion = "1.8"
+kotlinApiVersion = "1.8"
+kotlinCoreLibraries = "1.8.22"
 
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
-kotlin = "1.9.0"
+kotlin = "1.9.20-RC"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.5.0-beta01"
+jetbrains-compose = "1.5.10-rc01"
 
 # https://github.com/google/ksp/releases
 ksp = "1.9.0-1.0.13"
@@ -46,7 +46,8 @@ ksp = "1.9.0-1.0.13"
 # 31  -> Android 12.0  (October, 2021)  S
 # 32  -> Android 12L   (March, 2022)    S_V2
 # 33  -> Android 13    (August, 2022)   TIRAMISU
-# 34  -> Android 14    (Q3 2023)        UPSIDE_DOWN_CAKE
+# 34  -> Android 14    (October, 2023)  UPSIDE_DOWN_CAKE
+# 35  -> Android 15    (Q3 2024)        V
 #
 # see:
 #  https://apilevels.com
@@ -65,7 +66,7 @@ androidMinSdk = "21"
 # https://support.google.com/googleplay/android-developer/answer/11926878
 # https://support.google.com/googleplay/android-developer/answer/9859152#targetsdk
 # https://developer.android.com/distribute/best-practices/develop/target-sdk
-androidTargetSdk = "33"
+androidTargetSdk = "34"
 
 # Last version with sources available
 # androidCompileSdk >= 28 is required for Firebase
@@ -84,7 +85,7 @@ androidBuildTools = "34.0.0"
 
 # Gradle plug-in to build Android applications.
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
-android-gradle-plugin = "8.1.0"
+android-gradle-plugin = "8.1.2"
 
 # endregion
 
@@ -96,26 +97,26 @@ bcv = "0.13.2"
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
 # https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
-dokka = "1.8.20"
+dokka = "1.9.0"
 
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.1"
 
 # https://github.com/pinterest/ktlint/releases
-ktlint = "0.50.0"
+ktlint = "1.0.1"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "6.20.0"
+spotless = "6.22.0"
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-gradle-intellij-plugin = "1.15.0"
+gradle-intellij-plugin = "1.16.0"
 
 
 [libraries]
 
-ktlint = { module = "com.pinterest:ktlint", version.ref = "ktlint" }
+ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
@@ -146,23 +147,24 @@ complete-kotlin = { id = "com.louiscad.complete-kotlin", version = "1.1.0" }
 
 # Publish plugins to the Gradle Plugin Portal
 # https://plugins.gradle.org/plugin/com.gradle.plugin-publish
-gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }
+gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 
 # Build scans, data to speed up build and improve build reliability.
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.enterprise
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.14.1" }
+# NOTE: Don't forget to edit version in all `settings.gradle.kts` files as well!
+gradle-enterprise = { id = "com.gradle.enterprise", version = "3.15.1" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.47.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.49.0" }
 
 # Detect unused and misused dependencies. Provides advice for managing dependencies and other applied plugins.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
 # https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.20.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.25.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
@@ -192,4 +194,4 @@ build-config = { id = "com.github.gmazzo.buildconfig", version = "4.1.2" }
 # Resolve all dependencies used in a gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases
 # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
-about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.8.3" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.9.1" }

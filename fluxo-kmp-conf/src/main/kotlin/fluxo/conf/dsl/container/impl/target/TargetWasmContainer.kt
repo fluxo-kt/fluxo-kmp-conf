@@ -9,17 +9,17 @@ import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
 import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 
 internal class TargetWasmContainer(
     context: ContainerContext, name: String,
-) : KmpTargetContainerImpl<KotlinWasmTargetDsl>(context, name, WASM_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.CommonJs<KotlinWasmTargetDsl>, WasmTarget {
+) : KmpTargetContainerImpl<KotlinWasmJsTargetDsl>(context, name, WASM_SORT_ORDER),
+    KmpTargetContainerImpl.NonJvm.CommonJs<KotlinWasmJsTargetDsl>, WasmTarget {
 
     interface Configure : WasmTarget.Configure, ContainerHolderAware {
 
         @ExperimentalWasmDsl
-        override fun wasm(
+        override fun wasmJs(
             targetName: String,
             action: WasmTarget.() -> Unit,
         ) {
@@ -31,6 +31,18 @@ internal class TargetWasmContainer(
     }
 
     @ExperimentalWasmDsl
-    override fun KotlinMultiplatformExtension.createTarget() =
-        wasm(name, lazyTargetConf) as KotlinWasmTargetDsl
+    override fun KotlinMultiplatformExtension.createTarget(): KotlinWasmJsTargetDsl {
+        return try {
+            wasmJs(name, lazyTargetConf)
+        } catch (e1: Throwable) {
+            // Compatibility with Kotlin 1.8.20
+            try {
+                @Suppress("DEPRECATION")
+                wasm(name, lazyTargetConf)
+            } catch (e: Throwable) {
+                e.addSuppressed(e1)
+                throw e
+            }
+        }
+    }
 }

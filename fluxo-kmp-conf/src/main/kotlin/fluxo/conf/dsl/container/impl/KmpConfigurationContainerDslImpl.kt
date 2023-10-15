@@ -90,7 +90,7 @@ internal class KmpConfigurationContainerDslImpl(
 
         if (holder.kotlinPluginVersion >= KOTLIN_1_8_20) {
             @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
-            wasm()
+            wasmJs()
         }
 
         kotlinMultiplatform {
