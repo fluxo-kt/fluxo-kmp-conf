@@ -5,9 +5,16 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.MergeDetektBaselinesTask
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
-import fluxo.conf.impl.*
 import fluxo.conf.impl.android.DEBUG
 import fluxo.conf.impl.android.RELEASE
+import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.dependencies
+import fluxo.conf.impl.disableTask
+import fluxo.conf.impl.e
+import fluxo.conf.impl.onLibrary
+import fluxo.conf.impl.register
+import fluxo.conf.impl.splitCamelCase
+import fluxo.conf.impl.withType
 import io.github.detekt.gradle.DetektKotlinCompilerPlugin
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
@@ -60,7 +67,7 @@ internal fun Project.setupDetekt(
             when (conf.enableDetektCompilerPlugin) {
                 true -> DetektKotlinCompilerPlugin::class.java
                 else -> DetektPlugin::class.java
-            }
+            },
         )
     }
 
@@ -119,9 +126,14 @@ internal fun Project.setupDetekt(
     }
 
     val detektTasks = tasks.withType<Detekt> {
-        val isDisabled = context.testsDisabled || !isDetektTaskAllowed(context)
+        val testsAreDisabled = context.testsDisabled
+        val isDisabled = testsAreDisabled || !isDetektTaskAllowed(context)
         if (isDisabled && enabled) {
-            logger.e("Unexpected Detekt task {}, disabling", path)
+            val reason = when {
+                testsAreDisabled -> "tests are disabled"
+                else -> "platform ${taskPlatform()} is disabled"
+            }
+            logger.e("Unexpected Detekt task {}, disabling as $reason", path)
             disableTask()
         }
         context.kotlinConfig.jvmTarget?.let { jvmTarget = it }
@@ -133,7 +145,7 @@ internal fun Project.setupDetekt(
         }
     }
 
-    if (!context.testsDisabled) {
+    if (!testsDisabled) {
         val detektAll = tasks.register<Task>("detektAll") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Calls all available Detekt tasks for this project"
@@ -164,6 +176,11 @@ private const val DETEKT_BASELINE_FILE_NAME = "detekt-baseline.xml"
 
 private val TEST_TASK_PREFIXES = arrayOf(CHECK_TASK_NAME, TEST_TASK_NAME)
 
+
+private fun Detekt.taskPlatform(): DetectedTaskPlatform {
+    return getTaskDetailsFromName(name).platform
+        ?: DetectedTaskPlatform.UNKNOWN
+}
 
 private fun Detekt.isDetektTaskAllowed(context: FluxoKmpConfContext): Boolean = with(context) {
     getTaskDetailsFromName(name).platform.isTaskAllowed()
@@ -203,7 +220,7 @@ private fun getTaskDetailsFromName(
         list.firstOrNull().equals("assemble", ignoreCase = true) &&
         list.lastOrNull().let {
             it.equals(RELEASE, ignoreCase = true) ||
-                    it.equals(DEBUG, ignoreCase = true)
+                it.equals(DEBUG, ignoreCase = true)
         }
     ) {
         // Android assemble: $name
@@ -222,8 +239,8 @@ private fun getTaskDetailsFromName(
 @Suppress("CyclomaticComplexMethod")
 private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? = when {
     platform.isNullOrEmpty() ||
-            platform.equals("Common", ignoreCase = true) ||
-            platform.equals("Native", ignoreCase = true)
+        platform.equals("Common", ignoreCase = true) ||
+        platform.equals("Native", ignoreCase = true)
     -> null
 
     platform.equals("Js", ignoreCase = true) -> DetectedTaskPlatform.JS
@@ -231,26 +248,26 @@ private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? =
     platform.equals("Linux", ignoreCase = true) -> DetectedTaskPlatform.LINUX
 
     platform.equals("Android", ignoreCase = true) ||
-            platform.equals("bundle", ignoreCase = true) // Android AAR build tasks
+        platform.equals("bundle", ignoreCase = true) // Android AAR build tasks
     -> DetectedTaskPlatform.ANDROID
 
     platform.equals("Mingw", ignoreCase = true) ||
-            platform.equals("Win", ignoreCase = true) ||
-            platform.equals("Windows", ignoreCase = true)
+        platform.equals("Win", ignoreCase = true) ||
+        platform.equals("Windows", ignoreCase = true)
     -> DetectedTaskPlatform.MINGW
 
     platform.equals("Jvm", ignoreCase = true) ||
-            platform.equals("Jmh", ignoreCase = true) ||
-            platform.equals("Dokka", ignoreCase = true) ||
-            platform.equals("Java", ignoreCase = true)
+        platform.equals("Jmh", ignoreCase = true) ||
+        platform.equals("Dokka", ignoreCase = true) ||
+        platform.equals("Java", ignoreCase = true)
     -> DetectedTaskPlatform.JVM
 
     platform.equals("Darwin", ignoreCase = true) ||
-            platform.equals("Apple", ignoreCase = true) ||
-            platform.equals("Ios", ignoreCase = true) ||
-            platform.equals("Watchos", ignoreCase = true) ||
-            platform.equals("Tvos", ignoreCase = true) ||
-            platform.equals("Macos", ignoreCase = true)
+        platform.equals("Apple", ignoreCase = true) ||
+        platform.equals("Ios", ignoreCase = true) ||
+        platform.equals("Watchos", ignoreCase = true) ||
+        platform.equals("Tvos", ignoreCase = true) ||
+        platform.equals("Macos", ignoreCase = true)
     -> DetectedTaskPlatform.APPLE
 
     else -> DetectedTaskPlatform.UNKNOWN
