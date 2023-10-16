@@ -170,7 +170,8 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
                 try {
                     constraints.implementation(it)
                 } catch (e: Throwable) {
-                    project.logger.w("Failed to add constraint for $it: $e", e)
+                    val ex = if (context.isMaxDebug) e else null
+                    project.logger.w("Failed to add constraint for $it: $e", ex)
                 }
             }
 

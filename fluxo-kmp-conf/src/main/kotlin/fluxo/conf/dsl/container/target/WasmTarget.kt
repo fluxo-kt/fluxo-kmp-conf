@@ -1,8 +1,7 @@
 package fluxo.conf.dsl.container.target
 
-import DEFAULT_COMMON_JS_CONFIGURATION
+import DEFAULT_COMMON_JS_CONFIGURATION as DEFAULT_CONF
 import fluxo.conf.dsl.container.KotlinTargetContainer
-import fluxo.conf.impl.EMPTY_FUN
 import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithWasmPresetFunctions
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
@@ -23,7 +22,7 @@ public interface WasmTarget<out T : KotlinWasmTargetDsl> : KotlinTargetContainer
         @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
         public fun wasmJs(
             targetName: String = "wasmJs",
-            action: WasmTarget<KotlinWasmJsTargetDsl>.() -> Unit = DEFAULT_COMMON_JS_CONFIGURATION,
+            action: WasmTarget<KotlinWasmJsTargetDsl>.() -> Unit = DEFAULT_CONF,
         )
 
         /**
@@ -35,7 +34,7 @@ public interface WasmTarget<out T : KotlinWasmTargetDsl> : KotlinTargetContainer
         @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
         public fun wasmWasi(
             targetName: String = "wasmWasi",
-            action: WasmTarget<KotlinWasmWasiTargetDsl>.() -> Unit = EMPTY_FUN,
+            action: WasmTarget<KotlinWasmWasiTargetDsl>.() -> Unit = DEFAULT_CONF,
         )
     }
 }

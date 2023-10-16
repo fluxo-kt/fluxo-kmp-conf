@@ -150,31 +150,36 @@ internal fun configureKotlinMultiplatform(
     }
 
     val project = configuration.project
-    configuration.context.loadAndApplyPluginIfNotApplied(id = KMP_PLUGIN_ID, project = project)
+    val context = configuration.context
+    context.loadAndApplyPluginIfNotApplied(id = KMP_PLUGIN_ID, project = project)
 
     // Add all plugins first, for configuring in next steps.
     val pluginManager = project.pluginManager
     val containerList = containers.toMutableList()
     containerList.iterator().let { iter ->
         for (container in iter) {
-            (container as? ContainerImpl)?.let { c ->
-                try {
-                    c.applyPluginsWith(pluginManager)
-                } catch (e: Throwable) {
-                    iter.remove()
+            val c = container as? ContainerImpl ?: continue
+            try {
+                c.applyPluginsWith(pluginManager)
+            } catch (e: Throwable) {
+                iter.remove()
 
-                    var msg = e.toString()
-                    msg = when {
-                        // Special case for Android plugin.
-                        @Suppress("InstanceOfCheckForException")
-                        e is UnknownPluginException && "com.android." in msg ->
-                            ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
-
-                        else ->
-                            "Couldn't apply ${c.name} container due to: $msg"
+                var logException = true
+                var msg = e.toString()
+                msg = when {
+                    // Special case for Android plugin.
+                    @Suppress("InstanceOfCheckForException")
+                    e is UnknownPluginException && "com.android." in msg -> {
+                        logException = context.isMaxDebug
+                        ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
                     }
-                    project.logger.e(msg, e)
+
+                    else ->
+                        "Couldn't apply ${c.name} container due to: $msg"
                 }
+
+                val ex = if (logException) e else null
+                project.logger.e(msg, ex)
             }
         }
     }
