@@ -2,6 +2,7 @@
 
 import com.android.build.api.dsl.CommonExtension
 import fluxo.conf.dsl.FluxoConfigurationExtension
+import fluxo.conf.dsl.container.KmpConfigurationContainerDsl
 import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.kotlin.multiplatformExtension
 import fluxo.conf.impl.withType
@@ -22,6 +23,7 @@ public fun Project.setupMultiplatform(
     enableBuildConfig: Boolean? = null,
     optIns: List<String>? = null,
     configureAndroid: (CommonExtension<*, *, *, *, *>.() -> Unit)? = null,
+    kmp: (KmpConfigurationContainerDsl.() -> Unit)? = null,
     body: MultiplatformConfigurator? = null,
 ): Unit = fluxoConfiguration {
     if (namespace != null) this.androidNamespace = namespace
@@ -31,6 +33,8 @@ public fun Project.setupMultiplatform(
     config?.invoke(this)
 
     configureAsMultiplatform {
+        kmp?.invoke(this)
+
         if (body != null) {
             kotlinMultiplatform(body)
         }

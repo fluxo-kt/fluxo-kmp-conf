@@ -7,19 +7,42 @@ import TEST_SOURCE_SET_NAME
 import com.android.build.gradle.TestedExtension
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.container.Container
-import fluxo.conf.dsl.container.impl.*
+import fluxo.conf.dsl.container.impl.ContainerImpl
+import fluxo.conf.dsl.container.impl.ContainerKotlinAware
+import fluxo.conf.dsl.container.impl.ContainerKotlinMultiplatformAware
+import fluxo.conf.dsl.container.impl.KmpTargetCode
+import fluxo.conf.dsl.container.impl.KmpTargetContainer
 import fluxo.conf.dsl.container.impl.target.TargetAndroidContainer
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.*
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.ANDROID_APP
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.ANDROID_LIB
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.GRADLE_PLUGIN
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.IDEA_PLUGIN
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.KOTLIN_JVM
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.feat.setupVerification
-import fluxo.conf.impl.*
+import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
+import fluxo.conf.impl.android.ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
 import fluxo.conf.impl.android.setupAndroidCommon
+import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.e
+import fluxo.conf.impl.get
+import fluxo.conf.impl.getDisableTaskAction
+import fluxo.conf.impl.i
+import fluxo.conf.impl.isTestRelated
+import fluxo.conf.impl.v
+import fluxo.conf.impl.w
 import org.gradle.api.Action
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.dsl.*
+import org.gradle.api.plugins.UnknownPluginException
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
@@ -54,7 +77,7 @@ internal fun configureKotlinJvm(
 
     context.loadAndApplyPluginIfNotApplied(id = KOTLIN_JVM_PLUGIN_ID, project = project)
 
-    if (type === ConfigurationType.GRADLE_PLUGIN) {
+    if (type === GRADLE_PLUGIN) {
         // Gradle Kotlin DSL uses same compiler plugin (sam.with.receiver)
         context.loadAndApplyPluginIfNotApplied(id = KT_SAM_RECEIVER_PLUGIN_ID, project = project)
         context.loadAndApplyPluginIfNotApplied(id = GRADLE_PLUGIN_PUBLISH_ID, project = project)
@@ -69,7 +92,7 @@ internal fun configureKotlinJvm(
     project.configureExtension<KotlinProjectExtension>(name = "kotlin") {
         require(this is KotlinJvmProjectExtension || this is KotlinAndroidProjectExtension) {
             "use `setupMultiplatform` for KMP module or Kotlin/JS usage. \n" +
-                    "Unexpected KotlinProjectExtension: ${javaClass.name}"
+                "Unexpected KotlinProjectExtension: ${javaClass.name}"
         }
 
         // Set Kotlin settings before the containers so that they may be overridden if desired.
@@ -131,8 +154,29 @@ internal fun configureKotlinMultiplatform(
 
     // Add all plugins first, for configuring in next steps.
     val pluginManager = project.pluginManager
-    for (container in containers) {
-        (container as? ContainerImpl)?.applyPluginsWith(pluginManager)
+    val containerList = containers.toMutableList()
+    containerList.iterator().let { iter ->
+        for (container in iter) {
+            (container as? ContainerImpl)?.let { c ->
+                try {
+                    c.applyPluginsWith(pluginManager)
+                } catch (e: Throwable) {
+                    iter.remove()
+
+                    var msg = e.toString()
+                    msg = when {
+                        // Special case for Android plugin.
+                        @Suppress("InstanceOfCheckForException")
+                        e is UnknownPluginException && "com.android." in msg ->
+                            ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
+
+                        else ->
+                            "Couldn't apply ${c.name} container due to: $msg"
+                    }
+                    project.logger.e(msg, e)
+                }
+            }
+        }
     }
 
     project.configureExtension<KotlinMultiplatformExtension>("kotlin") {
@@ -140,7 +184,7 @@ internal fun configureKotlinMultiplatform(
         setupKotlinExtensionAndProject(configuration)
         setupMultiplatformDependencies(configuration)
 
-        for (container in containers) {
+        for (container in containerList) {
             when (container) {
                 is ContainerKotlinMultiplatformAware ->
                     container.setup(this)
@@ -165,9 +209,9 @@ private fun checkIfNeedToConfigure(
         KOTLIN_MULTIPLATFORM -> "setupMultiplatform"
         ANDROID_LIB -> "setupAndroidLibrary"
         ANDROID_APP -> "setupAndroidApp"
-        ConfigurationType.KOTLIN_JVM -> "setupKotlin"
+        KOTLIN_JVM -> "setupKotlin"
         IDEA_PLUGIN -> "setupIdeaPlugin"
-        ConfigurationType.GRADLE_PLUGIN -> "setupGradlePlugin"
+        GRADLE_PLUGIN -> "setupGradlePlugin"
     }
     if (!hasAnyTarget) {
         logger.w("$label - no applicable Kotlin targets found, skipping module configuration")
@@ -239,7 +283,7 @@ private fun KotlinProjectExtension.setupTargets(
                 .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
 
             val warningsAsErrors = kc.warningsAsErrors &&
-                    !isJs && !isTest && (context.isCI || context.isRelease)
+                !isJs && !isTest && (context.isCI || context.isRelease)
 
             if (warningsAsErrors) {
                 allWarningsAsErrors = true

@@ -1,5 +1,6 @@
 package fluxo.conf.impl.android
 
+import fluxo.conf.data.BuildConstants
 import org.gradle.api.plugins.PluginAware
 
 /**
@@ -31,3 +32,16 @@ internal const val JSR305_DEPENDENCY = "com.google.code.findbugs:jsr305:3.0.2"
 
 internal const val RELEASE = "release"
 internal const val DEBUG = "debug"
+
+
+internal val ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR = """
+    Android Gradle Plugin (AGP) is not found in the classpass which prevents android KMP target from initialization.
+    Please apply AGP in the root Gradle module (in `build.gradle.kts`) like this:
+    ```
+    plugins {
+        id("com.android.library") apply false
+        id("org.jetbrains.kotlin.multiplatform") apply false
+        id("${BuildConstants.PLUGIN_ID}")
+    }
+    ```
+""".trimIndent()
