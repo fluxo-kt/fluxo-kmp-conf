@@ -5,8 +5,6 @@ package fluxo.conf.impl.kotlin
 import MAIN_SOURCE_SET_POSTFIX
 import TEST_SOURCE_SET_POSTFIX
 import commonCompileOnly
-import commonMain
-import commonTest
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.JSR305_DEPENDENCY
@@ -18,6 +16,7 @@ import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.onBundle
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.testImplementation
+import fluxo.conf.impl.w
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -168,7 +167,11 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
             // https://issuetracker.google.com/issues/216293107
             val compileOnlyWithConstraint: (Any) -> Unit = {
                 compileOnly(it)
-                constraints.implementation(it)
+                try {
+                    constraints.implementation(it)
+                } catch (e: Throwable) {
+                    project.logger.w("Failed to add constraint for $it: $e", e)
+                }
             }
 
             // Java-only annotations
