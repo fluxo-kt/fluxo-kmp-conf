@@ -12,6 +12,7 @@ import commonNative
 import commonNonJvm
 import commonTvos
 import commonUnix
+import commonWasm
 import commonWasmNative
 import commonWatchos
 import dependsOn
@@ -22,7 +23,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 
 internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
     context: ContainerContext,
@@ -84,7 +85,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
         }
 
 
-        interface CommonJs<T : KotlinJsTargetDsl> : NonJvm<T> {
+        interface CommonJs<T : KotlinTarget> : NonJvm<T> {
 
             companion object {
                 const val COMMON_JS = "commonJs"
@@ -97,6 +98,23 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                 val bundle = k.commonJs
                 child dependsOn bundle
                 super.setupParentSourceSet(k, bundle)
+            }
+
+
+            interface CommonWasm<T : KotlinWasmTargetDsl> : CommonJs<T> {
+
+                companion object {
+                    const val COMMON_WASM = "commonWasm"
+                }
+
+                override fun setupParentSourceSet(
+                    k: KotlinMultiplatformExtension,
+                    child: SourceSetBundle,
+                ) {
+                    val bundle = k.commonWasm
+                    child dependsOn bundle
+                    super.setupParentSourceSet(k, bundle)
+                }
             }
         }
 

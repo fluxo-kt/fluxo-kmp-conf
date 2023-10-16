@@ -67,7 +67,7 @@ internal abstract class TargetLinuxContainer<T : KNT>(
     class Mips32(context: ContainerContext, targetName: String) :
         TargetLinuxContainer<KNT>(context, targetName) {
 
-        @Suppress("DEPRECATION", "DEPRECATION_ERROR")
+        @Suppress("DEPRECATION", "DEPRECATION_ERROR", "KotlinRedundantDiagnosticSuppress")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxMips32)
     }
 
@@ -75,7 +75,7 @@ internal abstract class TargetLinuxContainer<T : KNT>(
     class Mipsel32(context: ContainerContext, targetName: String) :
         TargetLinuxContainer<KNT>(context, targetName) {
 
-        @Suppress("DEPRECATION", "DEPRECATION_ERROR")
+        @Suppress("DEPRECATION", "DEPRECATION_ERROR", "KotlinRedundantDiagnosticSuppress")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxMipsel32)
     }
 }

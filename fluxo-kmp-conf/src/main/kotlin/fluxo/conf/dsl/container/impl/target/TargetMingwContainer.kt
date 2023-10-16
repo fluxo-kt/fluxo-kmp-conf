@@ -39,7 +39,7 @@ internal abstract class TargetMingwContainer<T : KNT>(
     class X86(context: ContainerContext, targetName: String) :
         TargetMingwContainer<KNT>(context, targetName) {
 
-        @Suppress("DEPRECATION", "DEPRECATION_ERROR")
+        @Suppress("DEPRECATION", "DEPRECATION_ERROR", "KotlinRedundantDiagnosticSuppress")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::mingwX86)
     }
 }

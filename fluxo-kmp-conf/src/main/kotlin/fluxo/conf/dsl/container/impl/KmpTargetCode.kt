@@ -9,6 +9,7 @@ import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import requestedKmpTargets
@@ -28,7 +29,8 @@ internal enum class KmpTargetCode {
     ANDROID,
 
     JS,
-    WASM,
+    WASM_JS,
+    WASM_WASI,
 
     LINUX_X64,
     LINUX_ARM64,
@@ -75,7 +77,8 @@ internal enum class KmpTargetCode {
         private val ALL = KmpTargetCode.values()
 
         private val COMMON_JVM = arrayOf(JVM, ANDROID)
-        private val COMMON_JS = arrayOf(JS, WASM)
+        internal val COMMON_WASM = arrayOf(WASM_JS, WASM_WASI)
+        private val COMMON_JS = COMMON_WASM + JS
 
         private val IOS = arrayOf(IOS_ARM32, IOS_ARM64, IOS_SIMULATOR_ARM64, IOS_X64)
         private val MACOS = arrayOf(MACOS_ARM64, MACOS_X64)
@@ -108,6 +111,8 @@ internal enum class KmpTargetCode {
         private val ALIASES = mapOf(
             ::ALL.name to ALL,
             ::COMMON_JVM.name to COMMON_JVM,
+            ::COMMON_WASM.name to COMMON_WASM,
+            "WASM" to arrayOf(WASM_JS),
             ::COMMON_JS.name to COMMON_JS,
             ::IOS.name to IOS,
             ::OSX.name to OSX,
@@ -189,7 +194,18 @@ internal enum class KmpTargetCode {
                 KotlinPlatformType.jvm -> JVM
                 KotlinPlatformType.androidJvm -> ANDROID
                 KotlinPlatformType.js -> JS
-                KotlinPlatformType.wasm -> WASM
+
+                KotlinPlatformType.wasm -> {
+                    try {
+                        // Kotlin 1.9.20+
+                        if (target is KotlinWasmWasiTargetDsl) {
+                            WASM_WASI
+                        }
+                    } catch (_: Throwable) {
+                    }
+                    WASM_JS
+                }
+
                 KotlinPlatformType.native -> {
                     when (val konanTarget = (target as KotlinNativeTarget).konanTarget) {
                         KonanTarget.ANDROID_ARM32 -> ANDROID_ARM32

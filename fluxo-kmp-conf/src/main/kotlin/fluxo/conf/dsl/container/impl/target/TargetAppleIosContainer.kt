@@ -46,7 +46,7 @@ internal abstract class TargetAppleIosContainer<T : KNT>(
     class Arm32(context: ContainerContext, targetName: String) :
         TargetAppleIosContainer<KNT>(context, targetName) {
 
-        @Suppress("DEPRECATION", "DEPRECATION_ERROR")
+        @Suppress("DEPRECATION", "DEPRECATION_ERROR", "KotlinRedundantDiagnosticSuppress")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::iosArm32)
     }
 

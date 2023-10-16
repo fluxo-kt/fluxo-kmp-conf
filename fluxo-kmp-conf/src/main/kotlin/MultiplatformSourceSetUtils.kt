@@ -70,6 +70,10 @@ public val KotlinSourceSetContainer.commonNonJvm: SourceSetBundle
 public val KotlinSourceSetContainer.commonJs: SourceSetBundle
     get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.CommonJs.COMMON_JS)
 
+/** Parent [SourceSetBundle] for all Kotlin/WASM-based targets (WASM-JS, WASM-WASI) */
+public val KotlinSourceSetContainer.commonWasm: SourceSetBundle
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.CommonJs.CommonWasm.COMMON_WASM)
+
 /** Parent [SourceSetBundle] for all Kotlin/Native targets */
 public val KotlinSourceSetContainer.commonNative: SourceSetBundle
     get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.NATIVE)

@@ -19,6 +19,7 @@ import fluxo.conf.dsl.container.impl.target.TargetMingwContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmNativeContainer
 import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
+import fluxo.conf.impl.kotlin.KOTLIN_1_9_20
 import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -88,12 +89,25 @@ internal class KmpConfigurationContainerDslImpl(
         linux()
         mingw()
 
-        if (holder.kotlinPluginVersion >= KOTLIN_1_8_20) {
+        val kotlinPluginVersion = holder.kotlinPluginVersion
+        if (kotlinPluginVersion >= KOTLIN_1_8_20) {
             @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
             wasmJs()
         }
 
+        if (kotlinPluginVersion >= KOTLIN_1_9_20) {
+            @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
+            wasmWasi()
+        }
+
         kotlinMultiplatform {
+            if (kotlinPluginVersion >= KOTLIN_1_9_20) {
+                // Apply the default hierarchy explicitly (needed after 1.9.20-RC).
+                // It'll create, for example, the iosMain source set.
+                // https://kotlinlang.org/docs/whatsnew1920.html#set-up-the-target-hierarchy
+                applyDefaultHierarchyTemplate()
+            }
+
             setupBackgroundNativeTests()
         }
     }
