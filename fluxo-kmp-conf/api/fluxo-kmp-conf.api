@@ -40,6 +40,7 @@ public final class MultiplatformSourceSetUtilsKt {
 	public static final fun getCommonNonJvm (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonTvos (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonUnix (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonWasm (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonWasmNative (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonWatchos (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getDarwinSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
@@ -118,8 +119,8 @@ public final class SetupMultiplatformKt {
 	public static final fun macosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun macosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 	public static final fun setupBackgroundNativeTests (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;)V
-	public static final fun setupMultiplatform (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupMultiplatform$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupMultiplatform (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupMultiplatform$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun tvosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun tvosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 	public static final fun watchosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
@@ -185,7 +186,7 @@ public final class fluxo/conf/dsl/FluxoConfigurationExtension$Companion {
 }
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionAndroid : fluxo/conf/dsl/FluxoConfigurationExtensionCommon, fluxo/conf/dsl/FluxoConfigurationExtensionPublication {
-	public fun filterVariants (Lkotlin/jvm/functions/Function1;)V
+	public abstract fun filterVariants (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun getAndroidApplicationId ()Ljava/lang/String;
 	public abstract fun getAndroidBuildToolsVersion ()Ljava/lang/String;
 	public abstract fun getAndroidCompileSdk ()Ljava/lang/Object;
@@ -195,7 +196,6 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionAndroi
 	public abstract fun getAndroidResourceConfigurations ()Ljava/util/Set;
 	public abstract fun getAndroidTargetSdk ()Ljava/lang/Object;
 	public abstract fun getAndroidVersionCode ()I
-	public abstract fun getFilterVariants ()Lkotlin/jvm/functions/Function1;
 	public abstract fun getNoVerificationBuildTypes ()Ljava/util/List;
 	public abstract fun getNoVerificationFlavors ()Ljava/util/List;
 	public abstract fun getRemoveKotlinMetadata ()Z
@@ -209,7 +209,6 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionAndroi
 	public abstract fun setAndroidResourceConfigurations (Ljava/util/Set;)V
 	public abstract fun setAndroidTargetSdk (Ljava/lang/Object;)V
 	public abstract fun setAndroidVersionCode (I)V
-	public abstract fun setFilterVariants (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun setNoVerificationBuildTypes (Ljava/util/List;)V
 	public abstract fun setNoVerificationFlavors (Ljava/util/List;)V
 	public abstract fun setRemoveKotlinMetadata (Z)V
@@ -561,6 +560,8 @@ public abstract interface class fluxo/conf/dsl/container/target/WasmTarget : flu
 public abstract interface class fluxo/conf/dsl/container/target/WasmTarget$Configure {
 	public abstract fun wasmJs (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun wasmJs$default (Lfluxo/conf/dsl/container/target/WasmTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun wasmWasi (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun wasmWasi$default (Lfluxo/conf/dsl/container/target/WasmTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
 public abstract interface class fluxo/conf/kmp/SourceSetBundle {
