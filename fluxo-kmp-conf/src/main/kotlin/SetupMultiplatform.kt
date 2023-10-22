@@ -25,12 +25,16 @@ public fun Project.setupMultiplatform(
     configureAndroid: (CommonExtension<*, *, *, *, *>.() -> Unit)? = null,
     kmp: (KmpConfigurationContainerDsl.() -> Unit)? = null,
     body: MultiplatformConfigurator? = null,
-): Unit = fluxoConfiguration {
+): Unit = fluxoConfiguration c@{
     if (namespace != null) this.androidNamespace = namespace
     if (setupCompose != null) this.enableCompose = setupCompose
     if (enableBuildConfig != null) this.enableBuildConfig = enableBuildConfig
     if (!optIns.isNullOrEmpty()) this.optIns += optIns
     config?.invoke(this)
+
+    if (kmp == null && body == null && configureAndroid == null) {
+        return@c
+    }
 
     configureAsMultiplatform {
         kmp?.invoke(this)

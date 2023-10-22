@@ -161,6 +161,14 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
 
     /**
+     * Flag that allows to disable kotlin plugin configuration completely.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     */
+    public var setupKotlin: Boolean
+
+
+    /**
      * List of Kotlin opt-ins to add in the project.
      *
      * Default set of opt-ins:

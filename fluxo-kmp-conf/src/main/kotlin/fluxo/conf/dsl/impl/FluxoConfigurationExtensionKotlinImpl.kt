@@ -83,6 +83,13 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
 
 
     @get:Input
+    val setupKotlinProp: Property<Boolean>
+    override var setupKotlin: Boolean
+        get() = setupKotlinProp.orNull ?: parent?.setupKotlin ?: true
+        set(value) = setupKotlinProp.set(value)
+
+
+    @get:Input
     val setupKspProp: Property<Boolean?>
     override var setupKsp: Boolean?
         get() = setupKspProp.orNull ?: parent?.setupKsp

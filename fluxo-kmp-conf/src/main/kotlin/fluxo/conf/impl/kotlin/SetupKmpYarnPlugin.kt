@@ -1,6 +1,7 @@
 package fluxo.conf.impl.kotlin
 
 import fluxo.conf.FluxoKmpConfContext
+import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.checkIsRootProject
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.d
@@ -19,8 +20,15 @@ import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion
 internal fun Project.setupKmpYarnPlugin(context: FluxoKmpConfContext) = afterEvaluate {
     // YarnPlugin can be applied only to the root project.
     checkIsRootProject("setupKmpYarnPlugin")
-    plugins.withType<YarnPlugin> {
+    plugins.withType<YarnPlugin> configuration@{
+        val conf = fluxoConfiguration
+        if (conf?.setupKotlin != true) {
+            logger.d("YarnPlugin configuration disabled!")
+            return@configuration
+        }
+
         logger.d("YarnPlugin configuration")
+        val setupDependencies = conf.setupDependencies
 
         val libs = context.libs
         val testsDisabled = context.testsDisabled
@@ -30,7 +38,7 @@ internal fun Project.setupKmpYarnPlugin(context: FluxoKmpConfContext) = afterEva
             // The Yarn 1.x line is frozen.
             // At least use the last known version.
             // https://github.com/yarnpkg/yarn/releases.
-            if (libs?.onVersion("js-yarn") { version = it } != true) {
+            if (setupDependencies && libs?.onVersion("js-yarn") { version = it } != true) {
                 if (KotlinToolingVersion(version) < KotlinToolingVersion("1.22.19")) {
                     version = "1.22.19"
                 }
@@ -43,7 +51,7 @@ internal fun Project.setupKmpYarnPlugin(context: FluxoKmpConfContext) = afterEva
                 reportNewYarnLock = false
             }
 
-            if (libs == null) {
+            if (libs == null || !setupDependencies) {
                 return@configureExtension
             }
 
@@ -52,8 +60,8 @@ internal fun Project.setupKmpYarnPlugin(context: FluxoKmpConfContext) = afterEva
             libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
         }
 
-        if (libs == null) {
-            return@withType
+        if (libs == null || !setupDependencies) {
+            return@configuration
         }
         configureExtension<NodeJsRootExtension>(NodeJsRootExtension.EXTENSION_NAME) {
             val v = versions

@@ -28,6 +28,7 @@ import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
 import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.d
 import fluxo.conf.impl.e
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
@@ -36,6 +37,7 @@ import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
 import org.gradle.api.Action
+import org.gradle.api.Named
 import org.gradle.api.Project
 import org.gradle.api.plugins.UnknownPluginException
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -101,6 +103,8 @@ internal fun configureKotlinJvm(
         if (configuration.setupDependencies) {
             val deps = project.dependencies
             deps.setupKotlinDependencies(context.libs, context.kotlinConfig, isApplication = isApp)
+        } else {
+            project.logger.v("Configuring Kotlin dependencies disabled")
         }
 
         var androidSetUp = false
@@ -193,9 +197,15 @@ internal fun configureKotlinMultiplatform(
 
         if (configuration.setupDependencies) {
             setupMultiplatformDependencies(configuration)
+        } else {
+            project.logger.v("Configuring Kotlin dependencies disabled")
         }
 
         for (container in containerList) {
+            if (SHOW_DEBUG_LOGS && container is Named) {
+                project.logger.v("-> container: '${container.name}'")
+            }
+
             when (container) {
                 is ContainerKotlinMultiplatformAware ->
                     container.setup(this)
@@ -242,6 +252,10 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     val ctx = conf.context
     val kc = conf.KotlinConfig(project, k = this)
     ctx.kotlinConfig = kc
+
+    if (!conf.setupKotlin) {
+        project.logger.d("Finishing Kotlin extension configuration early, disabled")
+    }
 
     project.group = conf.group
     project.version = conf.version
