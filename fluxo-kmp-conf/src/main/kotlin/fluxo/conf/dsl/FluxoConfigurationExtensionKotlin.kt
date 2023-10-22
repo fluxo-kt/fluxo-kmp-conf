@@ -190,7 +190,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     /**
      * Flag to report an error for any Kotlin warning.
      *
-     * Inherited from the parent project if not set. Default value: `false`
+     * Inherited from the parent project if not set. Default value: `false`.
      *
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerToolOptions.allWarningsAsErrors
      * @TODO: set for Java compilation tasks too (https://stackoverflow.com/q/30806920)
@@ -200,7 +200,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     /**
      * Generate metadata for Java 1.8 reflection on method parameters.
      *
-     * Inherited from the parent project if not set. Default value: `false`
+     * Inherited from the parent project if not set. Default value: `false`.
      *
      * [More details](https://docs.oracle.com/javase/tutorial/reflect/member/methodparameterreflection.html)
      *
@@ -213,7 +213,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Flag to turn off dynamic invocations (`invokedynamic`) compilation for Kotlin lambdas
      * and SAM conversions (`indy` mode).
      *
-     * Inherited from the parent project if not set. Default value: `true`
+     * Inherited from the parent project if not set. Default value: `true`.
      *
      * Indy mode produces faster and more compact bytecode,
      * using the `invokedynamic` JVM instruction.
@@ -235,7 +235,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * Only applied if the latest [kotlinLangVersion] used (otherwise meaningless).
      *
-     * Inherited from the parent project if not set. Default value: `true`
+     * Inherited from the parent project if not set. Default value: `true`.
      *
      * @see org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder.progressiveMode
      */
@@ -255,7 +255,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Flag to remove utility bytecode, eliminating names/data leaks in release artifacts
      * (better for minification and obfuscation).
      *
-     * Inherited from the parent project if not set. Default value: `true`
+     * Inherited from the parent project if not set. Default value: `true`.
      *
      * Uses `-Xno-call-assertions`, `-Xno-param-assertions`, and `-Xno-receiver-assertions`
      * compiler options.
@@ -267,13 +267,20 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
 
     /**
+     * Flag that allows to disable dependency setup completely.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     */
+    public var setupDependencies: Boolean
+
+    /**
      * Flag to add Kotlin `stdlib` dependency explicitly.
      *
      * Kotlin adds it automatically itself by default,
      * if not turned off bythe `kotlin.stdlib.default.dependency` gradle property.
      * But this property provides per-project control.
      *
-     * Inherited from the parent project if not set. Default value: `false`
+     * Inherited from the parent project if not set. Default value: `false`.
      *
      * [More info](https://kotlinlang.org/docs/gradle-configure-project.html#dependency-on-the-standard-library)
      */
@@ -283,7 +290,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Flag to configure [Kotlin coroutines](https://github.com/Kotlin/kotlinx.coroutines)
      * dependencies and opt-ins.
      *
-     * Inherited from the parent project if not set. Default value: `false`
+     * Inherited from the parent project if not set. Default value: `false`.
      *
      * @see optInInternal
      */
@@ -293,7 +300,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Set up basic [KotlinX serialization](https://github.com/Kotlin/kotlinx.serialization)
      * dependencies.
      *
-     * Inherited from the parent project if not set. Default value: `false`
+     * Inherited from the parent project if not set. Default value: `false`.
      */
     public var setupKotlinXSerialization: Boolean
 
@@ -303,7 +310,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * Don't use it for libraries, only for the final app!
      *
-     * Inherited from the parent project if not set. Default value: `false`
+     * Inherited from the parent project if not set. Default value: `false`.
      *
      * [More info](https://docs.gradle.org/current/userguide/java_platform_plugin.html)
      *
@@ -317,7 +324,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * but it is experimental and causes warning.
      * So auto turned off when [warningsAsErrors] enabled.
      *
-     * Inherited from the parent project if not set. Default value: `true`
+     * Inherited from the parent project if not set. Default value: `true`.
      *
      * Uses `-Xuse-fast-jar-file-system` compiler option.
      */
@@ -337,13 +344,17 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
 
     /**
-     * Flag to turn on the Detekt compiler plugin
+     * Flag to turn on the Detekt compiler plugin.
+     *
+     * Inherited from the parent project if not set. Default value: `false`.
      */
     public var enableDetektCompilerPlugin: Boolean?
 
     /**
      * Flag to turn on the Spotless setup.
      * Can be disabled by the [setupVerification] flag.
+     *
+     * Inherited from the parent project if not set. Default value: `false`.
      */
     public var enableSpotless: Boolean?
 

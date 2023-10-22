@@ -153,6 +153,12 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
 
 
     @get:Input
+    val setupDependenciesProp: Property<Boolean>
+    override var setupDependencies: Boolean
+        get() = setupDependenciesProp.orNull ?: parent?.setupDependencies ?: true
+        set(value) = setupDependenciesProp.set(value)
+
+    @get:Input
     val addStdlibDependencyProp: Property<Boolean>
     override var addStdlibDependency: Boolean
         get() = addStdlibDependencyProp.orNull ?: parent?.addStdlibDependency ?: false

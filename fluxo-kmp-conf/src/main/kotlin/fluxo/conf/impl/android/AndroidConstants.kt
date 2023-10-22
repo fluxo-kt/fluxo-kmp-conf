@@ -28,6 +28,7 @@ internal const val ALIAS_ANDROIDX_COMPOSE_COMPILER = "androidx-compose-compiler"
 
 // Old but sometimes useful annotation lib for Java/Kotlin compatibility.
 // Doesn't update, so no need for the version catalog.
+// https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
 internal const val JSR305_DEPENDENCY = "com.google.code.findbugs:jsr305:3.0.2"
 
 internal const val RELEASE = "release"

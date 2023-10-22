@@ -50,6 +50,8 @@ public interface FluxoConfigurationExtensionCommon {
 
     /**
      * Flag to turn on the set of verification features, like Detekt, Spotless, and so on.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
      */
     public var setupVerification: Boolean?
 

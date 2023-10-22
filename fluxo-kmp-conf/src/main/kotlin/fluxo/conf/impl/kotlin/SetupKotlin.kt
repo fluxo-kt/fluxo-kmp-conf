@@ -97,8 +97,11 @@ internal fun configureKotlinJvm(
 
         // Set Kotlin settings before the containers so that they may be overridden if desired.
         setupKotlinExtensionAndProject(configuration)
-        val deps = project.dependencies
-        deps.setupKotlinDependencies(context.libs, context.kotlinConfig, isApplication = isApp)
+
+        if (configuration.setupDependencies) {
+            val deps = project.dependencies
+            deps.setupKotlinDependencies(context.libs, context.kotlinConfig, isApplication = isApp)
+        }
 
         var androidSetUp = false
         for (container in containers) {
@@ -187,7 +190,10 @@ internal fun configureKotlinMultiplatform(
     project.configureExtension<KotlinMultiplatformExtension>("kotlin") {
         // Set Kotlin settings before the containers so that they may be overridden if desired.
         setupKotlinExtensionAndProject(configuration)
-        setupMultiplatformDependencies(configuration)
+
+        if (configuration.setupDependencies) {
+            setupMultiplatformDependencies(configuration)
+        }
 
         for (container in containerList) {
             when (container) {
