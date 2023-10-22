@@ -2,6 +2,10 @@ public final class CompilationsKt {
 	public static final fun isGenericCompilationEnabled (Lorg/gradle/api/Project;)Z
 }
 
+public final class KmpHierarchyTemplateKt {
+	public static final fun getFluxoKmpConf (Lorg/jetbrains/kotlin/gradle/plugin/KotlinHierarchyTemplate$Templates;)Lkotlin/jvm/functions/Function1;
+}
+
 public final class MultiplatformSourceSetUtilsKt {
 	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
 	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;)Lfluxo/conf/kmp/SourceSetBundle;
@@ -254,8 +258,10 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun getProgressiveMode ()Ljava/lang/Boolean;
 	public abstract fun getRemoveAssertionsInRelease ()Ljava/lang/Boolean;
 	public abstract fun getSetupCoroutines ()Ljava/lang/Boolean;
+	public abstract fun getSetupDependencies ()Z
 	public abstract fun getSetupJvmToolchain ()Ljava/lang/Boolean;
 	public abstract fun getSetupKnownBoms ()Z
+	public abstract fun getSetupKotlin ()Z
 	public abstract fun getSetupKotlinXSerialization ()Z
 	public abstract fun getUseExperimentalFastJarFs ()Ljava/lang/Boolean;
 	public abstract fun getUseIndyLambdas ()Ljava/lang/Boolean;
@@ -280,8 +286,10 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun setProgressiveMode (Ljava/lang/Boolean;)V
 	public abstract fun setRemoveAssertionsInRelease (Ljava/lang/Boolean;)V
 	public abstract fun setSetupCoroutines (Ljava/lang/Boolean;)V
+	public abstract fun setSetupDependencies (Z)V
 	public abstract fun setSetupJvmToolchain (Ljava/lang/Boolean;)V
 	public abstract fun setSetupKnownBoms (Z)V
+	public abstract fun setSetupKotlin (Z)V
 	public abstract fun setSetupKotlinXSerialization (Z)V
 	public abstract fun setUseExperimentalFastJarFs (Ljava/lang/Boolean;)V
 	public abstract fun setUseIndyLambdas (Ljava/lang/Boolean;)V

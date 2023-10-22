@@ -20,6 +20,7 @@ import fluxo.conf.dsl.container.impl.target.TargetWasmContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmNativeContainer
 import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
 import fluxo.conf.impl.kotlin.KOTLIN_1_9_20
+import fluxoKmpConf
 import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension

@@ -1,16 +1,9 @@
-package fluxo.conf.dsl.container.impl
-
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
-internal typealias Template = KotlinHierarchyBuilder.Root.() -> Unit
-
-// TODO: Make it public
-
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
-internal val KotlinHierarchyTemplate.Templates.fluxoKmpConf: Template
+public val KotlinHierarchyTemplate.Templates.fluxoKmpConf: KotlinHierarchyBuilder.Root.() -> Unit
     get() = {
         group("common") {
             group("commonJvm") {
