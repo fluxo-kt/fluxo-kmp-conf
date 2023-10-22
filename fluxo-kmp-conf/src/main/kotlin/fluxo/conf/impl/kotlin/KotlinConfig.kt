@@ -7,6 +7,7 @@ import fluxo.conf.impl.android.hasRoomPlugin
 import fluxo.conf.impl.l
 import fluxo.conf.impl.w
 import kotlin.KotlinVersion
+import noManualHierarchy
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -44,6 +45,8 @@ internal class KotlinConfig(
     val setupSerialization: Boolean,
     val optIns: Set<String>,
     val optInInternal: Boolean,
+
+    val allowManualHierarchy: Boolean,
 ) {
     fun langAndApiVersions(
         isTest: Boolean,
@@ -122,10 +125,16 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     }
     jvmTests?.run { jvmTests = takeIf { it != jvmTarget } }
 
+    // As of Kotlin 1.9.20,
+    // none of the source sets can depend on the compilation default source sets.
+    val allowManualHierarchy = pluginVersion < KOTLIN_1_9_20 && !project.noManualHierarchy()
 
     // Experimental test compilation with the latest Kotlin settings.
     // Don't try it for sources with old compatibility settings.
-    val latestCompilation = canUseLatestSettings
+    // TODO: Find a way to create such compilation without using the
+    //  `org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.dependsOn`
+    //  method (requires allowManualHierarchy).
+    val latestCompilation = canUseLatestSettings && allowManualHierarchy
         && !context.isInCompositeBuild
         && !context.testsDisabled
         && experimentalLatestCompilation != false
@@ -139,6 +148,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     )
 
     val setupRoom = setupRoom == true || project.hasRoomPlugin
+
     val kc = KotlinConfig(
         lang = lang,
         api = api,
@@ -168,6 +178,8 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         setupSerialization = setupKotlinXSerialization,
         optIns = optIns,
         optInInternal = optInInternal,
+
+        allowManualHierarchy = allowManualHierarchy,
     )
     project.logger.logKotlinProjectCompatibility(kc, pluginVersion)
     return kc

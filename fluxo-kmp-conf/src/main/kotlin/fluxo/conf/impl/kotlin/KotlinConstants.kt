@@ -12,3 +12,9 @@ internal const val GRADLE_PLUGIN_PUBLISH_ID = "com.gradle.plugin-publish"
 internal const val COROUTINES_DEPENDENCY = "org.jetbrains.kotlinx:kotlinx-coroutines-core"
 
 internal const val JUNIT_DEPENDENCY = "junit:junit:4.13.2"
+
+
+internal const val KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION =
+    "As of Kotlin 1.9.20, " +
+        "none of the source sets can depend on the compilation default source sets." +
+        " Please remove this dependency edge."

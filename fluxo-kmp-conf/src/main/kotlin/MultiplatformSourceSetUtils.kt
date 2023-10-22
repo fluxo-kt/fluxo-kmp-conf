@@ -8,6 +8,7 @@ import fluxo.conf.impl.e
 import fluxo.conf.impl.implementation
 import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.kotlin
+import fluxo.conf.impl.kotlin.KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION
 import fluxo.conf.kmp.SourceSetBundle
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
@@ -307,6 +308,7 @@ public operator fun SourceSetBundle.plus(other: SourceSetBundle): Set<SourceSetB
 public operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<SourceSetBundle> =
     setOf(this) + other
 
+@Deprecated(KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION)
 public infix fun SourceSetBundle.dependsOn(other: SourceSetBundle) {
     main.dependsOn(other.main)
     test.dependsOn(other.test)
@@ -315,34 +317,45 @@ public infix fun SourceSetBundle.dependsOn(other: SourceSetBundle) {
     }
 }
 
+@Deprecated(KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION)
 public infix fun Iterable<SourceSetBundle>.dependsOn(other: Iterable<SourceSetBundle>) {
     forEach { left ->
         other.forEach { right ->
+            @Suppress("DEPRECATION")
             left.dependsOn(right)
         }
     }
 }
 
+@Deprecated(KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION)
+@Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
 public infix fun SourceSetBundle.dependsOn(other: Iterable<SourceSetBundle>) {
     listOf(this) dependsOn other
 }
 
+@Deprecated(KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION)
+@Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
 public infix fun Iterable<SourceSetBundle>.dependsOn(other: SourceSetBundle) {
     this dependsOn listOf(other)
 }
 
 
+@Deprecated(KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION)
+@Suppress("DeprecatedCallableAddReplaceWith")
 public infix fun KotlinSourceSet.dependsOn(other: SourceSetBundle) {
     dependsOn(if (isTestRelated()) other.test else other.main)
 }
 
 @JvmName("dependsOnBundles")
+@Deprecated(KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION)
 public infix fun KotlinSourceSet.dependsOn(other: Iterable<SourceSetBundle>) {
     other.forEach { right ->
+        @Suppress("DEPRECATION")
         dependsOn(right)
     }
 }
 
+@Deprecated(KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION)
 public infix fun KotlinSourceSet.dependsOn(other: Iterable<KotlinSourceSet>) {
     other.forEach { right ->
         dependsOn(right)

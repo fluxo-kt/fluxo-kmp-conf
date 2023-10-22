@@ -10,14 +10,22 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 internal interface KmpTargetContainer<T : KotlinTarget> : KotlinTargetContainer<T>,
     ContainerKotlinMultiplatformAware {
 
+    val allowManualHierarchy: Boolean
+
     /**
      *
+     * @see KotlinMultiplatformExtension.applyDefaultHierarchyTemplate
+     * @see KotlinMultiplatformExtension.applyHierarchyTemplate
+     * @see org.jetbrains.kotlin.gradle.plugin.defaultKotlinHierarchyTemplate
      * @see org.jetbrains.kotlin.gradle.plugin.mpp.targetHierarchy.applyKotlinTargetHierarchy
      * @see org.jetbrains.kotlin.gradle.plugin.mpp.targetHierarchy.buildKotlinTargetHierarchy
      * @see org.jetbrains.kotlin.gradle.plugin.mpp.targetHierarchy.KotlinTargetHierarchyBuilderImpl
      */
     fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
-        // TODO: Create common bundle once and reuse
-        child dependsOn k.sourceSets.common
+        // TODO: Create common bundle once and reuse?
+        if (allowManualHierarchy) {
+            @Suppress("DEPRECATION")
+            child dependsOn k.sourceSets.common
+        }
     }
 }

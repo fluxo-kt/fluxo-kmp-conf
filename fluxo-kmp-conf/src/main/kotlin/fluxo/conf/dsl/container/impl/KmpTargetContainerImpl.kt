@@ -33,6 +33,8 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 
     final override fun getName(): String = name
 
+    override val allowManualHierarchy: Boolean
+        get() = context.context.kotlinConfig.allowManualHierarchy
 
     private val lazyTarget = context.objects.set<T.() -> Unit>()
 
@@ -53,7 +55,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 
     override fun setup(k: KotlinMultiplatformExtension) {
         val target = k.createTarget()
-        setupParentSourceSet(k, k.bundleFor(target))
+        if (allowManualHierarchy) {
+            setupParentSourceSet(k, k.bundleFor(target))
+        }
     }
 
 
@@ -65,7 +69,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
         }
 
         override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
+            if (!allowManualHierarchy) return
             val bundle = k.commonJvm
+            @Suppress("DEPRECATION")
             child dependsOn bundle
             super.setupParentSourceSet(k, bundle)
         }
@@ -79,7 +85,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
         }
 
         override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
+            if (!allowManualHierarchy) return
             val bundle = k.commonNonJvm
+            @Suppress("DEPRECATION")
             child dependsOn bundle
             super.setupParentSourceSet(k, bundle)
         }
@@ -95,7 +103,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                 k: KotlinMultiplatformExtension,
                 child: SourceSetBundle,
             ) {
+                if (!allowManualHierarchy) return
                 val bundle = k.commonJs
+                @Suppress("DEPRECATION")
                 child dependsOn bundle
                 super.setupParentSourceSet(k, bundle)
             }
@@ -111,7 +121,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     k: KotlinMultiplatformExtension,
                     child: SourceSetBundle,
                 ) {
+                    if (!allowManualHierarchy) return
                     val bundle = k.commonWasm
+                    @Suppress("DEPRECATION")
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)
                 }
@@ -129,7 +141,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                 k: KotlinMultiplatformExtension,
                 child: SourceSetBundle,
             ) {
+                if (!allowManualHierarchy) return
                 val bundle = k.commonNative
+                @Suppress("DEPRECATION")
                 child dependsOn bundle
                 super.setupParentSourceSet(k, bundle)
             }
@@ -147,7 +161,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     k: KotlinMultiplatformExtension,
                     child: SourceSetBundle,
                 ) {
+                    if (!allowManualHierarchy) return
                     val bundle = k.commonUnix
+                    @Suppress("DEPRECATION")
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)
                 }
@@ -163,7 +179,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                         k: KotlinMultiplatformExtension,
                         child: SourceSetBundle,
                     ) {
+                        if (!allowManualHierarchy) return
                         val bundle = k.commonApple
+                        @Suppress("DEPRECATION")
                         child dependsOn bundle
                         super.setupParentSourceSet(k, bundle)
                     }
@@ -178,7 +196,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                             k: KotlinMultiplatformExtension,
                             child: SourceSetBundle,
                         ) {
+                            if (!allowManualHierarchy) return
                             val bundle = k.commonIos
+                            @Suppress("DEPRECATION")
                             child dependsOn bundle
                             super.setupParentSourceSet(k, bundle)
                         }
@@ -193,7 +213,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                             k: KotlinMultiplatformExtension,
                             child: SourceSetBundle,
                         ) {
+                            if (!allowManualHierarchy) return
                             val bundle = k.commonMacos
+                            @Suppress("DEPRECATION")
                             child dependsOn bundle
                             super.setupParentSourceSet(k, bundle)
                         }
@@ -208,7 +230,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                             k: KotlinMultiplatformExtension,
                             child: SourceSetBundle,
                         ) {
+                            if (!allowManualHierarchy) return
                             val bundle = k.commonTvos
+                            @Suppress("DEPRECATION")
                             child dependsOn bundle
                             super.setupParentSourceSet(k, bundle)
                         }
@@ -223,7 +247,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                             k: KotlinMultiplatformExtension,
                             child: SourceSetBundle,
                         ) {
+                            if (!allowManualHierarchy) return
                             val bundle = k.commonWatchos
+                            @Suppress("DEPRECATION")
                             child dependsOn bundle
                             super.setupParentSourceSet(k, bundle)
                         }
@@ -239,7 +265,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                         k: KotlinMultiplatformExtension,
                         child: SourceSetBundle,
                     ) {
+                        if (!allowManualHierarchy) return
                         val bundle = k.commonLinux
+                        @Suppress("DEPRECATION")
                         child dependsOn bundle
                         super.setupParentSourceSet(k, bundle)
                     }
@@ -255,7 +283,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     k: KotlinMultiplatformExtension,
                     child: SourceSetBundle,
                 ) {
+                    if (!allowManualHierarchy) return
                     val bundle = k.commonMingw
+                    @Suppress("DEPRECATION")
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)
                 }
@@ -270,8 +300,10 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     k: KotlinMultiplatformExtension,
                     child: SourceSetBundle,
                 ) {
+                    if (!allowManualHierarchy) return
                     @Suppress("DEPRECATION")
                     val bundle = k.commonWasmNative
+                    @Suppress("DEPRECATION")
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)
                 }

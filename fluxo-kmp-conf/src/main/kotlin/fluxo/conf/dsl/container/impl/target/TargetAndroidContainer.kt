@@ -65,6 +65,11 @@ internal abstract class TargetAndroidContainer<T>(
         val target = k.createTarget()
         val project = target.project
         setupAndroid(project)
+
+        if (!allowManualHierarchy) {
+            return
+        }
+
         val layoutV2 = context.context.androidLayoutV2
         val bundle = k.sourceSets.bundleFor(target, androidLayoutV2 = layoutV2)
         setupParentSourceSet(k, bundle)
