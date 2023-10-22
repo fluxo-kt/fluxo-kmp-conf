@@ -294,11 +294,27 @@ private enum class DetectedTaskPlatform {
     ANDROID,
     JVM,
     UNKNOWN,
+
+    // TODO: Detect common/metadata tasks?
 }
 
 context(FluxoKmpConfContext)
-private fun DetectedTaskPlatform?.isTaskAllowed(): Boolean =
-    toKmpTargetCodes().any(::isTargetEnabled)
+private fun DetectedTaskPlatform?.isTaskAllowed(): Boolean {
+    // TODO: Improve detekt task platform detection.
+    //  task :detekt detected as platform UNKNOWN
+    //  task :detektMetadataMain detected as platform UNKNOWN
+    //  task :detektMetadataCommonJsMain detected as platform UNKNOWN
+    //  task :detektMetadataCommonMain detected as platform UNKNOWN
+    //  task :detektMetadataNativeMain detected as platform UNKNOWN
+    //  task :detektMetadataNonJvmMain detected as platform UNKNOWN
+    //  task :detektMetadataUnixMain detected as platform UNKNOWN
+
+    return when (this) {
+        // Always allow common tasks or tasks for unknown platforms.
+        null, DetectedTaskPlatform.UNKNOWN -> true
+        else -> toKmpTargetCodes().any(::isTargetEnabled)
+    }
+}
 
 private fun DetectedTaskPlatform?.toKmpTargetCodes(): Array<KmpTargetCode> {
     return when (this) {
@@ -309,6 +325,6 @@ private fun DetectedTaskPlatform?.toKmpTargetCodes(): Array<KmpTargetCode> {
         DetectedTaskPlatform.WASM -> KmpTargetCode.COMMON_WASM + KmpTargetCode.WASM32
         DetectedTaskPlatform.ANDROID -> arrayOf(KmpTargetCode.ANDROID)
         DetectedTaskPlatform.JVM -> arrayOf(KmpTargetCode.JVM)
-        else -> arrayOf()
+        null, DetectedTaskPlatform.UNKNOWN -> arrayOf()
     }
 }
