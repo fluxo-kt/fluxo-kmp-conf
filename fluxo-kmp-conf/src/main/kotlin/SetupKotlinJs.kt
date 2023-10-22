@@ -1,10 +1,14 @@
 import fluxo.conf.dsl.container.KotlinTargetContainer
+import org.gradle.api.attributes.Attribute
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinTargetWithNodeJsDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 
+
+private val WASM_ATTRIBUTE = Attribute.of("wasmType", String::class.java)
 
 internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget>.() -> Unit =
     {
@@ -15,6 +19,11 @@ internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget
                 nodejs {
                     testTimeout(seconds = TEST_TIMEOUT)
                 }
+            }
+
+            // Workaround the attribute error when used both wasmJs and wasmWasi targets.
+            if (this is KotlinWasmTargetDsl) {
+                attributes.attribute(WASM_ATTRIBUTE, targetName)
             }
         }
     }

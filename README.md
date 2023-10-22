@@ -80,7 +80,9 @@ pluginManagement {
    '-- nonJvm
          |-- commonJs
             |-- js
-            |-- wasm
+            '-- commonWasm (unstable, may be not available)
+                |-- wasmJs
+                '-- wasmWasi
          '-- native
                |-- androidNative (tier 3)
                |     |-- androidNativeArm32
