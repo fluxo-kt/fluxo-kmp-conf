@@ -15,12 +15,12 @@ internal abstract class TargetAppleMacosContainer(
 
     interface Configure : AppleMacosTarget.Configure, ContainerHolderAware {
 
-        override fun macosArm64(targetName: String, action: AppleMacosTarget.() -> Unit) {
-            holder.configure(targetName, ::Arm64, KmpTargetCode.MACOS_ARM64, action)
+        override fun macosArm64(targetName: String, configure: AppleMacosTarget.() -> Unit) {
+            holder.configure(targetName, ::Arm64, KmpTargetCode.MACOS_ARM64, configure)
         }
 
-        override fun macosX64(targetName: String, action: AppleMacosTarget.() -> Unit) {
-            holder.configure(targetName, ::X64, KmpTargetCode.MACOS_X64, action)
+        override fun macosX64(targetName: String, configure: AppleMacosTarget.() -> Unit) {
+            holder.configure(targetName, ::X64, KmpTargetCode.MACOS_X64, configure)
         }
     }
 

@@ -17,19 +17,19 @@ internal abstract class TargetAppleTvosContainer<T : KNT>(
 
     interface Configure : AppleTvosTarget.Configure, ContainerHolderAware {
 
-        override fun tvosArm64(targetName: String, action: AppleTvosTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm64, KmpTargetCode.TVOS_ARM64, action)
+        override fun tvosArm64(targetName: String, configure: AppleTvosTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm64, KmpTargetCode.TVOS_ARM64, configure)
         }
 
         override fun tvosSimulatorArm64(
             targetName: String,
-            action: AppleTvosTarget<KNTS>.() -> Unit,
+            configure: AppleTvosTarget<KNTS>.() -> Unit,
         ) {
-            holder.configure(targetName, ::SimulatorArm64, TVOS_SIMULATOR_ARM64, action)
+            holder.configure(targetName, ::SimulatorArm64, TVOS_SIMULATOR_ARM64, configure)
         }
 
-        override fun tvosX64(targetName: String, action: AppleTvosTarget<KNTS>.() -> Unit) {
-            holder.configure(targetName, ::X64, KmpTargetCode.TVOS_X64, action)
+        override fun tvosX64(targetName: String, configure: AppleTvosTarget<KNTS>.() -> Unit) {
+            holder.configure(targetName, ::X64, KmpTargetCode.TVOS_X64, configure)
         }
     }
 

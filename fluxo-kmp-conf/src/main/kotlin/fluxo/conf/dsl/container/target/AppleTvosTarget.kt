@@ -17,26 +17,26 @@ public interface AppleTvosTarget<out T : KotlinNativeTarget> : KotlinTargetConta
          * @see tvosCompat
          */
         @Suppress("MaxLineLength")
-        public fun tvos(action: AppleTvosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN) {
-            tvosArm64(action = action)
-            tvosX64(action = action)
-            tvosSimulatorArm64(action = action)
+        public fun tvos(configure: AppleTvosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN) {
+            tvosArm64(configure = configure)
+            tvosX64(configure = configure)
+            tvosSimulatorArm64(configure = configure)
         }
 
 
         public fun tvosArm64(
             targetName: String = "tvosArm64",
-            action: AppleTvosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
+            configure: AppleTvosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
         )
 
         public fun tvosX64(
             targetName: String = "tvosX64",
-            action: AppleTvosTarget<KotlinNativeTargetWithSimulatorTests>.() -> Unit = EMPTY_FUN,
+            configure: AppleTvosTarget<KotlinNativeTargetWithSimulatorTests>.() -> Unit = EMPTY_FUN,
         )
 
         public fun tvosSimulatorArm64(
             targetName: String = "tvosSimulatorArm64",
-            action: AppleTvosTarget<KotlinNativeTargetWithSimulatorTests>.() -> Unit = EMPTY_FUN,
+            configure: AppleTvosTarget<KotlinNativeTargetWithSimulatorTests>.() -> Unit = EMPTY_FUN,
         )
     }
 }

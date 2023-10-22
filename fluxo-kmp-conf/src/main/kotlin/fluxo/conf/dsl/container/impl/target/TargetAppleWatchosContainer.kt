@@ -28,49 +28,49 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
          * @see watchosCompat
          */
         @Suppress("MaxLineLength")
-        override fun watchos(action: AppleWatchosTarget<KNT>.() -> Unit) {
-            watchosArm32(action = action)
-            watchosArm64(action = action)
+        override fun watchos(configure: AppleWatchosTarget<KNT>.() -> Unit) {
+            watchosArm32(configure = configure)
+            watchosArm64(configure = configure)
             if (holder.kotlinPluginVersion >= KOTLIN_1_8) {
-                watchosDeviceArm64(action = action)
+                watchosDeviceArm64(configure = configure)
             }
-            watchosX64(action = action)
-            watchosSimulatorArm64(action = action)
+            watchosX64(configure = configure)
+            watchosSimulatorArm64(configure = configure)
         }
 
 
-        override fun watchosArm32(targetName: String, action: AppleWatchosTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm32, KmpTargetCode.WATCHOS_ARM32, action)
+        override fun watchosArm32(targetName: String, configure: AppleWatchosTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm32, KmpTargetCode.WATCHOS_ARM32, configure)
         }
 
-        override fun watchosArm64(targetName: String, action: AppleWatchosTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm64, KmpTargetCode.WATCHOS_ARM64, action)
+        override fun watchosArm64(targetName: String, configure: AppleWatchosTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm64, KmpTargetCode.WATCHOS_ARM64, configure)
         }
 
         override fun watchosDeviceArm64(
             targetName: String,
-            action: AppleWatchosTarget<KNT>.() -> Unit,
+            configure: AppleWatchosTarget<KNT>.() -> Unit,
         ) {
             if (holder.kotlinPluginVersion < KOTLIN_1_8) {
                 throw GradleException("watchosDeviceArm64 requires Kotlin 1.8 or greater")
             }
-            holder.configure(targetName, ::DeviceArm64, KmpTargetCode.WATCHOS_DEVICE_ARM64, action)
+            holder.configure(targetName, ::DeviceArm64, KmpTargetCode.WATCHOS_DEVICE_ARM64, configure)
         }
 
-        override fun watchosX64(targetName: String, action: AppleWatchosTarget<KNTS>.() -> Unit) {
-            holder.configure(targetName, ::X64, KmpTargetCode.WATCHOS_X64, action)
+        override fun watchosX64(targetName: String, configure: AppleWatchosTarget<KNTS>.() -> Unit) {
+            holder.configure(targetName, ::X64, KmpTargetCode.WATCHOS_X64, configure)
         }
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun watchosX86(targetName: String, action: AppleWatchosTarget<KNTS>.() -> Unit) {
-            holder.configure(targetName, ::X86, KmpTargetCode.WATCHOS_X86, action)
+        override fun watchosX86(targetName: String, configure: AppleWatchosTarget<KNTS>.() -> Unit) {
+            holder.configure(targetName, ::X86, KmpTargetCode.WATCHOS_X86, configure)
         }
 
         override fun watchosSimulatorArm64(
             targetName: String,
-            action: AppleWatchosTarget<KNTS>.() -> Unit,
+            configure: AppleWatchosTarget<KNTS>.() -> Unit,
         ) {
-            holder.configure(targetName, ::SimulatorArm64, WATCHOS_SIMULATOR_ARM64, action)
+            holder.configure(targetName, ::SimulatorArm64, WATCHOS_SIMULATOR_ARM64, configure)
         }
     }
 

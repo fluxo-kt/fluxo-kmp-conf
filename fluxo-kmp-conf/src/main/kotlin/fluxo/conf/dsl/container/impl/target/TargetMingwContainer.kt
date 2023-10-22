@@ -19,13 +19,13 @@ internal abstract class TargetMingwContainer<T : KNT>(
 
     interface Configure : MingwTarget.Configure, ContainerHolderAware {
 
-        override fun mingwX64(targetName: String, action: MingwTarget<KNTHT>.() -> Unit) {
-            holder.configure(targetName, ::X64, KmpTargetCode.MINGW_X64, action)
+        override fun mingwX64(targetName: String, configure: MingwTarget<KNTHT>.() -> Unit) {
+            holder.configure(targetName, ::X64, KmpTargetCode.MINGW_X64, configure)
         }
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun mingwX86(targetName: String, action: MingwTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::X86, KmpTargetCode.MINGW_X86, action)
+        override fun mingwX86(targetName: String, configure: MingwTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::X86, KmpTargetCode.MINGW_X86, configure)
         }
     }
 

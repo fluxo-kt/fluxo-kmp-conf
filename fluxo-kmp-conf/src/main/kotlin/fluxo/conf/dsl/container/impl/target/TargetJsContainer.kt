@@ -22,11 +22,11 @@ internal class TargetJsContainer(
         override fun js(
             compiler: KotlinJsCompilerType?,
             targetName: String,
-            action: JsTarget.() -> Unit,
+            configure: JsTarget.() -> Unit,
         ) {
             val f = compiler?.let {
-                { compilerType = it; action() }
-            } ?: action
+                { compilerType = it; configure() }
+            } ?: configure
 
             holder.configure(targetName, ::TargetJsContainer, KmpTargetCode.JS, f)
         }

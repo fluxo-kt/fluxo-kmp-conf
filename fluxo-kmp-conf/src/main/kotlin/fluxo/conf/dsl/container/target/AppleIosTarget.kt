@@ -19,27 +19,27 @@ public interface AppleIosTarget<out T : KotlinNativeTarget> : KotlinTargetContai
          * @see iosCompat
          */
         @Suppress("MaxLineLength")
-        public fun ios(action: AppleIosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN) {
-            iosArm64(action = action)
-            iosX64(action = action)
-            iosSimulatorArm64(action = action)
+        public fun ios(configure: AppleIosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN) {
+            iosArm64(configure = configure)
+            iosX64(configure = configure)
+            iosSimulatorArm64(action = configure)
         }
 
 
         @Deprecated(message = DEPRECATED_TARGET_MSG)
         public fun iosArm32(
             targetName: String = "iosArm32",
-            action: AppleIosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
+            configure: AppleIosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
         )
 
         public fun iosArm64(
             targetName: String = "iosArm64",
-            action: AppleIosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
+            configure: AppleIosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
         )
 
         public fun iosX64(
             targetName: String = "iosX64",
-            action: AppleIosTarget<KotlinNativeTargetWithSimulatorTests>.() -> Unit = EMPTY_FUN,
+            configure: AppleIosTarget<KotlinNativeTargetWithSimulatorTests>.() -> Unit = EMPTY_FUN,
         )
 
         public fun iosSimulatorArm64(

@@ -99,16 +99,16 @@ internal abstract class TargetAndroidContainer<T>(
 
         override fun androidApp(
             targetName: String,
-            action: AndroidTarget<BaseAppModuleExtension>.() -> Unit,
+            configure: AndroidTarget<BaseAppModuleExtension>.() -> Unit,
         ) {
-            holder.configure(targetName, ::App, KmpTargetCode.ANDROID, action)
+            holder.configure(targetName, ::App, KmpTargetCode.ANDROID, configure)
         }
 
         override fun androidLibrary(
             targetName: String,
-            action: AndroidTarget<LibraryExtension>.() -> Unit,
+            configure: AndroidTarget<LibraryExtension>.() -> Unit,
         ) {
-            holder.configure(targetName, ::Library, KmpTargetCode.ANDROID, action)
+            holder.configure(targetName, ::Library, KmpTargetCode.ANDROID, configure)
         }
     }
 

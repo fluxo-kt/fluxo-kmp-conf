@@ -36,7 +36,7 @@ public interface AndroidTarget<out T> :
          */
         public fun androidApp(
             targetName: String = ANDROID,
-            action: AndroidTarget<BaseAppModuleExtension>.() -> Unit = EMPTY_FUN,
+            configure: AndroidTarget<BaseAppModuleExtension>.() -> Unit = EMPTY_FUN,
         )
 
         /**
@@ -46,7 +46,7 @@ public interface AndroidTarget<out T> :
          */
         public fun androidLibrary(
             targetName: String = ANDROID,
-            action: AndroidTarget<LibraryExtension>.() -> Unit = EMPTY_FUN,
+            configure: AndroidTarget<LibraryExtension>.() -> Unit = EMPTY_FUN,
         )
 
 
@@ -55,9 +55,9 @@ public interface AndroidTarget<out T> :
             message = "Use `androidLibrary` instead.",
             replaceWith = ReplaceWith("androidLibrary(action)"),
         )
-        public fun android(action: AndroidTarget<LibraryExtension>.() -> Unit) {
+        public fun android(configure: AndroidTarget<LibraryExtension>.() -> Unit) {
             // TODO: Detect applied plugin (lib/app) and use appropriate container?
-            androidLibrary(action = action)
+            androidLibrary(configure = configure)
         }
     }
 }

@@ -19,7 +19,7 @@ public interface JsTarget : KotlinTargetContainer<KotlinJsTargetDsl> {
         public fun js(
             compiler: KotlinJsCompilerType? = null,
             targetName: String = "js",
-            action: JsTarget.() -> Unit = DEFAULT_COMMON_JS_CONFIGURATION,
+            configure: JsTarget.() -> Unit = DEFAULT_COMMON_JS_CONFIGURATION,
         )
     }
 }

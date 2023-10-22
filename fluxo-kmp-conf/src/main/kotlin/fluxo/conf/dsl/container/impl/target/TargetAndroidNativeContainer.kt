@@ -17,30 +17,30 @@ internal abstract class TargetAndroidNativeContainer(
 
         override fun androidNativeArm64(
             targetName: String,
-            action: AndroidNativeTarget.() -> Unit,
+            configure: AndroidNativeTarget.() -> Unit,
         ) {
-            holder.configure(targetName, ::Arm64, KmpTargetCode.ANDROID_ARM64, action)
+            holder.configure(targetName, ::Arm64, KmpTargetCode.ANDROID_ARM64, configure)
         }
 
         override fun androidNativeArm32(
             targetName: String,
-            action: AndroidNativeTarget.() -> Unit,
+            configure: AndroidNativeTarget.() -> Unit,
         ) {
-            holder.configure(targetName, ::Arm32, KmpTargetCode.ANDROID_ARM32, action)
+            holder.configure(targetName, ::Arm32, KmpTargetCode.ANDROID_ARM32, configure)
         }
 
         override fun androidNativeX64(
             targetName: String,
-            action: AndroidNativeTarget.() -> Unit,
+            configure: AndroidNativeTarget.() -> Unit,
         ) {
-            holder.configure(targetName, ::X64, KmpTargetCode.ANDROID_X64, action)
+            holder.configure(targetName, ::X64, KmpTargetCode.ANDROID_X64, configure)
         }
 
         override fun androidNativeX86(
             targetName: String,
-            action: AndroidNativeTarget.() -> Unit,
+            configure: AndroidNativeTarget.() -> Unit,
         ) {
-            holder.configure(targetName, ::X86, KmpTargetCode.ANDROID_X86, action)
+            holder.configure(targetName, ::X86, KmpTargetCode.ANDROID_X86, configure)
         }
     }
 

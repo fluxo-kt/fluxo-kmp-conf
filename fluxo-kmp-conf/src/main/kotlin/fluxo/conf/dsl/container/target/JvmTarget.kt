@@ -10,7 +10,7 @@ public interface JvmTarget : KotlinTargetContainer<KotlinJvmTarget> {
 
         public fun jvm(
             targetName: String = "jvm",
-            action: JvmTarget.() -> Unit = EMPTY_FUN,
+            configure: JvmTarget.() -> Unit = EMPTY_FUN,
         )
     }
 }

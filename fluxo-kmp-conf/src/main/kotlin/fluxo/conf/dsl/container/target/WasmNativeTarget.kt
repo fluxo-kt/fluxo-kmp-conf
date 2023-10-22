@@ -10,14 +10,14 @@ public interface WasmNativeTarget : KotlinTargetContainer<KotlinNativeTarget> {
     public interface Configure {
         @Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
         @Deprecated(DEPRECATED_TARGET_MSG)
-        public fun wasmNative(action: WasmNativeTarget.() -> Unit = EMPTY_FUN) {
-            wasm32(action = action)
+        public fun wasmNative(configure: WasmNativeTarget.() -> Unit = EMPTY_FUN) {
+            wasm32(configure = configure)
         }
 
         @Deprecated(DEPRECATED_TARGET_MSG)
         public fun wasm32(
             targetName: String = "wasm32",
-            action: WasmNativeTarget.() -> Unit = EMPTY_FUN,
+            configure: WasmNativeTarget.() -> Unit = EMPTY_FUN,
         )
     }
 }

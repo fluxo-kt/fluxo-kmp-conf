@@ -24,23 +24,23 @@ internal abstract class TargetWasmContainer<T : KotlinWasmTargetDsl>(
         @ExperimentalWasmDsl
         override fun wasmJs(
             targetName: String,
-            action: WasmTarget<KotlinWasmJsTargetDsl>.() -> Unit,
+            configure: WasmTarget<KotlinWasmJsTargetDsl>.() -> Unit,
         ) {
             if (holder.kotlinPluginVersion < KOTLIN_1_8_20) {
                 throw GradleException("wasmJs requires Kotlin 1.8.20 or greater")
             }
-            holder.configure(targetName, ::WasmJs, KmpTargetCode.WASM_JS, action)
+            holder.configure(targetName, ::WasmJs, KmpTargetCode.WASM_JS, configure)
         }
 
         @ExperimentalWasmDsl
         override fun wasmWasi(
             targetName: String,
-            action: WasmTarget<KotlinWasmWasiTargetDsl>.() -> Unit,
+            configure: WasmTarget<KotlinWasmWasiTargetDsl>.() -> Unit,
         ) {
             if (holder.kotlinPluginVersion < KOTLIN_1_9_20) {
                 throw GradleException("wasmWasi requires Kotlin 1.9.20 or greater")
             }
-            holder.configure(targetName, ::WasmWasi, KmpTargetCode.WASM_WASI, action)
+            holder.configure(targetName, ::WasmWasi, KmpTargetCode.WASM_WASI, configure)
         }
     }
 

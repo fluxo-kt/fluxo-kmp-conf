@@ -10,21 +10,21 @@ public interface MingwTarget<out T : KotlinNativeTarget> : KotlinTargetContainer
 
     public interface Configure {
         public fun mingw(
-            action: MingwTarget<KotlinNativeTargetWithHostTests>.() -> Unit = EMPTY_FUN,
+            configure: MingwTarget<KotlinNativeTargetWithHostTests>.() -> Unit = EMPTY_FUN,
         ) {
-            mingwX64(action = action)
+            mingwX64(configure = configure)
         }
 
 
         public fun mingwX64(
             targetName: String = "mingwX64",
-            action: MingwTarget<KotlinNativeTargetWithHostTests>.() -> Unit = EMPTY_FUN,
+            configure: MingwTarget<KotlinNativeTargetWithHostTests>.() -> Unit = EMPTY_FUN,
         )
 
         @Deprecated(DEPRECATED_TARGET_MSG)
         public fun mingwX86(
             targetName: String = "mingwX86",
-            action: MingwTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
+            configure: MingwTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
         )
     }
 }

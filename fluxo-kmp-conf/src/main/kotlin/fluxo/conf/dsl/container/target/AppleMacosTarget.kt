@@ -13,20 +13,20 @@ public interface AppleMacosTarget : KotlinTargetContainer<KotlinNativeTargetWith
          *
          * @see macosCompat
          */
-        public fun macos(action: AppleMacosTarget.() -> Unit = EMPTY_FUN) {
-            macosArm64(action = action)
-            macosX64(action = action)
+        public fun macos(configure: AppleMacosTarget.() -> Unit = EMPTY_FUN) {
+            macosArm64(configure = configure)
+            macosX64(configure = configure)
         }
 
 
         public fun macosArm64(
             targetName: String = "macosArm64",
-            action: AppleMacosTarget.() -> Unit = EMPTY_FUN,
+            configure: AppleMacosTarget.() -> Unit = EMPTY_FUN,
         )
 
         public fun macosX64(
             targetName: String = "macosX64",
-            action: AppleMacosTarget.() -> Unit = EMPTY_FUN,
+            configure: AppleMacosTarget.() -> Unit = EMPTY_FUN,
         )
     }
 }

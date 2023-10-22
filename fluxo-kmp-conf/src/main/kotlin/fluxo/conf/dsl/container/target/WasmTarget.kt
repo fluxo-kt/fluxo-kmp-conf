@@ -22,7 +22,7 @@ public interface WasmTarget<out T : KotlinWasmTargetDsl> : KotlinTargetContainer
         @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
         public fun wasmJs(
             targetName: String = "wasmJs",
-            action: WasmTarget<KotlinWasmJsTargetDsl>.() -> Unit = DEFAULT_CONF,
+            configure: WasmTarget<KotlinWasmJsTargetDsl>.() -> Unit = DEFAULT_CONF,
         )
 
         /**
@@ -34,7 +34,7 @@ public interface WasmTarget<out T : KotlinWasmTargetDsl> : KotlinTargetContainer
         @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
         public fun wasmWasi(
             targetName: String = "wasmWasi",
-            action: WasmTarget<KotlinWasmWasiTargetDsl>.() -> Unit = DEFAULT_CONF,
+            configure: WasmTarget<KotlinWasmWasiTargetDsl>.() -> Unit = DEFAULT_CONF,
         )
     }
 }

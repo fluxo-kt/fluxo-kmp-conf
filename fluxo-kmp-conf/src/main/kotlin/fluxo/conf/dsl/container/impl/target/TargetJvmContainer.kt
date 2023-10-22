@@ -17,9 +17,9 @@ internal class TargetJvmContainer(
 
         override fun jvm(
             targetName: String,
-            action: JvmTarget.() -> Unit,
+            configure: JvmTarget.() -> Unit,
         ) {
-            holder.configure(targetName, ::TargetJvmContainer, KmpTargetCode.JVM, action)
+            holder.configure(targetName, ::TargetJvmContainer, KmpTargetCode.JVM, configure)
         }
     }
 

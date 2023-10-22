@@ -16,8 +16,13 @@ internal class TargetWasmNativeContainer(
     interface Configure : WasmNativeTarget.Configure, ContainerHolderAware {
 
         @Suppress("OVERRIDE_DEPRECATION")
-        override fun wasm32(targetName: String, action: WasmNativeTarget.() -> Unit) {
-            holder.configure(targetName, ::TargetWasmNativeContainer, KmpTargetCode.WASM32, action)
+        override fun wasm32(targetName: String, configure: WasmNativeTarget.() -> Unit) {
+            holder.configure(
+                targetName = targetName,
+                contruct = ::TargetWasmNativeContainer,
+                code = KmpTargetCode.WASM32,
+                action = configure,
+            )
         }
     }
 

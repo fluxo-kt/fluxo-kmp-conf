@@ -17,28 +17,28 @@ internal abstract class TargetLinuxContainer<T : KNT>(
 
     interface Configure : LinuxTarget.Configure, ContainerHolderAware {
 
-        override fun linuxX64(targetName: String, action: LinuxTarget<KNTHT>.() -> Unit) {
-            holder.configure(targetName, ::X64, KmpTargetCode.LINUX_X64, action)
+        override fun linuxX64(targetName: String, configure: LinuxTarget<KNTHT>.() -> Unit) {
+            holder.configure(targetName, ::X64, KmpTargetCode.LINUX_X64, configure)
         }
 
-        override fun linuxArm64(targetName: String, action: LinuxTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm64, KmpTargetCode.LINUX_ARM64, action)
+        override fun linuxArm64(targetName: String, configure: LinuxTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm64, KmpTargetCode.LINUX_ARM64, configure)
         }
 
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun linuxArm32Hfp(targetName: String, action: LinuxTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Arm32Hfp, KmpTargetCode.LINUX_ARM32_HFP, action)
+        override fun linuxArm32Hfp(targetName: String, configure: LinuxTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Arm32Hfp, KmpTargetCode.LINUX_ARM32_HFP, configure)
         }
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun linuxMips32(targetName: String, action: LinuxTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Mips32, KmpTargetCode.LINUX_MIPS32, action)
+        override fun linuxMips32(targetName: String, configure: LinuxTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Mips32, KmpTargetCode.LINUX_MIPS32, configure)
         }
 
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun linuxMipsel32(targetName: String, action: LinuxTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Mipsel32, KmpTargetCode.LINUX_MIPSEL32, action)
+        override fun linuxMipsel32(targetName: String, configure: LinuxTarget<KNT>.() -> Unit) {
+            holder.configure(targetName, ::Mipsel32, KmpTargetCode.LINUX_MIPSEL32, configure)
         }
     }
 
