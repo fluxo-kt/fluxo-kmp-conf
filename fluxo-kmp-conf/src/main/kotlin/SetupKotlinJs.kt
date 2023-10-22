@@ -12,21 +12,23 @@ private val WASM_ATTRIBUTE = Attribute.of("wasmType", String::class.java)
 
 internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget>.() -> Unit =
     {
-        target {
-            if (this is KotlinJsTargetDsl) {
-                defaults()
-            } else if (this is KotlinTargetWithNodeJsDsl) {
-                nodejs {
-                    testTimeout(seconds = TEST_TIMEOUT)
-                }
-            }
+        target(DEFAULT_COMMON_JS_CONF)
+    }
 
-            // Workaround the attribute error when used both wasmJs and wasmWasi targets.
-            if (this is KotlinWasmTargetDsl) {
-                attributes.attribute(WASM_ATTRIBUTE, targetName)
-            }
+public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
+    if (this is KotlinJsTargetDsl) {
+        defaults()
+    } else if (this is KotlinTargetWithNodeJsDsl) {
+        nodejs {
+            testTimeout(seconds = TEST_TIMEOUT)
         }
     }
+
+    // Workaround the attribute error when used both wasmJs and wasmWasi targets.
+    if (this is KotlinWasmTargetDsl) {
+        attributes.attribute(WASM_ATTRIBUTE, targetName)
+    }
+}
 
 public fun KotlinJsTargetDsl.defaults() {
     // set up browser & nodejs environment + test timeouts
@@ -64,7 +66,7 @@ public fun KotlinJsTargetDsl.testTimeout(seconds: Int = TEST_TIMEOUT) {
     nodejs {
         testTimeout(seconds)
     }
-    if (this is KotlinWasmJsTargetDsl) {
+    if (ENABLE_D8 && this is KotlinWasmJsTargetDsl) {
         d8 {
             testTimeout(seconds)
         }
@@ -85,3 +87,10 @@ public fun KotlinJsSubTargetDsl.testTimeout(seconds: Int = TEST_TIMEOUT) {
  */
 // https://mochajs.org/#-timeout-ms-t-ms
 private const val TEST_TIMEOUT = 10
+
+/**
+ * Enable D8 for Kotlin/WASM target.
+ * Disabled due to errors in the Kotlin after 1.9.20-RC.
+ * @TODO: Check how it can be enabled?
+ */
+private const val ENABLE_D8 = false

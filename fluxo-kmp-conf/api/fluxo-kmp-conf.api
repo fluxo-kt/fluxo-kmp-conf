@@ -106,6 +106,7 @@ public final class SetupIdeaPluginKt {
 
 public final class SetupKotlinJsKt {
 	public static final fun defaults (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;)V
+	public static final fun getDEFAULT_COMMON_JS_CONF ()Lkotlin/jvm/functions/Function1;
 	public static final fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;I)V
 	public static final fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsTargetDsl;I)V
 	public static synthetic fun testTimeout$default (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;IILjava/lang/Object;)V
