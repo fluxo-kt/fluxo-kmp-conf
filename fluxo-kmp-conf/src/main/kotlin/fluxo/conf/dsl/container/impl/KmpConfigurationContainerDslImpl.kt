@@ -21,8 +21,10 @@ import fluxo.conf.dsl.container.impl.target.TargetWasmNativeContainer
 import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
 import fluxo.conf.impl.kotlin.KOTLIN_1_9_20
 import org.gradle.api.Action
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import setupBackgroundNativeTests
 
@@ -101,10 +103,11 @@ internal class KmpConfigurationContainerDslImpl(
 
         kotlinMultiplatform {
             if (kotlinPluginVersion >= KOTLIN_1_9_20) {
-                // Apply the default hierarchy explicitly (needed after 1.9.20-RC).
+                // Apply the extended default hierarchy explicitly (needed after 1.9.20-RC).
                 // It'll create, for example, the iosMain source set.
                 // https://kotlinlang.org/docs/whatsnew1920.html#set-up-the-target-hierarchy
-                applyDefaultHierarchyTemplate()
+                @OptIn(ExperimentalKotlinGradlePluginApi::class)
+                applyDefaultHierarchyTemplate(KotlinHierarchyTemplate.fluxoKmpConf)
             }
 
             setupBackgroundNativeTests()
