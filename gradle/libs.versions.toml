@@ -97,7 +97,7 @@ bcv = "0.13.2"
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
 # https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
-dokka = "1.9.0"
+dokka = "1.9.10"
 
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.1"
@@ -165,8 +165,8 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.49.0" }
 
 # Detect unused and misused dependencies. Provides advice for managing dependencies and other applied plugins.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
-# https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
+# https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
 deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.25.0" }
 
 # Plugin that guards against unintentional dependency changes
@@ -185,8 +185,8 @@ task-tree = { id = "com.dorongold.task-tree", version = "2.1.1" }
 task-info = { id = "org.barfuin.gradle.taskinfo", version = "2.1.0" }
 
 # `graphModules` task to create an image with the graph of how gradle modules depend on each other
-# https://plugins.gradle.org/plugin/com.savvasdalkitsis.module-dependency-graph
 # https://github.com/savvasdalkitsis/module-dependency-graph/tags
+# https://plugins.gradle.org/plugin/com.savvasdalkitsis.module-dependency-graph
 module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", version = "0.12" }
 
 # Generating BuildConstants for any kind of project
