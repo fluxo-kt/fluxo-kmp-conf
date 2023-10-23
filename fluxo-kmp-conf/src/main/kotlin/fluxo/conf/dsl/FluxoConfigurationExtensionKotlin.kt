@@ -9,6 +9,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
      * '2.0 (experimental)', '2.1 (experimental)'.
      * Set 'latest' or 'last' for the latest possible value.
+     * Set 'current' for the current Kotlin plugin base value.
      *
      * Inherited from the parent project if not set.
      * Default value: `null`.
@@ -32,7 +33,8 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
      * '2.0 (experimental)', '2.1 (experimental)'.
-     * Set 'latest' for the latest possible value.
+     * Set 'latest' or 'last' for the latest possible value.
+     * Set 'current' for the current Kotlin plugin base value.
      *
      * Inherited from the parent project if not set.
      * Default value: [kotlinLangVersion].
@@ -56,7 +58,8 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
      * '2.0 (experimental)', '2.1 (experimental)'.
-     * Set 'latest' for the latest possible value.
+     * Set 'latest' or 'last' for the latest possible value.
+     * Set 'current' for the current Kotlin plugin base value.
      *
      * Inherited from the parent project if not set.
      * Default value: `null`.
@@ -99,6 +102,9 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * And compiles source code according to the rules of the Java programming language
      * for the specified Java SE release.
      *
+     * Set 'latest' or 'last' for the latest possible value.
+     * Set 'current' for the current Kotlin plugin base value.
+     *
      * Inherited from the parent project if not set.
      *
      * Auto set using the version names in the toml version catalog:
@@ -114,8 +120,6 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * @see org.gradle.api.tasks.compile.AbstractCompile.setTargetCompatibility
      * @see org.gradle.jvm.toolchain.JavaToolchainSpec.getLanguageVersion
      * @see javaTestsLangTarget
-     *
-     * @TODO: support "latest" for the current JRE version or the latest known LTS (with toolchain).
      */
     public var javaLangTarget: String?
 

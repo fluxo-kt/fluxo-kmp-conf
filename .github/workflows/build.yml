@@ -63,6 +63,10 @@ jobs:
       - name: 'Build and check plugin itself'
         run: ./gradlew build assemble check --continue --stacktrace --scan
 
+      - name: 'Run check-main'
+        working-directory: checks/main
+        run: ./gradlew build assemble check --continue --stacktrace --scan
+
       - name: "Add build scan URL as PR comment"
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && failure()
