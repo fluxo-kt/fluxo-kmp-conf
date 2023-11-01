@@ -100,7 +100,7 @@ bcv = "0.13.2"
 dokka = "1.9.0"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.23.1"
+detekt = "1.23.3"
 
 # https://github.com/pinterest/ktlint/releases
 ktlint = "1.0.1"
