@@ -3,23 +3,17 @@ name: Build
 on:
   pull_request:
     paths-ignore:
-      - '**-check.yml'
-      - '**-submission.yml'
       - '**-validation.yml'
       - '**.*ignore'
       - '**.md'
       - '**.txt'
-      - '**benchmark.yml'
       - '**dependabot.yml'
   push:
     paths-ignore:
-      - '**-check.yml'
-      - '**-submission.yml'
       - '**-validation.yml'
       - '**.*ignore'
       - '**.md'
       - '**.txt'
-      - '**benchmark.yml'
       - '**dependabot.yml'
 
 env:
