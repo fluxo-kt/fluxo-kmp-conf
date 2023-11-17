@@ -16,7 +16,7 @@ internal fun FluxoKmpConfContext.prepareDependencyPinningBundle() {
         it.module to it.versionConstraint.toString()
     }
     rootProject.allprojects {
-        configurations.all {
+        configurations.configureEach {
             resolutionStrategy.eachDependency {
                 val version = pinnedDeps[requested.module]
                 if (version != null) {

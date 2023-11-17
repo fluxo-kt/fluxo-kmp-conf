@@ -40,7 +40,7 @@ internal fun KotlinProjectExtension.setupSourceSetsKotlinCompatibility(
     kc: KotlinConfig,
     testOptIns: Set<String> = kc.prepareTestOptIns(),
     disableTests: Boolean = false,
-) = sourceSets.all {
+) = sourceSets.configureEach {
     val isTestSet = isTestRelated()
 
     // Test compilations should be turned off from targets

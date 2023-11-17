@@ -39,7 +39,7 @@ public fun KotlinJsTargetDsl.defaults() {
         applyBinaryen()
     }
 
-    compilations.all {
+    compilations.configureEach {
         kotlinOptions {
             moduleKind = "es"
             useEsClasses = true

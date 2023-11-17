@@ -289,7 +289,7 @@ private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,
 ) = setupTargets {
     val compilations = compilations
-    compilations.all {
+    compilations.configureEach {
         val isExperimentalTest = isExperimentalTestCompilation
         val isTest = isExperimentalTest || isTestRelated()
 
@@ -352,7 +352,7 @@ private fun KotlinProjectExtension.setupTargets(
 private fun KotlinProjectExtension.setupTargets(action: Action<in KotlinTarget>) {
     when (this) {
         is KotlinSingleTargetExtension<*> -> action.execute(target)
-        is KotlinMultiplatformExtension -> targets.all(action)
+        is KotlinMultiplatformExtension -> targets.configureEach(action)
     }
 }
 
