@@ -21,6 +21,8 @@ env:
   BUILD_NUMBER: ${{ github.run_number }}
   SCM_TAG: ${{ github.sha }}
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  DEPENDENCY_GRAPH_INCLUDE_CONFIGURATIONS: "^(?!(classpath)).*"
+  DEPENDENCY_GRAPH_INCLUDE_PROJECTS: "^:(?!(buildSrc|test-)).*"
 
 jobs:
   buildAndCheck:
@@ -81,6 +83,8 @@ jobs:
       - name: 'Run check-main'
         working-directory: checks/main
         run: ./gradlew build assemble check --continue --stacktrace --scan
+        env:
+          GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: "Add build scan URL as PR comment"
         uses: actions/github-script@v6
@@ -94,3 +98,6 @@ jobs:
               repo: context.repo.repo,
               body: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
             })
+
+# TODO: Integrate the dependency-review-action
+#  https://github.com/marketplace/actions/gradle-build-action#integrating-the-dependency-review-action
