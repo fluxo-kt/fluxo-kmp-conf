@@ -1,5 +1,3 @@
-@file:Suppress("ktPropBy")
-
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.kotlin.hasKsp

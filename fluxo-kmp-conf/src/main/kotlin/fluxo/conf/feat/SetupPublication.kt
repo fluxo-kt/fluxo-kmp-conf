@@ -56,7 +56,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 private const val USE_DOKKA: Boolean = true
 
-
+@Deprecated("Migrate to the new async API")
 internal fun Project.setupPublication(config: FluxoPublicationConfig) {
     when {
         hasExtension<KotlinMultiplatformExtension>() ->

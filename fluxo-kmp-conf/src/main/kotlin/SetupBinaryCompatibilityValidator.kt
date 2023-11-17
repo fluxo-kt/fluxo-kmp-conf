@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 private const val BCV_PLUGIN_ID = "org.jetbrains.kotlinx.binary-compatibility-validator"
 
+@Deprecated("Should be removed after migration to new API")
 public fun Project.setupBinaryCompatibilityValidator(config: BinaryCompatibilityValidatorConfig?) {
     val calledExplicitly = gradle.startParameter.taskNames
         .any { it.endsWith("apiCheck", ignoreCase = true) }
