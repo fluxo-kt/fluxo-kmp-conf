@@ -12,6 +12,7 @@ import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.impl.ContainerContext
+import fluxo.conf.impl.e
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.kotlin.ksp
@@ -39,8 +40,12 @@ internal fun TestedExtension.setupAndroidCommon(
     ctx: FluxoKmpConfContext,
 ) {
     conf.androidNamespace.let { ns ->
-        namespace = ns
-        project.logger.l("Android namespace '$ns'")
+        if (ns.isEmpty()) {
+            project.logger.e("Required Android namespace IS EMPTY!")
+        } else {
+            namespace = ns
+            project.logger.l("Android namespace '$ns'")
+        }
     }
     conf.androidBuildToolsVersion?.let { buildToolsVersion = it }
 

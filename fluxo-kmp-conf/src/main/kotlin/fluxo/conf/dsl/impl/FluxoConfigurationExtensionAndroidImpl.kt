@@ -9,6 +9,7 @@ import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoConfigurationExtensionAndroid
 import fluxo.conf.impl.v
 import fluxo.conf.impl.vInt
+import java.util.Locale
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -31,14 +32,14 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
     @get:Input
     val androidNamespaceProp: Property<String?>
     override var androidNamespace: String
-        get() = (androidNamespaceProp.orNull
+        get() = (androidNamespaceProp.orNull.takeIf { !it.isNullOrBlank() }
             ?: let {
+                val ns = group.takeIf { it.isNotBlank() } ?: project.name
                 val prefix = androidNamespacePrefix
-                val ns = if (prefix.isNullOrEmpty()) group else project.name
-                if (prefix.isNullOrEmpty()) ns else "$prefix.$ns"
+                if (prefix.isNullOrBlank()) ns else "$prefix.$ns"
             })
-            .replace(':', '.')
-            .replace('-', '_')
+            .replace("[:_-]".toRegex(), ".")
+            .lowercase(Locale.US)
         set(value) = androidNamespaceProp.set(value)
 
     @get:Input
