@@ -8,7 +8,7 @@ import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.impl.configureExtension
+import java.util.Locale
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
@@ -29,33 +29,61 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
             catalogPluginId = DEPS_GUARD_PLUGIN_ALIAS,
         )
 
-        rootProject.dependencyGuard {
-            configuration("classpath")
+        val root = rootProject
+
+        // Nothing more is possible for the root project.
+        // TODO: Update when resolved (https://github.com/dropbox/dependency-guard/issues/3)
+        root.dependencyGuard {
+            configuration("classpath", COMMON_CONFIGURATION)
         }
 
-        // FIXME: configure non-root modules automatically
-        // FIXME: configure allowedFilter
-        // configuration("flavorReleaseCompileClasspath", RELEASE_CONFIGURATION)
-        // configuration("flavorReleaseRuntimeClasspath", RELEASE_CONFIGURATION)
+        // Configure non-root modules automatically
+        // TODO: Allow to customize auto-configuration
+        //  (custom list, `modules` switch, `allowedFilter`)
+        root.subprojects p@{
+            // Skip test or benchmark modules
+            val projectPath = path.lowercase(Locale.US)
+            for (marker in TEST_MARKERS) {
+                if (marker in projectPath) {
+                    return@p
+                }
+            }
 
-        // configuration("androidReleaseCompileClasspath", RELEASE_CONFIGURATION)
-        // configuration("androidReleaseRuntimeClasspath", RELEASE_CONFIGURATION)
+            // Guard all non-test, non-benchmark configurations
+            dependencyGuard {
+                project.configurations.configureEach {
+                    val confName = name.lowercase(Locale.US)
+                    val isRelease = "release" in confName ||
+                        TEST_MARKERS.none { it in confName }
+                    if (isRelease) {
+                        this@dependencyGuard.configuration(confName, RELEASE_CONFIGURATION)
+                    }
+                }
+            }
+        }
     }
 }
 
-internal fun Project.dependencyGuard(action: Action<in DependencyGuardPluginExtension>) {
+internal fun Project.dependencyGuard(action: Action<in DependencyGuardPluginExtension>) =
     extensions.configure(DEPS_GUARD_EXTENSION_NAME, action)
+
+private val COMMON_CONFIGURATION = Action<DependencyGuardConfiguration> {
+    artifacts = true
+    modules = true
 }
 
-private val RELEASE_CONFIGURATION: DependencyGuardConfiguration.() -> Unit = {
+private val RELEASE_CONFIGURATION = Action<DependencyGuardConfiguration> {
+    COMMON_CONFIGURATION.execute(this)
     allowedFilter = { dependency ->
-        dependency.lowercase().let { d -> RELEASE_BLOCK_LIST.all { it !in d } }
+        dependency.lowercase(Locale.US).let { d -> RELEASE_BLOCK_LIST.all { it !in d } }
     }
 }
 
 private val RELEASE_BLOCK_LIST = arrayOf(
-    "junit", "test", "mock", "truth", "assert", "turbine", "robolectric"
+    "junit", "test", "mock", "truth", "assert", "turbine", "robolectric",
 )
+
+private val TEST_MARKERS = arrayOf("test", "benchmark", "mock", "jmh")
 
 /** @see DependencyGuardPlugin.DEPENDENCY_GUARD_EXTENSION_NAME */
 private const val DEPS_GUARD_EXTENSION_NAME = "dependencyGuard"
