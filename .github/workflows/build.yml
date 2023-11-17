@@ -34,8 +34,9 @@ jobs:
     timeout-minutes: 25
     runs-on: 'macos-latest'
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    permissions: # The Dependency Submission API requires write permission
-      contents: write
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Harden Runner
