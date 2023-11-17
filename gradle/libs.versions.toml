@@ -21,14 +21,14 @@ kotlinCoreLibraries = "1.8.22"
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
-kotlin = "1.9.20-RC"
+kotlin = "1.9.20"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.5.10-rc01"
+jetbrains-compose = "1.5.10"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.20-RC-1.0.13"
+ksp = "1.9.20-1.0.14"
 
 # region Android specific
 
@@ -58,7 +58,7 @@ ksp = "1.9.20-RC-1.0.13"
 # 21 is required for Compose, and covers 99.3% of devices
 # 23 is required for Android Keystore
 # 24 is default for new projects as of June 2023, required for AndroidX Security-Identity-Credential
-# 26 is required for native Java 8 support, e.g. `MethodHandle` usage (signature-polymorphic calls)
+# 26 is required for native Java 8 support, e.g., `MethodHandle` usage (signature-polymorphic calls)
 # NOTE: Don't forget to edit related `-assumenosideeffects ... SDK_INT` as well!
 androidMinSdk = "21"
 
@@ -75,17 +75,18 @@ androidCompileSdk = "34"
 # Last SDK for test builds
 androidLastSdk = "34"
 
-# Preview API for MAX_DEBUG builds
+# Preview API for `MAX_DEBUG` builds
 # Zero value used to ignore this setting
 # E.g., to try out the Android U preview use `androidPreviewSdk = "U"`
 androidPreviewSdk = "0"
 
 # Compilers, packaging, deployment tools for Android apps.
+# https://developer.android.com/tools/releases/build-tools
 androidBuildTools = "34.0.0"
 
 # Gradle plug-in to build Android applications.
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
-android-gradle-plugin = "8.1.2"
+android-gradle-plugin = "8.1.3"
 
 # endregion
 
@@ -100,7 +101,7 @@ bcv = "0.13.2"
 dokka = "1.9.10"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.23.1"
+detekt = "1.23.3"
 
 # https://github.com/pinterest/ktlint/releases
 ktlint = "1.0.1"
@@ -161,13 +162,13 @@ gradle-enterprise = { id = "com.gradle.enterprise", version = "3.15.1" }
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.49.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.50.0" }
 
 # Detect unused and misused dependencies. Provides advice for managing dependencies and other applied plugins.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 # https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.25.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.26.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
@@ -194,7 +195,7 @@ module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", 
 # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
 build-config = { id = "com.github.gmazzo.buildconfig", version = "4.1.2" }
 
-# Resolve all dependencies used in a gradle module, with associated license and further information.
+# Resolve all dependencies used in a Gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases
 # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
-about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.9.1" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.9.2" }
