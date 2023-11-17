@@ -63,6 +63,14 @@ jobs:
       - name: 'Build and check plugin itself'
         run: ./gradlew build assemble check --continue --stacktrace --scan
 
+      - name: Upload sarif report (Detekt)
+        if: (success() || failure()) && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+        uses: github/codeql-action/upload-sarif@v2
+        continue-on-error: true
+        with:
+          sarif_file: fluxo-kmp-conf/build/reports/detekt/detekt.sarif
+          category: detekt
+
       - name: 'Run check-main'
         working-directory: checks/main
         run: ./gradlew build assemble check --continue --stacktrace --scan
