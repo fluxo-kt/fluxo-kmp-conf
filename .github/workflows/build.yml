@@ -54,6 +54,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: 'Cached KMP things (Konan, Node, Yarn, Binaryen)'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.konan
+            ~/.gradle/yarn
+            ~/.gradle/nodejs
+            ~/.gradle/binaryen
+            hashFiles('**/gradle/libs.versions.toml')
+          key: ${{ runner.os }}-kmp-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties', '**/gradle/libs.versions.toml') }}
+          restore-keys: ${{ runner.os }}-kmp-
+
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
