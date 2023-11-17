@@ -41,6 +41,17 @@ kotlin {
                     apiVersion = kotlinApiVersion
 //                    allWarningsAsErrors = true
 
+                    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+                        jvmTarget = jvmVersion
+                        languageVersion = kotlinVersion
+                        apiVersion = kotlinApiVersion
+                    }
+                    tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+                        jvmTarget = jvmVersion
+                        languageVersion = kotlinVersion
+                        apiVersion = kotlinApiVersion
+                    }
+
                     freeCompilerArgs += "-Xcontext-receivers"
                     freeCompilerArgs += "-Xklib-enable-signature-clash-checks"
                     freeCompilerArgs += "-Xjsr305=strict"
