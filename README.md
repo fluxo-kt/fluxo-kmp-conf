@@ -6,8 +6,8 @@
 [![Common Changelog](https://common-changelog.org/badge.svg)](CHANGELOG.md)
 
 [![Kotlin](http://img.shields.io/badge/Kotlin-1.9.20-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
-[![Gradle](http://img.shields.io/badge/Gradle-8.4-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
-[![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.1.2-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
+[![Gradle](http://img.shields.io/badge/Gradle-8.5-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
+[![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.1-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
 
 Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects.
 
@@ -57,7 +57,7 @@ pluginManagement {
   }
   resolutionStrategy.eachPlugin {
     if (requested.id.toString() == "io.github.fluxo-kt.fluxo-kmp-conf")
-      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:8521cd7e0a") // <-- specify version or commit
+      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:3002cb3137") // <-- specify version or commit
   }
 }
 ```
