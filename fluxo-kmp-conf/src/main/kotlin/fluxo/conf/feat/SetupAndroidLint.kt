@@ -15,6 +15,7 @@ import fluxo.conf.impl.withType
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 private const val MERGE_LINT_TASK_NAME = "mergeLintSarif"
 
@@ -40,8 +41,12 @@ internal fun Project.setupAndroidLint(
             xmlReport = false
 
             // Use baseline only for CI checks, show all problems in local development.
+            // Don't use if file doesn't exist, and we're running the `check` task.
             if (context.isCI || context.isRelease) {
-                baseline = file("lint-baseline.xml")
+                val file = file("lint-baseline.xml")
+                if (file.exists() || CHECK_TASK_NAME !in context.startTaskNames) {
+                    baseline = file
+                }
             }
 
             abortOnError = false
