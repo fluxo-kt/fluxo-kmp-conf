@@ -18,7 +18,7 @@ Please, use this format for PR titles too.
 **The expected commit message format is:**
 
 > type(scope): description
-* The `type` MUST be one of: `feat`, `fix`, `test`, `build`, `ci`, `docs`, `perf`, `refactor`, `style`, `chore`, `i18n`, `deps`, `misc`.
+* The `type` MUST be one of: `feat`, `fix`, `test`, `build`, `ci`, `docs`, `perf`, `refactor`, `style`, `chore`, `i18n`, `deps`, `misc`, `revert`.
 * The `scope` is optional, but recommended. Any string is allowed; it should indicate what the change affects.
 * The `description` MUST be pithy and direct short summary of the code changes.
 * The `description` MUST be in the imperative, present tense: "change" not "changed" nor "changes".
