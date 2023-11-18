@@ -88,6 +88,12 @@ jobs:
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
+      - name: 'Run check-gradle-plugin'
+        working-directory: checks/gradle-plugin
+        run: ./gradlew build assemble check --continue --stacktrace --scan
+        env:
+          GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+
       - name: "Add build scan URL as PR comment"
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && failure()
