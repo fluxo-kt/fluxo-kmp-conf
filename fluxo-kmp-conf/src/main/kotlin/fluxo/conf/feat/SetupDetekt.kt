@@ -115,14 +115,22 @@ internal fun Project.setupDetekt(
         if (testsDisabled) enableCompilerPlugin.set(false)
     }
 
-    if (mergeDetektBaselinesTask != null) {
-        val baselineTasks = tasks.withType<DetektCreateBaselineTask> {
+    val baselineTasks = tasks.withType<DetektCreateBaselineTask> {
+        // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
+
+        val kc = context.kotlinConfig
+        kc.jvmTarget?.let { jvmTarget = it }
+
+        val (lang) = kc.langAndApiVersions(isTest = false, /*latestSettings = */)
+        lang?.let { languageVersion.set(it.toString()) }
+
+        if (mergeDetektBaselinesTask != null) {
             baseline.set(file("$detektBaselineIntermediate-$name.xml"))
         }
-        mergeDetektBaselinesTask.configure {
-            dependsOn(baselineTasks)
-            baselineFiles.from(baselineTasks.map { it.baseline })
-        }
+    }
+    mergeDetektBaselinesTask?.configure {
+        dependsOn(baselineTasks)
+        baselineFiles.from(baselineTasks.map { it.baseline })
     }
 
     val detektTasks = tasks.withType<Detekt> {
@@ -136,7 +144,14 @@ internal fun Project.setupDetekt(
             logger.e("Unexpected Detekt task {}, disabling as $reason", path)
             disableTask()
         }
-        context.kotlinConfig.jvmTarget?.let { jvmTarget = it }
+
+        // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
+        val kc = context.kotlinConfig
+        kc.jvmTarget?.let { jvmTarget = it }
+
+        val (lang) = kc.langAndApiVersions(isTest = false, /*latestSettings = */)
+        lang?.let { languageVersion = it.toString() }
+
         reports.apply {
             sarif.required.set(!isDisabled)
             html.required.set(!isDisabled)

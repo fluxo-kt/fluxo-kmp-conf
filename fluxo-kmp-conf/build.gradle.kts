@@ -44,22 +44,10 @@ kotlin {
                     tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
                         jvmTarget = jvmVersion
                         languageVersion = kotlinVersion
-                        try {
-                            apiVersion = kotlinApiVersion
-                        } catch (_: Throwable) {
-                            // The value for property 'apiVersion' is final
-                            // and cannot be changed any further.
-                        }
                     }
                     tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
                         jvmTarget = jvmVersion
                         languageVersion = kotlinVersion
-                        try {
-                            apiVersion = kotlinApiVersion
-                        } catch (_: Throwable) {
-                            // The value for property 'apiVersion' is final
-                            // and cannot be changed any further.
-                        }
                     }
 
                     freeCompilerArgs += "-Xcontext-receivers"
