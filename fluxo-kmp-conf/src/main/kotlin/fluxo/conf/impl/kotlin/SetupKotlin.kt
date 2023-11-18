@@ -47,6 +47,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.samWithReceiver.gradle.SamWithReceiverExtension
 
 @Suppress("LongMethod")
 internal fun configureKotlinJvm(
@@ -80,8 +81,18 @@ internal fun configureKotlinJvm(
     context.loadAndApplyPluginIfNotApplied(id = KOTLIN_JVM_PLUGIN_ID, project = project)
 
     if (type === GRADLE_PLUGIN) {
-        // Gradle Kotlin DSL uses same compiler plugin (sam.with.receiver)
+        // Gradle Kotlin DSL uses the same compiler plugin (sam.with.receiver).
+        // Allow the same ease of use for Gradle plugins.
+        // Works for Gradle Action and potentially other similar types.
         context.loadAndApplyPluginIfNotApplied(id = KT_SAM_RECEIVER_PLUGIN_ID, project = project)
+        try {
+            project.configureExtension<SamWithReceiverExtension>(name = "samWithReceiver") {
+                annotation(requireNotNull(org.gradle.api.HasImplicitReceiver::class.qualifiedName))
+            }
+        } catch (e: Throwable) {
+            project.logger.e("Couldn't apply samWithReceiver extension due to: $e", e)
+        }
+
         context.loadAndApplyPluginIfNotApplied(id = GRADLE_PLUGIN_PUBLISH_ID, project = project)
     }
 

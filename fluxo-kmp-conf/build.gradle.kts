@@ -134,6 +134,7 @@ dependencies {
     compileOnly(libs.plugin.intellij)
     compileOnly(libs.plugin.jetbrains.compose)
     compileOnly(libs.plugin.kotlin)
+    compileOnly(libs.plugins.kotlin.sam.receiver.toModuleDependency())
     compileOnly(libs.plugin.ksp)
 
     compileOnly(libs.plugins.gradle.enterprise.toModuleDependency())
