@@ -8,12 +8,13 @@ public fun Project.setupGradlePlugin(
     group: String? = null,
     version: String? = null,
     pluginId: String? = if (pluginName != null && group != null) "$group.$pluginName" else null,
+    kotlin: (KotlinJvmProjectExtension.() -> Unit)? = null,
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
-    body: (KotlinJvmProjectExtension.() -> Unit)? = null,
 ): Unit = fluxoConfiguration {
+    explicitApi()
     config?.invoke(this)
 
     asGradlePlugin {
-        body?.let { kotlin(action = it) }
+        kotlin?.let { kotlin(action = it) }
     }
 }

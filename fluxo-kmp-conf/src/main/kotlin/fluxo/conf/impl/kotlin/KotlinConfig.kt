@@ -162,7 +162,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
         progressive = progressive,
         latestCompilation = latestCompilation,
-        warningsAsErrors = warningsAsErrors ?: false,
+        warningsAsErrors = allWarningsAsErrors ?: false,
         javaParameters = javaParameters,
         fastJarFs = useExperimentalFastJarFs ?: true,
         useIndyLambdas = useIndyLambdas ?: true,

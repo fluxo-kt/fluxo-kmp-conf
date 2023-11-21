@@ -8,6 +8,7 @@ import fluxo.conf.impl.v
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExtensionKotlin {
 
@@ -117,9 +118,16 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
 
 
     @get:Input
+    val explicitApiProp: Property<ExplicitApiMode?>
+    override var explicitApi: ExplicitApiMode?
+        get() = explicitApiProp.orNull ?: parent?.explicitApi
+        set(value) = explicitApiProp.set(value)
+
+
+    @get:Input
     val warningsAsErrorsProp: Property<Boolean?>
-    override var warningsAsErrors: Boolean?
-        get() = warningsAsErrorsProp.orNull ?: parent?.warningsAsErrors
+    override var allWarningsAsErrors: Boolean?
+        get() = warningsAsErrorsProp.orNull ?: parent?.allWarningsAsErrors
         set(value) = warningsAsErrorsProp.set(value)
 
     @get:Input

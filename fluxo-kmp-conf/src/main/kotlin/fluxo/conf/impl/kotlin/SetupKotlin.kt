@@ -272,6 +272,8 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     project.version = conf.version
     project.description = conf.description
 
+    conf.explicitApi?.let { explicitApi = it }
+
     if (kc.setupKsp) ctx.loadAndApplyPluginIfNotApplied(id = KSP_PLUGIN_ID, project = project)
     if (kc.setupKapt) ctx.loadAndApplyPluginIfNotApplied(id = KAPT_PLUGIN_ID, project = project)
 

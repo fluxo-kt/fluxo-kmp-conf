@@ -1,5 +1,7 @@
 package fluxo.conf.dsl
 
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+
 public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtensionCommon {
 
     /**
@@ -200,14 +202,33 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
 
     /**
-     * Flag to report an error for any Kotlin warning.
+     * Option that tells the Kotlin compiler
+     * if and how to report issues on all public API declarations
+     * without explicit visibility or return type.
      *
-     * Inherited from the parent project if not set. Default value: `false`.
+     * Inherited from the parent project if not set.
+     * Default value: `null`.
      *
-     * @see org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerToolOptions.allWarningsAsErrors
-     * @TODO: set for Java compilation tasks too (https://stackoverflow.com/q/30806920)
+     * @see org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension.explicitApi
      */
-    public var warningsAsErrors: Boolean?
+    public var explicitApi: ExplicitApiMode?
+
+    /**
+     * Sets [explicitApi] option to report issues as errors.
+     */
+    public fun explicitApi() {
+        explicitApi = ExplicitApiMode.Strict
+    }
+
+    /**
+     * Sets [explicitApi] option to report issues as warnings.
+     */
+    public fun explicitApiWarning() {
+        explicitApi = ExplicitApiMode.Warning
+    }
+
+
+    public var allWarningsAsErrors: Boolean?
 
     /**
      * Generate metadata for Java 1.8 reflection on method parameters.
@@ -334,7 +355,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     /**
      * Flag to turn on the new faster version of JAR FS should make build faster,
      * but it is experimental and causes warning.
-     * So auto turned off when [warningsAsErrors] enabled.
+     * So auto turned off when [allWarningsAsErrors] enabled.
      *
      * Inherited from the parent project if not set. Default value: `true`.
      *
