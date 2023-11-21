@@ -17,6 +17,10 @@ internal fun String.lowercase(): String = toLowerCase(Locale.US)
 
 internal fun Char.uppercaseChar(): Char = toUpperCase()
 
+/**
+ *
+ * @see org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
+ */
 internal fun String.capitalizeAsciiOnly(): String {
     if (isEmpty()) return this
     val c = this[0]

@@ -3,7 +3,6 @@
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm.Companion.ANDROID
-import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.conf.impl.e
 import fluxo.conf.impl.implementation
 import fluxo.conf.impl.isTestRelated
@@ -15,7 +14,6 @@ import kotlin.properties.ReadOnlyProperty
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Dependency
 import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -23,7 +21,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
-import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 
@@ -373,29 +370,6 @@ public infix fun Iterable<KotlinSourceSet>.dependencies(
     forEach { left ->
         left.dependencies(configure)
     }
-}
-
-
-public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
-    // Starting from KSP 1.0.1, applying KSP on a multiplatform project requires
-    // instead of writing the ksp("dep")
-    // use ksp<Target>() or add(ksp<SourceSet>).
-    // https://kotlinlang.org/docs/ksp-multiplatform.html
-    val parent = (this as DefaultKotlinDependencyHandler).parent
-    var configurationName =
-        parent.compileOnlyConfigurationName.replace("compileOnly", "", ignoreCase = true)
-    if (configurationName.startsWith(
-            KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME,
-            ignoreCase = true,
-        )) {
-        configurationName += "Metadata"
-    } else {
-        configurationName =
-            configurationName.replace(MAIN_SOURCE_SET_POSTFIX, "", ignoreCase = true)
-    }
-    configurationName = "ksp${configurationName.capitalizeAsciiOnly()}"
-    project.logger.lifecycle(">>> ksp configurationName: $configurationName")
-    return project.dependencies.add(configurationName, dependencyNotation)
 }
 
 

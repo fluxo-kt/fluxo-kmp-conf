@@ -2,6 +2,12 @@ public final class CompilationsKt {
 	public static final fun isGenericCompilationEnabled (Lorg/gradle/api/Project;)Z
 }
 
+public final class DependencyUtilsKt {
+	public static final fun ksp (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun toModuleDependency (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun toModuleDependency (Lorg/gradle/plugin/use/PluginDependency;)Ljava/lang/String;
+}
+
 public final class KmpHierarchyTemplateKt {
 	public static final fun getFluxoKmpConf (Lorg/jetbrains/kotlin/gradle/plugin/KotlinHierarchyTemplate$Templates;)Lkotlin/jvm/functions/Function1;
 }
@@ -60,7 +66,6 @@ public final class MultiplatformSourceSetUtilsKt {
 	public static final fun getTvosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getWasmNativeSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getWatchosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
-	public static final fun ksp (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
 	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Lfluxo/conf/kmp/SourceSetBundle;)Ljava/util/Set;
 	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Ljava/util/Set;)Ljava/util/Set;
 }
@@ -244,12 +249,16 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin : fluxo/conf/dsl/FluxoConfigurationExtensionCommon {
 	public fun apiValidation (Lkotlin/jvm/functions/Function1;)V
+	public fun explicitApi ()V
+	public fun explicitApiWarning ()V
 	public abstract fun getAddStdlibDependency ()Z
+	public abstract fun getAllWarningsAsErrors ()Ljava/lang/Boolean;
 	public abstract fun getApiValidation ()Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;
 	public abstract fun getEnableApiValidation ()Ljava/lang/Boolean;
 	public abstract fun getEnableDetektCompilerPlugin ()Ljava/lang/Boolean;
 	public abstract fun getEnableSpotless ()Ljava/lang/Boolean;
 	public abstract fun getExperimentalLatestCompilation ()Ljava/lang/Boolean;
+	public abstract fun getExplicitApi ()Lorg/jetbrains/kotlin/gradle/dsl/ExplicitApiMode;
 	public abstract fun getJavaLangTarget ()Ljava/lang/String;
 	public abstract fun getJavaParameters ()Ljava/lang/Boolean;
 	public abstract fun getJavaTestsLangTarget ()Ljava/lang/String;
@@ -271,13 +280,14 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun getSetupKotlinXSerialization ()Z
 	public abstract fun getUseExperimentalFastJarFs ()Ljava/lang/Boolean;
 	public abstract fun getUseIndyLambdas ()Ljava/lang/Boolean;
-	public abstract fun getWarningsAsErrors ()Ljava/lang/Boolean;
 	public abstract fun setAddStdlibDependency (Z)V
+	public abstract fun setAllWarningsAsErrors (Ljava/lang/Boolean;)V
 	public abstract fun setApiValidation (Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;)V
 	public abstract fun setEnableApiValidation (Ljava/lang/Boolean;)V
 	public abstract fun setEnableDetektCompilerPlugin (Ljava/lang/Boolean;)V
 	public abstract fun setEnableSpotless (Ljava/lang/Boolean;)V
 	public abstract fun setExperimentalLatestCompilation (Ljava/lang/Boolean;)V
+	public abstract fun setExplicitApi (Lorg/jetbrains/kotlin/gradle/dsl/ExplicitApiMode;)V
 	public abstract fun setJavaLangTarget (Ljava/lang/String;)V
 	public abstract fun setJavaParameters (Ljava/lang/Boolean;)V
 	public abstract fun setJavaTestsLangTarget (Ljava/lang/String;)V
@@ -299,7 +309,6 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun setSetupKotlinXSerialization (Z)V
 	public abstract fun setUseExperimentalFastJarFs (Ljava/lang/Boolean;)V
 	public abstract fun setUseIndyLambdas (Ljava/lang/Boolean;)V
-	public abstract fun setWarningsAsErrors (Ljava/lang/Boolean;)V
 }
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionPublication {

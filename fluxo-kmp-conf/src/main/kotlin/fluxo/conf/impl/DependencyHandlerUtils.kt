@@ -2,6 +2,7 @@
 
 package fluxo.conf.impl
 
+import COMPILE_ONLY
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.dsl.DependencyConstraintHandler
@@ -50,7 +51,7 @@ internal fun DependencyHandler.runtimeOnly(dependencyNotation: Any) =
 
 
 internal fun DependencyHandler.compileOnly(dependencyNotation: Any) =
-    add("compileOnly", dependencyNotation)
+    add(COMPILE_ONLY, dependencyNotation)
 
 internal fun DependencyHandler.compileOnlyWithConstraint(dependencyNotation: Any) {
     compileOnly(dependencyNotation)
