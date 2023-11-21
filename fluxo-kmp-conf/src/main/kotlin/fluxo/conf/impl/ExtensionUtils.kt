@@ -42,6 +42,7 @@ internal inline fun <reified T : Any> ExtensionAware.the(type: KClass<T>? = null
 
 
 internal inline fun <reified T : Any> ExtensionAware.configureExtensionIfAvailable(
+    @Suppress("UNUSED_PARAMETER") name: String? = null,
     noinline action: T.() -> Unit,
 ): Boolean {
     return try {

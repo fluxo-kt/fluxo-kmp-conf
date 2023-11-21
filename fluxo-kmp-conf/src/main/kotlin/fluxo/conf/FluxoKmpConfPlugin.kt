@@ -6,7 +6,7 @@ import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.impl.ConfigureContainers
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType
+import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.feat.ensureUnreachableTasksDisabled
 import fluxo.conf.feat.prepareBuildScanPlugin
 import fluxo.conf.feat.prepareCompleteKotlinPlugin
@@ -92,6 +92,10 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         context.setupVerificationRoot()
     }
 
+    /**
+     *
+     * @see FluxoConfigurationExtensionImpl.configureAs
+     */
     private fun configureContainers(
         type: ConfigurationType,
         configuration: FluxoConfigurationExtensionImpl,

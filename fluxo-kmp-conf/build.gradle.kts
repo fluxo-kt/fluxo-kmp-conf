@@ -103,6 +103,7 @@ kotlin {
     }
 }
 
+// Exclude Kotlin stdlib from the implementation classpath entirely
 configurations.implementation {
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
@@ -111,6 +112,10 @@ configurations.implementation {
     exclude(group = "org.ow2.asm")
 }
 
+/**
+ * Converts a [PluginDependency] to a usual module dependency
+ * with Gradle Plugin Marker Artifact convention.
+ */
 fun Provider<PluginDependency>.toModuleDependency() = map { p ->
     // Convention for the Gradle Plugin Marker Artifact
     // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_markers

@@ -2,6 +2,7 @@ package fluxo.conf.dsl.container.impl
 
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.d
 import org.gradle.api.NamedDomainObjectSet
 
 internal class ContainerHolder(
@@ -23,6 +24,9 @@ internal class ContainerHolder(
     ) {
         if (onlyTarget != null && onlyTarget != code) {
             // Return early if configuring only a single target.
+            // It's not an error as default KMP targets can be applied to JVM-obly subprojects.
+            // So just skip the unexpected ones.
+            project.logger.d("Skipping target '$targetName' because only '$onlyTarget' is allowed.")
             return
         }
 

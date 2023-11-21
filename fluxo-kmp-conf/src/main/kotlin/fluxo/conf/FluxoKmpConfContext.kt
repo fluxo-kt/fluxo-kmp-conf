@@ -6,7 +6,7 @@ import disableTests
 import fluxo.conf.deps.GradleProvisioner
 import fluxo.conf.deps.Provisioner
 import fluxo.conf.dsl.container.impl.KmpTargetCode
-import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.getSetOfRequestedKmpTargets
+import fluxo.conf.dsl.container.impl.getSetOfRequestedKmpTargets
 import fluxo.conf.feat.registerDetektMergeRootTask
 import fluxo.conf.feat.registerLintMergeRootTask
 import fluxo.conf.impl.CPUs

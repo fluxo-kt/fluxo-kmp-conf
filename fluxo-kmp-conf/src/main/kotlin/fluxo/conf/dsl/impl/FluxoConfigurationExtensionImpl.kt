@@ -10,13 +10,12 @@ import fluxo.conf.dsl.container.impl.ContainerHolder
 import fluxo.conf.dsl.container.impl.KmpConfigurationContainerDslImpl
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.fluxoConfiguration
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.ANDROID_APP
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.ANDROID_LIB
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.GRADLE_PLUGIN
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.IDEA_PLUGIN
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.KOTLIN_JVM
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.KOTLIN_MULTIPLATFORM
+import fluxo.conf.dsl.impl.ConfigurationType.ANDROID_APP
+import fluxo.conf.dsl.impl.ConfigurationType.ANDROID_LIB
+import fluxo.conf.dsl.impl.ConfigurationType.GRADLE_PLUGIN
+import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
+import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_JVM
+import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import javax.inject.Inject
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -86,8 +85,22 @@ internal abstract class FluxoConfigurationExtensionImpl
 
         val holder = ContainerHolder(configuration = this, onlyTarget)
         val dsl = KmpConfigurationContainerDslImpl(holder)
+
+        // Default configurations
         applyDefaultKmpConfigurations(dsl)
+
+        // Default single target configuration
+        if (onlyTarget != null) {
+            when (type) {
+                ANDROID_LIB -> dsl.androidLibrary()
+                ANDROID_APP -> dsl.androidApp()
+                else -> dsl.jvm()
+            }
+        }
+
+        // User configuration
         action(dsl)
+
         configureContainers(type, this, holder.containers.sorted())
     }
 
@@ -139,15 +152,5 @@ internal abstract class FluxoConfigurationExtensionImpl
             (it as? FluxoConfigurationExtensionImpl)
                 ?.defaultConfiguration?.orNull?.invoke(dsl)
         }
-    }
-
-
-    internal enum class ConfigurationType {
-        KOTLIN_MULTIPLATFORM,
-        ANDROID_LIB,
-        ANDROID_APP,
-        KOTLIN_JVM,
-        GRADLE_PLUGIN,
-        IDEA_PLUGIN,
     }
 }

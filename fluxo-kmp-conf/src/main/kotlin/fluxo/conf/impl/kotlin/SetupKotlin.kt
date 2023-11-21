@@ -1,5 +1,3 @@
-@file:Suppress("CyclomaticComplexMethod")
-
 package fluxo.conf.impl.kotlin
 
 import MAIN_SOURCE_SET_NAME
@@ -13,14 +11,14 @@ import fluxo.conf.dsl.container.impl.ContainerKotlinMultiplatformAware
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainer
 import fluxo.conf.dsl.container.impl.target.TargetAndroidContainer
+import fluxo.conf.dsl.impl.ConfigurationType
+import fluxo.conf.dsl.impl.ConfigurationType.ANDROID_APP
+import fluxo.conf.dsl.impl.ConfigurationType.ANDROID_LIB
+import fluxo.conf.dsl.impl.ConfigurationType.GRADLE_PLUGIN
+import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
+import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.ANDROID_APP
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.ANDROID_LIB
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.GRADLE_PLUGIN
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.IDEA_PLUGIN
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.KOTLIN_JVM
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl.ConfigurationType.KOTLIN_MULTIPLATFORM
+import fluxo.conf.dsl.impl.builderMethod
 import fluxo.conf.feat.setupVerification
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
@@ -28,6 +26,7 @@ import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
 import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.d
 import fluxo.conf.impl.e
 import fluxo.conf.impl.get
@@ -49,13 +48,12 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.samWithReceiver.gradle.SamWithReceiverExtension
 
-@Suppress("LongMethod")
 internal fun configureKotlinJvm(
     type: ConfigurationType,
     configuration: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
 ) {
-    require(type != KOTLIN_MULTIPLATFORM) { "Unexpected ConfigurationType: $type" }
+    require(type != KOTLIN_MULTIPLATFORM) { "Unexpected Kotlin Multiplatform configuration" }
     if (!checkIfNeedToConfigure(type, configuration, containers)) {
         return
     }
@@ -143,7 +141,7 @@ internal fun configureKotlinJvm(
         }
 
         if (!androidSetUp) {
-            project.configureExtension<TestedExtension>(name = "android") {
+            project.configureExtensionIfAvailable<TestedExtension>(name = "android") {
                 setupAndroidCommon(configuration.project, configuration, configuration.context)
             }
         }
@@ -235,16 +233,11 @@ private fun checkIfNeedToConfigure(
     configuration: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
 ): Boolean {
+    // TODO: Detect if KMP is already applied and what targets are already configured.
+
     val logger = configuration.project.logger
     val hasAnyTarget = containers.any { it is KmpTargetContainer<*> }
-    val label = ':' + when (type) {
-        KOTLIN_MULTIPLATFORM -> "setupMultiplatform"
-        ANDROID_LIB -> "setupAndroidLibrary"
-        ANDROID_APP -> "setupAndroidApp"
-        KOTLIN_JVM -> "setupKotlin"
-        IDEA_PLUGIN -> "setupIdeaPlugin"
-        GRADLE_PLUGIN -> "setupGradlePlugin"
-    }
+    val label = ':' + type.builderMethod
     if (!hasAnyTarget) {
         logger.w("$label - no applicable Kotlin targets found, skipping module configuration")
         return false

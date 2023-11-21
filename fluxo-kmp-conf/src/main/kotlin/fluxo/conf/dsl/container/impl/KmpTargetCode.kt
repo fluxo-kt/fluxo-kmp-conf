@@ -1,9 +1,6 @@
 package fluxo.conf.dsl.container.impl
 
-import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.w
-import isSplitTargetsEnabled
-import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -12,7 +9,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.KonanTarget
-import requestedKmpTargets
 
 /**
  *
@@ -74,17 +70,17 @@ internal enum class KmpTargetCode {
         internal const val SPLIT_TARGETS_PROP = "split_targets"
 
 
-        private val ALL = KmpTargetCode.values()
+        internal val ALL = KmpTargetCode.values()
 
-        private val COMMON_JVM = arrayOf(JVM, ANDROID)
+        internal val COMMON_JVM = arrayOf(JVM, ANDROID)
         internal val COMMON_WASM = arrayOf(WASM_JS, WASM_WASI)
-        private val COMMON_JS = COMMON_WASM + JS
+        internal val COMMON_JS = COMMON_WASM + JS
 
-        private val IOS = arrayOf(IOS_ARM32, IOS_ARM64, IOS_SIMULATOR_ARM64, IOS_X64)
-        private val MACOS = arrayOf(MACOS_ARM64, MACOS_X64)
-        private val OSX = MACOS
-        private val TVOS = arrayOf(TVOS_ARM64, TVOS_SIMULATOR_ARM64, TVOS_X64)
-        private val WATCHOS = arrayOf(
+        internal val IOS = arrayOf(IOS_ARM32, IOS_ARM64, IOS_SIMULATOR_ARM64, IOS_X64)
+        internal val MACOS = arrayOf(MACOS_ARM64, MACOS_X64)
+        internal val OSX = MACOS
+        internal val TVOS = arrayOf(TVOS_ARM64, TVOS_SIMULATOR_ARM64, TVOS_X64)
+        internal val WATCHOS = arrayOf(
             WATCHOS_ARM32, WATCHOS_ARM64, WATCHOS_DEVICE_ARM64,
             WATCHOS_SIMULATOR_ARM64, WATCHOS_X64, WATCHOS_X86,
         )
@@ -93,98 +89,19 @@ internal enum class KmpTargetCode {
         internal val LINUX =
             arrayOf(LINUX_X64, LINUX_ARM64, LINUX_ARM32_HFP, LINUX_MIPS32, LINUX_MIPSEL32)
         internal val MINGW = arrayOf(MINGW_X64, MINGW_X86)
-        private val UNIX = APPLE + LINUX
-        private val ANDROID_NATIVE =
+        internal val UNIX = APPLE + LINUX
+        internal val ANDROID_NATIVE =
             arrayOf(ANDROID_ARM32, ANDROID_ARM64, ANDROID_X64, ANDROID_X86)
-        private val NATIVE = UNIX + MINGW + ANDROID_NATIVE + WASM32
+        internal val NATIVE = UNIX + MINGW + ANDROID_NATIVE + WASM32
 
-        private val NON_JVM = COMMON_JS + NATIVE
+        internal val NON_JVM = COMMON_JS + NATIVE
 
-        private val PLATFORM = OperatingSystem.current().let { os ->
+        internal val PLATFORM = OperatingSystem.current().let { os ->
             when {
                 os.isMacOsX -> APPLE
                 os.isWindows -> MINGW
                 else -> LINUX
             }
-        }
-
-        private val ALIASES = mapOf(
-            ::ALL.name to ALL,
-            ::COMMON_JVM.name to COMMON_JVM,
-            ::COMMON_WASM.name to COMMON_WASM,
-            "WASM" to arrayOf(WASM_JS),
-            ::COMMON_JS.name to COMMON_JS,
-            ::IOS.name to IOS,
-            ::OSX.name to OSX,
-            ::MACOS.name to MACOS,
-            ::TVOS.name to TVOS,
-            ::WATCHOS.name to WATCHOS,
-            ::APPLE.name to APPLE,
-            "DARWIN" to APPLE,
-            ::LINUX.name to LINUX,
-            ::MINGW.name to MINGW,
-            ::UNIX.name to UNIX,
-            ::ANDROID_NATIVE.name to ANDROID_NATIVE,
-            ::NATIVE.name to NATIVE,
-            ::NON_JVM.name to NON_JVM,
-            ::PLATFORM.name to PLATFORM,
-        )
-
-        private val POSSIBLE_KEYS = ALIASES.keys.toList() + SPLIT_TARGETS_PROP.uppercase()
-
-
-        @Throws(GradleException::class)
-        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "NestedBlockDepth")
-        internal fun FluxoKmpConfContext.getSetOfRequestedKmpTargets(): Set<KmpTargetCode> {
-            val project = rootProject
-            val targets = project.requestedKmpTargets()
-            val sequence = targets?.splitToSequence(',')
-
-            // TODO: Support "metadata_only"/metadataOnly mode
-            val isSplitTargetsEnabled = project.isSplitTargetsEnabled()
-                || SPLIT_TARGETS_PROP.equals(targets, ignoreCase = true)
-            if ((sequence == null || targets.isEmpty()) && !isSplitTargetsEnabled) {
-                return emptySet()
-            }
-
-            val set = HashSet<KmpTargetCode>(mapCapacity(ALL.size))
-            when {
-                // old "split_targets"/splitTargets mode compatibility
-                sequence == null || isSplitTargetsEnabled -> {
-                    set.addAll(PLATFORM)
-
-                    // On CI Mac is the target platform for generic builds, Linux for local builds.
-                    val isGenericEnabled = PLATFORM === if (isCI) APPLE else LINUX
-                    if (isGenericEnabled) {
-                        set.addAll(COMMON_JVM)
-                        set.addAll(COMMON_JS)
-                    }
-                }
-
-                else -> for (v in sequence) {
-                    val target = v.uppercase().trim()
-                    val group = ALIASES[target]
-                    if (group != null) {
-                        set.addAll(group)
-                    } else {
-                        try {
-                            set.add(valueOf(target))
-                        } catch (e: IllegalArgumentException) {
-                            throw GradleException(
-                                "$KMP_TARGETS_PROP property of '$target' not recognized. \n" +
-                                    "Known options are: $POSSIBLE_KEYS",
-                                e,
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (set.isNotEmpty()) {
-                set.add(COMMON)
-            }
-
-            return set.optimizeReadOnlySet()
         }
 
         @Suppress("CyclomaticComplexMethod")
