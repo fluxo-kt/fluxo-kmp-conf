@@ -298,6 +298,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
 
 private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,
+    isMultiplatform: Boolean = this is KotlinMultiplatformExtension,
 ) = setupTargets {
     val compilations = compilations
     compilations.configureEach {
@@ -338,6 +339,7 @@ private fun KotlinProjectExtension.setupTargets(
                 latestSettings = isExperimentalTest,
                 jvmTargetVersion = jvmTargetVersion,
                 isAndroid = isAndroid,
+                isMultiplatform = isMultiplatform,
             )
         }
 

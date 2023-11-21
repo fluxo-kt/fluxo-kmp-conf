@@ -14,6 +14,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     warningsAsErrors: Boolean,
     latestSettings: Boolean,
     isAndroid: Boolean,
+    isMultiplatform: Boolean,
     jvmTargetVersion: String?,
 ) {
     val context = conf.context
@@ -28,6 +29,10 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     compilerArgs.addAll(DEFAULT_OPTS)
     if (useLatestSettings) {
         compilerArgs.addAll(LATEST_OPTS)
+    }
+    val kotlinPluginVersion = context.kotlinPluginVersion
+    if (isMultiplatform && kotlinPluginVersion >= KOTLIN_1_9_20) {
+        compilerArgs.add("-Xexpect-actual-classes")
     }
 
     val isJvm: Boolean
@@ -52,7 +57,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
                 //  by default (null) only for useLatestSettings, true/false for broader control.
                 if (useLatestSettings
                     && JRE_VERSION >= JRE_1_9
-                    && context.kotlinPluginVersion >= KOTLIN_1_7
+                    && kotlinPluginVersion >= KOTLIN_1_7
                 // TODO: && kotlinLang >= KotlinLangVersion.KOTLIN_1_7
                 ) {
                     compilerArgs.add("-Xjdk-release=$it")
