@@ -1,6 +1,7 @@
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.fluxoConfiguration
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 public fun Project.setupGradlePlugin(
     pluginName: String? = null,
@@ -8,14 +9,11 @@ public fun Project.setupGradlePlugin(
     version: String? = null,
     pluginId: String? = if (pluginName != null && group != null) "$group.$pluginName" else null,
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
-    body: (KotlinSingleTarget.() -> Unit)? = null,
+    body: (KotlinJvmProjectExtension.() -> Unit)? = null,
 ): Unit = fluxoConfiguration {
     config?.invoke(this)
 
-    configureAsGradlePlugin {
-        if (body != null) {
-            @Suppress("UNCHECKED_CAST")
-            kotlin { body(this as KotlinSingleTarget) }
-        }
+    asGradlePlugin {
+        body?.let { kotlin(action = it) }
     }
 }

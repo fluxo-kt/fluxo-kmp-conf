@@ -5,24 +5,23 @@ import fluxo.conf.impl.withType
 import org.gradle.api.Project
 import org.jetbrains.intellij.IntelliJPluginExtension
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
-@Suppress("LongParameterList")
 public fun Project.setupIdeaPlugin(
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
-    group: String,
-    version: String,
+    group: String? = null,
+    version: String? = null,
     sinceBuild: String,
     intellijVersion: String,
-    body: (KotlinSingleTarget.() -> Unit)? = null,
+    body: (KotlinJvmProjectExtension.() -> Unit)? = null,
 ): Unit = fluxoConfiguration {
-    if (group.isNotEmpty()) this.group = group
-    if (version.isNotEmpty()) this.version = version
+    if (!group.isNullOrEmpty()) this.group = group
+    if (!version.isNullOrEmpty()) this.version = version
     config?.invoke(this)
 
-    configureAsIdeaPlugin {
+    asIdeaPlugin {
         kotlin {
-            @Suppress("UNCHECKED_CAST")
-            body?.invoke(this as KotlinSingleTarget)
+            body?.let { kotlin(action = it) }
 
             tasks.withType<PatchPluginXmlTask> {
                 this.sinceBuild.set(sinceBuild)

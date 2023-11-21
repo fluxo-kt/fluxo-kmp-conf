@@ -4,7 +4,8 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoKmpConfDsl
 import fluxo.conf.dsl.container.Container
-import fluxo.conf.dsl.container.KmpConfigurationContainerDsl as KmpConfDsl
+import fluxo.conf.dsl.container.KmpConfigurationContainerDsl as KmpDsl
+import fluxo.conf.dsl.container.KotlinConfigurationContainerDsl as KstDsl
 import fluxo.conf.dsl.container.impl.ContainerHolder
 import fluxo.conf.dsl.container.impl.KmpConfigurationContainerDslImpl
 import fluxo.conf.dsl.container.impl.KmpTargetCode
@@ -21,6 +22,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 internal typealias ConfigureContainers =
     (ConfigurationType, FluxoConfigurationExtensionImpl, Collection<Container>) -> Unit
@@ -52,7 +55,7 @@ internal abstract class FluxoConfigurationExtensionImpl
     protected abstract val hasConfigurationAction: Property<Boolean?>
 
     @get:Input
-    protected abstract val defaultConfiguration: Property<(KmpConfDsl.() -> Unit)?>
+    protected abstract val defaultConfiguration: Property<(KmpDsl.() -> Unit)?>
 
 
     @get:Input
@@ -62,12 +65,12 @@ internal abstract class FluxoConfigurationExtensionImpl
         set(value) = skipDefaultConfigurationsProp.set(value)
 
 
-    override fun defaultConfiguration(action: KmpConfDsl.() -> Unit) {
+    override fun defaults(action: KmpDsl.() -> Unit) {
         defaultConfiguration.set(action)
     }
 
 
-    private fun configure(type: ConfigurationType, action: KmpConfDsl.() -> Unit) {
+    private fun configureAs(type: ConfigurationType, action: KmpDsl.() -> Unit) {
         if (hasConfigurationAction.orNull == true) {
             throw GradleException(
                 "${FluxoConfigurationExtension.NAME}.configure* can only be invoked once",
@@ -88,20 +91,22 @@ internal abstract class FluxoConfigurationExtensionImpl
         configureContainers(type, this, holder.containers.sorted())
     }
 
-    override fun configureAsMultiplatform(action: KmpConfDsl.() -> Unit) =
-        configure(KOTLIN_MULTIPLATFORM, action)
+    override fun asKmp(action: KmpDsl.() -> Unit) =
+        configureAs(KOTLIN_MULTIPLATFORM, action)
 
-    override fun configureAsKotlinJvm(action: KmpConfDsl.() -> Unit) =
-        configure(KOTLIN_JVM, action)
+    override fun asJvm(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit) =
+        configureAs(KOTLIN_JVM, @Suppress("UNCHECKED_CAST") (action as KmpDsl.() -> Unit))
 
-    override fun configureAsIdeaPlugin(action: KmpConfDsl.() -> Unit) =
-        configure(IDEA_PLUGIN, action)
+    override fun asIdeaPlugin(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit) =
+        configureAs(IDEA_PLUGIN, @Suppress("UNCHECKED_CAST") (action as KmpDsl.() -> Unit))
 
-    override fun configureAsGradlePlugin(action: KmpConfDsl.() -> Unit) =
-        configure(GRADLE_PLUGIN, action)
+    override fun asGradlePlugin(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit) =
+        configureAs(GRADLE_PLUGIN, @Suppress("UNCHECKED_CAST") (action as KmpDsl.() -> Unit))
 
-    override fun configureAsAndroid(app: Boolean, action: KmpConfDsl.() -> Unit) =
-        configure(if (app) ANDROID_APP else ANDROID_LIB, action)
+    override fun asAndroid(app: Boolean, action: KstDsl<KotlinAndroidProjectExtension>.() -> Unit) {
+        val type = if (app) ANDROID_APP else ANDROID_LIB
+        configureAs(type, @Suppress("UNCHECKED_CAST") (action as KmpDsl.() -> Unit))
+    }
 
 
     private fun applyDefaultKmpConfigurations(dsl: KmpConfigurationContainerDslImpl) {

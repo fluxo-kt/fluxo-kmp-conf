@@ -36,7 +36,7 @@ public fun Project.setupMultiplatform(
         return@c
     }
 
-    configureAsMultiplatform {
+    asKmp {
         kmp?.invoke(this)
 
         if (body != null) {

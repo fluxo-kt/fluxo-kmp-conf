@@ -172,21 +172,21 @@ public final class fluxo/conf/dsl/BinaryCompatibilityValidatorConfig {
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtension : fluxo/conf/dsl/FluxoConfigurationExtensionAndroid, fluxo/conf/dsl/FluxoConfigurationExtensionKotlin, fluxo/conf/dsl/FluxoConfigurationExtensionPublication {
 	public static final field Companion Lfluxo/conf/dsl/FluxoConfigurationExtension$Companion;
 	public static final field NAME Ljava/lang/String;
-	public fun configuration (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun configuration$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun asAndroid (ZLkotlin/jvm/functions/Function1;)V
+	public static synthetic fun asAndroid$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun asGradlePlugin (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun asGradlePlugin$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun asIdeaPlugin (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun asIdeaPlugin$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun asJvm (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun asJvm$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun asKmp (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun asKmp$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun asMultiplatform (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun asMultiplatform$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun configure (Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun configure$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun configureAsAndroid (ZLkotlin/jvm/functions/Function1;)V
-	public static synthetic fun configureAsAndroid$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun configureAsGradlePlugin (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun configureAsGradlePlugin$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun configureAsIdeaPlugin (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun configureAsIdeaPlugin$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun configureAsKotlinJvm (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun configureAsKotlinJvm$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun configureAsMultiplatform (Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun configureAsMultiplatform$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public abstract fun defaultConfiguration (Lkotlin/jvm/functions/Function1;)V
+	public abstract fun defaults (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun getSkipDefaultConfigurations ()Z
 	public abstract fun setSkipDefaultConfigurations (Z)V
 }
@@ -403,11 +403,14 @@ public abstract interface class fluxo/conf/dsl/container/Container : java/lang/C
 	public abstract fun applyPlugins ([Lorg/gradle/api/provider/Provider;)V
 }
 
-public abstract interface class fluxo/conf/dsl/container/KmpConfigurationContainerDsl : fluxo/conf/dsl/container/target/AndroidNativeTarget$Configure, fluxo/conf/dsl/container/target/AndroidTarget$Configure, fluxo/conf/dsl/container/target/AppleIosTarget$Configure, fluxo/conf/dsl/container/target/AppleMacosTarget$Configure, fluxo/conf/dsl/container/target/AppleTvosTarget$Configure, fluxo/conf/dsl/container/target/AppleWatchosTarget$Configure, fluxo/conf/dsl/container/target/JsTarget$Configure, fluxo/conf/dsl/container/target/JvmTarget$Configure, fluxo/conf/dsl/container/target/LinuxTarget$Configure, fluxo/conf/dsl/container/target/MingwTarget$Configure, fluxo/conf/dsl/container/target/WasmNativeTarget$Configure, fluxo/conf/dsl/container/target/WasmTarget$Configure {
+public abstract interface class fluxo/conf/dsl/container/KmpConfigurationContainerDsl : fluxo/conf/dsl/container/KotlinConfigurationContainerDsl, fluxo/conf/dsl/container/target/AndroidNativeTarget$Configure, fluxo/conf/dsl/container/target/AppleIosTarget$Configure, fluxo/conf/dsl/container/target/AppleMacosTarget$Configure, fluxo/conf/dsl/container/target/AppleTvosTarget$Configure, fluxo/conf/dsl/container/target/AppleWatchosTarget$Configure, fluxo/conf/dsl/container/target/JsTarget$Configure, fluxo/conf/dsl/container/target/LinuxTarget$Configure, fluxo/conf/dsl/container/target/MingwTarget$Configure, fluxo/conf/dsl/container/target/WasmNativeTarget$Configure, fluxo/conf/dsl/container/target/WasmTarget$Configure {
 	public abstract fun allDefaultTargets ()V
+	public abstract fun kotlinMultiplatform (Lkotlin/jvm/functions/Function1;)V
+}
+
+public abstract interface class fluxo/conf/dsl/container/KotlinConfigurationContainerDsl : fluxo/conf/dsl/container/target/AndroidTarget$Configure, fluxo/conf/dsl/container/target/JvmTarget$Configure {
 	public abstract fun common (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun kotlin (Lkotlin/jvm/functions/Function1;)V
-	public abstract fun kotlinMultiplatform (Lkotlin/jvm/functions/Function1;)V
 	public fun onAndroidTarget (Lorg/gradle/api/Action;)V
 	public abstract fun onTarget (Ljava/lang/Class;Lorg/gradle/api/Action;)V
 }

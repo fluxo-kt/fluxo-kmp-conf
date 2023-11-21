@@ -1,11 +1,14 @@
 package fluxo.conf.dsl
 
 import fluxo.conf.dsl.container.KmpConfigurationContainerDsl as KmpDsl
+import fluxo.conf.dsl.container.KotlinConfigurationContainerDsl as KstDsl
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.EMPTY_FUN
 import fluxo.conf.impl.find
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 public interface FluxoConfigurationExtension :
     FluxoConfigurationExtensionKotlin,
@@ -21,40 +24,43 @@ public interface FluxoConfigurationExtension :
     /**
      * Configures the current project as a Kotlin Multiplatform module.
      */
-    public fun configureAsMultiplatform(action: KmpDsl.() -> Unit = EMPTY_FUN)
+    public fun asKmp(action: KmpDsl.() -> Unit = EMPTY_FUN)
 
-    /** Alias for [configureAsMultiplatform] */
-    public fun configure(action: KmpDsl.() -> Unit = EMPTY_FUN): Unit = configure(action)
+    /** Alias for [asKmp] */
+    public fun asMultiplatform(action: KmpDsl.() -> Unit = EMPTY_FUN): Unit = asKmp(action)
 
-    /** Alias for [configureAsMultiplatform] */
-    public fun configuration(action: KmpDsl.() -> Unit = EMPTY_FUN): Unit = configure(action)
+    /** Alias for [asKmp] */
+    public fun configure(action: KmpDsl.() -> Unit = EMPTY_FUN): Unit = asKmp(action)
 
 
     /**
      * Configures the current project as a Kotlin/JVM module.
      */
-    public fun configureAsKotlinJvm(action: KmpDsl.() -> Unit = EMPTY_FUN)
+    public fun asJvm(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit = EMPTY_FUN)
 
     /**
      * Configures the current project as an IDEA plugin module.
      */
-    public fun configureAsIdeaPlugin(action: KmpDsl.() -> Unit = EMPTY_FUN)
+    public fun asIdeaPlugin(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit = EMPTY_FUN)
 
     /**
      * Configures the current project as a Gradle plugin module.
      */
-    public fun configureAsGradlePlugin(action: KmpDsl.() -> Unit = EMPTY_FUN)
+    public fun asGradlePlugin(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit = EMPTY_FUN)
 
     /**
      * Configures the current project as an Android module.
      */
-    public fun configureAsAndroid(app: Boolean = false, action: KmpDsl.() -> Unit = EMPTY_FUN)
+    public fun asAndroid(
+        app: Boolean = false,
+        action: KstDsl<KotlinAndroidProjectExtension>.() -> Unit = EMPTY_FUN,
+    )
 
 
     /**
      * Declares the default configuration for the current project and subprojects.
      */
-    public fun defaultConfiguration(action: KmpDsl.() -> Unit)
+    public fun defaults(action: KmpDsl.() -> Unit)
 
 
     /*

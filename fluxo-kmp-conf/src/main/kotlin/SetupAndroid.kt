@@ -22,7 +22,8 @@ public fun Project.setupAndroidLibrary(
     if (enableBuildConfig != null) this.enableBuildConfig = enableBuildConfig
     config?.invoke(this)
 
-    configureAsAndroid(app = false) {
+    // FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }
+    asAndroid(app = false) {
         if (body != null) {
             androidLibrary {
                 onAndroidExtension(body)
@@ -54,7 +55,8 @@ public fun Project.setupAndroidApp(
     if (enableBuildConfig != null) this.enableBuildConfig = enableBuildConfig
     config?.invoke(this)
 
-    configureAsAndroid(app = true) {
+    // FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }
+    asAndroid(app = true) {
         if (body != null) {
             androidApp {
                 onAndroidExtension(body)
