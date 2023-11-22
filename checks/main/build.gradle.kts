@@ -10,6 +10,7 @@ setupMultiplatform(
         kotlinApiVersion = "last"
         javaLangTarget = "current"
         kotlinCoreLibraries = ""
+        experimentalLatestCompilation = true
     },
     kmp = { allDefaultTargets() },
 )

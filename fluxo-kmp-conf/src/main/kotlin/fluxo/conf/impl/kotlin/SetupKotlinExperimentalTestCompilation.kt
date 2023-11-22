@@ -1,33 +1,36 @@
 package fluxo.conf.impl.kotlin
 
-import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.conf.impl.d
 import org.gradle.api.NamedDomainObjectContainer
-import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 
 internal val KotlinCompilation<*>.isExperimentalTestCompilation: Boolean
-    get() = name == EXPERIMENTAL_TEST_COMPILATION_NAME
+    get() = name.let { it.startsWith(PREFIX) && it.endsWith(POSTFIX) }
 
 /**
  * Creates experimental test compilation for checking code with the latest
  * and experimental features enabled.
+ *
+ * @receiver Main compilation to create experimental test compilation from.
  */
-internal fun NamedDomainObjectContainer<out KCompilation>.createExperimentalTestCompilation(
-    mainCompilation: KCompilation,
-    conf: FluxoConfigurationExtensionImpl,
+internal fun KCompilation.createExperimentalTestCompilation(
+    compilations: NamedDomainObjectContainer<out KCompilation>,
+    isMultiplatform: Boolean,
 ) {
-    // FIXME: check resulting compilations, add target name to the name
-
-    create(EXPERIMENTAL_TEST_COMPILATION_NAME) {
-        val project = conf.project
+    val platform = if (isMultiplatform) platformType.name.capitalizeAsciiOnly() else ""
+    val compilationName = "$PREFIX$platform$POSTFIX"
+    val mainCompilation = this
+    compilations.create(compilationName) {
+        val project = mainCompilation.project
         project.logger.d("Creating $name compilation (experimental test)")
-
         defaultSourceSet.dependsOn(mainCompilation.defaultSourceSet)
-        project.tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
+        project.tasks.named(CHECK_TASK_NAME) {
             dependsOn(compileTaskProvider)
         }
     }
 }
 
-private const val EXPERIMENTAL_TEST_COMPILATION_NAME = "experimentalTest"
+private const val PREFIX = "experimental"
+private const val POSTFIX = "Latest"

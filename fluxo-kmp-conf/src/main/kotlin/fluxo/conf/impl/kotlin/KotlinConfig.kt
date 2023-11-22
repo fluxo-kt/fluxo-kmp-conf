@@ -104,9 +104,8 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     val progressive = progressiveMode ?: true
 
-    @Suppress("DEPRECATION")
     val canUseLatestSettings = progressive && pluginVersion >= KOTLIN_1_4
-        && (lang == null || lang >= KotlinLangVersion.KOTLIN_1_4)
+        && (lang == null || lang >= @Suppress("DEPRECATION") KotlinLangVersion.KOTLIN_1_4)
 
     var tests = kotlinTestsLangVersion?.toKotlinLangVersion()
     val latestTests = latestSettingsForTests != false
@@ -131,13 +130,11 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     // Experimental test compilation with the latest Kotlin settings.
     // Don't try it for sources with old compatibility settings.
-    // TODO: Find a way to create such compilation without using the
-    //  `org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.dependsOn`
-    //  method (requires allowManualHierarchy).
-    val latestCompilation = canUseLatestSettings && allowManualHierarchy
+    // FIXME: Add env flag for dynamic switch-on when needed (and enable by a task name if called directly)
+    val latestCompilation = canUseLatestSettings
         && !context.isInCompositeBuild
         && !context.testsDisabled
-        && experimentalLatestCompilation != false
+        && experimentalLatestCompilation == true
 
     val setupCoroutines = setupCoroutines ?: true
     val optInInternal = optInInternal ?: false

@@ -14,7 +14,7 @@ plugins {
 
 val pluginName = "fluxo-kmp-conf"
 val pluginId = "io.github.fluxo-kt.fluxo-kmp-conf"
-val experimentalTest = false
+val experimentalTest = true
 
 group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
@@ -29,10 +29,21 @@ kotlin {
 
     coreLibrariesVersion = libs.versions.kotlinCoreLibraries.get()
 
+    val kotlinVersion = libs.versions.kotlinLangVersion.get()
+    val kotlinApiVersion = libs.versions.kotlinApiVersion.get()
+    val jvmVersion = libs.versions.javaLangTarget.get()
+
+    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+        jvmTarget = jvmVersion
+        languageVersion = kotlinVersion
+    }
+    tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+        jvmTarget = jvmVersion
+        languageVersion = kotlinVersion
+    }
+
     target.compilations {
-        val kotlinVersion = libs.versions.kotlinLangVersion.get()
-        val kotlinApiVersion = libs.versions.kotlinApiVersion.get()
-        val main by getting {
+        val configureMain: (KotlinWithJavaCompilation<KotlinJvmOptions, *>).() -> Unit = {
             libs.versions.javaLangTarget.get().let { jvmVersion ->
                 kotlinOptions {
                     jvmTarget = jvmVersion
@@ -40,15 +51,6 @@ kotlin {
                     // Note: apiVersion can't be greater than languageVersion!
                     apiVersion = kotlinApiVersion
 //                    allWarningsAsErrors = true
-
-                    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-                        jvmTarget = jvmVersion
-                        languageVersion = kotlinVersion
-                    }
-                    tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
-                        jvmTarget = jvmVersion
-                        languageVersion = kotlinVersion
-                    }
 
                     freeCompilerArgs += "-Xcontext-receivers"
                     freeCompilerArgs += "-Xklib-enable-signature-clash-checks"
@@ -73,17 +75,22 @@ kotlin {
         }
 
         val configureLatest: (KotlinWithJavaCompilation<KotlinJvmOptions, *>).() -> Unit = {
+            configureMain()
+            val latestJre = "17"
+            val latestKotlin = "2.1"
             kotlinOptions {
-                jvmTarget = "17"
-                languageVersion = "2.0"
-                apiVersion = "2.0"
+                jvmTarget = latestJre
+                languageVersion = latestKotlin
+                apiVersion = latestKotlin
+                allWarningsAsErrors = false
             }
             compileJavaTaskProvider.configure {
-                sourceCompatibility = "17"
-                targetCompatibility = "17"
+                sourceCompatibility = latestJre
+                targetCompatibility = latestJre
             }
         }
 
+        val main by getting(configuration = configureMain)
         getByName("test", configureLatest)
 
         // Experimental test compilation with the latest Kotlin settings.
@@ -92,9 +99,7 @@ kotlin {
         if (!isInCompositeBuild && experimentalTest && kotlinVersion.toFloat() >= 1.4f) {
             create("experimentalTest") {
                 configureLatest()
-                // Deprecated in Kotlin 1.9.0
-                @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
-                source(main.defaultSourceSet)
+                defaultSourceSet.dependsOn(main.defaultSourceSet)
                 tasks.named("check") {
                     dependsOn(compileTaskProvider)
                 }

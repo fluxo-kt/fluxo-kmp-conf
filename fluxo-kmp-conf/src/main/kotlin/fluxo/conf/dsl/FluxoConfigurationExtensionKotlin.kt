@@ -281,6 +281,9 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
     /**
      * Flag to create an experimental compilation with the latest language features.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `false`.
      */
     public var experimentalLatestCompilation: Boolean?
 

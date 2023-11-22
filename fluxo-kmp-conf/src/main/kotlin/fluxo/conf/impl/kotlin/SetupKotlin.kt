@@ -289,7 +289,7 @@ private fun KotlinProjectExtension.setupTargets(
     isMultiplatform: Boolean = this is KotlinMultiplatformExtension,
 ) = setupTargets {
     val compilations = compilations
-    compilations.configureEach {
+    compilations.configureEach compilation@{
         val isExperimentalTest = isExperimentalTestCompilation
         val isTest = isExperimentalTest || isTestRelated()
 
@@ -301,7 +301,7 @@ private fun KotlinProjectExtension.setupTargets(
 
         val context = conf.context
         val kc = context.kotlinConfig
-        kotlinOptions.apply {
+        kotlinOptions.run {
             val platformType = target.platformType
             val isAndroid = platformType.let { KotlinPlatformType.androidJvm === it }
             val isJs = !isAndroid && platformType
@@ -331,17 +331,20 @@ private fun KotlinProjectExtension.setupTargets(
             )
         }
 
+        // Disable test compilation if tests are disabled.
         if (isTest && context.testsDisabled) {
             disableCompilation()
         }
+    }
 
-        // Create experimental test compilation with the latest Kotlin settings.
-        else if (kc.latestCompilation
-            && name == MAIN_SOURCE_SET_NAME
-            && platformType != KotlinPlatformType.common
-        ) {
-            compilations.createExperimentalTestCompilation(this, conf)
-        }
+    // Create experimental test compilation with the latest Kotlin settings.
+    // Configured automatically with `configureEach`.
+    // NOTE: can't be created inside `compilations.configureEach`, it will fail due to wrong phase.
+    // TODO: Test, tune, and enable for KMP
+    val kc = conf.context.kotlinConfig
+    if (kc.latestCompilation && (!isMultiplatform || kc.allowManualHierarchy)) {
+        compilations.getByName(MAIN_SOURCE_SET_NAME)
+            .createExperimentalTestCompilation(compilations, isMultiplatform = isMultiplatform)
     }
 
     // Verify that all unneeded targets are disabled.
