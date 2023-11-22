@@ -122,7 +122,7 @@ internal fun Project.setupDetekt(
         kc.jvmTarget?.let { jvmTarget = it }
 
         val (lang) = kc.langAndApiVersions(isTest = false, /*latestSettings = */)
-        lang?.let { languageVersion.set(it.toString()) }
+        lang?.let { languageVersion.set(it.version) }
 
         if (mergeDetektBaselinesTask != null) {
             baseline.set(file("$detektBaselineIntermediate-$name.xml"))
@@ -150,7 +150,7 @@ internal fun Project.setupDetekt(
         kc.jvmTarget?.let { jvmTarget = it }
 
         val (lang) = kc.langAndApiVersions(isTest = false, /*latestSettings = */)
-        lang?.let { languageVersion = it.toString() }
+        lang?.let { languageVersion = it.version }
 
         reports.apply {
             sarif.required.set(!isDisabled)
