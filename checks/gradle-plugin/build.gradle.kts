@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.jvm) apply false
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
 

@@ -87,6 +87,8 @@ internal val KOTLIN_1_9_20 = KotlinVersion(1, 9, 20)
 @Volatile
 private var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT
 
+internal lateinit var KOTLIN_PLUGIN_VERSION_RAW: String
+
 /**
  * Gets the current Kotlin plugin version.
  *
@@ -99,6 +101,8 @@ internal fun Logger.kotlinPluginVersion(): KotlinVersion {
     val logger = this
     try {
         getKotlinPluginVersion(logger).let { versionString ->
+            KOTLIN_PLUGIN_VERSION_RAW = versionString
+
             val baseVersion = versionString.split("-", limit = 2)[0]
             val parts = baseVersion.split(".")
             return KotlinVersion(

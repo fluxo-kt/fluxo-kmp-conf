@@ -46,7 +46,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.samWithReceiver.gradle.SamWithReceiverExtension
 
 internal fun configureKotlinJvm(
     type: ConfigurationType,
@@ -82,14 +81,7 @@ internal fun configureKotlinJvm(
         // Gradle Kotlin DSL uses the same compiler plugin (sam.with.receiver).
         // Allow the same ease of use for Gradle plugins.
         // Works for Gradle Action and potentially other similar types.
-        context.loadAndApplyPluginIfNotApplied(id = KT_SAM_RECEIVER_PLUGIN_ID, project = project)
-        try {
-            project.configureExtension<SamWithReceiverExtension>(name = "samWithReceiver") {
-                annotation(requireNotNull(org.gradle.api.HasImplicitReceiver::class.qualifiedName))
-            }
-        } catch (e: Throwable) {
-            project.logger.e("Couldn't apply samWithReceiver extension due to: $e", e)
-        }
+        project.setupSamWithReceiver(context)
 
         context.loadAndApplyPluginIfNotApplied(id = GRADLE_PLUGIN_PUBLISH_ID, project = project)
     }

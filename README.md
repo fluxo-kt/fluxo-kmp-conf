@@ -134,6 +134,21 @@ pluginManagement {
 * [Gradle-Spotless-Plugin](https://github.com/diffplug/spotless/tree/main/plugin-gradle) from @diffplug
 * [AndroidX Baseline Profile Gradle Plugin](https://github.com/androidx/androidx/blob/7222fd3/benchmark/baseline-profile-gradle-plugin/src/main/kotlin/androidx/baselineprofile/gradle/utils/AgpPlugin.kt)
 
+
+### Research roadmap
+<details>
+  <summary>Show</summary>
+
+* [Gradle Plugin TestKit](https://github.com/autonomousapps/dependency-analysis-gradle-plugin/tree/main/testkit) ([Docs](https://docs.gradle.org/current/userguide/test_kit.html))
+* https://github.com/square/radiography
+* https://github.com/JetBrains-Research/reflekt
+* https://github.com/mikepenz/AboutLibraries
+* https://github.com/gradle/gradle/issues/26091#issuecomment-1798137734
+* https://github.com/drewhamilton/poko/
+  * https://github.com/saket/telephoto/releases/tag/0.7.1
+</details>
+
+
 ### Versioning
 
 Uses [SemVer](http://semver.org/) for versioning.

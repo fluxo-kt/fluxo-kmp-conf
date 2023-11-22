@@ -8,13 +8,16 @@ public fun Project.setupGradlePlugin(
     group: String? = null,
     version: String? = null,
     pluginId: String? = if (pluginName != null && group != null) "$group.$pluginName" else null,
+    // FIXME: Find a better API for this, ideally from within the `config` block.
     kotlin: (KotlinJvmProjectExtension.() -> Unit)? = null,
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
 ): Unit = fluxoConfiguration {
     explicitApi()
+
+    // FIXME: Configuration should be lazy, skippable, and only applied if the target is configured.
     config?.invoke(this)
 
     asGradlePlugin {
-        kotlin?.let { kotlin(action = it) }
+        kotlin?.let { this.kotlin(action = it) }
     }
 }

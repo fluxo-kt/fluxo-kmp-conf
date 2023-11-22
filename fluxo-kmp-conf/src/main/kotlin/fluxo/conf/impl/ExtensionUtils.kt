@@ -36,11 +36,15 @@ internal inline fun ExtensionAware.hasExtension(clazz: () -> KClass<*>): Boolean
  *
  * @see org.gradle.api.plugins.ExtensionContainer.getByType
  * @throws UnknownDomainObjectException When the given extension isn't found.
+ * @throws NoClassDefFoundError if [T] isn't on the classpath!
  */
 internal inline fun <reified T : Any> ExtensionAware.the(type: KClass<T>? = null): T =
     extensions.getByType<T>()
 
-
+/**
+ *
+ * @throws NoClassDefFoundError if [T] isn't on the classpath!
+ */
 internal inline fun <reified T : Any> ExtensionAware.configureExtensionIfAvailable(
     @Suppress("UNUSED_PARAMETER") name: String? = null,
     noinline action: T.() -> Unit,
@@ -53,11 +57,19 @@ internal inline fun <reified T : Any> ExtensionAware.configureExtensionIfAvailab
     }
 }
 
+/**
+ *
+ * @throws NoClassDefFoundError if [T] isn't on the classpath!
+ */
 internal inline fun <reified T : Any> ExtensionAware.configureExtension(
     type: KClass<T>? = null,
     noinline action: T.() -> Unit,
 ) = extensions.configure(T::class.java, actionOf(action))
 
+/**
+ *
+ * @throws NoClassDefFoundError if [T] isn't on the classpath!
+ */
 internal fun <T : Any> ExtensionAware.configureExtension(
     name: String,
     type: KClass<T>? = null,
