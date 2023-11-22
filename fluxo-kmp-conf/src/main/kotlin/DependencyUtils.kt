@@ -17,10 +17,18 @@ public fun Provider<PluginDependency>.toModuleDependency(): Provider<String> =
  * Converts a [PluginDependency] to a usual module dependency
  * with Gradle Plugin Marker Artifact convention.
  */
-public fun PluginDependency.toModuleDependency(): String {
-    // Convention for the Gradle Plugin Marker Artifact
-    // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_markers
-    return pluginId.let { "$it:$it.gradle.plugin:$version" }
+public fun PluginDependency.toModuleDependency(): String =
+    // TODO: Support rich VersionConstraint
+    getGradlePluginMarkerArtifactMavenCoordinates(pluginId, version.toString())
+
+// Convention for the Gradle Plugin Marker Artifact
+// https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_markers
+internal fun getGradlePluginMarkerArtifactMavenCoordinates(
+    pluginId: String,
+    version: String?,
+): String {
+    val v = if (!version.isNullOrBlank()) ":$version" else ""
+    return pluginId.let { "$it:$it.gradle.plugin$v" }
 }
 
 
