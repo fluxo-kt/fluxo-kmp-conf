@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.attributes.Bundling
+import org.gradle.internal.component.AbstractVariantSelectionException
 
 internal object GradleProvisioner {
 
@@ -65,6 +66,14 @@ internal object GradleProvisioner {
                 }
                 config.resolve()
             } catch (e: Throwable) {
+                var cause = e.cause
+                while (cause != null) {
+                    if (cause is AbstractVariantSelectionException) {
+                        throw e
+                    }
+                    cause = cause.cause
+                }
+
                 var projName = project.path.substring(1).replace(':', '/')
                 if (projName.isNotEmpty()) {
                     projName = "$projName/"

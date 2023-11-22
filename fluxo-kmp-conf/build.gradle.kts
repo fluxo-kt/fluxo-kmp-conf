@@ -179,6 +179,7 @@ buildConfig {
     }
 
     buildConfigField("KOTLIN_SAM_RECEIVER", libs.plugins.kotlin.sam.receiver)
+    buildConfigField("GRADLE_PLUGIN_PUBLISH", libs.plugins.gradle.plugin.publish)
     buildConfigField("COMPLETE_KOTLIN", libs.plugins.complete.kotlin)
     buildConfigField("DEPS_VERSIONS", libs.plugins.deps.versions)
     buildConfigField("DEPS_ANALYSIS", libs.plugins.deps.analysis)

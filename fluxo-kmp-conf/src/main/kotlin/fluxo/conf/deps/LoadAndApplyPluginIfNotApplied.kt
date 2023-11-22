@@ -23,6 +23,7 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     catalogVersionIds: Array<out String>? = null,
     vararg catalogPluginIds: String,
     project: Project = rootProject,
+    lookupClassName: Boolean = LOOKUP_CLASS_NAME_IN_CLASS_LOADER,
 ): ApplyPluginResult {
     val logger = project.logger
     val pluginManager = project.pluginManager
@@ -44,17 +45,18 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
 
     // Get the plugin ID and version with all the fallbacks from version catalog.
     val (pluginId, pluginVersion) = getPluginIdAndVersion(
-        id,
-        version,
-        catalogPluginIds,
-        catalogPluginId,
-        logger,
-        catalogVersionIds,
-        catalogVersionId,
+        id = id,
+        version = version,
+        catalogPluginIds = catalogPluginIds,
+        catalogPluginId = catalogPluginId,
+        logger = logger,
+        catalogVersionIds = catalogVersionIds,
+        catalogVersionId = catalogVersionId,
     )
 
-    val pluginClass = loadPluginArtifactAndGetClass(pluginId, pluginVersion, className)
-        ?: return ApplyPluginResult.FALSE
+    val pluginClass = loadPluginArtifactAndGetClass(
+            pluginId, pluginVersion, className, lookupClassName = lookupClassName,
+    ) ?: return ApplyPluginResult.FALSE
 
     pluginManager.apply(pluginClass)
 
@@ -71,6 +73,7 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
     pluginId: String,
     pluginVersion: String?,
     className: String?,
+    lookupClassName: Boolean,
 ): Class<*>? {
     val logger = rootProject.logger
     val example = loadingWarnExample(pluginId)
@@ -78,7 +81,7 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
     if (!className.isNullOrEmpty()) {
         classNames = mutableSetOf(className)
     } else {
-        if (!LOOKUP_CLASS_NAME_IN_CLASS_LOADER) {
+        if (!lookupClassName) {
             val error = "Can't load plugin '$pluginId' dynamically (unknown plugin class name)!"
             logger.e(loadingErrorMessage(error, example))
             return null
@@ -92,7 +95,7 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
         logger.v("Found plugin '$pluginId' class on the classpath: $className")
         return pluginClass
     }
-    if (LOOKUP_CLASS_NAME_IN_CLASS_LOADER && classNames.isEmpty()) {
+    if (lookupClassName && classNames.isEmpty()) {
         try {
             val classLoader = Thread.currentThread().contextClassLoader ?: javaClass.classLoader
             classNames += classLoader.findPluginClassNames(pluginId, logger)

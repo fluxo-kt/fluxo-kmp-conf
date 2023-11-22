@@ -83,7 +83,8 @@ internal fun configureKotlinJvm(
         // Works for Gradle Action and potentially other similar types.
         project.setupSamWithReceiver(context)
 
-        context.loadAndApplyPluginIfNotApplied(id = GRADLE_PLUGIN_PUBLISH_ID, project = project)
+        // Main plugin for Gradle plugins authoring and publication
+        project.setupGradlePublishPlugin(context)
     }
 
     // Add all plugins first, for configuring in next steps.

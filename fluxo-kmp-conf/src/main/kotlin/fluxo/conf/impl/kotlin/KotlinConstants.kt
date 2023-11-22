@@ -6,7 +6,6 @@ internal const val KAPT_PLUGIN_ID = "org.jetbrains.kotlin.kapt"
 internal const val KSP_PLUGIN_ID = "com.google.devtools.ksp"
 internal const val JETBRAINS_COMPOSE_PLUGIN_ID = "org.jetbrains.compose"
 internal const val INTELLIJ_PLUGIN_ID = "org.jetbrains.intellij"
-internal const val GRADLE_PLUGIN_PUBLISH_ID = "com.gradle.plugin-publish"
 
 internal const val COROUTINES_DEPENDENCY = "org.jetbrains.kotlinx:kotlinx-coroutines-core"
 
