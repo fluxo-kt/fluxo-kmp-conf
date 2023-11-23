@@ -7,7 +7,7 @@ on:
       - '**.*ignore'
       - '**.md'
       - '**.txt'
-      - '**/pr-*.yml'
+      - '**/pr-**.yml'
       - '**dependabot.yml'
   push:
     paths-ignore:
@@ -15,7 +15,7 @@ on:
       - '**.*ignore'
       - '**.md'
       - '**.txt'
-      - '**/pr-*.yml'
+      - '**/pr-**.yml'
       - '**dependabot.yml'
 
 env:
@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
           disable-sudo: true
           egress-policy: audit

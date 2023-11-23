@@ -1,4 +1,4 @@
-name: Fast-Forward PR Merge
+name: PR Fast-Forward Merge
 
 on:
   issue_comment:
@@ -20,12 +20,15 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
           disable-sudo: true
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
 
-      - name: Fast-Forward PR Merge
+      - name: Fast-forwarding and pushing
         uses: sequoia-pgp/fast-forward@v1
         with:
           merge: true
