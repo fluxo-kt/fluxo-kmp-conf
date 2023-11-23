@@ -96,7 +96,7 @@ internal val KotlinCompilation<*>.compileJavaTaskProvider: TaskProvider<out Java
     get() = when (this) {
         is KotlinJvmAndroidCompilation -> compileJavaTaskProvider
         is KotlinWithJavaCompilation<*, *> -> compileJavaTaskProvider
-        // nullable for Kotlin-only JVM target in MPP
+        // nullable for Kotlin-only JVM target in KMP-module
         is KotlinJvmCompilation -> compileJavaTaskProvider
         else -> null
     }
@@ -140,9 +140,34 @@ internal val JRE_VERSION: Int = run {
     }
 }
 
-internal fun lastKnownJdkVersion(setupToolchain: Boolean): Int {
-    return if (setupToolchain) max(JRE_VERSION, LTS_JDK_VERSION) else JRE_VERSION
+
+private fun lastKnownJdkVersion(setupToolchain: Boolean): Int =
+    if (setupToolchain) max(JRE_VERSION, LTS_JDK_VERSION) else JRE_VERSION
+
+internal fun lastSupportedJvmMajorVersion(setupToolchain: Boolean): Int =
+    lastKnownJdkVersion(setupToolchain).toKotlinSupportedJvmMajorVersion()
+
+internal fun lastSupportedJvmTargetVersion(setupToolchain: Boolean): String =
+    lastSupportedJvmMajorVersion(setupToolchain).asJvmTargetVersion()
+
+
+internal fun String.toJvmMajorVersion(setupToolchain: Boolean): Int {
+    return when {
+        isBlank() -> 0
+
+        equals("last", ignoreCase = true) ||
+            equals("latest", ignoreCase = true) ||
+            equals("max", ignoreCase = true) ||
+            equals("+")
+        -> lastKnownJdkVersion(setupToolchain)
+
+        equals("current", ignoreCase = true) || isEmpty()
+        -> JRE_VERSION
+
+        else -> asJvmMajorVersion()
+    }.toKotlinSupportedJvmMajorVersion()
 }
+
 
 internal fun Int.asJvmTargetVersion(): String = if (this >= JRE_1_9) toString() else "1.$this"
 
@@ -150,4 +175,4 @@ internal fun Int.asJvmTargetVersion(): String = if (this >= JRE_1_9) toString() 
 internal fun String.asJvmMajorVersion(): Int =
     removePrefix("1.").takeWhile { it.isDigit() }.toInt()
 
-internal fun String.asJavaVersion() = JavaVersion.toVersion(this)
+internal fun String.asJavaVersion(): JavaVersion = JavaVersion.toVersion(this)

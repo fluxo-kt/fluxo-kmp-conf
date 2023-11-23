@@ -268,7 +268,8 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * Only applied if the latest [kotlinLangVersion] used (otherwise meaningless).
      *
-     * Inherited from the parent project if not set. Default value: `true`.
+     * Inherited from the parent project if not set.
+     * Default value: `true`.
      *
      * @see org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder.progressiveMode
      */
@@ -276,6 +277,9 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
     /**
      * Flag to create an experimental compilation with the latest language features.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `true`.
      */
     public var latestSettingsForTests: Boolean?
 
@@ -291,7 +295,8 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Flag to remove utility bytecode, eliminating names/data leaks in release artifacts
      * (better for minification and obfuscation).
      *
-     * Inherited from the parent project if not set. Default value: `true`.
+     * Inherited from the parent project if not set.
+     * Default value: `true`.
      *
      * Uses `-Xno-call-assertions`, `-Xno-param-assertions`, and `-Xno-receiver-assertions`
      * compiler options.

@@ -62,7 +62,7 @@ jobs:
             ~/.gradle/binaryen
             hashFiles('**/gradle/libs.versions.toml')
           key: ${{ runner.os }}-kmp-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties', '**/gradle/libs.versions.toml') }}
-          restore-keys: ${{ runner.os }}-kmp-
+          #restore-keys: ${{ runner.os }}-kmp-
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2

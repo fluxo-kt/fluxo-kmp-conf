@@ -290,7 +290,7 @@ private fun KotlinProjectExtension.setupTargets(
 ) = setupTargets {
     val compilations = compilations
     compilations.configureEach compilation@{
-        val isExperimentalTest = isExperimentalTestCompilation
+        val isExperimentalTest = isExperimentalLatestCompilation
         val isTest = isExperimentalTest || isTestRelated()
 
         setupKotlinCompatibility(
@@ -327,6 +327,7 @@ private fun KotlinProjectExtension.setupTargets(
                 latestSettings = isExperimentalTest,
                 jvmTargetVersion = jvmTargetVersion,
                 isAndroid = isAndroid,
+                isTest = isTest,
                 isMultiplatform = isMultiplatform,
             )
         }
@@ -339,13 +340,9 @@ private fun KotlinProjectExtension.setupTargets(
 
     // Create experimental test compilation with the latest Kotlin settings.
     // Configured automatically with `configureEach`.
-    // NOTE: can't be created inside `compilations.configureEach`, it will fail due to wrong phase.
-    // TODO: Test, tune, and enable for KMP
-    val kc = conf.context.kotlinConfig
-    if (kc.latestCompilation && (!isMultiplatform || kc.allowManualHierarchy)) {
-        compilations.getByName(MAIN_SOURCE_SET_NAME)
-            .createExperimentalTestCompilation(compilations, isMultiplatform = isMultiplatform)
-    }
+    // NOTE: can't be created inside `compilations.configureEach`,
+    //  it will fail due to the wrong phase.
+    setupExperimentalLatestCompilation(conf, isMultiplatform = isMultiplatform)
 
     // Verify that all unneeded targets are disabled.
     if (SHOW_DEBUG_LOGS) {

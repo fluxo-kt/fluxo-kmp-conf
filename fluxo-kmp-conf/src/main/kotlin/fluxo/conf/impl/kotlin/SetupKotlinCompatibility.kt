@@ -148,53 +148,37 @@ private val KOTLIN_LANG_VERSION = try {
     KotlinLangVersion.fromVersion("${v.major}.${v.minor}")
 }
 
-internal fun lastKnownJvmTargetVersion(setupToolchain: Boolean): String {
-    var version = lastKnownJdkVersion(setupToolchain)
-
+internal fun Int.toKotlinSupportedJvmMajorVersion(): Int {
     // Align with the current Kotlin plugin supported JVM targets
-    if (version > 8) {
-        // 1.3.30 added support for 9..12.
-        // https://blog.jetbrains.com/kotlin/2019/04/kotlin-1-3-30-released/#SpecifyingJVMbytecodetargets9%E2%80%9312
-        // 1.4.0 supports also 13..14
-        // https://stackoverflow.com/a/64331184/1816338
-        // 1.6.0 added support for 17
-        // https://kotlinlang.org/docs/whatsnew16.html#kotlin-jvm
-        // 1.8.0 added support for 19
-        // https://kotlinlang.org/docs/whatsnew18.html#kotlin-jvm
-        // 1.9.0 added support for 20
-        // https://kotlinlang.org/docs/whatsnew19.html#kotlin-jvm
+    if (this > 8) {
         val pluginVersion = KOTLIN_PLUGIN_VERSION
         val maxSupportedTarget = when {
+            // 1.9.20 added support for 21
+            // https://kotlinlang.org/docs/whatsnew1920.html#kotlin-jvm
+            // TODO: Detekt doesn't support 21 yet, enable when it does
+            //pluginVersion >= KOTLIN_1_9_20 -> 21
+            // 1.9.0 added support for 20
+            // https://kotlinlang.org/docs/whatsnew19.html#kotlin-jvm
             pluginVersion >= KOTLIN_1_9 -> 20
+            // 1.8.0 added support for 19
+            // https://kotlinlang.org/docs/whatsnew18.html#kotlin-jvm
             pluginVersion >= KOTLIN_1_8 -> 19
+            // 1.6.0 added support for 17
+            // https://kotlinlang.org/docs/whatsnew16.html#kotlin-jvm
             pluginVersion >= KOTLIN_1_6 -> 17
+            // 1.4.0 supports also 13..14
+            // https://stackoverflow.com/a/64331184/1816338
             pluginVersion >= KOTLIN_1_4 -> 14
+            // 1.3.30 added support for 9..12.
+            // https://blog.jetbrains.com/kotlin/2019/04/kotlin-1-3-30-released/#SpecifyingJVMbytecodetargets9%E2%80%9312
             pluginVersion >= KOTLIN_1_3_30 -> 12
             else -> 8
         }
-        if (version > maxSupportedTarget) {
-            version = maxSupportedTarget
+        if (this > maxSupportedTarget) {
+            return maxSupportedTarget
         }
     }
-
-    return version.asJvmTargetVersion()
-}
-
-internal fun String.toJvmTargetVersion(setupToolchain: Boolean = false): String? {
-    return when {
-        isBlank() -> null
-
-        equals("last", ignoreCase = true) ||
-            equals("latest", ignoreCase = true) ||
-            equals("max", ignoreCase = true) ||
-            equals("+")
-        -> lastKnownJvmTargetVersion(setupToolchain)
-
-        equals("current", ignoreCase = true) || isEmpty()
-        -> JRE_VERSION.asJvmTargetVersion()
-
-        else -> this
-    }
+    return this
 }
 
 // endregion

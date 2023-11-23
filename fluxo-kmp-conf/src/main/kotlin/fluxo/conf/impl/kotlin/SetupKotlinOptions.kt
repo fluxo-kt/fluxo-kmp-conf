@@ -6,6 +6,7 @@ import fluxo.conf.impl.addAll
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 
 @Suppress("LongParameterList", "ComplexMethod", "LongMethod")
 internal fun KotlinCommonOptions.setupKotlinOptions(
@@ -14,6 +15,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     warningsAsErrors: Boolean,
     latestSettings: Boolean,
     isAndroid: Boolean,
+    isTest: Boolean,
     isMultiplatform: Boolean,
     jvmTargetVersion: String?,
 ) {
@@ -27,10 +29,17 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
 
     val compilerArgs = freeCompilerArgs.toMutableList()
     compilerArgs.addAll(DEFAULT_OPTS)
+
+    val kotlinPluginVersion = context.kotlinPluginVersion
+    val (lang) = kc.langAndApiVersions(isTest = isTest, latestSettings = useLatestSettings)
+    if (if (lang != null) lang <= KotlinLangVersion.KOTLIN_1_9 else kotlinPluginVersion <= KOTLIN_1_9) {
+        compilerArgs.addAll(KOTLIN_UP_TO_1_9_OPTS)
+    }
+
     if (useLatestSettings) {
         compilerArgs.addAll(LATEST_OPTS)
     }
-    val kotlinPluginVersion = context.kotlinPluginVersion
+
     if (isMultiplatform && kotlinPluginVersion >= KOTLIN_1_9_20) {
         compilerArgs.add("-Xexpect-actual-classes")
     }
@@ -42,7 +51,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             isJvm = true
             isJs = false
 
-            // FIXME: Move to JvmCompatibility
+            // FIXME: Move to JvmCompatibility?
             jvmTargetVersion?.let {
                 setupJvmCompatibility(it)
 
@@ -166,16 +175,11 @@ private fun langFeature(name: String) = "-XXLanguage:+$name"
 // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
 // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/js/jsExtraHelp.out
 private val DEFAULT_OPTS = arrayOf(
-    "-Xenable-incremental-compilation",
-
     // Check uniqueness of signatures at klib generating phase
     "-Xklib-enable-signature-clash-checks",
 
     // Enable context receivers. Only works for JVM targets by 2023.07.
     "-Xcontext-receivers",
-
-    // Inline functions using IR inliner instead of bytecode inliner for JVM targets.
-    "-Xir-inliner",
 
     // Support for IR backend parallel compilation:
     //  https://youtrack.jetbrains.com/issue/KT-46085
@@ -187,6 +191,16 @@ private val DEFAULT_OPTS = arrayOf(
     // Also reserved 2 cores for Gradle multitasking.
     // On Apple M1 Max parallelism reduces compilation time by 1/3.
     "-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
+).asList()
+
+// Not supported in Kotlin 2.1 language version.
+private val KOTLIN_UP_TO_1_9_OPTS = arrayOf(
+    // For incremental compilation, both flags should be supplied:
+    //  -Xenable-incremental-compilation and -Xic-cache-dir.
+    "-Xenable-incremental-compilation",
+
+    // Inline functions using IR inliner instead of bytecode inliner for JVM targets.
+    "-Xir-inliner",
 ).asList()
 
 /** Latest options for early testing Kotlin compatibility or for non-production compilations. */

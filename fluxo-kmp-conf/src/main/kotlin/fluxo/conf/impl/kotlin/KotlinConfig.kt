@@ -66,7 +66,7 @@ internal class KotlinConfig(
         latestSettings: Boolean = false,
     ): String? {
         if (latestSettings) {
-            return lastKnownJvmTargetVersion(jvmToolchain)
+            return lastSupportedJvmTargetVersion(jvmToolchain)
         }
         if (isTest) {
             jvmTestTarget?.let { return it }
@@ -98,14 +98,22 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     }
 
     val jvmToolchain = setupJvmToolchain ?: false
-    val jvmTarget = javaLangTarget?.toJvmTargetVersion(jvmToolchain)
-    val jvmTargetInt = jvmTarget?.asJvmMajorVersion() ?: JRE_VERSION
+    var jvmTargetInt = jvmTarget?.toJvmMajorVersion(jvmToolchain) ?: 0
+    val jvmTarget: String?
+    if (jvmTargetInt <= 0) {
+        jvmTargetInt = JRE_VERSION.toKotlinSupportedJvmMajorVersion()
+        jvmTarget = null
+    } else {
+        jvmTarget = jvmTargetInt.asJvmTargetVersion()
+    }
     val javaParameters = jvmTargetInt >= JRE_1_8 && javaParameters ?: false
+
 
     val progressive = progressiveMode ?: true
 
     val canUseLatestSettings = progressive && pluginVersion >= KOTLIN_1_4
         && (lang == null || lang >= @Suppress("DEPRECATION") KotlinLangVersion.KOTLIN_1_4)
+
 
     var tests = kotlinTestsLangVersion?.toKotlinLangVersion()
     val latestTests = latestSettingsForTests != false
@@ -114,15 +122,13 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     }
     tests?.run { tests = takeIf { it != lang } }
 
+    // The tests JVM target can't be lower than the main target version!
+    var jvmTestsInt = javaTestsLangTarget?.toJvmMajorVersion(jvmToolchain) ?: 0
+    if (jvmTestsInt <= 0 && canUseLatestSettings && latestTests) {
+        jvmTestsInt = lastSupportedJvmMajorVersion(jvmToolchain)
+    }
+    val jvmTests = if (jvmTestsInt > jvmTargetInt) jvmTestsInt.asJvmTargetVersion() else null
 
-    // The test target can't be lower than the main target version!
-    var jvmTests = javaTestsLangTarget?.toJvmTargetVersion(jvmToolchain)?.takeIf { v ->
-        if (jvmTarget != null) v != jvmTarget else v.asJvmMajorVersion() != jvmTargetInt
-    }
-    if (jvmTests == null && canUseLatestSettings && latestTests) {
-        jvmTests = lastKnownJvmTargetVersion(jvmToolchain)
-    }
-    jvmTests?.run { jvmTests = takeIf { it != jvmTarget } }
 
     // As of Kotlin 1.9.20,
     // none of the source sets can depend on the compilation default source sets.
