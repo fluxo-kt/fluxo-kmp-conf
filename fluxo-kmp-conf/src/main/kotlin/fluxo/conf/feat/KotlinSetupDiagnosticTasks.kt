@@ -10,14 +10,12 @@ import fluxo.conf.impl.withType
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
+import org.jetbrains.kotlin.gradle.plugin.mpp.HasBinaries
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinTargetWithBinaries
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
-import org.jetbrains.kotlin.gradle.targets.js.KotlinJsTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetContainerDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmSubTargetContainerDsl
-import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
@@ -65,30 +63,19 @@ private fun Project.printKotlinTargetsInfo() {
         if (target is KotlinJsTargetDsl) {
             println("$T moduleName: ${target.moduleName}")
         }
-        if (target is KotlinJsTarget) {
-            println(
-                "$T disambiguationClassifierInPlatform:" +
-                        " ${target.disambiguationClassifierInPlatform}",
-            )
-        }
         if (target is KotlinJvmTarget) {
             println("$T javaEnabled: ${target.withJavaEnabled}")
         }
-        if (target is KotlinTargetWithBinaries<*, *>) {
-            if (target is KotlinNativeTarget) {
-                target.binaries.forEach {
+        if (target is HasBinaries<*>) {
+            when (target) {
+                is KotlinNativeTarget -> target.binaries.forEach {
                     println(
                         "$P binary ${it.name}(${it.outputKind}" +
                                 ", debuggable=${it.debuggable}, optimized=${it.optimized})",
                     )
                 }
-            } else {
-                val binaries = when (target) {
-                    is KotlinJsTarget -> target.binaries
-                    is KotlinJsIrTarget -> target.binaries
-                    else -> null
-                }
-                binaries?.forEach {
+
+                is KotlinJsTargetDsl -> target.binaries.forEach {
                     println("$P binary ${it.name}(${it.mode})")
                 }
             }

@@ -399,7 +399,7 @@ public fun <E> E.commonCompileOnly(
     if (!addConstraint) {
         return
     }
-    var p = project
+    var p = project ?: targets.firstOrNull()?.project
     try {
         if (p == null) {
             @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
