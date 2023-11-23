@@ -22,7 +22,7 @@ env:
   CI: true
   BUILD_NUMBER: ${{ github.run_number }}
   SCM_TAG: ${{ github.sha }}
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  #GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   DEPENDENCY_GRAPH_INCLUDE_CONFIGURATIONS: "^(?!(classpath)).*"
   DEPENDENCY_GRAPH_INCLUDE_PROJECTS: "^:(?!(buildSrc|test-)).*"
 
