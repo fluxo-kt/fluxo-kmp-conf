@@ -97,7 +97,8 @@ internal class KmpConfigurationContainerDslImpl(
         if (kotlinPluginVersion >= KOTLIN_1_8_20) {
             wasmJs()
 
-            if (kotlinPluginVersion >= KOTLIN_1_9_20) {
+            // Usage of both Wasi and JS targets lead to problems atm.
+            if (ENABLE_WASM_WASI && kotlinPluginVersion >= KOTLIN_1_9_20) {
                 wasmWasi()
             }
         }
@@ -115,3 +116,5 @@ internal class KmpConfigurationContainerDslImpl(
         }
     }
 }
+
+private const val ENABLE_WASM_WASI = false
