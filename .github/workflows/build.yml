@@ -35,6 +35,10 @@ jobs:
     permissions:
       contents: write
       security-events: write
+      # We appear to need write permission for both pull-requests and
+      # issues in order to post a comment to a pull request.
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Harden Runner
@@ -70,6 +74,9 @@ jobs:
           gradle-home-cache-cleanup: true
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
           dependency-graph: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'generate-and-submit' || 'disabled'}}
+
+      # TODO: If it's a "build(deps): ..." commit, then run the dependency review actions,
+      #  amend the `dependencyGuardBaseline` and `kotlinUpgradeYarnLock` task results
 
       - name: 'Build and check plugin itself'
         run: ./gradlew build assemble check --continue --stacktrace --scan

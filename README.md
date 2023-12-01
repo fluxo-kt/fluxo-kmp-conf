@@ -144,6 +144,10 @@ pluginManagement {
 * https://github.com/JetBrains-Research/reflekt
 * https://github.com/mikepenz/AboutLibraries
 * https://github.com/gradle/gradle/issues/26091#issuecomment-1798137734
+* https://github.com/BenWoodworth/Parameterize
+* https://github.com/hbmartin/hbmartin-detekt-rules
+* https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.13.0
+* https://github.com/BenWoodworth/Parameterize
 * https://github.com/drewhamilton/poko/
   * https://github.com/saket/telephoto/releases/tag/0.7.1
 </details>

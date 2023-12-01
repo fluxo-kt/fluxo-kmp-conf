@@ -28,6 +28,8 @@ jobs:
             api.github.com:443
             github.com:443
 
+      # TODO: Add thumbs-up reaction to the comment before the fast-forward to quickly indicate the command was received.
+
       - name: Fast-forwarding and pushing
         uses: sequoia-pgp/fast-forward@v1
         with:
