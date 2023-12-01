@@ -28,7 +28,7 @@ kotlin = "1.9.20"
 jetbrains-compose = "1.5.10"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.20-1.0.14"
+ksp = "1.9.21-1.0.15"
 
 # region Android specific
 
