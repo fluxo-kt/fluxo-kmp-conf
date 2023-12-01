@@ -107,7 +107,7 @@ detekt = "1.23.3"
 ktlint = "1.0.1"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "6.22.0"
+spotless = "6.23.2"
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij
