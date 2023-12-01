@@ -198,4 +198,4 @@ build-config = { id = "com.github.gmazzo.buildconfig", version = "4.1.2" }
 # Resolve all dependencies used in a Gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases
 # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
-about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.9.2" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.9.2-wasm1" }
