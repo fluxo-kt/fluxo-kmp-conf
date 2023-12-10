@@ -180,17 +180,6 @@ private val DEFAULT_OPTS = arrayOf(
 
     // Enable context receivers. Only works for JVM targets by 2023.07.
     "-Xcontext-receivers",
-
-    // Support for IR backend parallel compilation:
-    //  https://youtrack.jetbrains.com/issue/KT-46085
-    // IR backend runs lowerings by file in N parallel threads.
-    //  0 means use a thread per processor core.
-    //  The default value is 1.
-    // Using /2 processors as JVM and Android targets share the processors
-    // and compile at the same time.
-    // Also reserved 2 cores for Gradle multitasking.
-    // On Apple M1 Max parallelism reduces compilation time by 1/3.
-    "-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
 ).asList()
 
 // Not supported in Kotlin 2.1 language version.
@@ -201,6 +190,18 @@ private val KOTLIN_UP_TO_1_9_OPTS = arrayOf(
 
     // Inline functions using IR inliner instead of bytecode inliner for JVM targets.
     "-Xir-inliner",
+
+    // Support for IR backend parallel compilation:
+    //  https://youtrack.jetbrains.com/issue/KT-46085
+    // IR backend runs lowerings by file in N parallel threads.
+    //  0 means use a thread per processor core.
+    //  The default value is 1.
+    // Using /2 processors as JVM and Android targets share the processors
+    // and compile at the same time.
+    // Also reserved 2 cores for Gradle multitasking.
+    // On Apple M1 Max parallelism reduces compilation time by 1/3.
+    // Seems to be not supported in Kotlin 2.0+
+    "-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
 ).asList()
 
 /** Latest options for early testing Kotlin compatibility or for non-production compilations. */

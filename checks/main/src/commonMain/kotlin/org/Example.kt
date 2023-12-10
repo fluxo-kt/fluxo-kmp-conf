@@ -1,7 +1,7 @@
 package org
 
 class Example {
-    fun example() {
+    fun print() {
         println("Hello, world!")
     }
 }

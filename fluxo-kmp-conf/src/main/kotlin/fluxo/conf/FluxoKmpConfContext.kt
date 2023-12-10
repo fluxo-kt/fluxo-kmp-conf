@@ -109,6 +109,8 @@ internal abstract class FluxoKmpConfContext
                 "JRE $JRE_VERSION_STRING, " +
                 "Kotlin $kotlinPluginVersion, " +
                 "$CPUs CPUs"
+
+            // R8 version
             try {
                 // https://r8.googlesource.com/r8/+refs
                 // https://issuetracker.google.com/issues/193543616#comment4
@@ -117,6 +119,7 @@ internal abstract class FluxoKmpConfContext
                 m += ", R8 $r8"
             } catch (_: Throwable) {
             }
+
             logger.l(m)
         }
 
