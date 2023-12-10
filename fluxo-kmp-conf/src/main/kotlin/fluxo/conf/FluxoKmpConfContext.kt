@@ -234,8 +234,8 @@ internal abstract class FluxoKmpConfContext
         private const val NAME = "fluxoInternalConfigurationContext"
 
         // https://twitter.com/Sellmair/status/1619308362881187840
-        private const val KOTLIN_IDEA_IMPORT_TASK = "prepareKotlinIdeaImport"
-        private const val KOTLIN_IDEA_BSM_TASK = "prepareKotlinBuildScriptModel"
+        internal const val KOTLIN_IDEA_IMPORT_TASK = "prepareKotlinIdeaImport"
+        internal const val KOTLIN_IDEA_BSM_TASK = "prepareKotlinBuildScriptModel"
     }
 
     private object ProjectInSyncMarker

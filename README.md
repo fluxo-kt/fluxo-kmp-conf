@@ -148,6 +148,9 @@ pluginManagement {
 * https://github.com/hbmartin/hbmartin-detekt-rules
 * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.13.0
 * https://github.com/BenWoodworth/Parameterize
+* https://github.com/kotlin-hands-on/kotlin-swift-interopedia
+* https://slackhq.github.io/keeper/
+  * https://github.com/slackhq/Keeper
 * https://github.com/drewhamilton/poko/
   * https://github.com/saket/telephoto/releases/tag/0.7.1
 </details>

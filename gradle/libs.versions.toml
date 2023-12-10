@@ -12,7 +12,7 @@ version = "0.1.0"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
-# javaLangTarget 11 is required for Android Gradle Plugin and Android Lint
+# javaLangTarget 11 required for Android Gradle Plugin and Android Lint.
 javaLangTarget = "11"
 kotlinLangVersion = "1.8"
 kotlinApiVersion = "1.8"
@@ -43,10 +43,10 @@ ksp = "1.9.21-1.0.15"
 # 28  -> Android 9.0   (August 2018)    PIE
 # 29  -> Android 10.0  (September 2019) Q
 # 30  -> Android 11.0  (September 2020) R
-# 31  -> Android 12.0  (October, 2021)  S
-# 32  -> Android 12L   (March, 2022)    S_V2
-# 33  -> Android 13    (August, 2022)   TIRAMISU
-# 34  -> Android 14    (October, 2023)  UPSIDE_DOWN_CAKE
+# 31  -> Android 12.0  (October 2021)   S
+# 32  -> Android 12L   (March 2022)     S_V2
+# 33  -> Android 13    (August 2022)    TIRAMISU
+# 34  -> Android 14    (October 2023)   UPSIDE_DOWN_CAKE
 # 35  -> Android 15    (Q3 2024)        V
 #
 # see:
@@ -185,7 +185,7 @@ task-tree = { id = "com.dorongold.task-tree", version = "2.1.1" }
 # https://plugins.gradle.org/plugin/org.barfuin.gradle.taskinfo
 task-info = { id = "org.barfuin.gradle.taskinfo", version = "2.1.0" }
 
-# `graphModules` task to create an image with the graph of how gradle modules depend on each other
+# `graphModules` task to create an image with the graph of how Gradle modules depend on each other
 # https://github.com/savvasdalkitsis/module-dependency-graph/tags
 # https://plugins.gradle.org/plugin/com.savvasdalkitsis.module-dependency-graph
 module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", version = "0.12" }

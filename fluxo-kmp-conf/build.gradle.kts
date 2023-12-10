@@ -140,6 +140,7 @@ dependencies {
 
     compileOnly(libs.plugin.android)
     compileOnly(libs.plugin.binCompatValidator)
+    compileOnly(libs.plugins.build.config.toModuleDependency())
     compileOnly(libs.plugin.dokka)
     compileOnly(libs.plugin.intellij)
     compileOnly(libs.plugin.jetbrains.compose)
@@ -192,9 +193,9 @@ buildConfig {
     buildConfigField("TASK_TREE", libs.plugins.task.tree)
     buildConfigField("TASK_INFO", libs.plugins.task.info)
     buildConfigField("MODULE_DEPENDENCY_GRAPH", libs.plugins.module.dependency.graph)
-
-    // FIXME: Add support for plugins:
     buildConfigField("BUILD_CONFIG", libs.plugins.build.config)
+
+    // FIXME: Add support for plugin:
     buildConfigField("ABOUT_LIBRARIES", libs.plugins.about.libraries)
 
     // Automatically run task during Gradle sync in IDEA

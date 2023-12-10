@@ -15,6 +15,7 @@ import fluxo.conf.feat.prepareDependencyAnalysisTasks
 import fluxo.conf.feat.prepareDependencyGuardPlugin
 import fluxo.conf.feat.prepareDependencyPinningBundle
 import fluxo.conf.feat.prepareGradleVersionsPlugin
+import fluxo.conf.feat.prepareKmpBuildConfigPlugin
 import fluxo.conf.feat.prepareKotlinSetupDiagnosticTasks
 import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
 import fluxo.conf.feat.prepareTaskInfoPlugin
@@ -66,6 +67,8 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
                     }
                 }
             }
+
+            context.prepareKmpBuildConfigPlugin(project = this)
         }
 
         target.setupKmpYarnPlugin(context)
