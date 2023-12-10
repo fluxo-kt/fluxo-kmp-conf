@@ -31,7 +31,7 @@ Initially made for the [Fluxo][fluxo] state management framework and other libra
 // in the `build.gradle.kts` of the target module
 plugins {
   kotlin("multiplatform") version "1.9.21"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.1.0" // <-- add here
+  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.2.0" // <-- add here
 }
 ```
 

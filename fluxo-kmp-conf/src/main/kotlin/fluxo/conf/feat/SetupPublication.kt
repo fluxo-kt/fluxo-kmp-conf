@@ -54,6 +54,10 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 // TODO: Protect publication tasks from invalid GIT state (dirty, untracked files, etc.)
 //  https://github.com/tbroyer/gradle-errorprone-plugin/blob/5d83185/build.gradle.kts#L24
 
+// TODO: Replace Gradle Plugin publishing with something less broken (official is just a mess)?
+//  https://github.com/adamko-dev/dokkatoo/issues/61#issuecomment-1701156702
+//  https://github.com/adamko-dev/dokkatoo/blob/b1ca20c/buildSrc/src/main/kotlin/buildsrc/conventions/maven-publishing.gradle.kts
+
 private const val USE_DOKKA: Boolean = true
 
 @Deprecated("Migrate to the new async API")

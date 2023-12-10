@@ -9,7 +9,12 @@ env:
   CI: true
   BUILD_NUMBER: ${{ github.run_number }}
   SCM_TAG: ${{ github.sha }}
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_OPTS: |
+    -Dorg.gradle.caching=false
+    -Dorg.gradle.configuration-cache=false
+    -Dorg.gradle.daemon=false
+    -Dorg.gradle.unsafe.watch-fs=false
+    -Dorg.gradle.vfs.watch=false
 
 jobs:
   release:
@@ -38,11 +43,11 @@ jobs:
           echo "RELEASE_PRE=$RELEASE_PRE" >> $GITHUB_ENV
           echo "RELEASE_SUFFIX=$RELEASE_SUFFIX" >> $GITHUB_ENV
 
-      - name: Set up JDK 17
+      - name: 'Set up JDK 21'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -55,8 +60,9 @@ jobs:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           RELEASE: true
-        run: ./gradlew build assemble check publishPlugins --no-build-cache --stacktrace --scan \
-          -Pgradle.publish.key="${{ secrets.GRADLE_PUBLISH_KEY }}" \
+        run: >
+          ./gradlew build assemble check publishPlugins --no-build-cache --stacktrace --scan
+          -Pgradle.publish.key="${{ secrets.GRADLE_PUBLISH_KEY }}"
           -Pgradle.publish.secret="${{ secrets.GRADLE_PUBLISH_SECRET }}"
 
       - name: GitHub Release

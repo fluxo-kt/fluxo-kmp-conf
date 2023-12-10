@@ -1,4 +1,4 @@
-:fluxo-kmp-conf
+:plugin
 androidx.databinding:databinding-common:8.1.4
 androidx.databinding:databinding-compiler-common:8.1.4
 com.android.databinding:baseLibrary:8.1.4

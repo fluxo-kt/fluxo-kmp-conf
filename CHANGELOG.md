@@ -3,12 +3,18 @@
 
 ## Unreleased
 
-🌱 _First release._
-
+[//]: # (Changed, Added, Removed, Fixed)
 - ...
 
 
+## [0.2.0] - 2023-12-10
+
+🌱 _Initial pre-release in the [Gradle Plugin Portal](https://plugins.gradle.org/plugin/io.github.fluxo-kt.fluxo-kmp-conf)._
+
+
 ## Notes
+
+[0.2.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.2.0
 
 [^1]: Uses [Common Changelog style](https://common-changelog.org/) [^2]
 [^2]: https://github.com/vweevers/common-changelog#readme
