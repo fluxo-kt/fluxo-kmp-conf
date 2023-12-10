@@ -20,8 +20,10 @@ import fluxo.conf.dsl.container.impl.target.TargetWasmContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmNativeContainer
 import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
 import fluxo.conf.impl.kotlin.KOTLIN_1_9_20
+import fluxo.conf.impl.kotlin.KOTLIN_2_0
 import fluxoKmpConf
 import org.gradle.api.Action
+import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -92,9 +94,15 @@ internal class KmpConfigurationContainerDslImpl(
         linux()
         mingw()
 
+        // WASM target has a problem with Gradle 8+
+        // Reason: One task uses the output of another task
+        //  without declaring an explicit or implicit dependency.
+        // Fixed in Kotlin 2.0.
         val kotlinPluginVersion = holder.kotlinPluginVersion
         @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
-        if (kotlinPluginVersion >= KOTLIN_1_8_20) {
+        if (kotlinPluginVersion >= KOTLIN_1_8_20 &&
+            (kotlinPluginVersion >= KOTLIN_2_0 || isGradleNotFailingOnImplicitTaskDependencies())
+        ) {
             wasmJs()
 
             // Usage of both Wasi and JS targets lead to problems atm.
@@ -115,6 +123,10 @@ internal class KmpConfigurationContainerDslImpl(
             setupBackgroundNativeTests()
         }
     }
+
+    // https://docs.gradle.org/current/userguide/validation_problems.html#implicit_dependency
+    private fun isGradleNotFailingOnImplicitTaskDependencies() =
+        GradleVersion.version(holder.project.gradle.gradleVersion) < GradleVersion.version("8.0")
 }
 
 private const val ENABLE_WASM_WASI = false
