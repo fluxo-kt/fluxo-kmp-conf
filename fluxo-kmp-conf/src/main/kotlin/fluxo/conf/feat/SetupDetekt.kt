@@ -32,6 +32,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 private const val MERGE_DETEKT_TASK_NAME = "mergeDetektSarif"
 
+// https://detekt.dev/docs/introduction/reporting/#merging-reports
 internal fun FluxoKmpConfContext.registerDetektMergeRootTask(): TaskProvider<ReportMergeTask>? =
     registerReportMergeTask(
         name = MERGE_DETEKT_TASK_NAME,
@@ -89,6 +90,9 @@ internal fun Project.setupDetekt(
         buildUponDefaultConfig = true
         ignoreFailures = true
         autoCorrect = !context.isCI && !testStarted && !detektMergeStarted
+
+        // For GitHub or another report consumers to know
+        // where the file with issue is to place annotations correctly.
         basePath = rootProject.projectDir.absolutePath
 
         this.ignoredBuildTypes = ignoredBuildTypes
@@ -155,7 +159,7 @@ internal fun Project.setupDetekt(
         reports.apply {
             sarif.required.set(!isDisabled)
             html.required.set(!isDisabled)
-            txt.required.set(false)
+            txt.required.set(!isDisabled)
             xml.required.set(false)
         }
     }
