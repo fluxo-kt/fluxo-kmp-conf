@@ -1,20 +1,18 @@
-package fluxo.conf
+package fluxo.test
 
 import groovy.time.TimeCategory
 import java.io.FileOutputStream
 import java.util.Date
-import java.util.concurrent.ConcurrentLinkedQueue
 import javax.xml.stream.XMLOutputFactory
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
-import org.gradle.api.tasks.testing.AbstractTestTask
-import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.work.DisableCachingByDefault
-import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 
 /**
  * Exports merged JUnit-like XML tests report for all tests in all projects.
@@ -24,16 +22,22 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinTest
  * @see org.gradle.api.tasks.testing.TestReport
  */
 @DisableCachingByDefault(because = "Not cacheable")
-internal abstract class TestsReportsMergeTask : DefaultTask() {
+internal abstract class TestReportsMergeTask : DefaultTask() {
 
     @get:OutputFile
     abstract val output: RegularFileProperty
 
-    private val testResults = ConcurrentLinkedQueue<ReportTestResult>()
+    @get:ServiceReference(TestReportService.NAME)
+    abstract val reportService: Property<TestReportService>
 
     @TaskAction
     fun merge() {
         logger.info("Input")
+
+        val reportService = reportService.get()
+        val testResults = reportService.testResults
+        reportService.clear()
+
         logger.info("{} tests", testResults.size)
         val outputFile = output.get().asFile.absoluteFile
         logger.info("Output = {}", outputFile)
@@ -180,7 +184,6 @@ internal abstract class TestsReportsMergeTask : DefaultTask() {
             "Merged XML tests report to $outputFile"
 
         logger.lifecycle(formatSummary(summary, fails))
-        testResults.clear()
 
         if (totalFailures > 0) {
             val cause = IllegalStateException("$totalFailures from $totalTests tests $status!")
@@ -194,43 +197,8 @@ internal abstract class TestsReportsMergeTask : DefaultTask() {
         else -> "SKIPPED"
     }
 
-    fun registerTestResult(testTask: AbstractTestTask, desc: TestDescriptor, result: TestResult) {
-        testResults.add(ReportTestResult(testTask, desc, result))
-    }
-
     private companion object {
-        const val VERBOSE_OUTPUT = false
-    }
-}
-
-private class ReportTestResult(
-    task: AbstractTestTask,
-    desc: TestDescriptor,
-    val result: TestResult,
-) {
-    val className = desc.className ?: ""
-    val testSuite = ":${task.project.name} $className"
-    val testTaskName = task.name.substringBeforeLast("Test")
-    val kmpTarget: String?
-    val name: String
-
-    init {
-        var name = desc.displayName ?: ""
-        if (!name.endsWith(']')) {
-            val targetName = (task as? KotlinTest)?.targetName ?: testTaskName
-            if (targetName.isNotBlank()) {
-                name += "[$targetName]"
-            }
-        }
-
-        kmpTarget = name.substringAfterLast('[', "").trimEnd(']').takeIf { it.isNotEmpty() }
-
-        // Show target details in test name (browser/node, background, and so on.)
-        if (kmpTarget != testTaskName && ", " !in name) {
-            name = name.substringBeforeLast('[') + "[$testTaskName]"
-        }
-
-        this.name = name
+        private const val VERBOSE_OUTPUT = false
     }
 }
 

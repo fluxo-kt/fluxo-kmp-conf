@@ -3,7 +3,6 @@
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.TestsReportsMergeTask
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.impl.closureOf
 import fluxo.conf.impl.disableTask
@@ -11,6 +10,9 @@ import fluxo.conf.impl.e
 import fluxo.conf.impl.register
 import fluxo.conf.impl.splitCamelCase
 import fluxo.conf.impl.withType
+import fluxo.test.TestReportResult
+import fluxo.test.TestReportService
+import fluxo.test.TestReportsMergeTask
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.testing.AbstractTestTask
@@ -31,34 +33,41 @@ private const val TEST_REPORTS_FILE_NAME = "tests-report-merged.xml"
 
 internal fun FluxoKmpConfContext.setupTestsReport() {
     val project = rootProject
-    val mergedReport = if (testsDisabled) null else
-        project.tasks.register<TestsReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
+    val mergedReportTask = if (testsDisabled) null else
+        project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
             group = JavaBasePlugin.VERIFICATION_GROUP
             description = "Combines all tests reports from all modules to the published root one"
             output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME))
         }
 
+    val mergedReportService = if (testsDisabled) null else
+        project.gradle.sharedServices.registerIfAbsent(
+            TestReportService.NAME, TestReportService::class.java,
+        ) {
+            // TODO: Support Gradle before 8.0 (set service parameter and usesService) ?
+        }
+
     project.allprojects {
-        if (mergedReport != null) {
+        if (mergedReportTask != null) {
             tasks.matching { it.name in COMMON_TEST_TASKS_NAMES }
-                .configureEach { finalizedBy(mergedReport) }
+                .configureEach { finalizedBy(mergedReportTask) }
 
             try {
-                tasks.withType<KotlinTestReport> { finalizedBy(mergedReport) }
+                tasks.withType<KotlinTestReport> { finalizedBy(mergedReportTask) }
             } catch (e: Throwable) {
                 logger.e("Failed to configure KotlinTestReport tasks: $e", e)
             }
         }
 
         tasks.withType<AbstractTestTask> configuration@{
-            if (!enabled || mergedReport == null || !isTestTaskAllowed()) {
+            if (!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()) {
                 disableTask()
                 return@configuration
             }
 
             val testTask = this
-            finalizedBy(mergedReport)
-            mergedReport.configure { mustRunAfter(testTask) }
+            finalizedBy(mergedReportTask)
+            mergedReportTask.configure { mustRunAfter(testTask) }
 
             testLogging {
                 events = setOf(
@@ -75,9 +84,13 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
 
             ignoreFailures = isCI // Always run all tests for all modules on CI
 
+            val rootLogger = rootProject.logger
             afterTest(
                 closureOf { desc: TestDescriptor, result: TestResult ->
-                    mergedReport.get().registerTestResult(testTask, desc, result)
+                    mergedReportService.get().registerTestResult(
+                        TestReportResult.from(testTask, desc, result),
+                        rootLogger,
+                    )
                 },
             )
         }

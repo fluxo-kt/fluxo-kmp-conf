@@ -5,10 +5,6 @@
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![Common Changelog](https://common-changelog.org/badge.svg)](CHANGELOG.md)
 
-[![Kotlin](http://img.shields.io/badge/Kotlin-1.9.21-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
-[![Gradle](http://img.shields.io/badge/Gradle-8.5-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
-[![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.1-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
-
 Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects.
 
 - Completely lazy on-demand project configuration framework with many nice-to-have things out-of-the-box.
@@ -22,6 +18,11 @@ Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects
 - Enables passing of build targets via command line to control what gets configured (great for CI).
 
 Initially made for the [Fluxo][fluxo] state management framework and other libraries, then published for general use.
+
+Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
+[![Kotlin](http://img.shields.io/badge/Kotlin-1.9.21-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
+[![Gradle](http://img.shields.io/badge/Gradle-8.5-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
+[![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.1-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
 
 ### How to use
 
@@ -146,7 +147,9 @@ pluginManagement {
 * https://github.com/gradle/gradle/issues/26091#issuecomment-1798137734
 * https://github.com/BenWoodworth/Parameterize
 * https://github.com/hbmartin/hbmartin-detekt-rules
-* https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.13.0
+* https://github.com/slackhq/slack-gradle-plugin/
+  * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.13.0
+  * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.14.0
 * https://github.com/BenWoodworth/Parameterize
 * https://github.com/kotlin-hands-on/kotlin-swift-interopedia
 * https://slackhq.github.io/keeper/
