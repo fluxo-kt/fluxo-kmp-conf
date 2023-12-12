@@ -200,8 +200,8 @@ private val KOTLIN_UP_TO_1_9_OPTS = arrayOf(
     // and compile at the same time.
     // Also reserved 2 cores for Gradle multitasking.
     // On Apple M1 Max parallelism reduces compilation time by 1/3.
-    // Seems to be not supported in Kotlin 2.0+
-    "-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
+    // Seems to be not supported in Kotlin 2.0+ and failing in Kotlin 1.9.21.
+    //"-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
 ).asList()
 
 /** Latest options for early testing Kotlin compatibility or for non-production compilations. */
