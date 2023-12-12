@@ -55,6 +55,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 //  https://github.com/tbroyer/gradle-errorprone-plugin/blob/5d83185/build.gradle.kts#L24
 
 // TODO: Replace Gradle Plugin publishing with something less broken (official is just a mess)?
+//  https://github.com/vanniktech/gradle-maven-publish-plugin
 //  https://github.com/adamko-dev/dokkatoo/issues/61#issuecomment-1701156702
 //  https://github.com/adamko-dev/dokkatoo/blob/b1ca20c/buildSrc/src/main/kotlin/buildsrc/conventions/maven-publishing.gradle.kts
 

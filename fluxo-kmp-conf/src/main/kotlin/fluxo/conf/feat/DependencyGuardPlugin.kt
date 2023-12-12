@@ -8,10 +8,14 @@ import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
+import fluxo.conf.impl.d
 import java.util.Locale
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
+
+// TODO: Opt-out configurable switch  via `fluxoKmpConf { depsGuard = false }`
 
 // Plugin that guards against unintentional dependency changes
 // https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
@@ -21,13 +25,9 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
     if (isCalled) {
         markProjectInSync()
     }
+
     onProjectInSyncRun(forceIf = isCalled) {
-        loadAndApplyPluginIfNotApplied(
-            id = DEPS_GUARD_PLUGIN_ID,
-            className = DEPS_GUARD_CLASS_NAME,
-            version = DEPS_GUARD_PLUGIN_VERSION,
-            catalogPluginId = DEPS_GUARD_PLUGIN_ALIAS,
-        )
+        loadAndApplyPluginIfNotApplied()
 
         val root = rootProject
 
@@ -38,9 +38,10 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
         }
 
         // Configure non-root modules automatically
-        // TODO: Allow to customize auto-configuration
-        //  (custom list, `modules` switch, `allowedFilter`)
         root.subprojects p@{
+            // TODO: Allow to customize projects auto-filtration
+            //  (custom list, `modules` switch, `allowedFilter`, callback)
+
             // Skip test or benchmark modules
             val projectPath = path.lowercase(Locale.US)
             for (marker in TEST_MARKERS) {
@@ -49,13 +50,19 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
                 }
             }
 
-            // Guard all non-test, non-benchmark configurations
+            val project = this
+            loadAndApplyPluginIfNotApplied(project = project)
+
+            // Guard all non-test, non-benchmark, non-meta configurations
+            /** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.validatePluginConfiguration */
             dependencyGuard {
+                // TODO: Allow to customize configurations auto-filtration
+                //  (custom list, `allowedFilter`, callback)
+
                 project.configurations.configureEach {
-                    val confName = name.lowercase(Locale.US)
-                    val isRelease = "release" in confName ||
-                        TEST_MARKERS.none { it in confName }
-                    if (isRelease) {
+                    if (isShouldBeGuarded()) {
+                        val confName = name
+                        logger.d("Dependency guard the '$confName' configuration")
                         this@dependencyGuard.configuration(confName, RELEASE_CONFIGURATION)
                     }
                 }
@@ -64,7 +71,32 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
     }
 }
 
-internal fun Project.dependencyGuard(action: Action<in DependencyGuardPluginExtension>) =
+private fun Configuration.isShouldBeGuarded(): Boolean {
+    return isCanBeResolved && name.lowercase(Locale.US).let { confNameL ->
+        isClasspathConfig(confNameL) && (
+            "release" in confNameL || NON_GUARD_MARKERS.none { it in confNameL }
+            )
+    }
+}
+
+/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */
+private fun isClasspathConfig(configName: String): Boolean {
+    return configName.endsWith("compileclasspath") ||
+        configName.endsWith("runtimeclasspath")
+}
+
+private fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
+    project: Project = rootProject,
+) =
+    loadAndApplyPluginIfNotApplied(
+        id = DEPS_GUARD_PLUGIN_ID,
+        className = DEPS_GUARD_CLASS_NAME,
+        version = DEPS_GUARD_PLUGIN_VERSION,
+        catalogPluginId = DEPS_GUARD_PLUGIN_ALIAS,
+        project = project,
+    )
+
+private fun Project.dependencyGuard(action: Action<in DependencyGuardPluginExtension>) =
     extensions.configure(DEPS_GUARD_EXTENSION_NAME, action)
 
 private val COMMON_CONFIGURATION = Action<DependencyGuardConfiguration> {
@@ -84,6 +116,9 @@ private val RELEASE_BLOCK_LIST = arrayOf(
 )
 
 private val TEST_MARKERS = arrayOf("test", "benchmark", "mock", "jmh")
+private val NON_GUARD_MARKERS = TEST_MARKERS + arrayOf(
+    "metadata", "scriptdef", "compilerplugin",
+)
 
 /** @see DependencyGuardPlugin.DEPENDENCY_GUARD_EXTENSION_NAME */
 private const val DEPS_GUARD_EXTENSION_NAME = "dependencyGuard"
