@@ -19,12 +19,12 @@ private constructor(
             desc: TestDescriptor,
             result: TestResult,
         ): TestReportResult {
-            val className = desc.className ?: ""
+            val className = desc.className.orEmpty()
             val testSuite = ":${task.project.name} $className"
             val testTaskName = task.name.substringBeforeLast("Test")
             val kmpTarget: String?
 
-            var name = desc.displayName ?: ""
+            var name = desc.displayName.orEmpty()
             if (!name.endsWith(']')) {
                 val targetName = (task as? KotlinTest)?.targetName ?: testTaskName
                 if (targetName.isNotBlank()) {

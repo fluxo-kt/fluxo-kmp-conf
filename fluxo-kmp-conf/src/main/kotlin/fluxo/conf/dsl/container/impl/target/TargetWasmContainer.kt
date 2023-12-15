@@ -15,9 +15,11 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
 
 internal abstract class TargetWasmContainer<T : KotlinWasmTargetDsl>(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<T>(context, name, WASM_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.CommonJs.CommonWasm<T>, WasmTarget<T> {
+    KmpTargetContainerImpl.NonJvm.CommonJs.CommonWasm<T>,
+    WasmTarget<T> {
 
     interface Configure : WasmTarget.Configure, ContainerHolderAware {
 

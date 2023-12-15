@@ -29,7 +29,15 @@ style:
   MaxLineLength:
     maxLineLength: 100
 
+naming:
+  NoNameShadowing:
+    # False positives with SAM receiver usage
+    active: false
+
 formatting:
+  excludes: [
+    '**/fluxo/conf/data/BuildConstants.kt',
+  ]
   ArgumentListWrapping:
     maxLineLength: 100
   FunctionSignature:

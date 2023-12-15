@@ -35,12 +35,14 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     @get:Input
     val androidNamespaceProp: Property<String?>
     override var androidNamespace: String
-        get() = (androidNamespaceProp.orNull.takeIf { !it.isNullOrBlank() }
-            ?: let {
-                val ns = group.takeIf { it.isNotBlank() } ?: project.name
-                val prefix = androidNamespacePrefix
-                if (prefix.isNullOrBlank()) ns else "$prefix.$ns"
-            })
+        get() = (
+            androidNamespaceProp.orNull.takeIf { !it.isNullOrBlank() }
+                ?: run {
+                    val ns = group.takeIf { it.isNotBlank() } ?: project.name
+                    val prefix = androidNamespacePrefix
+                    if (prefix.isNullOrBlank()) ns else "$prefix.$ns"
+                }
+            )
             .replace("[:_-]".toRegex(), ".")
             .lowercase(Locale.US)
         set(value) = androidNamespaceProp.set(value)

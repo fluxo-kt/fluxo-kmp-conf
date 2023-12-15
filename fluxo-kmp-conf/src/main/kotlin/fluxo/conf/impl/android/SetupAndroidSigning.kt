@@ -29,6 +29,7 @@ internal fun ApplicationExtension.setupSigningIn(project: Project) {
             val alias = properties["keyAlias"]?.toString()
             if (!alias.isNullOrEmpty()) {
                 releaseConfigured = alias == RELEASE
+                @Suppress("UnnecessaryApply")
                 maybeCreate(alias).apply {
                     configureFrom(properties, project, alias, release = false)
                 }

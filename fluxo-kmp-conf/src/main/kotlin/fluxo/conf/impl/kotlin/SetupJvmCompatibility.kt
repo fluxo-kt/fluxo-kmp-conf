@@ -22,8 +22,8 @@ import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 @Suppress("ReturnCount")
 internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: KotlinConfig) {
-    if (this is KotlinSingleTargetExtension<*>
-        && target.run { this is KotlinJvmTarget && !withJavaEnabled }
+    if (this is KotlinSingleTargetExtension<*> &&
+        target.run { this is KotlinJvmTarget && !withJavaEnabled }
     ) {
         project.logger.d("KotlinSingleTarget with no Java enabled, skip Java compatibility setup")
         return

@@ -81,8 +81,12 @@ internal enum class KmpTargetCode {
         internal val OSX = MACOS
         internal val TVOS = arrayOf(TVOS_ARM64, TVOS_SIMULATOR_ARM64, TVOS_X64)
         internal val WATCHOS = arrayOf(
-            WATCHOS_ARM32, WATCHOS_ARM64, WATCHOS_DEVICE_ARM64,
-            WATCHOS_SIMULATOR_ARM64, WATCHOS_X64, WATCHOS_X86,
+            WATCHOS_ARM32,
+            WATCHOS_ARM64,
+            WATCHOS_DEVICE_ARM64,
+            WATCHOS_SIMULATOR_ARM64,
+            WATCHOS_X64,
+            WATCHOS_X86,
         )
         internal val APPLE = IOS + MACOS + TVOS + WATCHOS
 

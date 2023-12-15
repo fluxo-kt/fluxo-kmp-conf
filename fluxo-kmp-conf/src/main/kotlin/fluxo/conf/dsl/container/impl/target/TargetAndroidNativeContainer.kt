@@ -9,9 +9,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 internal abstract class TargetAndroidNativeContainer(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<KotlinNativeTarget>(context, name, ANDROID_NATIVE_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.AndroidNative, AndroidNativeTarget {
+    KmpTargetContainerImpl.NonJvm.Native.AndroidNative,
+    AndroidNativeTarget {
 
     interface Configure : AndroidNativeTarget.Configure, ContainerHolderAware {
 

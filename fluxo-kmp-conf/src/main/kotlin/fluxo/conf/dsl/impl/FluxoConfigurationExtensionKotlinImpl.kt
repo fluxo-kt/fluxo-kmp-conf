@@ -260,6 +260,12 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
         set(value) = enableDetektCompilerPluginProp.set(value)
 
     @get:Input
+    val enableDetektAutoCorrectProp: Property<Boolean?>
+    override var enableDetektAutoCorrect: Boolean?
+        get() = enableDetektAutoCorrectProp.orNull ?: parent?.enableDetektAutoCorrect
+        set(value) = enableDetektAutoCorrectProp.set(value)
+
+    @get:Input
     val enableSpotlessProp: Property<Boolean?>
     override var enableSpotless: Boolean?
         get() = enableSpotlessProp.orNull ?: parent?.enableSpotless

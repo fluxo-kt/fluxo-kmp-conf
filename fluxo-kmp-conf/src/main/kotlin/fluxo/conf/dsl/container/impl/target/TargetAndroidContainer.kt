@@ -25,9 +25,11 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
 internal abstract class TargetAndroidContainer<T>(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<KotlinAndroidTarget>(context, name, ANDROID_SORT_ORDER),
-    KmpTargetContainerImpl.CommonJvm<KotlinAndroidTarget>, AndroidTarget<T>
+    KmpTargetContainerImpl.CommonJvm<KotlinAndroidTarget>,
+    AndroidTarget<T>
     where T : CommonExtension<*, *, *, *, *>, T : TestedExtension {
 
     internal val lazyAndroid = context.objects.set<T.() -> Unit>()
@@ -58,7 +60,9 @@ internal abstract class TargetAndroidContainer<T>(
         /** `androidTarget` should be used since Kotlin 1.9.0 instead of `android`. */
         // https://kotl.in/android-target-dsl.
         context.kotlinPluginVersion >= KOTLIN_1_9 -> createTarget(::androidTarget)
-        else -> @Suppress("DEPRECATION") createTarget(::android)
+        else ->
+            @Suppress("DEPRECATION")
+            createTarget(::android)
     }
 
     final override fun setup(k: KotlinMultiplatformExtension) {

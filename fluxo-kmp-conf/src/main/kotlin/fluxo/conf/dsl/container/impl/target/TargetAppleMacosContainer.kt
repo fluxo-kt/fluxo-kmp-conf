@@ -9,9 +9,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 
 internal abstract class TargetAppleMacosContainer(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<KotlinNativeTargetWithHostTests>(context, name, APPLE_MACOS_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Macos, AppleMacosTarget {
+    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Macos,
+    AppleMacosTarget {
 
     interface Configure : AppleMacosTarget.Configure, ContainerHolderAware {
 

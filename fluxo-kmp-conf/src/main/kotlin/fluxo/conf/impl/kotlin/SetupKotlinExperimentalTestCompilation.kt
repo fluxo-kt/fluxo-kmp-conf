@@ -62,7 +62,9 @@ private fun KCompilation.setupExperimentalLatestCompilation(
     val mainCompilation = this
     compilations.create(compilationName) {
         val project = mainCompilation.project
-        project.logger.i("'$name' compilation set up (experimental compilation with latest features)")
+        project.logger.i(
+            "'$name' compilation set up (experimental compilation with latest features)",
+        )
         defaultSourceSet.dependsOn(mainCompilation.defaultSourceSet)
         project.tasks.named(CHECK_TASK_NAME) {
             dependsOn(compileTaskProvider)

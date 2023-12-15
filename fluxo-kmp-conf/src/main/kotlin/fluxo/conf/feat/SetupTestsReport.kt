@@ -33,19 +33,27 @@ private const val TEST_REPORTS_FILE_NAME = "tests-report-merged.xml"
 
 internal fun FluxoKmpConfContext.setupTestsReport() {
     val project = rootProject
-    val mergedReportTask = if (testsDisabled) null else
-        project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
-            group = JavaBasePlugin.VERIFICATION_GROUP
-            description = "Combines all tests reports from all modules to the published root one"
-            output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME))
+    val mergedReportTask = when {
+        testsDisabled -> null
+        else -> {
+            project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
+                group = JavaBasePlugin.VERIFICATION_GROUP
+                description = "Combines all tests reports from all modules to the published root one"
+                output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME))
+            }
         }
+    }
 
-    val mergedReportService = if (testsDisabled) null else
-        project.gradle.sharedServices.registerIfAbsent(
-            TestReportService.NAME, TestReportService::class.java,
-        ) {
-            // TODO: Support Gradle before 8.0 (set service parameter and usesService) ?
+    val mergedReportService = when {
+        testsDisabled -> null
+        else -> {
+            project.gradle.sharedServices.registerIfAbsent(
+                TestReportService.NAME, TestReportService::class.java,
+            ) {
+                // TODO: Support Gradle before 8.0 (set service parameter and usesService) ?
+            }
         }
+    }
 
     project.allprojects {
         if (mergedReportTask != null) {

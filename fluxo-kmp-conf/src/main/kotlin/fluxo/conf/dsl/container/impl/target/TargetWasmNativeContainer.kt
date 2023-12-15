@@ -9,9 +9,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 internal class TargetWasmNativeContainer(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<KotlinNativeTarget>(context, name, WASM_NATIVE_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.WasmNative, WasmNativeTarget {
+    KmpTargetContainerImpl.NonJvm.Native.WasmNative,
+    WasmNativeTarget {
 
     interface Configure : WasmNativeTarget.Configure, ContainerHolderAware {
 

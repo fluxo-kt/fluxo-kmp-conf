@@ -67,7 +67,9 @@ private fun isNonStable(version: String): Boolean {
     val hasStableKeyword = STABLE_KEYWORDS.any {
         version.contains(it, ignoreCase = true)
     }
-    return !hasStableKeyword && (!STABLE_REGEX.matches(version) || UNSTABLE_REGEX.matches(
-        version,
-    ))
+    return !hasStableKeyword && (
+        !STABLE_REGEX.matches(version) || UNSTABLE_REGEX.matches(
+            version,
+        )
+        )
 }

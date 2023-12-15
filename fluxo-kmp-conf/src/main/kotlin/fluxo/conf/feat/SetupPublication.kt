@@ -373,12 +373,14 @@ internal fun Project.setupPublicationRepository(
                 url = uri(rootProject.file(LOCAL_REPO_PATH))
             }
 
-            if (mavenRepo) maven {
-                setUrl(config.repositoryUrl)
+            if (mavenRepo) {
+                maven {
+                    setUrl(config.repositoryUrl)
 
-                credentials {
-                    username = config.repositoryUserName
-                    password = config.repositoryPassword
+                    credentials {
+                        username = config.repositoryUserName
+                        password = config.repositoryPassword
+                    }
                 }
             }
         }

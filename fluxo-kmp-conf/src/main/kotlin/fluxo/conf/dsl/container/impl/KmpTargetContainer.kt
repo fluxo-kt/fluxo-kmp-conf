@@ -7,7 +7,8 @@ import fluxo.conf.kmp.SourceSetBundle
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
-internal interface KmpTargetContainer<T : KotlinTarget> : KotlinTargetContainer<T>,
+internal interface KmpTargetContainer<T : KotlinTarget> :
+    KotlinTargetContainer<T>,
     ContainerKotlinMultiplatformAware {
 
     val allowManualHierarchy: Boolean

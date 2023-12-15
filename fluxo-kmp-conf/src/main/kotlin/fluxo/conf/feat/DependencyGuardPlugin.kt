@@ -112,7 +112,13 @@ private val RELEASE_CONFIGURATION = Action<DependencyGuardConfiguration> {
 }
 
 private val RELEASE_BLOCK_LIST = arrayOf(
-    "junit", "test", "mock", "truth", "assert", "turbine", "robolectric",
+    "junit",
+    "test",
+    "mock",
+    "truth",
+    "assert",
+    "turbine",
+    "robolectric",
 )
 
 private val TEST_MARKERS = arrayOf("test", "benchmark", "mock", "jmh")

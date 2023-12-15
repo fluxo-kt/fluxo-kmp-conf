@@ -10,9 +10,11 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
 internal class TargetJsContainer(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<KotlinJsTargetDsl>(context, name, JS_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.CommonJs<KotlinJsTargetDsl>, JsTarget {
+    KmpTargetContainerImpl.NonJvm.CommonJs<KotlinJsTargetDsl>,
+    JsTarget {
 
     override var compilerType: KotlinJsCompilerType? = null
 
@@ -25,7 +27,10 @@ internal class TargetJsContainer(
             configure: JsTarget.() -> Unit,
         ) {
             val f = compiler?.let {
-                { compilerType = it; configure() }
+                {
+                    compilerType = it
+                    configure()
+                }
             } ?: configure
 
             holder.configure(targetName, ::TargetJsContainer, KmpTargetCode.JS, f)

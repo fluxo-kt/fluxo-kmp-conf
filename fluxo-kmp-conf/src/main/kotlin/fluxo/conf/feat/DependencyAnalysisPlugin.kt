@@ -73,7 +73,9 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
 
 private val DEPS_ANALYSIS_TASK_NAMES = arrayOf(
     // public plugin tasks
-    "buildHealth", "projectHealth", "reason",
+    "buildHealth",
+    "projectHealth",
+    "reason",
     // internal plugin tasks
     // "computeDuplicateDependencies", "printDuplicateDependencies", "postProcess",
 )

@@ -93,10 +93,15 @@ internal fun Project.setupDetekt(
 
     val baselineIntermediateDir = project.layout.buildDirectory.dir("intermediates/detekt")
     configureExtensionIfAvailable<DetektExtension>(DetektPlugin.DETEKT_EXTENSION) {
+        @Suppress("NAME_SHADOWING")
+        val context = conf.context
+
         parallel = true
         buildUponDefaultConfig = true
         ignoreFailures = detektMergeStarted
-        autoCorrect = !context.isCI && !testStarted && !detektMergeStarted
+
+        autoCorrect = conf.enableDetektAutoCorrect == true &&
+            !context.isCI && !testStarted && !detektMergeStarted
 
         // For GitHub or another report consumers to know
         // where the file with issue is to place annotations correctly.
@@ -147,6 +152,7 @@ internal fun Project.setupDetekt(
         baselineFiles.from(baselineTasks.map { it.baseline })
     }
 
+    // FIXME: Disable non-resolving tasks if resolving version is available.
     val detektTasks = tasks.withType<Detekt> {
         val testsAreDisabled = context.testsDisabled
         val isDisabled = testsAreDisabled || !isDetektTaskAllowed(context)

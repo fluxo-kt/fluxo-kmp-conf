@@ -2,7 +2,7 @@ package fluxo.conf.dsl.container.impl
 
 import fluxo.conf.impl.set
 
-internal abstract class CustomTypeContainer<T>(
+internal open class CustomTypeContainer<T>(
     context: ContainerContext,
     private val name: String,
 ) : ContainerImpl(context) {

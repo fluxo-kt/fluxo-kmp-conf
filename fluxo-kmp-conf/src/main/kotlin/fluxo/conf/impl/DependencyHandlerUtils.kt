@@ -11,7 +11,7 @@ import org.gradle.api.provider.Provider
 
 @Suppress("UnusedReceiverParameter")
 internal fun DependencyHandler.kotlin(module: String, version: String? = null): Any =
-    "org.jetbrains.kotlin:kotlin-$module${version?.let { ":$version" } ?: ""}"
+    "org.jetbrains.kotlin:kotlin-$module${version?.let { ":$version" }.orEmpty()}"
 
 
 internal fun DependencyHandler.ksp(dependencyNotation: Any) = add("ksp", dependencyNotation)

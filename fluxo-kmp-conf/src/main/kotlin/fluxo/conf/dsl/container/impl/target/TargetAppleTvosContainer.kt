@@ -11,9 +11,11 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests as KNTS
 
 internal abstract class TargetAppleTvosContainer<T : KNT>(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<T>(context, name, APPLE_TVOS_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Tvos<T>, AppleTvosTarget<T> {
+    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Tvos<T>,
+    AppleTvosTarget<T> {
 
     interface Configure : AppleTvosTarget.Configure, ContainerHolderAware {
 

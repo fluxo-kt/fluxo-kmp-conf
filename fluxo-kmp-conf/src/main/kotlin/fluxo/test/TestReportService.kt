@@ -9,7 +9,8 @@ import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 
 @ThreadSafe
-internal abstract class TestReportService : BuildService<TestReportService.Parameters>,
+internal abstract class TestReportService :
+    BuildService<TestReportService.Parameters>,
     AutoCloseable {
 
     val testResults: Array<TestReportResult>

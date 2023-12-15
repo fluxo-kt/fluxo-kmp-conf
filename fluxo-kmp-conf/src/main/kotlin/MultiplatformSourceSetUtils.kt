@@ -129,8 +129,8 @@ public val <E> E.allTargetsSet: Set<SourceSetBundle>
 public val <E> E.javaSet: Set<SourceSetBundle>
     where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = targets.matching {
-        it.platformType == KotlinPlatformType.androidJvm
-            || it.platformType == KotlinPlatformType.jvm
+        it.platformType == KotlinPlatformType.androidJvm ||
+            it.platformType == KotlinPlatformType.jvm
     }.toSourceSetBundles()
 
 /** androidJvm */

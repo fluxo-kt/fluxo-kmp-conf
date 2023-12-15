@@ -71,7 +71,7 @@ private fun Project.printKotlinTargetsInfo() {
                 is KotlinNativeTarget -> target.binaries.forEach {
                     println(
                         "$P binary ${it.name}(${it.outputKind}" +
-                                ", debuggable=${it.debuggable}, optimized=${it.optimized})",
+                            ", debuggable=${it.debuggable}, optimized=${it.optimized})",
                     )
                 }
 

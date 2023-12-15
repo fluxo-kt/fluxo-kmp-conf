@@ -121,8 +121,10 @@ internal abstract class TestReportsMergeTask : DefaultTask() {
                             writer.writeStartElement("failure")
 
                             val es = r.exceptions
-                            writer.writeAttribute("message", es.firstOrNull()?.toString() ?: "")
-                            writer.writeAttribute("type", es.firstOrNull()?.javaClass?.name ?: "")
+                            val message = es.firstOrNull()?.toString().orEmpty()
+                            val type = es.firstOrNull()?.javaClass?.name.orEmpty()
+                            writer.writeAttribute("message", message)
+                            writer.writeAttribute("type", type)
                             writer.writeCData(es.joinToString("\n\n") { it.stackTraceToString() })
 
                             fails += "$testSuite.${rtr.name}"

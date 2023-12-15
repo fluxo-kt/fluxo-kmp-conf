@@ -221,6 +221,7 @@ internal abstract class KotlinSourceSetsReportTask :
     internal class KotlinSourceSetGraphNode(id: Any, name: String = id.toString()) :
         GraphNode(id, name) {
 
+        @Suppress("UnusedPrivateMember")
         private operator fun <V, V1 : V> Map<String, V>.getValue(r: Any?, p: KProperty<*>): V1 {
             @Suppress("UNCHECKED_CAST")
             return get(p.name) as V1

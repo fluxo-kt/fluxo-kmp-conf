@@ -13,9 +13,11 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests as KNTHT
 
 internal abstract class TargetMingwContainer<T : KNT>(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<T>(context, name, MINGW_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.Mingw<T>, MingwTarget<T> {
+    KmpTargetContainerImpl.NonJvm.Native.Mingw<T>,
+    MingwTarget<T> {
 
     interface Configure : MingwTarget.Configure, ContainerHolderAware {
 

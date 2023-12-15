@@ -34,8 +34,10 @@ internal fun FluxoKmpConfContext.onBuildFinished(action: () -> Unit) {
     serviceProvider.get().addBuildListener(action)
 }
 
-internal abstract class OnBuildFinishedService : BuildService<BuildServiceParameters.None>,
-    OperationCompletionListener, AutoCloseable {
+internal abstract class OnBuildFinishedService :
+    BuildService<BuildServiceParameters.None>,
+    OperationCompletionListener,
+    AutoCloseable {
 
     private val buildListeners = ConcurrentHashMap<() -> Unit, Boolean>()
 

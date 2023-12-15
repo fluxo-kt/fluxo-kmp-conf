@@ -9,9 +9,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal class TargetJvmContainer(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<KotlinJvmTarget>(context, name, JVM_SORT_ORDER),
-    KmpTargetContainerImpl.CommonJvm<KotlinJvmTarget>, JvmTarget {
+    KmpTargetContainerImpl.CommonJvm<KotlinJvmTarget>,
+    JvmTarget {
 
     interface Configure : JvmTarget.Configure, ContainerHolderAware {
 

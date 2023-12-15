@@ -1,5 +1,7 @@
 package fluxo.conf.dsl
 
+import org.gradle.api.Incubating
+
 public interface FluxoConfigurationExtensionCommon {
 
     /**
@@ -69,7 +71,23 @@ public interface FluxoConfigurationExtensionCommon {
      *
      * @see setupVerification
      */
+    @set:Incubating
     public var enableDetektCompilerPlugin: Boolean?
+
+    /**
+     * Flag to turn on the Detekt autocorrect feature.
+     *
+     * Disabled by default as can lead to compatibility errors
+     * before every tool is compatible with the latest Kotlin updates.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `false`.
+     *
+     * @see setupVerification
+     */
+    @set:Incubating
+    public var enableDetektAutoCorrect: Boolean?
+
 
     /**
      * Flag to turn on the Spotless setup.

@@ -55,7 +55,7 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     )
 
     val pluginClass = loadPluginArtifactAndGetClass(
-            pluginId, pluginVersion, className, lookupClassName = lookupClassName,
+        pluginId, pluginVersion, className, lookupClassName = lookupClassName,
     ) ?: return ApplyPluginResult.FALSE
 
     pluginManager.apply(pluginClass)

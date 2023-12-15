@@ -1,6 +1,8 @@
 package fluxo.conf
 
 import fluxo.conf.MergeDetektBaselinesTask.Companion.TASK_NAME
+import fluxo.conf.impl.i
+import fluxo.conf.impl.l
 import io.github.detekt.tooling.api.BaselineProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
@@ -52,15 +54,13 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
 
     @TaskAction
     fun merge() {
-        logger.info("Input")
-        logger.info(baselineFiles.files.joinToString(separator = "\n") { it.absolutePath })
-
-        val outputFile = outputFile.get().asFile
-        logger.info("Output = ${outputFile.absolutePath}")
+        val files = baselineFiles.files
+        logger.l("merging Detekt baseline from ${files.size} files")
+        logger.i(files.joinToString(separator = "\n\t", prefix = "\t") { it.absolutePath })
 
         val baselineFiles = baselineFiles.filter { it.exists() }
         if (baselineFiles.isEmpty) {
-            logger.lifecycle("No Detekt baseline files")
+            logger.l("No Detekt baseline files to merge")
             return
         }
 
@@ -71,7 +71,7 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
         }
         val merged = baselineFiles
             .map {
-                logger.info("merge {}", it)
+                logger.i("merge {}", it)
                 bp.read(it.toPath())
             }
             .reduce { acc, baseline ->
@@ -84,7 +84,9 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
             manuallySuppressedIssues = merged.manuallySuppressedIssues.toSortedSet(),
             currentIssues = merged.currentIssues.toSortedSet(),
         )
+
+        val outputFile = outputFile.get().asFile
         bp.write(targetPath = outputFile.toPath(), baseline = sorted)
-        logger.lifecycle("Merged Detekt baseline files to ${outputFile.absolutePath}")
+        logger.l("Merged Detekt baseline files to ${outputFile.absolutePath}")
     }
 }

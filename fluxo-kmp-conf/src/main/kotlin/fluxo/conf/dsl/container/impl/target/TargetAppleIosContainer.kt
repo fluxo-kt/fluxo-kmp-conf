@@ -14,9 +14,11 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests as KNTS
 
 internal abstract class TargetAppleIosContainer<T : KNT>(
-    context: ContainerContext, name: String,
+    context: ContainerContext,
+    name: String,
 ) : KmpTargetContainerImpl<T>(context, name, APPLE_IOS_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Ios<T>, AppleIosTarget<T> {
+    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Ios<T>,
+    AppleIosTarget<T> {
 
     interface Configure : AppleIosTarget.Configure, ContainerHolderAware {
 

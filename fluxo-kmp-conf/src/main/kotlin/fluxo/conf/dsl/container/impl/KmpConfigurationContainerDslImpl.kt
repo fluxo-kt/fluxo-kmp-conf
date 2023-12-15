@@ -57,19 +57,25 @@ internal class KmpConfigurationContainerDslImpl(
 
     override fun common(action: Container.() -> Unit) {
         holder.configureCustom(
-            CommonActionContainer.NAME, ::CommonActionContainer, action,
+            CommonActionContainer.NAME,
+            ::CommonActionContainer,
+            action,
         )
     }
 
     override fun kotlin(action: KotlinProjectExtension.() -> Unit) {
         holder.configureCustom(
-            KotlinProjectActionContainer.NAME, ::KotlinProjectActionContainer, action,
+            KotlinProjectActionContainer.NAME,
+            ::KotlinProjectActionContainer,
+            action,
         )
     }
 
     override fun kotlinMultiplatform(action: KotlinMultiplatformExtension.() -> Unit) {
         holder.configureCustom(
-            KotlinMultiplatformActionContainer.NAME, ::KotlinMultiplatformActionContainer, action,
+            KotlinMultiplatformActionContainer.NAME,
+            ::KotlinMultiplatformActionContainer,
+            action,
         )
     }
 

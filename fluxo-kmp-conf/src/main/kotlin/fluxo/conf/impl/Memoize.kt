@@ -1,3 +1,5 @@
+@file:Suppress("RedundantSuppression")
+
 package fluxo.conf.impl
 
 import org.gradle.api.internal.provider.AbstractMinimalProvider
@@ -20,6 +22,7 @@ internal fun <T> Provider<T>.memoize(): Provider<T> = when (this) {
 }
 
 /** @see org.jetbrains.intellij.MemoizedProvider */
+@Suppress("HasPlatformType")
 private class MemoizedProvider<T>(private val delegate: ProviderInternal<T>) :
     AbstractMinimalProvider<T>() {
 
@@ -33,7 +36,7 @@ private class MemoizedProvider<T>(private val delegate: ProviderInternal<T>) :
     // the producer is from the source provider
     override fun getProducer() = delegate.producer
 
-    override fun toString() = "memoized($delegate)"
+    override fun toString(): String = "memoized($delegate)"
 
     override fun calculateOwnValue(valueConsumer: ValueSupplier.ValueConsumer) = memoizedValue.value
 }

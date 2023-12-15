@@ -51,7 +51,6 @@ internal fun DependencyHandler.setupKotlinDependencies(
                 excludeJetbrainsAnnotations,
             )
             implementation(COROUTINES_DEPENDENCY)
-
         } || libs.onLibrary("kotlinx-coroutines-core") { implementation(it) }
 
         libs.onLibrary("kotlinx-coroutines-test") { testImplementation(it) }
@@ -151,10 +150,12 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
         }
 
         // AndroidX Compose
-        else libs?.onLibrary("androidx-compose-runtime") { lib ->
-            sourceSets.register(CommonJvm.ANDROID + MAIN_SOURCE_SET_POSTFIX) {
-                dependencies { compileOnly(lib) }
-                constraints.implementation(lib)
+        else {
+            libs?.onLibrary("androidx-compose-runtime") { lib ->
+                sourceSets.register(CommonJvm.ANDROID + MAIN_SOURCE_SET_POSTFIX) {
+                    dependencies { compileOnly(lib) }
+                    constraints.implementation(lib)
+                }
             }
         }
     }

@@ -1,7 +1,6 @@
 package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
-import fluxo.conf.impl.CPUs
 import fluxo.conf.impl.addAll
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsOptions
@@ -64,9 +63,9 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
                 // https://youtrack.jetbrains.com/issue/KT-29974
                 // FIXME: Move to KotlinConfig and configure in the context
                 //  by default (null) only for useLatestSettings, true/false for broader control.
-                if (useLatestSettings
-                    && JRE_VERSION >= JRE_1_9
-                    && kotlinPluginVersion >= KOTLIN_1_7
+                if (useLatestSettings &&
+                    JRE_VERSION >= JRE_1_9 &&
+                    kotlinPluginVersion >= KOTLIN_1_7
                 // TODO: && kotlinLang >= KotlinLangVersion.KOTLIN_1_7
                 ) {
                     compilerArgs.add("-Xjdk-release=$it")
@@ -90,8 +89,8 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
 
             // class mode provides lambdas arguments names
             // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
-            val useIndyLambdas = kc.jvmTargetInt >= JRE_1_8
-                && (kc.useIndyLambdas || isCI || releaseSettings)
+            val useIndyLambdas = kc.jvmTargetInt >= JRE_1_8 &&
+                (kc.useIndyLambdas || isCI || releaseSettings)
             (if (useIndyLambdas) "indy" else "class").let { mode ->
                 compilerArgs.addAll("-Xlambdas=$mode", "-Xsam-conversions=$mode")
             }
@@ -202,7 +201,7 @@ private val KOTLIN_UP_TO_1_9_OPTS = arrayOf(
     // Also reserved 2 cores for Gradle multitasking.
     // On Apple M1 Max parallelism reduces compilation time by 1/3.
     // Seems to be not supported in Kotlin 2.0+ and failing in Kotlin 1.9.21.
-    //"-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
+    // "-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
 ).asList()
 
 /** Latest options for early testing Kotlin compatibility or for non-production compilations. */
