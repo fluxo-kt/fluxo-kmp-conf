@@ -5,6 +5,9 @@
 
 [//]: # (Changed, Added, Removed, Fixed, Updated)
 
+
+## [0.3.0] - 2023-12-15
+
 _Stabilization release._
 
 ### Changed
@@ -30,6 +33,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.3.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.3.0
 [0.2.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.2.0
 
 [^1]: Uses [Common Changelog style](https://common-changelog.org/) [^2]
