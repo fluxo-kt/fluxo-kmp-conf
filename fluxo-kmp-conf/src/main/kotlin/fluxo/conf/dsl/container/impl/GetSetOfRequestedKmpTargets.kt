@@ -13,7 +13,7 @@ internal fun FluxoKmpConfContext.getSetOfRequestedKmpTargets(): Set<KmpTargetCod
     val targets = project.requestedKmpTargets()
     val sequence = targets?.splitToSequence(',')
 
-    // TODO: Support "metadata_only"/metadataOnly mode
+    // TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)
     val isSplitTargetsEnabled = project.isSplitTargetsEnabled()
         || Code.SPLIT_TARGETS_PROP.equals(targets, ignoreCase = true)
     if ((sequence == null || targets.isEmpty()) && !isSplitTargetsEnabled) {

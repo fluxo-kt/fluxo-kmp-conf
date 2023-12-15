@@ -7,6 +7,7 @@ import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_MIN_SDK
 import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_TARGET_SDK
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoConfigurationExtensionAndroid
+import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.impl.v
 import fluxo.conf.impl.vInt
 import java.util.Locale
@@ -16,7 +17,9 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Input
 
-internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationExtensionAndroid {
+internal interface FluxoConfigurationExtensionAndroidImpl :
+    FluxoConfigurationExtensionAndroid,
+    FluxoConfigurationExtensionPublication {
 
     val project: Project
     val context: FluxoKmpConfContext
@@ -127,33 +130,13 @@ internal interface FluxoConfigurationExtensionAndroidImpl : FluxoConfigurationEx
         set(value) = androidResourceConfsProp.set(value)
 
 
-    @get:Input
-    val enableBuildConfigProp: Property<Boolean>
-    override var enableBuildConfig: Boolean
-        get() = enableBuildConfigProp.orNull ?: parent?.enableBuildConfig ?: false
-        set(value) = enableBuildConfigProp.set(value)
-
-
-    @get:Input
-    val enableComposeProp: Property<Boolean?>
-    override var enableCompose: Boolean?
-        get() = enableComposeProp.orNull ?: parent?.enableCompose
-        set(value) = enableComposeProp.set(value)
-
-    @get:Input
-    val suppressKotlinComposeCompatibilityCheckProp: Property<Boolean?>
-    override var suppressKotlinComposeCompatibilityCheck: Boolean?
-        get() = suppressKotlinComposeCompatibilityCheckProp.orNull
-            ?: parent?.suppressKotlinComposeCompatibilityCheck
-        set(value) = suppressKotlinComposeCompatibilityCheckProp.set(value)
-
-
     // Mask android VariantBuilder with Any
-    // to avoid runtime error when Android plugin isn't present
+    // to avoid runtime error when Android plugin isn't present.
     @get:Input
     val filterVariantsProp: Property<((Any) -> Boolean)?>
     val filterVariants: ((Any) -> Boolean)?
         get() = filterVariantsProp.orNull
+        // TODO: Avoid casting
             ?: (parent as? FluxoConfigurationExtensionAndroidImpl)?.filterVariants
 
     override fun filterVariants(predicate: (VariantBuilder) -> Boolean) {

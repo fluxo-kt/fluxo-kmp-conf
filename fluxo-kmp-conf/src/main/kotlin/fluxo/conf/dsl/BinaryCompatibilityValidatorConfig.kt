@@ -1,11 +1,13 @@
 package fluxo.conf.dsl
 
+import isRelease
+
 /**
  * Configuration for the [kotlinx.validation.BinaryCompatibilityValidatorPlugin].
  *
  * @see kotlinx.validation.ApiValidationExtension
  */
-public data class BinaryCompatibilityValidatorConfig(
+public class BinaryCompatibilityValidatorConfig(
     /**
      * Fully qualified package names that not consider public API.
      * For example, it could be `kotlinx.coroutines.internal`
@@ -13,7 +15,7 @@ public data class BinaryCompatibilityValidatorConfig(
      *
      * @see kotlinx.validation.ApiValidationExtension.ignoredPackages
      */
-    var ignoredPackages: List<String> = emptyList(),
+    public var ignoredPackages: MutableList<String> = mutableListOf(),
 
     /**
      * Fully qualified names of annotations that effectively exclude declarations from being public.
@@ -21,7 +23,7 @@ public data class BinaryCompatibilityValidatorConfig(
      *
      * @see kotlinx.validation.ApiValidationExtension.nonPublicMarkers
      */
-    var nonPublicMarkers: List<String> = emptyList(),
+    public var nonPublicMarkers: MutableList<String> = mutableListOf(),
 
     /**
      * Fully qualified names of classes that ignored by the API check.
@@ -29,7 +31,7 @@ public data class BinaryCompatibilityValidatorConfig(
      *
      * @see kotlinx.validation.ApiValidationExtension.ignoredClasses
      */
-    var ignoredClasses: List<String> = emptyList(),
+    public var ignoredClasses: MutableList<String> = mutableListOf(),
 
     /**
      * Whether to turn off validation for non-release builds.
@@ -37,10 +39,10 @@ public data class BinaryCompatibilityValidatorConfig(
      * @see isRelease
      * @see kotlinx.validation.ApiValidationExtension.validationDisabled
      */
-    var disableForNonRelease: Boolean = false,
+    public var disableForNonRelease: Boolean = false,
 
     /**
      * Whether to verify JS API. Uses compiled TypeScript definitions.
      */
-    var jsApiChecks: Boolean = true,
+    public var jsApiChecks: Boolean = true,
 )

@@ -8,8 +8,6 @@ import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.withAnyPlugin
-import io.github.detekt.gradle.DetektKotlinCompilerPlugin
-import io.gitlab.arturbosch.detekt.DetektPlugin
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
@@ -26,19 +24,8 @@ internal fun FluxoKmpConfContext.setupVerificationRoot() {
 
 internal fun Project.setupVerification(conf: FluxoConfigurationExtensionImpl) {
     val context = conf.context
-    val testsDisabled = context.testsDisabled
-    if (!testsDisabled) {
-        if (!isRootProject && conf.enableSpotless == true) {
-            setupSpotless(context)
-        }
-
-        // Detekt is always availabe in the classpath as it's a dependency.
-        pluginManager.apply(
-            when (conf.enableDetektCompilerPlugin) {
-                true -> DetektKotlinCompilerPlugin::class.java
-                else -> DetektPlugin::class.java
-            }
-        )
+    if (context.testsDisabled && !isRootProject && conf.enableSpotless == true) {
+        setupSpotless(context)
     }
 
     val ignoredBuildTypes = conf.noVerificationBuildTypes

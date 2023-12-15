@@ -9,22 +9,30 @@ public data class FluxoPublicationConfig(
     public var projectName: String? = null,
 
     public var projectDescription: String? = null,
+    /** Project website or repository url */
     public var projectUrl: String? = null,
+    /** `scm:git:git://..` url */
     public var scmUrl: String? = null,
 
     public var developerId: String? = null,
     public var developerName: String? = null,
     public var developerEmail: String? = null,
 
+    /** PGP signing key */
     public var signingKey: String? = null,
+    /** PGP signing password */
     public var signingPassword: String? = null,
 
+    /** Maven publishing repository username */
     public var repositoryUserName: String? = null,
+    /** Maven publishing repository password */
     public var repositoryPassword: String? = null,
 
+    /** VCS link to the specific publication (e.g. release tag) */
     public var publicationUrl: String? = projectUrl,
     public var isSnapshot: Boolean = version.contains("SNAPSHOT", ignoreCase = true),
 
+    /** VCS tag or branch name for publication */
     public var scmTag: String? = if (isSnapshot) DEFAULT_BRANCH_NAME else "v$version",
 
     public var repositoryUrl: String = when {

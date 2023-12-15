@@ -4,13 +4,9 @@ import com.android.build.api.dsl.CommonExtension
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.KmpConfigurationContainerDsl
 import fluxo.conf.dsl.fluxoConfiguration
-import fluxo.conf.impl.kotlin.multiplatformExtension
 import fluxo.conf.impl.withType
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests
 
 public typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
@@ -72,42 +68,12 @@ public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
 }
 
 
-// FIXME: Move to BCV setup
-@Deprecated("For deletion")
-internal enum class Target {
-    ANDROID,
-    JVM,
-    JS,
-}
-
-// FIXME: Move to BCV setup
-@Suppress("DEPRECATION")
-@Deprecated("For deletion")
-internal fun Project.isMultiplatformTargetEnabled(target: Target): Boolean =
-    multiplatformExtension.isMultiplatformTargetEnabled(target)
-
-@Suppress("DEPRECATION")
-private fun KotlinTargetsContainer.isMultiplatformTargetEnabled(target: Target): Boolean {
-    return targets.any {
-        when (it.platformType) {
-            KotlinPlatformType.androidJvm -> target == Target.ANDROID
-            KotlinPlatformType.jvm -> target == Target.JVM
-            KotlinPlatformType.js -> target == Target.JS
-            KotlinPlatformType.common,
-            KotlinPlatformType.native,
-            KotlinPlatformType.wasm,
-            -> false
-        }
-    }
-}
-
-
 // region Old darwin compat helpers
 
 /**
  *
- * @see KotlinTargetContainerWithNativeShortcuts.ios
- * @see KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.ios
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
  */
 public fun KotlinMultiplatformExtension.iosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
@@ -125,8 +91,8 @@ public fun KotlinMultiplatformExtension.iosCompat(
 
 /**
  *
- * @see KotlinTargetContainerWithNativeShortcuts.watchos
- * @see KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.watchos
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
  */
 public fun KotlinMultiplatformExtension.watchosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
@@ -154,8 +120,8 @@ public fun KotlinMultiplatformExtension.watchosCompat(
 
 /**
  *
- * @see KotlinTargetContainerWithNativeShortcuts.tvos
- * @see KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.tvos
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
  */
 public fun KotlinMultiplatformExtension.tvosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
@@ -173,7 +139,7 @@ public fun KotlinMultiplatformExtension.tvosCompat(
 
 /**
  *
- * @see KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
+ * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts.createIntermediateSourceSet
  */
 public fun KotlinMultiplatformExtension.macosCompat(
     x64: String? = DEFAULT_TARGET_NAME,

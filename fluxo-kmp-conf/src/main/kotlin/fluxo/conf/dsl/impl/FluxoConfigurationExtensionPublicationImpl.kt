@@ -59,7 +59,11 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     @get:Input
     val descriptionProp: Property<String?>
     override var description: String?
-        get() = descriptionProp.orNull ?: project.description ?: parent?.description
+        get() {
+            return descriptionProp.orNull
+                ?: project.description?.takeIf { it.isNotBlank() }
+                ?: parent?.description
+        }
         set(value) = descriptionProp.set(value)
 
 
@@ -79,8 +83,8 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
 
     @get:Input
     val reproducibleSnapshotsProp: Property<Boolean?>
-    override var reproducibleSnapshots: Boolean?
-        get() = reproducibleSnapshotsProp.orNull ?: parent?.reproducibleSnapshots
+    override var reproducibleArtifacts: Boolean?
+        get() = reproducibleSnapshotsProp.orNull ?: parent?.reproducibleArtifacts
         set(value) = reproducibleSnapshotsProp.set(value)
 
 
@@ -123,6 +127,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
             else -> project.scmTag().orNull ?: defaultGitBranchName
         }
 
+        // TODO: Add validation for value. Shouldn't be url, but `namespace/name`
         githubProject?.let { githubProject ->
             url = "https://github.com/$githubProject"
             publicationUrl = "$url/tree/$scmTag"
@@ -130,7 +135,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         }
 
         // Make snapshot builds safe and reproducible for usage
-        if (reproducibleSnapshots != false && isSnapshot) {
+        if (reproducibleArtifacts != false && isSnapshot) {
             version = version.substringBeforeLast("SNAPSHOT")
 
             // commit short hash is more convenient for usage as date-n-build

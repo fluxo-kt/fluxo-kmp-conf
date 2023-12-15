@@ -7,6 +7,7 @@ import com.diffplug.spotless.kotlin.DiktatStep
 import com.diffplug.spotless.kotlin.KtLintStep
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.d
 import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.v
 import org.gradle.api.Project
@@ -20,6 +21,8 @@ internal fun Project.setupSpotless(
     context: FluxoKmpConfContext,
     enableDiktat: Boolean = false,
 ) {
+    logger.d("setup Spotless")
+
     // SpotlessPlugin is always availabe in the classpath as it's a dependency.
     pluginManager.apply(SpotlessPlugin::class.java)
 
@@ -44,11 +47,11 @@ internal fun Project.setupSpotless(
             endWithNewline()
         }
 
-        // TODO: Only if kotlin plugin enabled?
         val editorConfigPath = rootProject.file(".editorconfig")
         kotlin {
             target("**/*.kt", "**/*.kts")
 
+            // TODO: Use ktlint directly?
             // https://github.com/search?q=setEditorConfigPath+path%3A*.kt&type=code
             try {
                 ktlint(context.libs.v("ktlint") ?: KtLintStep.defaultVersion())

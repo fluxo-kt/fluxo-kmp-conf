@@ -156,7 +156,8 @@ private fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
     // Output Compose Compiler metrics to the specified directory.
     // https://chris.banes.dev/composable-metrics/
     // https://github.com/androidx/androidx/blob/androidx-main/compose/compiler/design/compiler-metrics.md#interpreting-compose-compiler-metrics
-    val reportsDir = "${project.buildDir.absolutePath}/reports/compose"
+    val buildDir = project.layout.buildDirectory.get().asFile.absolutePath
+    val reportsDir = "$buildDir/reports/compose"
     compilerArgs.addAll("-P", "$p:metricsDestination=$reportsDir")
     compilerArgs.addAll("-P", "$p:reportsDestination=$reportsDir")
 

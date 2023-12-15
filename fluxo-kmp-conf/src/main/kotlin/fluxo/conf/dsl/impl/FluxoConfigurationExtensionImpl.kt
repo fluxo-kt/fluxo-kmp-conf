@@ -21,9 +21,11 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
+/** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */
 internal typealias ConfigureContainers =
     (ConfigurationType, FluxoConfigurationExtensionImpl, Collection<Container>) -> Unit
 
@@ -31,6 +33,8 @@ internal typealias ConfigureContainers =
 internal abstract class FluxoConfigurationExtensionImpl
 @Inject internal constructor(
     override val context: FluxoKmpConfContext,
+
+    /** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */
     private val configureContainers: ConfigureContainers,
 ) : FluxoConfigurationExtension,
     FluxoConfigurationExtensionKotlinImpl,
@@ -51,6 +55,7 @@ internal abstract class FluxoConfigurationExtensionImpl
         }
 
     @get:Input
+    @get:Internal
     protected abstract val hasConfigurationAction: Property<Boolean?>
 
     @get:Input
@@ -101,6 +106,7 @@ internal abstract class FluxoConfigurationExtensionImpl
         // User configuration
         action(dsl)
 
+        /** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */
         configureContainers(type, this, holder.containers.sorted())
     }
 

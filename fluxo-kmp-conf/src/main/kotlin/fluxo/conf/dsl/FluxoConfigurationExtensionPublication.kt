@@ -1,5 +1,7 @@
 package fluxo.conf.dsl
 
+import fluxo.conf.impl.EMPTY_FUN
+
 public interface FluxoConfigurationExtensionPublication {
 
     // Helpful links:
@@ -16,6 +18,12 @@ public interface FluxoConfigurationExtensionPublication {
     // https://dev.to/kotlin/how-to-build-and-publish-a-kotlin-multiplatform-library-creating-your-first-library-1bp8
 
 
+    /**
+     * Flag to enable publication of this project.
+     * Inherited from the parent project if not set.
+     *
+     * Defaults to `true` if [publicationConfig] is set.
+     */
     public var enablePublication: Boolean?
 
 
@@ -57,20 +65,30 @@ public interface FluxoConfigurationExtensionPublication {
 
     public var defaultGitBranchName: String
 
-    /** For example: `fluxo-kt/fluxo` */
+    /** For example: `namespace/name`. Don't use URLs! */
     public var githubProject: String?
 
 
-    public var reproducibleSnapshots: Boolean?
-
-
-    public var publicationConfig: FluxoPublicationConfig?
+    /**
+     * Flag to disable reproducible artifact generation.
+     *
+     * Defaults to `true`.
+     */
+    public var reproducibleArtifacts: Boolean?
 
 
     /**
-     * Reasonably configures the [FluxoPublicationConfig] with provided values.
+     * Config for the project artifacts publication.
      */
-    public fun publicationConfig(configure: FluxoPublicationConfig.() -> Unit)
+    public var publicationConfig: FluxoPublicationConfig?
+
+    /**
+     * Reasonably configures the [FluxoPublicationConfig]
+     * with provided values with possibility for customization.
+     *
+     * @see publicationConfig
+     */
+    public fun publicationConfig(configure: FluxoPublicationConfig.() -> Unit = EMPTY_FUN)
 
 
     public companion object {

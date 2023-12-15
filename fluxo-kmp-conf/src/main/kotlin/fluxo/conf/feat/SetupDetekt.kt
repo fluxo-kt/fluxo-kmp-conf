@@ -7,7 +7,8 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.DEBUG
 import fluxo.conf.impl.android.RELEASE
-import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.configureExtensionIfAvailable
+import fluxo.conf.impl.d
 import fluxo.conf.impl.dependencies
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.e
@@ -29,6 +30,8 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
+
+private const val DEBUG_DETEKT_LOGS = false
 
 private const val MERGE_DETEKT_TASK_NAME = "mergeDetektSarif"
 
@@ -53,6 +56,8 @@ internal fun FluxoKmpConfContext.registerReportMergeTask(
     }
 }
 
+// TODO: Add option to ignore baselines completely and fail on anything,
+//  to help working on reducing baselines.
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun Project.setupDetekt(
@@ -63,7 +68,9 @@ internal fun Project.setupDetekt(
     val context = conf.context
     val testsDisabled = context.testsDisabled
     if (!testsDisabled) {
-        // Detekt is always availabe in the classpath as it's a dependency.
+        logger.d("setup Detekt")
+
+        // Detekt is always availabe in the classpath as an implementation dependency.
         pluginManager.apply(
             when (conf.enableDetektCompilerPlugin) {
                 true -> DetektKotlinCompilerPlugin::class.java
@@ -84,11 +91,11 @@ internal fun Project.setupDetekt(
         TEST_TASK_PREFIXES.any { name.startsWith(it) }
     }
 
-    val detektBaselineIntermediate = "$buildDir/intermediates/detekt/baseline"
-    configureExtension<DetektExtension>(DetektPlugin.DETEKT_EXTENSION) {
+    val baselineIntermediateDir = project.layout.buildDirectory.dir("intermediates/detekt")
+    configureExtensionIfAvailable<DetektExtension>(DetektPlugin.DETEKT_EXTENSION) {
         parallel = true
         buildUponDefaultConfig = true
-        ignoreFailures = true
+        ignoreFailures = detektMergeStarted
         autoCorrect = !context.isCI && !testStarted && !detektMergeStarted
 
         // For GitHub or another report consumers to know
@@ -98,25 +105,28 @@ internal fun Project.setupDetekt(
         this.ignoredBuildTypes = ignoredBuildTypes
         this.ignoredFlavors = ignoredFlavors
 
-        val files = arrayOf(
+        val files = arrayListOf(
             file("detekt.yml"),
             rootProject.file("detekt.yml"),
-            rootProject.file("detekt-compose.yml"),
             rootProject.file("detekt-formatting.yml"),
-        ).filter { it.exists() && it.canRead() }
-
+        )
+        if (context.kotlinConfig.setupCompose) {
+            files += rootProject.file("detekt-compose.yml")
+        }
+        files.retainAll { it.exists() && it.canRead() }
         if (files.isNotEmpty()) {
             @Suppress("SpreadOperator")
             config.from(*files.toTypedArray())
         }
 
-        baseline = if (detektMergeStarted) {
-            file("$detektBaselineIntermediate.xml")
-        } else {
-            detektBaselineFile
+        baseline = when {
+            !detektMergeStarted -> detektBaselineFile
+            else -> baselineIntermediateDir.get().file("$BASELINE.$EXT").asFile
         }
 
-        if (testsDisabled) enableCompilerPlugin.set(false)
+        if (testsDisabled) {
+            enableCompilerPlugin.set(false)
+        }
     }
 
     val baselineTasks = tasks.withType<DetektCreateBaselineTask> {
@@ -125,11 +135,11 @@ internal fun Project.setupDetekt(
         val kc = context.kotlinConfig
         kc.jvmTarget?.let { jvmTarget = it }
 
-        val (lang) = kc.langAndApiVersions(isTest = false, /*latestSettings = */)
+        val (lang) = kc.langAndApiVersions(isTest = false)
         lang?.let { languageVersion.set(it.version) }
 
         if (mergeDetektBaselinesTask != null) {
-            baseline.set(file("$detektBaselineIntermediate-$name.xml"))
+            baseline.set(baselineIntermediateDir.map { it.file("$BASELINE-$name.$EXT") })
         }
     }
     mergeDetektBaselinesTask?.configure {
@@ -140,26 +150,34 @@ internal fun Project.setupDetekt(
     val detektTasks = tasks.withType<Detekt> {
         val testsAreDisabled = context.testsDisabled
         val isDisabled = testsAreDisabled || !isDetektTaskAllowed(context)
-        if (isDisabled && enabled) {
-            val reason = when {
-                testsAreDisabled -> "tests are disabled"
-                else -> "platform ${taskPlatform()} is disabled"
+
+        if (isDisabled) {
+            if (enabled) {
+                val reason = when {
+                    testsAreDisabled -> "tests are disabled"
+                    else -> "platform ${taskPlatform()} is disabled"
+                }
+                logger.e("Unexpected Detekt task {}, disabling as $reason", path)
+                disableTask()
             }
-            logger.e("Unexpected Detekt task {}, disabling as $reason", path)
-            disableTask()
+        } else {
+            // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
+            val kc = context.kotlinConfig
+            kc.jvmTarget?.let { jvmTarget = it }
+
+            val (lang) = kc.langAndApiVersions(isTest = false)
+            lang?.let { languageVersion = it.version }
+
+            if (DEBUG_DETEKT_LOGS) {
+                debug = true
+            }
         }
-
-        // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
-        val kc = context.kotlinConfig
-        kc.jvmTarget?.let { jvmTarget = it }
-
-        val (lang) = kc.langAndApiVersions(isTest = false, /*latestSettings = */)
-        lang?.let { languageVersion = it.version }
 
         reports.apply {
             sarif.required.set(!isDisabled)
             html.required.set(!isDisabled)
-            txt.required.set(!isDisabled)
+            txt.required.set(false)
+            md.required.set(false)
             xml.required.set(false)
         }
     }
@@ -181,7 +199,10 @@ internal fun Project.setupDetekt(
         context.libs?.run {
             dependencies {
                 onLibrary("detekt-formatting", ::detektPlugins)
-                onLibrary("detekt-compose", ::detektPlugins)
+
+                if (context.kotlinConfig.setupCompose) {
+                    onLibrary("detekt-compose", ::detektPlugins)
+                }
             }
         }
     }
@@ -191,7 +212,11 @@ internal fun Project.setupDetekt(
 private fun DependencyHandler.detektPlugins(dependencyNotation: Any) =
     add("detektPlugins", dependencyNotation)
 
-private const val DETEKT_BASELINE_FILE_NAME = "detekt-baseline.xml"
+private const val BASELINE = "baseline"
+
+private const val EXT = "xml"
+
+private const val DETEKT_BASELINE_FILE_NAME = "detekt-$BASELINE.$EXT"
 
 private val TEST_TASK_PREFIXES = arrayOf(CHECK_TASK_NAME, TEST_TASK_NAME)
 

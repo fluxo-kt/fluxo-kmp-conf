@@ -97,6 +97,10 @@ android-gradle-plugin = "8.1.4"
 # WARNING: 0.13+ uses Kotlin metadata 0.6.0!
 bcv = "0.13.2"
 
+# Kotlin/JS API support for the KotlinX Binary Compatibility Validator based on the generated TS definitions.
+# https://github.com/fluxo-kt/fluxo-bcv-js/releases
+fluxo-bcv-js = "0.2.0"
+
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
 # https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
@@ -125,7 +129,6 @@ detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref 
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
-plugin-binCompatValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bcv" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version.ref = "gradle-intellij-plugin" }
@@ -140,7 +143,10 @@ plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", ver
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-sam-receiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
 kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }
+fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version.ref = "fluxo-bcv-js" }
 
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 

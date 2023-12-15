@@ -9,11 +9,19 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExtensionKotlin {
 
     val context: FluxoKmpConfContext
     val parent: FluxoConfigurationExtension?
+
+
+    @get:Input
+    val onConfigurationProp: Property<(KotlinProjectExtension.() -> Unit)?>
+    override var onConfiguration: (KotlinProjectExtension.() -> Unit)?
+        get() = onConfigurationProp.orNull ?: parent?.onConfiguration
+        set(value) = onConfigurationProp.set(value)
 
 
     @get:Input
@@ -206,6 +214,27 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
 
 
     @get:Input
+    val enableComposeProp: Property<Boolean?>
+    override var enableCompose: Boolean?
+        get() = enableComposeProp.orNull ?: parent?.enableCompose
+        set(value) = enableComposeProp.set(value)
+
+    @get:Input
+    val suppressKotlinComposeCompatibilityCheckProp: Property<Boolean?>
+    override var suppressKotlinComposeCompatibilityCheck: Boolean?
+        get() = suppressKotlinComposeCompatibilityCheckProp.orNull
+            ?: parent?.suppressKotlinComposeCompatibilityCheck
+        set(value) = suppressKotlinComposeCompatibilityCheckProp.set(value)
+
+
+    @get:Input
+    val enableBuildConfigProp: Property<Boolean>
+    override var enableBuildConfig: Boolean
+        get() = enableBuildConfigProp.orNull ?: parent?.enableBuildConfig ?: false
+        set(value) = enableBuildConfigProp.set(value)
+
+
+    @get:Input
     val enableApiValidationProp: Property<Boolean?>
     override var enableApiValidation: Boolean?
         get() = enableApiValidationProp.orNull ?: parent?.enableApiValidation
@@ -235,4 +264,11 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     override var enableSpotless: Boolean?
         get() = enableSpotlessProp.orNull ?: parent?.enableSpotless
         set(value) = enableSpotlessProp.set(value)
+
+
+    @get:Input
+    val useDokkaProp: Property<Boolean?>
+    override var useDokka: Boolean?
+        get() = useDokkaProp.orNull ?: parent?.useDokka
+        set(value) = useDokkaProp.set(value)
 }

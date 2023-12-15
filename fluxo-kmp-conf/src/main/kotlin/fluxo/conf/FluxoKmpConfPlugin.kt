@@ -4,9 +4,9 @@ import fluxo.conf.data.BuildConstants.PLUGIN_ID
 import fluxo.conf.deps.FluxoCache
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.Container
+import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.ConfigureContainers
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
-import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.feat.ensureUnreachableTasksDisabled
 import fluxo.conf.feat.prepareBuildScanPlugin
 import fluxo.conf.feat.prepareCompleteKotlinPlugin
@@ -20,11 +20,15 @@ import fluxo.conf.feat.prepareKotlinSetupDiagnosticTasks
 import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
 import fluxo.conf.feat.prepareTaskInfoPlugin
 import fluxo.conf.feat.prepareTaskTreePlugin
+import fluxo.conf.feat.setupBinaryCompatibilityValidator
+import fluxo.conf.feat.setupGradleProjectPublication
 import fluxo.conf.feat.setupSpotless
 import fluxo.conf.feat.setupTestsReport
 import fluxo.conf.feat.setupVerificationRoot
 import fluxo.conf.impl.checkIsRootProject
+import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.isRootProject
+import fluxo.conf.impl.kotlin.KOTLIN_EXT
 import fluxo.conf.impl.kotlin.configureKotlinJvm
 import fluxo.conf.impl.kotlin.configureKotlinMultiplatform
 import fluxo.conf.impl.kotlin.setupKmpYarnPlugin
@@ -98,6 +102,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
     /**
      *
      * @see FluxoConfigurationExtensionImpl.configureAs
+     * @see ConfigureContainers
      */
     private fun configureContainers(
         type: ConfigurationType,
@@ -105,12 +110,32 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         containers: Collection<Container>,
     ) {
         val containerArray = containers.toTypedArray()
-        when (type) {
+        val configured = when (type) {
             ConfigurationType.KOTLIN_MULTIPLATFORM ->
                 configureKotlinMultiplatform(configuration, containerArray)
 
             else ->
                 configureKotlinJvm(type, configuration, containerArray)
+        }
+        if (configured) {
+            return
+        }
+
+        // Public API validation
+        configuration.apiValidation?.let {
+            setupBinaryCompatibilityValidator(it, configuration, type)
+        }
+
+        // Gradle project atifacts publication
+        if (configuration.enablePublication != false) {
+            configuration.publicationConfig?.let {
+                setupGradleProjectPublication(it, configuration, type)
+            }
+        }
+
+        // Generic custom lazy configuration
+        configuration.onConfiguration?.let { action ->
+            configuration.project.configureExtension(KOTLIN_EXT, action = action)
         }
     }
 

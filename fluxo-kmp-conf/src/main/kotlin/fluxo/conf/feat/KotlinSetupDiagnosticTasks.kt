@@ -96,9 +96,6 @@ private fun Project.printKotlinTargetsInfo() {
 
                 // List of compilation, which compiled outputs are used.
                 // Associating compilations establishes internal visibility between them.
-                compilation.associateWith
-
-                // TODO: Use associatedCompilations
                 compilation.associatedCompilations
             } catch (_: Throwable) {
             }

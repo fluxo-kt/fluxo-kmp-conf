@@ -2,9 +2,7 @@ package fluxo.conf.dsl
 
 import com.android.build.api.variant.VariantBuilder
 
-public interface FluxoConfigurationExtensionAndroid :
-    FluxoConfigurationExtensionCommon,
-    FluxoConfigurationExtensionPublication {
+public interface FluxoConfigurationExtensionAndroid {
 
     /**
      * Prefix for the auto generated [androidNamespace].
@@ -23,13 +21,14 @@ public interface FluxoConfigurationExtensionAndroid :
      * Additionally, it's used for the `applicationId` value.
      *
      * If not set, the default is the [androidNamespacePrefix] (if set) + the project name.
-     * Or [group] if [androidNamespacePrefix] isn't set.
+     * Or [group][FluxoConfigurationExtensionPublication.group]
+     * if [androidNamespacePrefix] isn't set.
      *
      * @see com.android.build.api.dsl.CommonExtension.namespace
      * @see com.android.build.gradle.BaseExtension.namespace
      * @see com.android.build.api.dsl.ApplicationBaseFlavor.applicationId
      * @see com.android.build.api.dsl.ApplicationBaseFlavor.applicationIdSuffix
-     * @see group
+     * @see FluxoConfigurationExtensionPublication.group
      */
     public var androidNamespace: String
 
@@ -59,7 +58,7 @@ public interface FluxoConfigurationExtensionAndroid :
      * See [Versioning Your Application](http://developer.android.com/tools/publishing/versioning.html)
      *
      * @see com.android.build.api.dsl.ApplicationBaseFlavor.versionCode
-     * @see version
+     * @see FluxoConfigurationExtensionPublication.version
      */
     public var androidVersionCode: Int
 
@@ -71,7 +70,8 @@ public interface FluxoConfigurationExtensionAndroid :
      * Inherited from the parent project if not set.
      *
      * Auto set using the version names in toml version catalog:
-     * `androidMinSdk`, `minSdk`, `androidMinSdkPreview`, `minSdkPreview` or `androidPreviewSdk`
+     * `androidMinSdk`, `minSdk`, `androidMinSdkPreview`,
+     * `minSdkPreview`, or `androidPreviewSdk`.
      *
      * @see com.android.build.api.dsl.BaseFlavor.minSdk
      * @see com.android.build.api.dsl.BaseFlavor.minSdkPreview
@@ -85,8 +85,8 @@ public interface FluxoConfigurationExtensionAndroid :
      * Inherited from the parent project if not set.
      *
      * Auto set using the version names in toml version catalog:
-     * `androidTargetSdk`, `targetSdk`, `androidTargetSdkPreview`, `targetSdkPreview`
-     * or `androidPreviewSdk`
+     * `androidTargetSdk`, `targetSdk`, `androidTargetSdkPreview`,
+     * `targetSdkPreview`, or `androidPreviewSdk`.
      *
      * @see com.android.build.api.dsl.ApplicationBaseFlavor.targetSdk
      * @see com.android.build.api.dsl.ApplicationBaseFlavor.targetSdkPreview
@@ -102,8 +102,8 @@ public interface FluxoConfigurationExtensionAndroid :
      * Inherited from the parent project if not set.
      *
      * Auto set using the version names in toml version catalog:
-     * `androidCompileSdk`, `compileSdk`, `androidCompileSdkPreview`, `compileSdkPreview`
-     * or `androidPreviewSdk`
+     * `androidCompileSdk`, `compileSdk`, `androidCompileSdkPreview`,
+     * `compileSdkPreview`, or `androidPreviewSdk`.
      *
      * @see com.android.build.api.dsl.CommonExtension.compileSdk
      * @see com.android.build.api.dsl.CommonExtension.compileSdkPreview

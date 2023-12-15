@@ -1,7 +1,6 @@
 package fluxo.conf.feat
 
 import com.autonomousapps.DependencyAnalysisExtension
-import com.autonomousapps.extension.Issue
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.BuildConstants.DEPS_ANALYSIS_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.DEPS_ANALYSIS_PLUGIN_ID
@@ -12,8 +11,6 @@ import fluxo.conf.data.VersionCatalogConstants.VC_SQUARE_PLUMBER_ALIAS
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.onLibrary
-import org.gradle.api.artifacts.MinimalExternalModuleDependency
-import org.gradle.api.provider.Provider
 
 // Detect unused and misused dependencies.
 // Provides advice for managing dependencies and other applied plugins.
@@ -34,7 +31,7 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
 
     rootProject.configureExtension<DependencyAnalysisExtension> {
         // https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/Customizing-plugin-behavior
-        dependencies {
+        structure {
             bundle("kotlin-stdlib") {
                 includeGroup("org.jetbrains.kotlin")
             }
@@ -52,7 +49,7 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
                 }
                 onUnusedDependencies {
                     severity("fail")
-                    // Needed for compose '@Preview'
+                    // Needed for Compose '@Preview'
                     libs?.onLibrary(VC_ANDROIDX_COMPOSE_TOOLING_ALIAS, ::exclude)
                 }
                 onAny {
@@ -72,10 +69,6 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
             }
         }
     }
-}
-
-private fun Issue.exclude(it: Provider<out MinimalExternalModuleDependency>) {
-    exclude(it.get().module.toString())
 }
 
 private val DEPS_ANALYSIS_TASK_NAMES = arrayOf(

@@ -139,13 +139,9 @@ dependencies {
     compileOnly(libs.ktlint)
 
     compileOnly(libs.plugin.android)
-    compileOnly(libs.plugin.binCompatValidator)
-    compileOnly(libs.plugins.build.config.toModuleDependency())
-    compileOnly(libs.plugin.dokka)
     compileOnly(libs.plugin.intellij)
     compileOnly(libs.plugin.jetbrains.compose)
     compileOnly(libs.plugin.kotlin)
-    compileOnly(libs.plugins.kotlin.sam.receiver.toModuleDependency())
     compileOnly(libs.plugin.ksp)
 
     compileOnly(libs.plugins.gradle.enterprise.toModuleDependency())
@@ -185,6 +181,9 @@ buildConfig {
     }
 
     buildConfigField("KOTLIN_SAM_RECEIVER", libs.plugins.kotlin.sam.receiver)
+    buildConfigField("KOTLINX_BCV", libs.plugins.kotlinx.binCompatValidator)
+    buildConfigField("FLUXO_BCV_JS", libs.plugins.fluxo.bcv.js)
+    buildConfigField("DOKKA", libs.plugins.dokka)
     buildConfigField("GRADLE_PLUGIN_PUBLISH", libs.plugins.gradle.plugin.publish)
     buildConfigField("COMPLETE_KOTLIN", libs.plugins.complete.kotlin)
     buildConfigField("DEPS_VERSIONS", libs.plugins.deps.versions)
@@ -300,6 +299,8 @@ dependencyGuard {
 
 detekt {
     parallel = true
+    ignoreFailures = false
+    buildUponDefaultConfig = true
     config.setFrom(rootProject.file("detekt.yml"))
     baseline = file("detekt-baseline.xml")
 }

@@ -56,10 +56,6 @@ public val NamedDomainObjectCollection<out KotlinSourceSet>.common: SourceSetBun
 public val KotlinSourceSetContainer.commonJvm: SourceSetBundle
     get() = sourceSets.bundle(KmpTargetContainerImpl.CommonJvm.COMMON_JVM)
 
-/** Parent [SourceSetBundle] for all JVM-based targets (JVM, Android) */
-@Deprecated("Use commonJvm instead", ReplaceWith("commonJvm"))
-public val KotlinSourceSetContainer.commonJava: SourceSetBundle get() = commonJvm
-
 /** Parent [SourceSetBundle] for all non-JVM targets (JS, Native) */
 public val KotlinSourceSetContainer.commonNonJvm: SourceSetBundle
     get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.NON_JVM)

@@ -12,8 +12,3 @@ if (hasProperty("buildScan")) {
         termsOfServiceAgree = "yes"
     }
 }
-
-val buildTask = tasks.register("buildPlugins")
-subprojects {
-    buildTask.configure { dependsOn(tasks.named("build")) }
-}

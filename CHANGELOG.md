@@ -4,7 +4,16 @@
 ## Unreleased
 
 [//]: # (Changed, Added, Removed, Fixed)
-- ...
+
+_Stabilization release._
+
+### Changed
+- setup artifacts publication.
+- setup BinaryCompatibilityValidator.
+- stabilize Detekt configuration.
+
+### Removed
+- remove deprecated API surface parts.
 
 
 ## [0.2.0] - 2023-12-10

@@ -51,10 +51,10 @@ internal fun configureKotlinJvm(
     type: ConfigurationType,
     configuration: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
-) {
+): Boolean {
     require(type != KOTLIN_MULTIPLATFORM) { "Unexpected Kotlin Multiplatform configuration" }
     if (!checkIfNeedToConfigure(type, configuration, containers)) {
-        return
+        return false
     }
 
     val project = configuration.project
@@ -93,7 +93,7 @@ internal fun configureKotlinJvm(
         (container as? ContainerImpl)?.applyPluginsWith(pluginManager)
     }
 
-    project.configureExtension<KotlinProjectExtension>(name = "kotlin") {
+    project.configureExtension<KotlinProjectExtension>(name = KOTLIN_EXT) {
         require(this is KotlinJvmProjectExtension || this is KotlinAndroidProjectExtension) {
             "use `setupMultiplatform` for KMP module or Kotlin/JS usage. \n" +
                 "Unexpected KotlinProjectExtension: ${javaClass.name}"
@@ -139,6 +139,8 @@ internal fun configureKotlinJvm(
             }
         }
     }
+
+    return true
 }
 
 private fun KotlinProjectExtension.applyKmpContainer(
@@ -153,9 +155,9 @@ private fun KotlinProjectExtension.applyKmpContainer(
 internal fun configureKotlinMultiplatform(
     configuration: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
-) {
+): Boolean {
     if (!checkIfNeedToConfigure(KOTLIN_MULTIPLATFORM, configuration, containers)) {
-        return
+        return false
     }
 
     val project = configuration.project
@@ -193,7 +195,7 @@ internal fun configureKotlinMultiplatform(
         }
     }
 
-    project.configureExtension<KotlinMultiplatformExtension>("kotlin") {
+    project.configureExtension<KotlinMultiplatformExtension>(KOTLIN_EXT) {
         // Set Kotlin settings before the containers so that they may be overridden if desired.
         setupKotlinExtensionAndProject(configuration)
 
@@ -219,6 +221,8 @@ internal fun configureKotlinMultiplatform(
             }
         }
     }
+
+    return true
 }
 
 private fun checkIfNeedToConfigure(
@@ -387,3 +391,6 @@ private fun KotlinTarget.checkForDisabledTarget(conf: FluxoConfigurationExtensio
         }.configureEach(getDisableTaskAction(target))
     }
 }
+
+
+internal const val KOTLIN_EXT = "kotlin"

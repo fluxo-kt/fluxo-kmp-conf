@@ -3,8 +3,31 @@ package fluxo.conf.dsl
 public interface FluxoConfigurationExtensionCommon {
 
     /**
+     * Flag that allows to disable dependency setup completely.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `true`.
+     */
+    public var setupDependencies: Boolean
+
+    /**
+     * Flag to add the supported BOM dependencies automatically from the
+     * toml version catalog on configuration of the project.
+     *
+     * Don't use it for libraries, only for the final app!
+     *
+     * Inherited from the parent project if not set. Default value: `false`.
+     *
+     * [More info](https://docs.gradle.org/current/userguide/java_platform_plugin.html)
+     *
+     * @TODO: Document list of supported BOMs
+     */
+    public var setupKnownBoms: Boolean
+
+
+    /**
      * Flag to enable generation of the `BuildConfig` class for this module.
-     * Uses native capability for Android modules, gradle plugin otherwise.
+     * Uses native capability for Android-only modules, gradle plugin otherwise.
      *
      * Set default with `android.defaults.buildfeatures.buildconfig` property, false if not set.
      *
@@ -15,43 +38,13 @@ public interface FluxoConfigurationExtensionCommon {
 
 
     /**
-     * Flag to set up the KSP plugin.
-     */
-    public var setupKsp: Boolean?
-
-    /**
-     * Flag to set up the Kapt plugin.
-     */
-    public var setupKapt: Boolean?
-
-
-    /**
-     * Flag to enable the Compose feature.
-     * Uses native capability for Android modules, multiplatform JetBrains Compose otherwise.
+     * Flag to turn on ALL the set of verification features, like Detekt, Spotless, and so on.
      *
-     * @see com.android.build.api.dsl.BuildFeatures.compose
-     */
-    public var enableCompose: Boolean?
-
-    /**
-     * Turn on the `suppressKotlinVersionCompatibilityCheck` for Compose.
-     * It prevents the Compose compiler from checking the Kotlin version.
+     * Inherited from the parent project if not set.
+     * Default value: `true`.
      *
-     * Inherited from the parent project if not set. Default value: `false`.
-     *
-     * #### Compatibility maps:
-     * - [Compose to Kotlin Compatibility Map](https://developer.android.com/jetpack/androidx/releases/compose-kotlin)
-     * - [Same for JetBrains Compose](https://github.com/JetBrains/compose-multiplatform/blob/master/VERSIONING.md#kotlin-compatibility)
-     *
-     * @see enableCompose
-     */
-    public var suppressKotlinComposeCompatibilityCheck: Boolean?
-
-
-    /**
-     * Flag to turn on the set of verification features, like Detekt, Spotless, and so on.
-     *
-     * Inherited from the parent project if not set. Default value: `true`.
+     * @see enableSpotless
+     * @see enableDetektCompilerPlugin
      */
     public var setupVerification: Boolean?
 
@@ -63,4 +56,29 @@ public interface FluxoConfigurationExtensionCommon {
         set(value) {
             setupVerification = value
         }
+
+
+    /**
+     * Flag to turn on the Detekt compiler plugin.
+     * IT MAY BE HIGHLY UNSTABLE!
+     *
+     * Can be disabled by the [setupVerification] flag.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `false`.
+     *
+     * @see setupVerification
+     */
+    public var enableDetektCompilerPlugin: Boolean?
+
+    /**
+     * Flag to turn on the Spotless setup.
+     * Can be disabled by the [setupVerification] flag.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `false`.
+     *
+     * @see setupVerification
+     */
+    public var enableSpotless: Boolean?
 }
