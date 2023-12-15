@@ -29,7 +29,7 @@ kotlin = "1.9.21"
 jetbrains-compose = "1.5.11"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.21-1.0.15"
+ksp = "1.9.21-1.0.16"
 
 # region Android specific
 
@@ -88,7 +88,7 @@ androidBuildTools = "34.0.0"
 # Gradle plug-in to build Android applications.
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # WARNING: Do not forget to update the version badge in `README.md`!
-android-gradle-plugin = "8.1.4"
+android-gradle-plugin = "8.2.0"
 
 # endregion
 
@@ -113,7 +113,7 @@ detekt = "1.23.4"
 ktlint = "1.0.1"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "6.23.2"
+spotless = "6.23.3"
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij
@@ -165,7 +165,7 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.enterprise
 # NOTE: Don't forget to edit version in all `settings.gradle.kts` files as well!
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.15.1" }
+gradle-enterprise = { id = "com.gradle.enterprise", version = "3.16.1" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin/releases
@@ -176,7 +176,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.50.0" }
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 # https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.26.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.28.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log

@@ -313,6 +313,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionPublic
 	public abstract fun getReproducibleArtifacts ()Ljava/lang/Boolean;
 	public abstract fun getVersion ()Ljava/lang/String;
 	public abstract fun publicationConfig (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun publicationConfig$default (Lfluxo/conf/dsl/FluxoConfigurationExtensionPublication;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun setDefaultGitBranchName (Ljava/lang/String;)V
 	public abstract fun setDescription (Ljava/lang/String;)V
 	public abstract fun setEnablePublication (Ljava/lang/Boolean;)V

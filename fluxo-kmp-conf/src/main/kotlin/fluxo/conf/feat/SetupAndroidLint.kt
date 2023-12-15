@@ -16,11 +16,13 @@ import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.ifNotEmpty
 import fluxo.conf.impl.l
 import fluxo.conf.impl.v
+import fluxo.conf.impl.w
 import fluxo.conf.impl.withType
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
@@ -146,7 +148,31 @@ private fun Task.reportLintVersion() {
 }
 
 private fun Task.reportLintVersion(lintTool: LintTool?): Boolean {
-    val lintVersion = lintTool?.version?.orNull?.trim()
+    var lintVersion: String? = null
+    var versionKey: Property<String>? = null
+    try {
+        versionKey = lintTool?.versionKey
+        lintVersion = versionKey?.orNull?.trim()
+    } catch (e: Throwable) {
+        var report = true
+        try {
+            if (versionKey == null && lintTool != null) {
+                // AGP before 8.2
+                lintTool.javaClass.getDeclaredMethod("getVersion").invoke(lintTool)?.let {
+                    lintVersion = it.toString().trim()
+                }
+                report = false
+            }
+        } catch (e2: Throwable) {
+            e2.addSuppressed(e)
+            logger.w("Failed to get Android Lint version", e2)
+            return false
+        }
+        if (report) {
+            logger.w("Failed to get Android Lint version", e)
+            return false
+        }
+    }
     if (lintVersion.isNullOrEmpty() || !IS_VERSION_REPORTED.compareAndSet(false, true)) {
         return false
     }

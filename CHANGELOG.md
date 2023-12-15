@@ -3,7 +3,7 @@
 
 ## Unreleased
 
-[//]: # (Changed, Added, Removed, Fixed)
+[//]: # (Changed, Added, Removed, Fixed, Updated)
 
 _Stabilization release._
 
@@ -14,6 +14,13 @@ _Stabilization release._
 
 ### Removed
 - remove deprecated API surface parts.
+
+### Updated
+- KSP 1.0.16
+- Android Gradle Plugin 8.2.0
+- Spotless 6.23.3
+- Gradle Enterprise 3.16.1
+- Dependency Analysis 1.28.0
 
 
 ## [0.2.0] - 2023-12-10
