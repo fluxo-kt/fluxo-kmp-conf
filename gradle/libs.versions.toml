@@ -9,6 +9,7 @@
 [versions]
 
 version = "0.3.0"
+fluxo-conf = "0.3.0"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
@@ -139,6 +140,8 @@ plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", ver
 
 
 [plugins]
+
+fluxo-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version.ref = "fluxo-conf" }
 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

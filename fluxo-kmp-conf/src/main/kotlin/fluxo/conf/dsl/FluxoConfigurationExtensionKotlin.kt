@@ -1,5 +1,6 @@
 package fluxo.conf.dsl
 
+import fluxo.conf.impl.EMPTY_FUN
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtensionKotlinOptions {
@@ -89,8 +90,9 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
     public var apiValidation: BinaryCompatibilityValidatorConfig?
 
-    public fun apiValidation(configure: BinaryCompatibilityValidatorConfig.() -> Unit) {
-        apiValidation = BinaryCompatibilityValidatorConfig().apply(configure)
+    public fun apiValidation(configure: BinaryCompatibilityValidatorConfig.() -> Unit = EMPTY_FUN) {
+        enableApiValidation = true
+        apiValidation = (apiValidation ?: BinaryCompatibilityValidatorConfig()).apply(configure)
     }
 
 
