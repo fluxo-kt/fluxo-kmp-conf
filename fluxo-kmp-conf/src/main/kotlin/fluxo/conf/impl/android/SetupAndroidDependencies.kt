@@ -13,9 +13,11 @@ import fluxo.conf.impl.onBundle
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.runtimeOnly
 import fluxo.conf.impl.testImplementation
+import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
 
+context(Project)
 @Suppress("LongMethod")
 internal fun DependencyHandler.setupAndroidDependencies(
     libs: VersionCatalog?,

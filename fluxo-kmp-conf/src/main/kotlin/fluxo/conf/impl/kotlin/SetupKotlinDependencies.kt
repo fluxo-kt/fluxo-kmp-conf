@@ -9,14 +9,16 @@ import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.JSR305_DEPENDENCY
 import fluxo.conf.impl.android.hasAndroidAppPlugin
+import fluxo.conf.impl.compileOnlyAndLog
 import fluxo.conf.impl.compileOnlyWithConstraint
 import fluxo.conf.impl.getOrNull
 import fluxo.conf.impl.implementation
+import fluxo.conf.impl.implementationAndLog
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.onBundle
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.testImplementation
-import fluxo.conf.impl.w
+import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -24,6 +26,7 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+context(Project)
 internal fun DependencyHandler.setupKotlinDependencies(
     libs: VersionCatalog?,
     kc: KotlinConfig,
@@ -89,6 +92,7 @@ internal fun DependencyHandler.setupKotlinDependencies(
     }
 }
 
+context(Project)
 internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
     configuration: FluxoConfigurationExtensionImpl,
     isApplication: Boolean = configuration.project.hasAndroidAppPlugin,
@@ -103,10 +107,10 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
     sourceSets.commonMain.dependencies {
         if (kc.setupKnownBoms) {
             val bom = kotlin("bom", kc.coreLibs)
-            implementation(if (isApplication) dh.enforcedPlatform(bom) else dh.platform(bom))
+            implementationAndLog(if (isApplication) dh.enforcedPlatform(bom) else dh.platform(bom))
 
             val bomImplementation: (Provider<MinimalExternalModuleDependency>) -> Unit = {
-                implementation(if (isApplication) dh.enforcedPlatform(it) else dh.platform(it))
+                implementationAndLog(if (isApplication) dh.enforcedPlatform(it) else dh.platform(it))
             }
             if (kc.setupCoroutines) {
                 libs?.onLibrary("kotlinx-coroutines-bom", bomImplementation)
@@ -121,22 +125,22 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
             }
         }
         if (kc.addStdlibDependency) {
-            implementation(kotlin("stdlib", kc.coreLibs), excludeJetbrainsAnnotations)
+            implementationAndLog(kotlin("stdlib", kc.coreLibs), excludeJetbrainsAnnotations)
         }
         if (kc.setupCoroutines) {
-            libs?.onLibrary("kotlinx-coroutines-core") { implementation(it) }
+            libs?.onLibrary("kotlinx-coroutines-core") { implementationAndLog(it) }
         }
     }
 
     sourceSets.commonTest.dependencies {
-        implementation(kotlin("test"))
-        implementation(kotlin("reflect"))
+        implementationAndLog(kotlin("test"))
+        implementationAndLog(kotlin("reflect"))
 
-        libs?.onLibrary("kotlinx-datetime") { implementation(it) }
+        libs?.onLibrary("kotlinx-datetime") { implementationAndLog(it) }
 
         if (kc.setupCoroutines) {
-            libs?.onLibrary("kotlinx-coroutines-test") { implementation(it) }
-            libs?.onLibrary("test-turbine") { implementation(it) }
+            libs?.onLibrary("kotlinx-coroutines-test") { implementationAndLog(it) }
+            libs?.onLibrary("test-turbine") { implementationAndLog(it) }
         }
     }
 
@@ -153,7 +157,7 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
         else {
             libs?.onLibrary("androidx-compose-runtime") { lib ->
                 sourceSets.register(CommonJvm.ANDROID + MAIN_SOURCE_SET_POSTFIX) {
-                    dependencies { compileOnly(lib) }
+                    dependencies { compileOnlyAndLog(lib) }
                     constraints.implementation(lib)
                 }
             }
@@ -167,13 +171,8 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
             // https://issuetracker.google.com/issues/216305675
             // https://issuetracker.google.com/issues/216293107
             val compileOnlyWithConstraint: (Any) -> Unit = {
-                compileOnly(it)
-                try {
-                    constraints.implementation(it)
-                } catch (e: Throwable) {
-                    val ex = if (context.isMaxDebug) e else null
-                    project.logger.w("Failed to add constraint for $it: $e", ex)
-                }
+                compileOnlyAndLog(it)
+                constraints.implementation(it)
             }
 
             // Java-only annotations
@@ -192,7 +191,7 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
                 .findLibrary("test-junit")
                 .or { libs.findLibrary("junit") }
                 .getOrNull() ?: JUNIT_DEPENDENCY
-            compileOnly(junit)
+            compileOnlyAndLog(junit)
         }
     }
 }

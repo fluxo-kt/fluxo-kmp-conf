@@ -106,7 +106,13 @@ internal fun configureKotlinJvm(
 
         if (configuration.setupDependencies) {
             val deps = project.dependencies
-            deps.setupKotlinDependencies(context.libs, context.kotlinConfig, isApplication = isApp)
+            with(project) {
+                deps.setupKotlinDependencies(
+                        context.libs,
+                        context.kotlinConfig,
+                        isApplication = isApp,
+                )
+            }
         } else {
             project.logger.v("Configuring Kotlin dependencies disabled")
         }
@@ -201,7 +207,9 @@ internal fun configureKotlinMultiplatform(
         setupKotlinExtensionAndProject(configuration)
 
         if (configuration.setupDependencies) {
-            setupMultiplatformDependencies(configuration)
+            with(project) {
+                setupMultiplatformDependencies(configuration)
+            }
         } else {
             project.logger.v("Configuring Kotlin dependencies disabled")
         }

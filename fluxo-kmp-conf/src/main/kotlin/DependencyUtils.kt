@@ -1,3 +1,5 @@
+import fluxo.conf.impl.COMPILE_ONLY
+import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.capitalizeAsciiOnly
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.provider.Provider
@@ -49,8 +51,7 @@ public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
         confName = confName.replace(MAIN_SOURCE_SET_POSTFIX, "", ignoreCase = true)
     }
     confName = "ksp${confName.capitalizeAsciiOnly()}"
-    project.logger.lifecycle(">>> ksp configurationName: $confName")
-    return project.dependencies.add(confName, dependencyNotation)
+    return with(project) {
+        dependencies.addAndLog(confName, dependencyNotation)
+    }
 }
-
-internal const val COMPILE_ONLY = org.jetbrains.kotlin.gradle.utils.COMPILE_ONLY

@@ -3,14 +3,17 @@
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm.Companion.ANDROID
+import fluxo.conf.impl.compileOnlyAndLog
 import fluxo.conf.impl.e
 import fluxo.conf.impl.implementation
+import fluxo.conf.impl.implementationAndLog
 import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.kotlin.KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION
 import fluxo.conf.kmp.SourceSetBundle
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
+import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -374,40 +377,48 @@ public fun <E> E.commonCompileOnly(
     project: Project? = null,
     addConstraint: Boolean = true,
 ) where E : KotlinSourceSetContainer, E : KotlinTargetsContainer {
-    val sourceSets = sourceSets
-    sourceSets.commonMain.dependencies {
-        compileOnly(dependencyNotation)
-    }
+    val p = try {
+        project ?: targets.firstOrNull()?.project ?: when (this) {
+            is KotlinTopLevelExtension -> {
+                @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+                this.project
+            }
 
-    /**
-     * A compileOnly dependencies aren't applicable for Kotlin/Native.
-     * Use `implementation` or `api` dependency type instead.
-     * Set it in the shared "native" target.
-     *
-     * @see commonNative
-     */
-    sourceSets.register(KmpTargetContainerImpl.NonJvm.Native.NATIVE + MAIN_SOURCE_SET_POSTFIX) {
-        dependencies {
-            implementation(dependencyNotation)
+            else -> throw NullPointerException("Please, provide project")
         }
+    } catch (e: Throwable) {
+        throw GradleException(
+            "Unable to add common compileOnly dependency '$dependencyNotation': $e",
+            e,
+        )
     }
 
-    if (!addConstraint) {
-        return
-    }
-    var p = project ?: targets.firstOrNull()?.project
-    try {
-        if (p == null) {
-            @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-            p = when (this) {
-                is KotlinTopLevelExtension -> this.project
-                else -> throw NullPointerException("Please, provide project")
+    with(p) {
+        val sourceSets = sourceSets
+        sourceSets.commonMain.dependencies {
+            compileOnlyAndLog(dependencyNotation)
+        }
+
+        /*
+         * A compileOnly dependencies aren't applicable for Kotlin/Native.
+         * Use `implementation` or `api` dependency type instead.
+         * Set it in the shared "native" target.
+         */
+        /** @see commonNative */
+        val sourceSetName = KmpTargetContainerImpl.NonJvm.Native.NATIVE + MAIN_SOURCE_SET_POSTFIX
+        sourceSets.register(sourceSetName) {
+            dependencies {
+                implementationAndLog(dependencyNotation)
             }
         }
-        val constraints = p.dependencies.constraints
-        constraints.implementation(dependencyNotation)
-    } catch (e: Throwable) {
-        p?.logger?.e("Unable to add constraint for $dependencyNotation", e)
+
+        if (addConstraint) {
+            try {
+                dependencies.constraints.implementation(dependencyNotation)
+            } catch (e: Throwable) {
+                logger.e("Unable to add constraint for $dependencyNotation", e)
+            }
+        }
     }
 }
 

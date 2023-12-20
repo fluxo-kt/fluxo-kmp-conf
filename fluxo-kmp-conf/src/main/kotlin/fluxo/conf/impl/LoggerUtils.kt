@@ -45,11 +45,13 @@ internal fun Logger.d(message: String, arg1: Any?, arg2: Any?, arg3: Any?) {
     }
 }
 
+
+internal fun Logger.i(message: String) = info("$CONF $message")
+
+internal fun Logger.i(message: String, arg1: Any?) = info("$CONF $message", arg1)
+
+
 internal fun Logger.l(message: String) = lifecycle("$CONF $message")
-
-internal fun Logger.i(message: String) = l(message)
-
-internal fun Logger.i(message: String, arg1: Any?) = lifecycle("$CONF $message", arg1)
 
 
 internal fun Logger.w(message: String, e: Throwable? = null) = warn("$CONF! $message", e)

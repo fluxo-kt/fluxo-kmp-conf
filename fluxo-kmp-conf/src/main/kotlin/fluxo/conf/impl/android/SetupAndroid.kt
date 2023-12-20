@@ -12,6 +12,7 @@ import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.impl.ContainerContext
+import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.e
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
@@ -175,7 +176,9 @@ internal fun TestedExtension.setupAndroidCommon(
 
         // Custom desugaring dependency.
         ctx.libs?.onLibrary(ALIAS_DESUGAR_LIBS) {
-            project.dependencies.add("coreLibraryDesugaring", it)
+            with(project) {
+                dependencies.addAndLog("coreLibraryDesugaring", it)
+            }
         }
     }
 
@@ -204,11 +207,13 @@ internal fun TestedExtension.setupAndroidCommon(
         tasks.withType(AndroidLintTextOutputTask::class.java, disableTask)
     }
 
-    project.dependencies.setupAndroidDependencies(
-        ctx.libs,
-        isApplication = isApplication,
-        kc = ctx.kotlinConfig,
-    )
+    with(project) {
+        project.dependencies.setupAndroidDependencies(
+            ctx.libs,
+            isApplication = isApplication,
+            kc = ctx.kotlinConfig,
+        )
+    }
 
     project.setupFinalizeAndroidDsl(ctx)
 }

@@ -5,6 +5,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.MergeDetektBaselinesTask
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.android.DEBUG
 import fluxo.conf.impl.android.RELEASE
 import fluxo.conf.impl.configureExtensionIfAvailable
@@ -204,10 +205,10 @@ internal fun Project.setupDetekt(
 
         context.libs?.run {
             dependencies {
-                onLibrary("detekt-formatting", ::detektPlugins)
+                onLibrary("detekt-formatting") { detektPlugins(it) }
 
                 if (context.kotlinConfig.setupCompose) {
-                    onLibrary("detekt-compose", ::detektPlugins)
+                    onLibrary("detekt-compose") { detektPlugins(it) }
                 }
             }
         }
@@ -215,8 +216,9 @@ internal fun Project.setupDetekt(
 }
 
 
+context(Project)
 private fun DependencyHandler.detektPlugins(dependencyNotation: Any) =
-    add("detektPlugins", dependencyNotation)
+    addAndLog("detektPlugins", dependencyNotation)
 
 private const val BASELINE = "baseline"
 

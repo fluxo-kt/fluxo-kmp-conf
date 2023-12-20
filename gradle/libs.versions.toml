@@ -126,6 +126,9 @@ gradle-intellij-plugin = "1.16.1"
 
 ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 
+# https://github.com/mrmans0n/compose-rules/releases
+# https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.3.8" }
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 

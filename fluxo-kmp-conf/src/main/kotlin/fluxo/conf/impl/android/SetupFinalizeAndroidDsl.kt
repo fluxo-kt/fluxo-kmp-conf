@@ -6,6 +6,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.builder.model.BaseConfig
 import fluxo.conf.FluxoKmpConfContext
+import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.the
 import org.gradle.api.Project
@@ -58,7 +59,7 @@ internal fun Project.setupFinalizeAndroidDsl(context: FluxoKmpConfContext) {
             // Add leakcanary to all build types in the app
             if (isApplication && !isReleaseBuildType && bt.name != DEBUG) {
                 libs?.onLibrary(ALIAS_LEAK_CANARY) { d ->
-                    dependencies.add("${bt.name}Implementation", d)
+                    dependencies.addAndLog("${bt.name}Implementation", d)
                 }
             }
 

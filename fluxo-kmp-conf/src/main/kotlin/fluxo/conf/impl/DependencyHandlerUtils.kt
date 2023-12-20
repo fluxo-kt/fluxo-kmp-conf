@@ -2,71 +2,120 @@
 
 package fluxo.conf.impl
 
-import COMPILE_ONLY
+import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.DependencyConstraint
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.ModuleDependency
+import org.gradle.api.artifacts.ModuleVersionSelector
 import org.gradle.api.artifacts.dsl.DependencyConstraintHandler
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Provider
+import org.jetbrains.kotlin.gradle.plugin.HasKotlinDependencies
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
+import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 
+
+private const val IMPLEMENTATION = org.jetbrains.kotlin.gradle.utils.IMPLEMENTATION
+internal const val COMPILE_ONLY = org.jetbrains.kotlin.gradle.utils.COMPILE_ONLY
+
+
+/**
+ *
+ * @see org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler.kotlin
+ */
 @Suppress("UnusedReceiverParameter")
 internal fun DependencyHandler.kotlin(module: String, version: String? = null): Any =
     "org.jetbrains.kotlin:kotlin-$module${version?.let { ":$version" }.orEmpty()}"
 
 
-internal fun DependencyHandler.ksp(dependencyNotation: Any) = add("ksp", dependencyNotation)
+context(Project)
+internal fun DependencyHandler.ksp(dependencyNotation: Any) =
+    addAndLog("ksp", dependencyNotation)
 
 
+context(Project)
 internal fun DependencyHandler.implementation(dependencyNotation: Any) =
-    add("implementation", dependencyNotation)
+    addAndLog(IMPLEMENTATION, dependencyNotation)
 
+context(Project)
 internal fun DependencyHandler.implementation(
     dependencyNotation: Provider<*>,
     configuration: ExternalModuleDependency.() -> Unit,
-) = addConfiguredDependencyTo(this, "implementation", dependencyNotation, configuration)
+) = addConfiguredDependencyTo(this, IMPLEMENTATION, dependencyNotation, configuration)
+
+context(Project)
+internal fun DependencyConstraintHandler.implementation(constraintNotation: Any) =
+    addAndLog(IMPLEMENTATION, constraintNotation)
+
+internal fun KotlinDependencyHandler.implementationAndLog(dependencyNotation: Any) =
+    implementation(dependencyNotation).also {
+        logKmpDependency(IMPLEMENTATION, it ?: dependencyNotation) {
+            implementationConfigurationName
+        }
+    }
+
+internal fun <T : Dependency> KotlinDependencyHandler.implementationAndLog(
+    dependencyNotation: T,
+    configure: T.() -> Unit,
+) = implementation(dependencyNotation, configure).also {
+    logKmpDependency(IMPLEMENTATION, it, " ($dependencyNotation)") {
+        implementationConfigurationName
+    }
+}
 
 
+context(Project)
 internal fun DependencyHandler.testImplementation(dependencyNotation: Any) =
-    add("testImplementation", dependencyNotation)
+    addAndLog("testImplementation", dependencyNotation)
 
 
-internal fun DependencyHandler.androidTestImplementation(dependencyNotation: Any) =
-    add("androidTestImplementation", dependencyNotation)
+context(Project)
+internal fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? =
+    addAndLog("androidTestImplementation", dependencyNotation)
 
+context(Project)
 internal fun DependencyHandler.androidTestImplementation(
     dependencyNotation: Provider<*>,
     configuration: ExternalModuleDependency.() -> Unit,
 ) = addConfiguredDependencyTo(this, "androidTestImplementation", dependencyNotation, configuration)
 
 
+context(Project)
 internal fun DependencyHandler.debugImplementation(dependencyNotation: Any) =
-    add("debugImplementation", dependencyNotation)
+    addAndLog("debugImplementation", dependencyNotation)
 
+context(Project)
 internal fun DependencyHandler.debugCompileOnly(dependencyNotation: Any) =
-    add("debugCompileOnly", dependencyNotation)
+    addAndLog("debugCompileOnly", dependencyNotation)
 
 
+context(Project)
 internal fun DependencyHandler.runtimeOnly(dependencyNotation: Any) =
-    add("runtimeOnly", dependencyNotation)
+    addAndLog("runtimeOnly", dependencyNotation)
 
 
+context(Project)
 internal fun DependencyHandler.compileOnly(dependencyNotation: Any) =
-    add(COMPILE_ONLY, dependencyNotation)
+    addAndLog(COMPILE_ONLY, dependencyNotation)
 
+context(Project)
 internal fun DependencyHandler.compileOnlyWithConstraint(dependencyNotation: Any) {
     compileOnly(dependencyNotation)
     constraints.implementation(dependencyNotation)
 }
 
-internal fun DependencyConstraintHandler.implementation(constraintNotation: Any) =
-    add("implementation", constraintNotation)
+context(Project)
+internal fun KotlinDependencyHandler.compileOnlyAndLog(dependencyNotation: Any) =
+    compileOnly(dependencyNotation).also {
+        logKmpDependency(COMPILE_ONLY, it ?: dependencyNotation) {
+            compileOnlyConfigurationName
+        }
+    }
 
 
 internal fun <T : ModuleDependency> T.exclude(group: String? = null, module: String? = null): T =
     uncheckedCast(exclude(excludeMapFor(group, module)))
-
-@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
-private inline fun <T> uncheckedCast(obj: Any?): T = obj as T
 
 private fun excludeMapFor(group: String?, module: String?): Map<String, String> =
     mapOfNonNullValuesOf(
@@ -84,11 +133,97 @@ private fun mapOfNonNullValuesOf(vararg entries: Pair<String, String?>): Map<Str
     }
 
 
-private fun addConfiguredDependencyTo(
+private fun Project.addConfiguredDependencyTo(
     dependencies: DependencyHandler,
-    configuration: String,
+    configurationName: String,
     dependencyNotation: Provider<*>,
     action: ExternalModuleDependency.() -> Unit,
 ) {
-    dependencies.addProvider(configuration, dependencyNotation, action)
+    dependencies.addProvider(configurationName, dependencyNotation, action)
+    logDependency(configurationName, dependencyNotation)
 }
+
+
+context(Project)
+internal fun DependencyHandler.addAndLog(
+    configurationName: String,
+    dependencyNotation: Any,
+) = add(configurationName, dependencyNotation).also {
+    logDependency(configurationName, it ?: dependencyNotation)
+}
+
+
+context(Project)
+private fun DependencyConstraintHandler.addAndLog(
+    configurationName: String,
+    dependencyNotation: Any,
+): DependencyConstraint? {
+    try {
+        return add(configurationName, dependencyNotation).also {
+            logDependency(configurationName, dependencyNotation, prefix = "constraint ")
+        }
+    } catch (e: Throwable) {
+        logger.w("Failed to add $configurationName constraint for $dependencyNotation: $e", e)
+        return null
+    }
+}
+
+private inline fun KotlinDependencyHandler.logKmpDependency(
+    configurationName: String,
+    dependencyNotation: Any,
+    extra: String = "",
+    configurationNameAccessor: HasKotlinDependencies.() -> String,
+) {
+    val confName = try {
+        when (this) {
+            is DefaultKotlinDependencyHandler -> configurationNameAccessor(parent)
+            else -> null
+        }
+    } catch (e: Throwable) {
+        project.logger.e("Failed to get configuration name: $e", e)
+        null
+    } ?: "KMP/$configurationName"
+
+    with(project) {
+        logDependency(confName, dependencyNotation, extra)
+    }
+}
+
+internal fun Project.logDependency(
+    configurationName: String,
+    dependencyNotation: Any,
+    extra: String = "",
+    prefix: String = "",
+) {
+    logger.l("$LOG_PREFIX$configurationName($prefix${dependencyNotation.dn})$extra")
+}
+
+private val Any.dn: String
+    get() {
+        return when (this) {
+            is Dependency -> listOfNotNull(
+                group,
+                name,
+                version,
+            )
+
+            is ModuleVersionSelector -> listOfNotNull(
+                group,
+                name,
+                version,
+            )
+
+            is Provider<*> -> {
+                return try {
+                    @Suppress("RecursivePropertyAccessor")
+                    orNull?.dn
+                } catch (e: Throwable) {
+                    null
+                } ?: toString()
+            }
+
+            else -> return "'$this'"
+        }.joinToString(":", prefix = "'", postfix = "'")
+    }
+
+private const val LOG_PREFIX = "D   --> "
