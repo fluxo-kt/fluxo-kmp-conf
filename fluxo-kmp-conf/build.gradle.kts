@@ -1,17 +1,26 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.build.config)
+    alias(libs.plugins.gradle.plugin.publish)
 }
 
 group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
 description = "Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects. Made by Fluxo."
 val pluginId = libs.plugins.fluxo.conf.get().pluginId
+val pluginName = "fluxo-kmp-conf"
+
+// Workaround, while no eager configuration auto configured
+gradlePlugin {
+    plugins.create(pluginName) {
+        id = pluginId
+        implementationClass = "fluxo.conf.FluxoKmpConfPlugin"
+    }
+}
 
 setupGradlePlugin(
     pluginId = pluginId,
-    pluginName = "fluxo-kmp-conf",
-    pluginClass = "fluxo.conf.FluxoKmpConfPlugin",
+    pluginName = pluginName,
     displayName = "Fluxo KMP Configuration",
     tags = listOf(
         "kotlin",

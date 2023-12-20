@@ -1,6 +1,6 @@
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.fluxoConfiguration
-import fluxo.conf.feat.gradlePlugin
+import fluxo.conf.feat.gradlePluginExt
 import fluxo.conf.impl.e
 import fluxo.conf.impl.l
 import fluxo.conf.impl.w
@@ -16,12 +16,12 @@ public fun Project.setupGradlePlugin(
     pluginId: String? = if (pluginName != null && group != null) "$group.$pluginName" else null,
     kotlin: (KotlinJvmProjectExtension.() -> Unit)? = null,
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
-): Unit = fluxoConfiguration c@{
+): Unit = fluxoConfiguration configuration@{
     explicitApi()
 
     kotlin?.let { kotlinJvmConfiguration ->
         onConfiguration {
-            // TODO: Can we avoid this cast?
+            // TODO: Try avoid this cast?
             (this as KotlinJvmProjectExtension).kotlinJvmConfiguration()
         }
     }
@@ -30,32 +30,33 @@ public fun Project.setupGradlePlugin(
 
     asGradlePlugin()
 
-    pluginName ?: return@c
-    onConfiguration {
-        gradlePlugin.apply {
-            plugins.create(pluginName) {
-                // TODO: Retry create pluginId from configuration if null?
+    pluginName ?: return@configuration
 
-                val logger = logger
-                if (pluginId.isNullOrEmpty()) {
-                    logger.w("Plugin ID is not set for plugin '$pluginName'!")
-                } else {
-                    id = pluginId
-                    logger.l("Plugin '$pluginName' prepared with ID '$pluginId'")
-                }
+    // Configure Gradle plugin eagerly!
+    // Otherwise, it's not available for composite builds.
+    gradlePluginExt.plugins.maybeCreate(pluginName).apply {
+        // TODO: Retry create pluginId from configuration if null?
 
-                pluginClass?.let { implementationClass = it }
-                displayName?.let { this.displayName = it }
-                this@c.description?.let { this.description = it }
+        if (id.isNullOrBlank()) {
+            val logger = logger
+            if (pluginId.isNullOrEmpty()) {
+                logger.w("Plugin ID is not set for plugin '$pluginName'!")
+            } else {
+                id = pluginId
+                logger.l("Plugin '$pluginName' prepared with ID '$pluginId'")
+            }
+        }
 
-                if (!tags.isNullOrEmpty()) {
-                    try {
-                        @Suppress("UnstableApiUsage")
-                        this.tags.set(tags)
-                    } catch (e: Throwable) {
-                        logger.e("Failed to set tags for plugin $pluginName", e)
-                    }
-                }
+        pluginClass?.let { implementationClass = it }
+        displayName?.let { this.displayName = it }
+        this@configuration.description?.let { this.description = it }
+
+        if (!tags.isNullOrEmpty()) {
+            try {
+                @Suppress("UnstableApiUsage")
+                this.tags.set(tags)
+            } catch (e: Throwable) {
+                logger.e("Failed to set tags for plugin $pluginName", e)
             }
         }
     }
