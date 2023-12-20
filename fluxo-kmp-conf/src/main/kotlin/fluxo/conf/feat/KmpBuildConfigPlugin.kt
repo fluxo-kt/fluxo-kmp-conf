@@ -1,6 +1,6 @@
 package fluxo.conf.feat
 
-import com.github.gmazzo.gradle.plugins.BuildConfigTask
+import com.github.gmazzo.buildconfig.BuildConfigTask
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.FluxoKmpConfContext.Companion.KOTLIN_IDEA_BSM_TASK
 import fluxo.conf.FluxoKmpConfContext.Companion.KOTLIN_IDEA_IMPORT_TASK

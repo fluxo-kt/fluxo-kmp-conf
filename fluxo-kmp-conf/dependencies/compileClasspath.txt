@@ -17,8 +17,8 @@ com.dropbox.dependency-guard:com.dropbox.dependency-guard.gradle.plugin:0.4.3
 com.dropbox.dependency-guard:dependency-guard:0.4.3
 com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.50.0
 com.github.ben-manes:gradle-versions-plugin:0.50.0
-com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin:4.2.0
-com.github.gmazzo.buildconfig:plugin:4.2.0
+com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin:5.1.0
+com.github.gmazzo.buildconfig:plugin:5.1.0
 com.google.code.findbugs:jsr305:3.0.2
 com.google.devtools.ksp:symbol-processing-gradle-plugin:1.9.21-1.0.16
 com.google.errorprone:error_prone_annotations:2.11.0
@@ -34,7 +34,7 @@ com.louiscad.complete-kotlin:com.louiscad.complete-kotlin.gradle.plugin:1.1.0
 com.louiscad.complete-kotlin:plugin:1.1.0
 com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.9.2
 com.mikepenz.aboutlibraries.plugin:com.mikepenz.aboutlibraries.plugin.gradle.plugin:10.9.2
-com.pinterest.ktlint:ktlint-cli:1.0.1
+com.pinterest.ktlint:ktlint-cli:1.1.0
 com.savvasdalkitsis.module-dependency-graph:com.savvasdalkitsis.module-dependency-graph.gradle.plugin:0.12
 com.savvasdalkitsis:module-dependency-graph:0.12
 com.squareup.moshi:moshi-adapters:1.14.0
