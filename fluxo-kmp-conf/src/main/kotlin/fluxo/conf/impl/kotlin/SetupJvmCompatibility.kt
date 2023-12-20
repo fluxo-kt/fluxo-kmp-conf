@@ -1,6 +1,7 @@
 package fluxo.conf.impl.kotlin
 
 import com.android.build.gradle.TestedExtension
+import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.d
 import fluxo.conf.impl.l
@@ -54,7 +55,7 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
         // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
     } else {
         // Java
-        project.configureExtensionIfAvailable<JavaPluginExtension> {
+        project.configureExtensionIfAvailable({ JavaPluginExtension::class }) {
             jvmTarget.asJavaVersion().let { v ->
                 sourceCompatibility = v
                 targetCompatibility = v
@@ -65,7 +66,7 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
     }
 
     // Android
-    project.configureExtensionIfAvailable<TestedExtension> {
+    project.configureExtensionIfAvailable<TestedExtension>(ANDROID_EXT_NAME) {
         compileOptions {
             jvmTarget.asJavaVersion().let { v ->
                 sourceCompatibility = v
@@ -73,7 +74,7 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
             }
         }
         /** `android.kotlinOptions` */
-        (this as? ExtensionAware)?.configureExtensionIfAvailable<KotlinJvmOptions> {
+        (this as? ExtensionAware)?.configureExtensionIfAvailable<KotlinJvmOptions>("kotlinOptions") {
             setupJvmCompatibility(jvmTarget)
         }
     }

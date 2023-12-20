@@ -174,6 +174,7 @@ private fun langFeature(name: String) = "-XXLanguage:+$name"
 
 // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
 // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/js/jsExtraHelp.out
+// https://github.com/JetBrains/kotlin/blob/master/compiler/cli/cli-common/src/org/jetbrains/kotlin/cli/common/arguments/CommonCompilerArguments.kt
 private val DEFAULT_OPTS = arrayOf(
     // Check uniqueness of signatures at klib generating phase
     "-Xklib-enable-signature-clash-checks",

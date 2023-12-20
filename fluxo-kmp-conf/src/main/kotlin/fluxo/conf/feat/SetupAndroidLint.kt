@@ -11,6 +11,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
+import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.ifNotEmpty
@@ -48,7 +49,7 @@ internal fun Project.setupAndroidLint(
 ) {
     val context = conf.context
     val disableLint = context.testsDisabled || !context.isTargetEnabled(KmpTargetCode.ANDROID)
-    configureExtension("android", CommonExtension::class) {
+    configureExtension(ANDROID_EXT_NAME, CommonExtension::class) {
         lint {
             if (SHOW_DEBUG_LOGS) {
                 logger.v("Setup Android Lint (disable=$disableLint)")

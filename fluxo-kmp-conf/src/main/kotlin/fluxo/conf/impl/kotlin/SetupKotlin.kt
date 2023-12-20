@@ -22,6 +22,7 @@ import fluxo.conf.dsl.impl.builderMethod
 import fluxo.conf.feat.setupVerification
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
+import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
 import fluxo.conf.impl.android.setupAndroidCommon
@@ -134,7 +135,7 @@ internal fun configureKotlinJvm(
         }
 
         if (!androidSetUp) {
-            project.configureExtensionIfAvailable<TestedExtension>(name = "android") {
+            project.configureExtensionIfAvailable<TestedExtension>(ANDROID_EXT_NAME) {
                 setupAndroidCommon(configuration.project, configuration, configuration.context)
             }
         }

@@ -199,9 +199,19 @@ internal abstract class FluxoKmpConfContext
     fun onProjectInSyncRun(forceIf: Boolean = false, action: FluxoKmpConfContext.() -> Unit) {
         val context = this
         when {
-            forceIf || isProjectInSyncRun -> context.action()
+            forceIf || isProjectInSyncRun -> {
+                try {
+                    context.action()
+                } catch (e: Throwable) {
+                    rootProject.logger.e("Failed to run onProjectInSyncRun action: $e", e)
+                }
+            }
             else -> projectInSyncSet.all {
-                context.action()
+                try {
+                    context.action()
+                } catch (e: Throwable) {
+                    rootProject.logger.e("Failed to run onProjectInSyncRun action: $e", e)
+                }
             }
         }
     }

@@ -156,6 +156,30 @@ pluginManagement {
   * https://github.com/slackhq/Keeper
 * https://github.com/drewhamilton/poko/
   * https://github.com/saket/telephoto/releases/tag/0.7.1
+* https://telegra.ph/Compose-stabilityConfigurationPath-11-30
+  * https://fvilarino.medium.com/exploring-jetpack-compose-compilers-stability-config-f1ccb197d6c0
+* https://github.com/yandexmobile/detekt-rules-ui-tests
+  * https://habr.com/ru/companies/yandex/articles/779152/
+  * https://t.me/c/1198043993/3696
+  * https://edmundkirwan.com/general/cdd.html
+  * https://edmundkirwan.com/general/c-and-c.html
+* https://github.com/VKCOM/vkompose/
+  * https://mobiusconf.com/talks/0beebbbd16bf4358ab2a1b60cabf57a1
+  * https://t.me/compose_broadcast/202
+  * https://t.me/int_ax/47
+    * https://t.me/int_ax/47?comment=25
+    * https://t.me/int_ax/47?comment=29
+    * https://t.me/int_ax/47?comment=49
+* https://github.com/saveourtool/diktat
+* https://github.com/Kotlin/kotlinx-benchmark/
+  * https://github.com/CharlieTap/cachemap
+  * https://github.com/CharlieTap/cachemap/tree/failing-native-benchmark
+  * https://github.com/CharlieTap/cachemap/tree/benchmarking
+* https://gitlab.com/opensavvy/ci-templates
+  * https://gitlab.com/opensavvy/playgrounds/gradle/-/blob/main/.gitlab-ci.yml?ref_type=heads
+* https://github.com/gmazzo/gradle-codeowners-plugin
+* https://github.com/gmazzo/gradle-docker-compose-plugin
+* https://github.com/gmazzo/gradle-report-publications-plugin
 </details>
 
 

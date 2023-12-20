@@ -69,6 +69,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 //  https://github.com/adamko-dev/dokkatoo/issues/61#issuecomment-1701156702
 //  https://github.com/adamko-dev/dokkatoo/blob/b1ca20c/buildSrc/src/main/kotlin/buildsrc/conventions/maven-publishing.gradle.kts
 
+// TODO: Decorate the build logs with maven coordinates of published artifacts
+//  https://github.com/gmazzo/gradle-report-publications-plugin
+
 internal fun setupGradleProjectPublication(
     config: FluxoPublicationConfig,
     configuration: FluxoConfigurationExtensionImpl,
@@ -92,7 +95,7 @@ internal fun setupGradleProjectPublication(
 
         else -> {
             logger.e("Unsupported project type for publication: $type")
-            if (hasExtension<JavaPluginExtension>() && SHOW_DEBUG_LOGS) {
+            if (SHOW_DEBUG_LOGS && hasExtension { JavaPluginExtension::class }) {
                 setupPublicationJava(config, context)
             }
             return@r
@@ -201,7 +204,7 @@ internal fun Project.setupPublicationGradlePlugin(
 
     val publishing = applyMavenPublishPlugin(config)
 
-    val gradlePluginExtension = gradlePlugin.apply {
+    val gradlePluginExtension = gradlePluginExt.apply {
         config.projectUrl?.let { website.set(it) }
         config.publicationUrl?.let { vcsUrl.set(it) }
     }
@@ -418,7 +421,7 @@ private fun Project.applyMavenPublishPlugin(config: FluxoPublicationConfig): Pub
     return extensions.getByName<PublishingExtension>(PUBLISHING_EXT_NAME)
 }
 
-internal val Project.gradlePlugin: GradlePluginDevelopmentExtension
+internal val Project.gradlePluginExt: GradlePluginDevelopmentExtension
     get() = extensions.getByName<GradlePluginDevelopmentExtension>(GRADLE_PLUGIN_EXT_NAME)
 
 

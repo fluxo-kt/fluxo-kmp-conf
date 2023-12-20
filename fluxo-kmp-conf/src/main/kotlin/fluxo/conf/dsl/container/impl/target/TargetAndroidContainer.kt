@@ -11,6 +11,7 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.AndroidTarget
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
+import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
@@ -124,7 +125,7 @@ internal abstract class TargetAndroidContainer<T>(
         }
 
         override fun setupAndroid(project: Project) {
-            project.configureExtension<BaseAppModuleExtension>("android") {
+            project.configureExtension<BaseAppModuleExtension>(ANDROID_EXT_NAME) {
                 setupAndroidExtension()
                 lazyAndroid.all { this() }
             }
@@ -139,7 +140,7 @@ internal abstract class TargetAndroidContainer<T>(
         }
 
         override fun setupAndroid(project: Project) {
-            project.configureExtension<LibraryExtension>("android") {
+            project.configureExtension<LibraryExtension>(ANDROID_EXT_NAME) {
                 setupAndroidExtension()
                 lazyAndroid.all { this() }
             }

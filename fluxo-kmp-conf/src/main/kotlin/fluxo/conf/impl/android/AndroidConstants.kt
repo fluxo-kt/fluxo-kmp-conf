@@ -13,6 +13,8 @@ internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
 // https://developer.android.com/jetpack/androidx/releases/room#2.6.0-alpha02
 internal const val ANDROIDX_ROOM_PLUGIN_ID = "androidx.room"
 
+internal const val ANDROID_EXT_NAME = "android"
+
 internal val PluginAware.hasAndroidAppPlugin: Boolean
     get() = pluginManager.hasPlugin(ANDROID_APP_PLUGIN_ID)
 
