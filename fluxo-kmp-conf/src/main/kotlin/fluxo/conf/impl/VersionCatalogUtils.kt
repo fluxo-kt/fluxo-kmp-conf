@@ -71,10 +71,13 @@ internal fun VersionCatalog?.p(alias: String?): Provider<PluginDependency>? {
     return if (!alias.isNullOrEmpty()) this?.findPlugin(alias)?.getOrNull() else null
 }
 
-internal fun VersionCatalog?.p(aliases: Array<out String>?): Provider<PluginDependency>? {
+internal fun VersionCatalog?.p(aliases: Array<out String>?): Pair<Provider<PluginDependency>, String>? {
     if (this != null && aliases != null) {
         for (alias in aliases) {
-            return p(alias) ?: continue
+            val pluginDep = p(alias)
+            if (pluginDep != null) {
+                return pluginDep to alias
+            }
         }
     }
     return null

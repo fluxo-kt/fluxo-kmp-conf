@@ -6,7 +6,8 @@ plugins {
 
 group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
-description = "Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects. Made by Fluxo."
+description =
+    "Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects. Made by Fluxo."
 val pluginId = libs.plugins.fluxo.conf.get().pluginId
 val pluginName = "fluxo-kmp-conf"
 
@@ -84,10 +85,15 @@ buildConfig {
         name: String,
         p: Provider<PluginDependency>,
         alias: String? = null,
+        alias2: String? = null,
         implementation: Boolean = false,
     ) {
         val aliasName = alias ?: name.lowercase().replace('_', '-')
         buildConfigField("String", "${name}_PLUGIN_ALIAS", "\"$aliasName\"")
+
+        alias2?.let {
+            buildConfigField("String", "${name}_PLUGIN_ALIAS2", "\"$it\"")
+        }
 
         val pd = p.get()
         val pluginId = pd.pluginId
@@ -106,7 +112,11 @@ buildConfig {
     }
 
     buildConfigField("KOTLIN_SAM_RECEIVER", libs.plugins.kotlin.sam.receiver)
-    buildConfigField("KOTLINX_BCV", libs.plugins.kotlinx.binCompatValidator)
+    buildConfigField(
+        "KOTLINX_BCV",
+        libs.plugins.kotlinx.binCompatValidator,
+        alias2 = "kotlinx-binCompatValidator",
+    )
     buildConfigField("FLUXO_BCV_JS", libs.plugins.fluxo.bcv.js)
     buildConfigField("DOKKA", libs.plugins.dokka)
     buildConfigField("GRADLE_PLUGIN_PUBLISH", libs.plugins.gradle.plugin.publish)

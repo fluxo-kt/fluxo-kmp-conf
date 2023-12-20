@@ -117,13 +117,13 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             else ->
                 configureKotlinJvm(type, configuration, containerArray)
         }
-        if (configured) {
+        if (!configured) {
             return
         }
 
         // Public API validation
-        configuration.apiValidation?.let {
-            setupBinaryCompatibilityValidator(it, configuration, type)
+        if (configuration.enableApiValidation != false) {
+            setupBinaryCompatibilityValidator(configuration.apiValidation, configuration, type)
         }
 
         // Gradle project atifacts publication

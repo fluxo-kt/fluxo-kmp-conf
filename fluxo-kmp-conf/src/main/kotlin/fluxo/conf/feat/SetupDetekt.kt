@@ -9,10 +9,10 @@ import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.android.DEBUG
 import fluxo.conf.impl.android.RELEASE
 import fluxo.conf.impl.configureExtensionIfAvailable
-import fluxo.conf.impl.d
 import fluxo.conf.impl.dependencies
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.e
+import fluxo.conf.impl.l
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.register
 import fluxo.conf.impl.splitCamelCase
@@ -69,7 +69,7 @@ internal fun Project.setupDetekt(
     val context = conf.context
     val testsDisabled = context.testsDisabled
     if (!testsDisabled) {
-        logger.d("setup Detekt")
+        logger.l("setup Detekt")
 
         // Detekt is always availabe in the classpath as an implementation dependency.
         pluginManager.apply(

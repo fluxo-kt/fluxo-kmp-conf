@@ -7,8 +7,8 @@ import com.diffplug.spotless.kotlin.DiktatStep
 import com.diffplug.spotless.kotlin.KtLintStep
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.d
 import fluxo.conf.impl.isRootProject
+import fluxo.conf.impl.l
 import fluxo.conf.impl.v
 import org.gradle.api.Project
 
@@ -21,7 +21,7 @@ internal fun Project.setupSpotless(
     context: FluxoKmpConfContext,
     enableDiktat: Boolean = false,
 ) {
-    logger.d("setup Spotless")
+    logger.l("setup Spotless")
 
     // SpotlessPlugin is always availabe in the classpath as it's a dependency.
     pluginManager.apply(SpotlessPlugin::class.java)

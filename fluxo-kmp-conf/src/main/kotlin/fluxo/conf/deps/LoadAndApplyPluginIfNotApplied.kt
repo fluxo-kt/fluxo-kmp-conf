@@ -10,6 +10,7 @@ import fluxo.conf.impl.p
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
 import getGradlePluginMarkerArtifactMavenCoordinates
+import java.util.regex.Pattern
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.plugins.UnknownPluginException
@@ -21,9 +22,10 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     catalogPluginId: String? = null,
     catalogVersionId: String? = catalogPluginId,
     catalogVersionIds: Array<out String>? = null,
-    vararg catalogPluginIds: String,
+    catalogPluginIds: Array<out String>? = null,
     project: Project = rootProject,
     lookupClassName: Boolean = LOOKUP_CLASS_NAME_IN_CLASS_LOADER,
+    canLoadDynamically: Boolean = true,
 ): ApplyPluginResult {
     val logger = project.logger
     val pluginManager = project.pluginManager
@@ -44,7 +46,7 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     }
 
     // Get the plugin ID and version with all the fallbacks from version catalog.
-    val (pluginId, pluginVersion) = getPluginIdAndVersion(
+    val (pluginId, pluginVersion, catalogPluginAlias) = getPluginIdAndVersion(
         id = id,
         version = version,
         catalogPluginIds = catalogPluginIds,
@@ -55,8 +57,13 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     )
 
     val pluginClass = loadPluginArtifactAndGetClass(
-        pluginId, pluginVersion, className, lookupClassName = lookupClassName,
-    ) ?: return ApplyPluginResult.FALSE
+        pluginId = pluginId,
+        pluginVersion = pluginVersion,
+        className = className,
+        catalogPluginAlias = catalogPluginAlias,
+        lookupClassName = lookupClassName,
+        canLoadDynamically = canLoadDynamically,
+    ) ?: return ApplyPluginResult(applied = false, id = id, alias = catalogPluginAlias)
 
     pluginManager.apply(pluginClass)
 
@@ -66,17 +73,19 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
         }
     }
 
-    return ApplyPluginResult(applied = true, pluginClass = pluginClass)
+    return ApplyPluginResult(applied = true, pluginClass = pluginClass, id = id)
 }
 
 private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
     pluginId: String,
     pluginVersion: String?,
     className: String?,
+    catalogPluginAlias: String?,
     lookupClassName: Boolean,
+    canLoadDynamically: Boolean,
 ): Class<*>? {
     val logger = rootProject.logger
-    val example = loadingWarnExample(pluginId)
+    val example = loadingWarnExample(pluginId, catalogPluginAlias)
     val classNames: MutableSet<String>
     if (!className.isNullOrEmpty()) {
         classNames = mutableSetOf(className)
@@ -113,6 +122,11 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
         }
     }
 
+    if (!canLoadDynamically) {
+        val error = "Can't load plugin '$pluginId' dynamically!"
+        logger.e(loadingErrorMessage(error, example))
+        return null
+    }
     val coords = getGradlePluginMarkerArtifactMavenCoordinates(pluginId, pluginVersion)
     try {
         val classLoader = JarState.from(coords, provisioner).classLoader
@@ -182,17 +196,20 @@ private fun tryGetClassForName(className: String?): Class<*>? {
 private fun FluxoKmpConfContext.getPluginIdAndVersion(
     id: String,
     version: String?,
-    catalogPluginIds: Array<out String>,
+    catalogPluginIds: Array<out String>? = null,
     catalogPluginId: String?,
     logger: Logger,
     catalogVersionIds: Array<out String>?,
     catalogVersionId: String?,
-): Pair<String, String?> {
+): Triple<String, String?, String?> {
     var pluginId = id
     var pluginVersion = version
-    libs?.let { libs ->
-        val p = libs.p(catalogPluginIds)?.orNull
-            ?: libs.p(catalogPluginId)?.orNull
+    var catalogPluginAlias: String? = null
+    val libs = libs
+    if (libs != null) {
+        val (provider, alias) = libs.p(catalogPluginIds)
+            ?: (libs.p(catalogPluginId) to catalogPluginId)
+        val p = provider?.orNull
         if (p != null) {
             val pId = p.pluginId
             if (pId != pluginId) {
@@ -201,13 +218,27 @@ private fun FluxoKmpConfContext.getPluginIdAndVersion(
             pluginId = pId
             // TODO: Check version for correctness
             pluginVersion = p.version.toString()
+            catalogPluginAlias = alias
         } else {
             libs.v(catalogVersionIds) ?: libs.v(catalogVersionId)?.let {
                 pluginVersion = it
             }
+
+            // Find actual plugin alias in the version catalog.
+            for (pAlias in libs.pluginAliases) {
+                val pp = libs.p(pAlias)?.orNull
+                if (pp?.pluginId != id) {
+                    continue
+                }
+
+                // TODO: Check version for correctness
+                pluginVersion = pp.version.toString()
+                catalogPluginAlias = pAlias
+                break
+            }
         }
     }
-    return pluginId to pluginVersion
+    return Triple(pluginId, pluginVersion, catalogPluginAlias)
 }
 
 private fun Project.hasPluginAvailable(pluginId: String): Boolean {
@@ -222,25 +253,47 @@ private const val CLASS_NAME_NOT_PROVIDED = " (class name is not provided and au
 private fun loadingErrorMessage(err: String, example: String) = "$err\n " +
     "Please, add it to the classpath in the root or module build.gradle.kts! $example"
 
-private fun loadingWarnExample(pluginId: String) = """
+private fun loadingWarnExample(pluginId: String, catalogPluginAlias: String?): String {
+    val declaration = when {
+        catalogPluginAlias.isNullOrEmpty() -> "id(\"$pluginId\")"
+        else -> "alias(libs.plugins.${aliasNormalized(catalogPluginAlias)})"
+    }
+    return """
         Example:
         ```
         plugins {
             ...
-            id("$pluginId") apply false
+            $declaration apply false
             ...
         }
         ```
     """.trimIndent()
+}
 
 internal class ApplyPluginResult(
     val applied: Boolean,
+    val id: String? = null,
+    val alias: String? = null,
     val pluginClass: Class<*>? = null,
 ) {
+    fun orThrow() {
+        if (!applied) {
+            val example = loadingWarnExample(id.orEmpty(), alias)
+            val error = "Plugin '$id' is required but was not applied!"
+            error(loadingErrorMessage(error, example))
+        }
+    }
+
     internal companion object {
-        val FALSE = ApplyPluginResult(false)
         val TRUE = ApplyPluginResult(true)
     }
+}
+
+private val SEPARATOR = Pattern.compile("[_.-]")
+
+/** @see org.gradle.api.internal.catalog.AliasNormalizer */
+private fun aliasNormalized(name: String): String {
+    return SEPARATOR.matcher(name).replaceAll(".")
 }
 
 private const val LOOKUP_CLASS_NAME_IN_CLASS_LOADER = true

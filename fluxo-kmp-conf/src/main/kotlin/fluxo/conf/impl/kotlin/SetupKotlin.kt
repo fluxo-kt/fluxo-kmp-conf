@@ -28,12 +28,12 @@ import fluxo.conf.impl.android.ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
 import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.configureExtensionIfAvailable
-import fluxo.conf.impl.d
 import fluxo.conf.impl.e
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.i
 import fluxo.conf.impl.isTestRelated
+import fluxo.conf.impl.l
 import fluxo.conf.impl.uncheckedCast
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
@@ -263,7 +263,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     ctx.kotlinConfig = kc
 
     if (!conf.setupKotlin) {
-        project.logger.d("Finishing Kotlin extension configuration early, disabled")
+        project.logger.l("Finishing Kotlin extension configuration early (disabled)")
     }
 
     project.group = conf.group

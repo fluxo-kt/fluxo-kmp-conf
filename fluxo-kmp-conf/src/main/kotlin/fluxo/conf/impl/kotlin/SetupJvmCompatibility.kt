@@ -3,7 +3,6 @@ package fluxo.conf.impl.kotlin
 import com.android.build.gradle.TestedExtension
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.configureExtensionIfAvailable
-import fluxo.conf.impl.d
 import fluxo.conf.impl.l
 import kotlin.math.max
 import org.gradle.api.JavaVersion
@@ -26,7 +25,7 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
     if (this is KotlinSingleTargetExtension<*> &&
         target.run { this is KotlinJvmTarget && !withJavaEnabled }
     ) {
-        project.logger.d("KotlinSingleTarget with no Java enabled, skip Java compatibility setup")
+        project.logger.l("KotlinSingleTarget with no Java enabled, skip Java compatibility setup")
         return
     }
 

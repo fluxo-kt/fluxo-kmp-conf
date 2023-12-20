@@ -4,7 +4,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.checkIsRootProject
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.d
+import fluxo.conf.impl.l
 import fluxo.conf.impl.onVersion
 import fluxo.conf.impl.withType
 import org.gradle.api.Project
@@ -23,11 +23,11 @@ internal fun Project.setupKmpYarnPlugin(context: FluxoKmpConfContext) = afterEva
     plugins.withType<YarnPlugin> configuration@{
         val conf = fluxoConfiguration
         if (conf?.setupKotlin != true) {
-            logger.d("YarnPlugin configuration disabled!")
+            logger.l("YarnPlugin configuration disabled!")
             return@configuration
         }
 
-        logger.d("YarnPlugin configuration")
+        logger.l("YarnPlugin configuration")
         val setupDependencies = conf.setupDependencies
 
         val libs = context.libs

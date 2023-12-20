@@ -18,6 +18,7 @@ public fun Project.setupGradlePlugin(
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
 ): Unit = fluxoConfiguration configuration@{
     explicitApi()
+    enableApiValidation = true
 
     kotlin?.let { kotlinJvmConfiguration ->
         onConfiguration {
