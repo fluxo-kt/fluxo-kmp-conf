@@ -26,3 +26,7 @@ internal fun String.capitalizeAsciiOnly(): String {
     val c = this[0]
     return if (c in 'a'..'z') c.uppercaseChar() + substring(1) else this
 }
+
+
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+internal inline fun <T> uncheckedCast(obj: Any?): T = obj as T

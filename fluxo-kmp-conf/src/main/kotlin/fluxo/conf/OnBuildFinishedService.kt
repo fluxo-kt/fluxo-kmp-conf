@@ -1,5 +1,6 @@
 package fluxo.conf
 
+import fluxo.conf.impl.uncheckedCast
 import java.util.concurrent.ConcurrentHashMap
 import org.gradle.api.provider.Provider
 import org.gradle.api.services.BuildService
@@ -28,8 +29,7 @@ internal fun FluxoKmpConfContext.onBuildFinished(action: () -> Unit) {
         ext.set(name, serviceProvider)
         eventsListenerRegistry.onTaskCompletion(serviceProvider)
     } else {
-        @Suppress("UNCHECKED_CAST")
-        serviceProvider = ext.get(name) as Provider<OnBuildFinishedService>
+        serviceProvider = uncheckedCast(ext.get(name))
     }
     serviceProvider.get().addBuildListener(action)
 }

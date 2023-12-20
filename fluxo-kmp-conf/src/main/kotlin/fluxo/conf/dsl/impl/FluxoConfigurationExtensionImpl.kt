@@ -16,6 +16,7 @@ import fluxo.conf.dsl.impl.ConfigurationType.GRADLE_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_JVM
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
+import fluxo.conf.impl.uncheckedCast
 import javax.inject.Inject
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -114,18 +115,16 @@ internal abstract class FluxoConfigurationExtensionImpl
         configureAs(KOTLIN_MULTIPLATFORM, action)
 
     override fun asJvm(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit) =
-        configureAs(KOTLIN_JVM, @Suppress("UNCHECKED_CAST") (action as KmpDsl.() -> Unit))
+        configureAs(KOTLIN_JVM, uncheckedCast(action))
 
     override fun asIdeaPlugin(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit) =
-        configureAs(IDEA_PLUGIN, @Suppress("UNCHECKED_CAST") (action as KmpDsl.() -> Unit))
+        configureAs(IDEA_PLUGIN, uncheckedCast(action))
 
     override fun asGradlePlugin(action: KstDsl<KotlinJvmProjectExtension>.() -> Unit) =
-        configureAs(GRADLE_PLUGIN, @Suppress("UNCHECKED_CAST") (action as KmpDsl.() -> Unit))
+        configureAs(GRADLE_PLUGIN, uncheckedCast(action))
 
-    override fun asAndroid(app: Boolean, action: KstDsl<KotlinAndroidProjectExtension>.() -> Unit) {
-        val type = if (app) ANDROID_APP else ANDROID_LIB
-        configureAs(type, @Suppress("UNCHECKED_CAST") (action as KmpDsl.() -> Unit))
-    }
+    override fun asAndroid(app: Boolean, action: KstDsl<KotlinAndroidProjectExtension>.() -> Unit) =
+        configureAs(if (app) ANDROID_APP else ANDROID_LIB, uncheckedCast(action))
 
 
     private fun applyDefaultKmpConfigurations(dsl: KmpConfigurationContainerDslImpl) {

@@ -4,6 +4,7 @@ import fluxo.conf.graph.AsciiGraphReportRenderer
 import fluxo.conf.graph.GraphNode
 import fluxo.conf.graph.RenderableNode
 import fluxo.conf.graph.SimpleNodeRenderer
+import fluxo.conf.impl.uncheckedCast
 import java.io.File
 import kotlin.reflect.KProperty
 import org.gradle.api.Project
@@ -222,10 +223,8 @@ internal abstract class KotlinSourceSetsReportTask :
         GraphNode(id, name) {
 
         @Suppress("UnusedPrivateMember")
-        private operator fun <V, V1 : V> Map<String, V>.getValue(r: Any?, p: KProperty<*>): V1 {
-            @Suppress("UNCHECKED_CAST")
-            return get(p.name) as V1
-        }
+        private operator fun <V, V1 : V> Map<String, V>.getValue(r: Any?, p: KProperty<*>): V1 =
+            uncheckedCast(get(p.name))
 
         var kotlinSourceDirs: List<String> by attrs
         var resourcesDirs: List<String> by attrs

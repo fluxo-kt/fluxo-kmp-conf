@@ -58,8 +58,7 @@ internal inline fun <T : Any> ExtensionAware.configureExtensionIfAvailable(
     try {
         val ext = extensions.findByName(name)
         if (ext != null) {
-            @Suppress("UNCHECKED_CAST")
-            action(ext as T)
+            action(uncheckedCast(ext))
             return true
         }
     } catch (_: NoClassDefFoundError) {
@@ -143,8 +142,7 @@ internal inline fun <reified T : Any> ExtensionContainer.getByName(
  */
 internal inline fun <T : Any> ExtensionContainer.findByType(clazz: () -> KClass<*>): T? {
     return try {
-        @Suppress("UNCHECKED_CAST")
-        findByType(clazz().java) as T
+        uncheckedCast(findByType(clazz().java))
     } catch (_: NoClassDefFoundError) {
         null
     }

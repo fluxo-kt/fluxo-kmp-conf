@@ -25,7 +25,6 @@ internal inline fun <reified T : Task> TaskContainer.register(
 
 
 /** @see org.gradle.api.tasks.TaskCollection.named */
-@Suppress("UNCHECKED_CAST")
 internal inline fun <reified T : Task> TaskCollection<out Task>.named(
     name: String,
-): TaskProvider<out T> = (this as TaskCollection<T>).named(name, T::class.java)
+): TaskProvider<out T> = uncheckedCast<TaskCollection<T>>(this).named(name, T::class.java)

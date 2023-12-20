@@ -8,6 +8,7 @@ import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_TARGET_SDK
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoConfigurationExtensionAndroid
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
+import fluxo.conf.impl.uncheckedCast
 import fluxo.conf.impl.v
 import fluxo.conf.impl.vInt
 import java.util.Locale
@@ -142,8 +143,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
             ?: (parent as? FluxoConfigurationExtensionAndroidImpl)?.filterVariants
 
     override fun filterVariants(predicate: (VariantBuilder) -> Boolean) {
-        @Suppress("UNCHECKED_CAST")
-        filterVariantsProp.set(predicate as (Any) -> Boolean)
+        filterVariantsProp.set(uncheckedCast<(Any) -> Boolean>(predicate))
     }
 
     @get:Input

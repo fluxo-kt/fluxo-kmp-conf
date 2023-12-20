@@ -34,6 +34,7 @@ import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.i
 import fluxo.conf.impl.isTestRelated
+import fluxo.conf.impl.uncheckedCast
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
 import org.gradle.api.Action
@@ -128,8 +129,7 @@ internal fun configureKotlinJvm(
                 }
 
                 is ContainerKotlinAware<*> ->
-                    @Suppress("UNCHECKED_CAST")
-                    (container as ContainerKotlinAware<KotlinProjectExtension>)
+                    uncheckedCast<ContainerKotlinAware<KotlinProjectExtension>>(container)
                         .setup(this)
             }
         }
@@ -216,8 +216,7 @@ internal fun configureKotlinMultiplatform(
                     container.setup(this)
 
                 is ContainerKotlinAware<*> ->
-                    @Suppress("UNCHECKED_CAST")
-                    (container as ContainerKotlinAware<KotlinProjectExtension>)
+                    uncheckedCast<ContainerKotlinAware<KotlinProjectExtension>>(container)
                         .setup(this)
             }
         }

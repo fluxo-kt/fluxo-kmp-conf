@@ -3,6 +3,7 @@
 package fluxo.conf.deps
 
 import com.diffplug.spotless.NoLambda
+import fluxo.conf.impl.uncheckedCast
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
@@ -31,8 +32,7 @@ internal abstract class LazyForwardingEquality<T : Serializable> : Serializable,
     private fun writeObject(out: ObjectOutputStream) = out.writeObject(state())
 
     private fun readObject(`in`: ObjectInputStream) {
-        @Suppress("UNCHECKED_CAST")
-        state = `in`.readObject() as T
+        state = uncheckedCast<T>(`in`.readObject())
     }
 
     private fun readObjectNoData(): Unit = throw UnsupportedOperationException()
