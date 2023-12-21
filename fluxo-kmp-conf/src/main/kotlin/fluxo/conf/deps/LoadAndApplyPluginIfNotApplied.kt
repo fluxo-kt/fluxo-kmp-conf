@@ -30,18 +30,18 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     val logger = project.logger
     val pluginManager = project.pluginManager
     if (pluginManager.hasPlugin(id)) {
-        logger.v("Project has plugin '$id' already applied")
+        logger.v("Project has plugin '$id' already applied in '${project.path}'")
         return ApplyPluginResult.TRUE
     }
 
     try {
         pluginManager.apply(id)
-        logger.d("Plugin '$id' is applied dynamically by id")
+        logger.d("Plugin '$id' is applied dynamically by id in '${project.path}'")
         return ApplyPluginResult.TRUE
     } catch (e: Throwable) {
         @Suppress("InstanceOfCheckForException")
         if (project.hasPluginAvailable(id) || e !is UnknownPluginException) {
-            logger.e("Failed to apply plugin '$id': $e", e)
+            logger.e("Failed to apply plugin '$id' in '${project.path}': $e", e)
         }
     }
 
@@ -63,13 +63,14 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
         catalogPluginAlias = catalogPluginAlias,
         lookupClassName = lookupClassName,
         canLoadDynamically = canLoadDynamically,
+        project = project,
     ) ?: return ApplyPluginResult(applied = false, id = id, alias = catalogPluginAlias)
 
     pluginManager.apply(pluginClass)
 
     if (SHOW_DEBUG_LOGS) {
         check(pluginManager.hasPlugin(id)) {
-            "Plugin '$id' was not dynamically applied!"
+            "Plugin '$id' was not dynamically applied in '${project.path}'!"
         }
     }
 
@@ -83,15 +84,17 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
     catalogPluginAlias: String?,
     lookupClassName: Boolean,
     canLoadDynamically: Boolean,
+    project: Project,
 ): Class<*>? {
-    val logger = rootProject.logger
+    val logger = project.logger
     val example = loadingWarnExample(pluginId, catalogPluginAlias)
     val classNames: MutableSet<String>
     if (!className.isNullOrEmpty()) {
         classNames = mutableSetOf(className)
     } else {
         if (!lookupClassName) {
-            val error = "Can't load plugin '$pluginId' dynamically (unknown plugin class name)!"
+            val error = "Can't load plugin '$pluginId' dynamically" +
+                " in '${project.path}' (unknown plugin class name)!"
             logger.e(loadingErrorMessage(error, example))
             return null
         }
@@ -101,7 +104,7 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
     // Try the classpath first.
     var pluginClass: Class<*>? = tryGetClassForName(className)
     if (pluginClass != null) {
-        logger.v("Found plugin '$pluginId' class on the classpath: $className")
+        logger.v("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")
         return pluginClass
     }
     if (lookupClassName && classNames.isEmpty()) {
@@ -111,19 +114,22 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
             for (name in classNames) {
                 pluginClass = tryGetClassForName(className)
                 if (pluginClass != null) {
-                    val message = "Found plugin '$pluginId' class on the classpath: $className" +
-                        CLASS_NAME_NOT_PROVIDED
+                    val message = "Found plugin '$pluginId' class on the classpath" +
+                        " for '${project.path}': $className" +
+                        CLASS_NAME_AUTO_DETECTED
                     logger.w(message)
                     return pluginClass
                 }
             }
         } catch (e: Throwable) {
-            logger.e("Unexpected error while dynamically loading plugin '$pluginId': $e", e)
+            val message = "Unexpected error while dynamically loading plugin '$pluginId'" +
+                " in '${project.path}': $e"
+            logger.e(message, e)
         }
     }
 
     if (!canLoadDynamically) {
-        val error = "Can't load plugin '$pluginId' dynamically!"
+        val error = "Can't load plugin '$pluginId' dynamically in '${project.path}'!"
         logger.e(loadingErrorMessage(error, example))
         return null
     }
@@ -133,21 +139,23 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
         var detected = ""
         if (classNames.isEmpty()) {
             classNames += classLoader.findPluginClassNames(pluginId, logger)
-            detected = CLASS_NAME_NOT_PROVIDED
+            detected = CLASS_NAME_AUTO_DETECTED
         }
         for (name in classNames) {
-            pluginClass = classLoader.loadClass(className)
+            pluginClass = Class.forName(className, true, classLoader)
             if (pluginClass != null) {
-                val warn = "Dynamically loaded plugin '$pluginId' from [$coords]$detected.\n " +
+                val warn = "Dynamically loaded plugin '$pluginId'" +
+                    " in '${project.path}' from [$coords]$detected.\n " +
                     "You may want to add it to the classpath in the root build.gradle.kts instead! $example"
                 logger.w(warn)
                 return pluginClass
             }
         }
 
-        error("plugin class name is unknown and wasn't detected")
+        error("plugin class name is unknown and wasn't detected for '${project.path}'")
     } catch (e: Throwable) {
-        val error = "Couldn't load plugin '$pluginId' dynamically from [$coords]: $e"
+        val error = "Couldn't load plugin '$pluginId' dynamically" +
+            " in '${project.path}' from [$coords]: $e"
         logger.e(loadingErrorMessage(error, example), e)
     }
     return null
@@ -248,7 +256,7 @@ private fun Project.hasPluginAvailable(pluginId: String): Boolean {
     return plugin != null
 }
 
-private const val CLASS_NAME_NOT_PROVIDED = " (class name is not provided and auto detected!)"
+private const val CLASS_NAME_AUTO_DETECTED = " (class name is not provided and auto detected!)"
 
 private fun loadingErrorMessage(err: String, example: String) = "$err\n " +
     "Please, add it to the classpath in the root or module build.gradle.kts! $example"

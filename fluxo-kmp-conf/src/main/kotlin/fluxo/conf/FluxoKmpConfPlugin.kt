@@ -127,6 +127,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         }
 
         // Gradle project atifacts publication
+        val project = configuration.project
         if (configuration.enablePublication != false) {
             configuration.publicationConfig?.let {
                 setupGradleProjectPublication(it, configuration, type)
@@ -135,7 +136,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
 
         // Generic custom lazy configuration
         configuration.onConfiguration?.let { action ->
-            configuration.project.configureExtension(KOTLIN_EXT, action = action)
+            project.configureExtension(KOTLIN_EXT, action = action)
         }
     }
 

@@ -1,6 +1,7 @@
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
+import fluxo.conf.impl.l
 import fluxo.conf.impl.register
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -24,6 +25,7 @@ private fun FluxoKmpConfContext.registerAllDepsTasks() {
         rootProject.subprojects { registerTaskAllDeps() }
     }
     onProjectInSyncRun(forceIf = isCalled) {
+        rootProject.logger.l("register :$ALL_DEPS_TASK_NAME task")
         rootProject.registerTaskAllDeps()
     }
 }
@@ -48,7 +50,9 @@ private const val ALL_DEPS_TASK_NAME = "allDeps"
 
 private fun FluxoKmpConfContext.registerResolveDependenciesTasks() {
     onProjectInSyncRun(forceIf = hasStartTaskCalled(RESOLVE_DEPENDENCIES_TASK_NAME)) {
-        rootProject.tasks.register<Task>(RESOLVE_DEPENDENCIES_TASK_NAME) {
+        val project = rootProject
+        project.logger.l("register :$RESOLVE_DEPENDENCIES_TASK_NAME task")
+        project.tasks.register<Task>(RESOLVE_DEPENDENCIES_TASK_NAME) {
             group = TASK_GROUP_NAME
             description = "Resolve and prefetch dependencies"
             doLast {

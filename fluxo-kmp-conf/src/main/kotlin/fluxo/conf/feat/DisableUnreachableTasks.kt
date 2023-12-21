@@ -5,6 +5,7 @@ import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.d
 import fluxo.conf.impl.l
 import fluxo.conf.impl.v
+import java.lang.System.currentTimeMillis
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
@@ -29,9 +30,16 @@ internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
     val project = rootProject
     val logger = project.logger
     project.gradle.taskGraph.whenReady {
+        val start = currentTimeMillis()
         if (!isProjectInSyncRun) {
+            if (SHOW_DEBUG_LOGS || DEBUG_LOGS) {
+                logger.v("DisableUnreachableTasks.apply")
+            }
+
             DisableUnreachableTasks(graph = this, logger = logger)
                 .apply()
+
+            logger.d("DisableUnreachableTasks.apply took ${currentTimeMillis() - start} ms")
         }
     }
 }
@@ -61,27 +69,27 @@ private class DisableUnreachableTasks(
     }
 
     fun apply() {
-        if (SHOW_DEBUG_LOGS) logger.v("DisableUnreachableTasks.apply")
         for (it in graph.allTasks) {
+            // Disable inaccessible dependencies of enabled tasks
             if (it.enabled) {
-                disableChildren(it)
+                disableInaccessibleChildren(it)
             }
         }
     }
 
-    private fun disableChildren(task: Task) {
+    private fun disableInaccessibleChildren(task: Task) {
         graph.getDependencies(task).forEach { child ->
             if (child.enabled) {
                 if (!isTaskAccessible(task = child)) {
                     child.enabled = false
                     logger.l("Inaccessible task disabled: ${child.path}")
-                    disableChildren(task = child)
-                } else {
-                    logger.d("Task accessible: ${child.path}")
+                    disableInaccessibleChildren(task = child)
+                } else if (DEBUG_LOGS) {
+                    logger.v("Task accessible: ${child.path}")
                 }
             } else {
                 logger.d("Task already disabled: ${child.path}")
-                disableChildren(task = child)
+                disableInaccessibleChildren(task = child)
             }
         }
     }
@@ -89,8 +97,8 @@ private class DisableUnreachableTasks(
     private fun isTaskAccessible(task: Task): Boolean = rootTasks.any {
         val isPathExists = (it != task) && isPathExists(source = it, destination = task)
 
-        if (isPathExists) {
-            logger.d("Task ${task.path} accessible from ${it.path}")
+        if (DEBUG_LOGS && isPathExists) {
+            logger.v("Task ${task.path} accessible from ${it.path}")
         }
 
         isPathExists
@@ -100,15 +108,21 @@ private class DisableUnreachableTasks(
         results.getOrPut(source to destination) {
             when {
                 !source.enabled -> false
-                source == destination -> true.also { logger.d("Task reached: ${destination.path}") }
+                source == destination -> true.also {
+                    if (DEBUG_LOGS) {
+                        logger.d("Task reached: ${destination.path}")
+                    }
+                }
 
                 else -> graph.getDependencies(source)
                     .any { isPathExists(source = it, destination = destination) }
                     .also {
-                        if (it) {
-                            logger.d("Task path found from ${source.path} to ${destination.path}")
+                        if (DEBUG_LOGS && it) {
+                            logger.v("Task path found from ${source.path} to ${destination.path}")
                         }
                     }
             }
         }
 }
+
+private const val DEBUG_LOGS = false

@@ -4,7 +4,7 @@ import MAIN_SOURCE_SET_NAME
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.conf.impl.e
-import fluxo.conf.impl.i
+import fluxo.conf.impl.l
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -62,7 +62,7 @@ private fun KCompilation.setupExperimentalLatestCompilation(
     val mainCompilation = this
     compilations.create(compilationName) {
         val project = mainCompilation.project
-        project.logger.i(
+        project.logger.l(
             "'$name' compilation set up (experimental compilation with latest features)",
         )
         defaultSourceSet.dependsOn(mainCompilation.defaultSourceSet)

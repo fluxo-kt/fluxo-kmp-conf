@@ -6,6 +6,7 @@ import fluxo.conf.data.BuildConstants.TASK_INFO_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.TASK_INFO_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
+import fluxo.conf.impl.l
 import org.barfuin.gradle.taskinfo.GradleTaskInfoPlugin
 
 // Provides task metadata and dependency information, execution queue, and more
@@ -17,6 +18,9 @@ internal fun FluxoKmpConfContext.prepareTaskInfoPlugin() {
             check(TASK_INFO_PLUGIN_ID == GradleTaskInfoPlugin.PLUGIN_ID) {
                 "TASK_INFO_PLUGIN_ID($TASK_INFO_PLUGIN_ID) != ${GradleTaskInfoPlugin.PLUGIN_ID}"
             }
+        }
+        TASK_INFO_TASK_NAMES.joinToString(prefix = ":").let { tasks ->
+            rootProject.logger.l("prepareTaskInfoPlugin, register tasks: $tasks")
         }
         loadAndApplyPluginIfNotApplied(
             id = GradleTaskInfoPlugin.PLUGIN_ID,

@@ -31,7 +31,6 @@ import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.e
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
-import fluxo.conf.impl.i
 import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.l
 import fluxo.conf.impl.uncheckedCast
@@ -247,7 +246,7 @@ private fun checkIfNeedToConfigure(
         logger.w("$label - no applicable Kotlin targets found, skipping module configuration")
         return false
     }
-    logger.i(label)
+    logger.l(label)
     return true
 }
 

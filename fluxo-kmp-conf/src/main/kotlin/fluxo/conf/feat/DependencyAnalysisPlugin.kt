@@ -10,6 +10,7 @@ import fluxo.conf.data.VersionCatalogConstants.VC_SQUARE_LEAK_CANARY_ALIAS
 import fluxo.conf.data.VersionCatalogConstants.VC_SQUARE_PLUMBER_ALIAS
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.impl.configureExtension
+import fluxo.conf.impl.l
 import fluxo.conf.impl.onLibrary
 
 // Detect unused and misused dependencies.
@@ -22,12 +23,16 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
         return
     }
 
-    loadAndApplyPluginIfNotApplied(
+    rootProject.logger.l("prepareDependencyAnalysisPlugin")
+    val result = loadAndApplyPluginIfNotApplied(
         id = DEPS_ANALYSIS_PLUGIN_ID,
         className = DEPS_ANALYSIS_CLASS_NAME,
         version = DEPS_ANALYSIS_PLUGIN_VERSION,
         catalogPluginId = DEPS_ANALYSIS_PLUGIN_ALIAS,
     )
+    if (!result.applied) {
+        return
+    }
 
     rootProject.configureExtension<DependencyAnalysisExtension> {
         // https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/Customizing-plugin-behavior

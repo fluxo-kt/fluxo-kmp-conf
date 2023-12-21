@@ -27,12 +27,12 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
     }
 
     onProjectInSyncRun(forceIf = isCalled) {
-        loadAndApplyPluginIfNotApplied()
-
         val root = rootProject
+        loadAndApplyPluginIfNotApplied(project = root)
 
         // Nothing more is possible for the root project.
         // TODO: Update when resolved (https://github.com/dropbox/dependency-guard/issues/3)
+        root.logger.d("Dependency guard the 'classpath' configuration")
         root.dependencyGuard {
             configuration("classpath", COMMON_CONFIGURATION)
         }
@@ -85,9 +85,7 @@ private fun isClasspathConfig(configName: String): Boolean {
         configName.endsWith("runtimeclasspath")
 }
 
-private fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
-    project: Project = rootProject,
-) =
+private fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(project: Project) =
     loadAndApplyPluginIfNotApplied(
         id = DEPS_GUARD_PLUGIN_ID,
         className = DEPS_GUARD_CLASS_NAME,

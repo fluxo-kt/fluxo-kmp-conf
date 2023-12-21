@@ -46,9 +46,21 @@ internal fun Logger.d(message: String, arg1: Any?, arg2: Any?, arg3: Any?) {
 }
 
 
-internal fun Logger.i(message: String) = info("$CONF $message")
+internal fun Logger.i(message: String) {
+    if (SHOW_DEBUG_LOGS) {
+        lifecycle("> Fi: $message")
+    } else {
+        debug("$CONF $message")
+    }
+}
 
-internal fun Logger.i(message: String, arg1: Any?) = info("$CONF $message", arg1)
+internal fun Logger.i(message: String, arg1: Any?) {
+    if (SHOW_DEBUG_LOGS) {
+        lifecycle("> Fi: $message", arg1)
+    } else {
+        debug("$CONF $message", arg1)
+    }
+}
 
 
 internal fun Logger.l(message: String) = lifecycle("$CONF $message")

@@ -5,6 +5,7 @@ package fluxo.conf.feat
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.KotlinSourceSetsReportTask
 import fluxo.conf.impl.ifNotEmpty
+import fluxo.conf.impl.l
 import fluxo.conf.impl.register
 import fluxo.conf.impl.withType
 import org.gradle.api.Project
@@ -20,6 +21,9 @@ import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
     onProjectInSyncRun(forceIf = hasStartTaskCalled(DIAGNOSTIC_TASKS)) {
+        DIAGNOSTIC_TASKS.joinToString(prefix = ":").let { tasks ->
+            rootProject.logger.l("prepareKotlinSetupDiagnosticTasks, register tasks: $tasks")
+        }
         rootProject.allprojects {
             plugins.withType<KotlinBasePlugin> {
                 // TODO: @DisableCachingByDefault(because = "Not worth caching")

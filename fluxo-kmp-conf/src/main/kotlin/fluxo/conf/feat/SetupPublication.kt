@@ -106,6 +106,7 @@ internal fun setupGradleProjectPublication(
     // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
     // https://github.com/JetBrains/kotlin/commit/68fdeaf
     if (configuration.reproducibleArtifacts != false) {
+        logger.l("setup reproducibleArtifacts")
         tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
@@ -165,10 +166,8 @@ internal fun Project.setupPublicationAndroidLibrary(
 
     val androidExtension = the<LibraryExtension>()
 
-    val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
-        from(androidExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).java.srcDirs)
-        archiveClassifier.set("source")
-    }
+    val sourceJarTask =
+        sourceJarTask(androidExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).java.srcDirs)
 
     fun PublicationContainer.createMavenPublication(name: String, artifactIdSuffix: String) {
         create<MavenPublication>(name) {
@@ -209,10 +208,7 @@ internal fun Project.setupPublicationGradlePlugin(
         config.publicationUrl?.let { vcsUrl.set(it) }
     }
 
-    val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
-        from(gradlePluginExtension.pluginSourceSet.java.srcDirs)
-        archiveClassifier.set("sources")
-    }
+    val sourceJarTask = sourceJarTask(gradlePluginExtension.pluginSourceSet.java.srcDirs)
 
     afterEvaluate {
         setupPublicationExtension(publishing, context, config, sourceJarTask, useDokka = useDokka)
@@ -234,10 +230,8 @@ internal fun Project.setupPublicationKotlinJvm(
 
     val kotlinPluginExtension = extensions.getByName<KotlinJvmProjectExtension>(KOTLIN_EXT)
 
-    val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
-        from(kotlinPluginExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).kotlin.srcDirs)
-        archiveClassifier.set("sources")
-    }
+    val sourceJarTask =
+        sourceJarTask(kotlinPluginExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).kotlin.srcDirs)
 
     setupPublicationExtension(publishing, context, config, sourceJarTask, useDokka = useDokka)
     setupPublicationRepository(config, publishing)
@@ -255,10 +249,8 @@ internal fun Project.setupPublicationJava(
 
     val javaPluginExtension = the<JavaPluginExtension>()
 
-    val sourceJarTask = tasks.create<Jar>("sourceJarTask") {
-        from(javaPluginExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).java.srcDirs)
-        archiveClassifier.set("sources")
-    }
+    val sourceJarTask =
+        sourceJarTask(javaPluginExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).java.srcDirs)
 
     setupPublicationExtension(publishing, context, config, sourceJarTask, useDokka = false)
     setupPublicationRepository(config, publishing)
@@ -283,6 +275,7 @@ internal fun MavenPublication.setupPublicationPom(
                 project = project,
             )
             if (result.applied) {
+                project.logger.l("setup Dokka publication")
                 val dokkaHtmlAsJavadocTaskName = "dokkaHtmlAsJavadoc"
                 val dokkaHtmlAsJavadoc = project.tasks.run {
                     findByName(dokkaHtmlAsJavadocTaskName) ?: run {
@@ -303,11 +296,15 @@ internal fun MavenPublication.setupPublicationPom(
         }
     }
     if (fallback) {
+        project.logger.l("setup Javadoc publication fallback")
         artifact(project.javadocJarTask())
     }
 
     pom {
-        name.set(config.projectName)
+        val projectName = config.projectName
+        project.logger.l("setup publication pom for: '$projectName'")
+
+        name.set(projectName)
         description.set(config.projectDescription)
         url.set(config.publicationUrl)
 
@@ -365,12 +362,14 @@ internal fun Project.setupPublicationRepository(
     publishing.apply {
         if (config.isSigningEnabled) {
             configureExtension<SigningExtension>(name = SIGNING_EXT_NAME) {
+                logger.l("setup publications signing configuration")
                 useInMemoryPgpKeys(config.signingKey, config.signingPassword)
                 sign(publications)
             }
         }
 
         repositories {
+            logger.l("setup localDev maven repository")
             maven {
                 name = "localDev"
                 url = uri(rootProject.file(LOCAL_REPO_PATH))
@@ -378,7 +377,9 @@ internal fun Project.setupPublicationRepository(
 
             if (mavenRepo) {
                 maven {
-                    setUrl(config.repositoryUrl)
+                    val url = config.repositoryUrl
+                    setUrl(url)
+                    logger.l("setup maven repository: $url")
 
                     credentials {
                         username = config.repositoryUserName
@@ -434,4 +435,14 @@ private fun Jar.setupJavadocJar() {
     group = LifecycleBasePlugin.BUILD_GROUP
     description = "Assembles a jar archive containing the Javadoc API documentation."
     archiveClassifier.set("javadoc")
+}
+
+private fun Project.sourceJarTask(sourcePaths: Any): Jar {
+    return tasks.create<Jar>("sourceJarTask") {
+        from(sourcePaths)
+        group = LifecycleBasePlugin.BUILD_GROUP
+        description = "Assembles a jar archive containing the project sources."
+        archiveClassifier.set("sources")
+        markAsMustRunAfterBuildConfigTasks(this)
+    }
 }

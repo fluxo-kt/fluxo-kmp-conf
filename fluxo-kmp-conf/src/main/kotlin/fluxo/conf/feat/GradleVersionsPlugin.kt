@@ -6,6 +6,7 @@ import fluxo.conf.data.BuildConstants.DEPS_VERSIONS_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.DEPS_VERSIONS_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.DEPS_VERSIONS_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
+import fluxo.conf.impl.l
 import fluxo.conf.impl.withType
 
 // Gradle Versions Plugin, provides a task to find, which dependencies have updates.
@@ -16,6 +17,7 @@ internal fun FluxoKmpConfContext.prepareGradleVersionsPlugin() {
     if (!hasStartTaskCalled(DEPS_VERSIONS_TASK_NAME)) {
         return
     }
+    rootProject.logger.l("prepareGradleVersionsPlugin, :$DEPS_VERSIONS_TASK_NAME task")
 
     loadAndApplyPluginIfNotApplied(
         id = DEPS_VERSIONS_PLUGIN_ID,

@@ -18,6 +18,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "fluxo-kmp-conf"
 
-// On module update, don't forget to update '.github/workflows/deps-submission.yml'!
-include(":fluxo-kmp-conf")
-project(":fluxo-kmp-conf").name = "plugin"
+":fluxo-kmp-conf".let {
+    include(it)
+    project(it).name = "plugin"
+}

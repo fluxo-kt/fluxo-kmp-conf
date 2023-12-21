@@ -5,6 +5,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.FluxoKmpConfContext.Companion.KOTLIN_IDEA_BSM_TASK
 import fluxo.conf.FluxoKmpConfContext.Companion.KOTLIN_IDEA_IMPORT_TASK
 import fluxo.conf.data.BuildConstants.BUILD_CONFIG_PLUGIN_ID
+import fluxo.conf.impl.l
 import fluxo.conf.impl.maybeRegister
 import fluxo.conf.impl.withType
 import org.gradle.api.Project
@@ -16,14 +17,34 @@ import org.gradle.api.Task
 // https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
 internal fun FluxoKmpConfContext.prepareKmpBuildConfigPlugin(project: Project) {
     plugins.withId(BUILD_CONFIG_PLUGIN_ID) {
-        // Automatically build configs during Gradle sync in IDEA
+        // Automatically build configs during Gradle sync in IDE
         onProjectInSyncRun {
-            val buildConfigTasks = project.tasks.withType<BuildConfigTask>()
+            project.logger.l("prepareKmpBuildConfigPlugin")
+
+            val tasks = project.tasks
+            val buildConfigTasks = tasks.withType<BuildConfigTask>()
             val configureSyncTasks: Task.() -> Unit = {
                 dependsOn(buildConfigTasks)
             }
-            project.tasks.maybeRegister(KOTLIN_IDEA_IMPORT_TASK, configureSyncTasks)
-            project.tasks.maybeRegister(KOTLIN_IDEA_BSM_TASK, configureSyncTasks)
+            tasks.maybeRegister(KOTLIN_IDEA_IMPORT_TASK, configureSyncTasks)
+            tasks.maybeRegister(KOTLIN_IDEA_BSM_TASK, configureSyncTasks)
+        }
+    }
+}
+
+internal fun Project.markAsMustRunAfterBuildConfigTasks(forTask: Task) {
+    plugins.withId(BUILD_CONFIG_PLUGIN_ID) {
+        try {
+            forTask.mustRunAfter(tasks.withType<BuildConfigTask>())
+        } catch (e: NoClassDefFoundError) {
+            // Name-based fallback
+            /** @see com.github.gmazzo.buildconfig.BuildConfigPlugin.configureSourceSet */
+            tasks.configureEach {
+                val name = name
+                if (name.startsWith("generate") && name.endsWith("BuildConfig")) {
+                    forTask.mustRunAfter(this)
+                }
+            }
         }
     }
 }

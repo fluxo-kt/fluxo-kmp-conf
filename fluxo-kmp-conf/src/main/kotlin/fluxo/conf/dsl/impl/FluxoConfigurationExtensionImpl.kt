@@ -16,7 +16,9 @@ import fluxo.conf.dsl.impl.ConfigurationType.GRADLE_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_JVM
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
+import fluxo.conf.impl.i
 import fluxo.conf.impl.uncheckedCast
+import java.lang.System.currentTimeMillis
 import javax.inject.Inject
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -83,6 +85,7 @@ internal abstract class FluxoConfigurationExtensionImpl
         }
         hasConfigurationAction.set(true)
 
+        val start = currentTimeMillis()
         val onlyTarget = when (type) {
             KOTLIN_MULTIPLATFORM -> null
             ANDROID_LIB, ANDROID_APP -> KmpTargetCode.ANDROID
@@ -109,6 +112,8 @@ internal abstract class FluxoConfigurationExtensionImpl
 
         /** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */
         configureContainers(type, this, holder.containers.sorted())
+
+        project.logger.i(":${type.builderMethod} configuration took ${currentTimeMillis() - start} ms")
     }
 
     override fun asKmp(action: KmpDsl.() -> Unit) =

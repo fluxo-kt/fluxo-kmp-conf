@@ -7,6 +7,7 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.impl.closureOf
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.e
+import fluxo.conf.impl.l
 import fluxo.conf.impl.register
 import fluxo.conf.impl.splitCamelCase
 import fluxo.conf.impl.withType
@@ -36,6 +37,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
     val mergedReportTask = when {
         testsDisabled -> null
         else -> {
+            project.logger.l("setupTestsReport, register :$TEST_REPORTS_TASK_NAME task")
             project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
                 group = JavaBasePlugin.VERIFICATION_GROUP
                 description = "Combines all tests reports from all modules to the published root one"

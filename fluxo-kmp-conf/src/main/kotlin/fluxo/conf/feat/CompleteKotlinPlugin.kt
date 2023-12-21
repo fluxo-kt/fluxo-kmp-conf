@@ -26,16 +26,18 @@ import loadKmmCodeCompletion
  */
 internal fun FluxoKmpConfContext.prepareCompleteKotlinPlugin() {
     // https://github.com/LouisCAD/CompleteKotlin/releases
-    if (!isCI && rootProject.loadKmmCodeCompletion()) {
-        onProjectInSyncRun {
-            val pluginId = COMPLETE_KOTLIN_PLUGIN_ID
-            loadAndApplyPluginIfNotApplied(
-                id = pluginId,
-                className = COMPLETE_KOTLIN_CLASS_NAME,
-                version = COMPLETE_KOTLIN_PLUGIN_VERSION,
-                catalogPluginId = COMPLETE_KOTLIN_PLUGIN_ALIAS,
-            )
-
+    if (isCI || !rootProject.loadKmmCodeCompletion()) {
+        return
+    }
+    onProjectInSyncRun {
+        val pluginId = COMPLETE_KOTLIN_PLUGIN_ID
+        val result = loadAndApplyPluginIfNotApplied(
+            id = pluginId,
+            className = COMPLETE_KOTLIN_CLASS_NAME,
+            version = COMPLETE_KOTLIN_PLUGIN_VERSION,
+            catalogPluginId = COMPLETE_KOTLIN_PLUGIN_ALIAS,
+        )
+        if (result.applied) {
             onBuildFinished {
                 val flag = LOAD_KMM_CODE_COMPLETION_FLAG
                 rootProject.logger.warn(

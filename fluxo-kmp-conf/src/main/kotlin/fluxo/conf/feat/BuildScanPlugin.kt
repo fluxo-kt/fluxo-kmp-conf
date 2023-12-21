@@ -5,7 +5,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.e
-import fluxo.conf.impl.v
+import fluxo.conf.impl.l
 
 // Build scans, data to speed up build and improve build reliability.
 // https://scans.gradle.com/plugin/
@@ -17,7 +17,7 @@ internal fun FluxoKmpConfContext.prepareBuildScanPlugin() {
             project.configureExtension<BuildScanExtension>("buildScan") {
                 termsOfServiceUrl = "https://gradle.com/terms-of-service"
                 termsOfServiceAgree = "yes"
-                project.logger.v("Configured the build scan plugin")
+                project.logger.l("Configured the build scan plugin")
             }
         }
     } catch (e: Throwable) {
