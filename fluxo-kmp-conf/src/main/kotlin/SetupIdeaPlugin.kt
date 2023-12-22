@@ -7,6 +7,7 @@ import org.jetbrains.intellij.IntelliJPluginExtension
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
+@Suppress("LongParameterList")
 public fun Project.setupIdeaPlugin(
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
     group: String? = null,

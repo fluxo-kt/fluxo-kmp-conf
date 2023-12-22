@@ -10,18 +10,20 @@ description =
     "Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects. Made by Fluxo."
 val pluginId = libs.plugins.fluxo.conf.get().pluginId
 val pluginName = "fluxo-kmp-conf"
+val pluginClass = "fluxo.conf.FluxoKmpConfPlugin"
 
 // Workaround, while no eager configuration auto configured
 gradlePlugin {
     plugins.create(pluginName) {
         id = pluginId
-        implementationClass = "fluxo.conf.FluxoKmpConfPlugin"
+        implementationClass = pluginClass
     }
 }
 
 setupGradlePlugin(
     pluginId = pluginId,
     pluginName = pluginName,
+    pluginClass = pluginClass,
     displayName = "Fluxo KMP Configuration",
     tags = listOf(
         "kotlin",
@@ -36,7 +38,11 @@ setupGradlePlugin(
     setupCoroutines = false
     experimentalLatestCompilation = true
 
-    publicationConfig()
+    publicationConfig {
+        developerId = "amal"
+        developerName = "Artyom Shendrik"
+        developerEmail = "artyom.shendrik@gmail.com"
+    }
 
     apiValidation {
         nonPublicMarkers.add("fluxo.annotation.InternalFluxoApi")

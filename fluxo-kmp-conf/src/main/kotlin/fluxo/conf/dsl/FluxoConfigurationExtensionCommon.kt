@@ -8,7 +8,7 @@ public interface FluxoConfigurationExtensionCommon {
      * Flag that allows to disable dependency setup completely.
      *
      * Inherited from the parent project if not set.
-     * Default value: `true`.
+     * Default value: `false`.
      */
     public var setupDependencies: Boolean
 

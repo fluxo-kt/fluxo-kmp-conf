@@ -35,7 +35,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     val versionProp: Property<String?>
     override var version: String
         get() = versionProp.orNull
-            ?: parent?.version
+            ?: parent?.version?.takeIf { it.isNotBlank() }
             ?: context.libs.v("version", "versionName", "app", "appVersion", "v")
             ?: project.version.toString()
         set(value) = versionProp.set(value)
@@ -44,7 +44,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     val groupProp: Property<String?>
     override var group: String
         get() = groupProp.orNull
-            ?: parent?.group
+            ?: parent?.group?.takeIf { it.isNotBlank() }
             ?: context.libs.v("group", "package")
             ?: project.group.toString()
         set(value) = groupProp.set(value)

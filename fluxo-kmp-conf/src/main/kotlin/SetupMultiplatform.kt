@@ -54,7 +54,7 @@ public fun Project.setupMultiplatform(
 public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
     // Configure a separate test where code runs in worker thread
     // https://kotlinlang.org/docs/compiler-reference.html#generate-worker-test-runner-trw.
-    targets.withType<KotlinNativeTargetWithTests<*>>().configureEach {
+    targets.withType<KotlinNativeTargetWithTests<*>> {
         val background = "background"
         binaries {
             test(background, listOf(DEBUG)) {

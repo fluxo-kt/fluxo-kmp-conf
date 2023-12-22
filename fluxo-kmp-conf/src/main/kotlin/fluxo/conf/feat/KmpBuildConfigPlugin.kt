@@ -8,10 +8,12 @@ import fluxo.conf.data.BuildConstants.BUILD_CONFIG_PLUGIN_ID
 import fluxo.conf.impl.l
 import fluxo.conf.impl.maybeRegister
 import fluxo.conf.impl.withType
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-// A plugin for generating BuildConstants for any kind of Gradle projects: Java, Kotlin, Android, Groovy, etc.
+// A plugin for generating BuildConstants for any kind of Gradle projects:
+//  Java, Kotlin, Android, Groovy, etc.
 // Designed for KTS scripts, with experimental support for Kotlin's multi-platform plugin
 // https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 // https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
@@ -32,19 +34,19 @@ internal fun FluxoKmpConfContext.prepareKmpBuildConfigPlugin(project: Project) {
     }
 }
 
-internal fun Project.markAsMustRunAfterBuildConfigTasks(forTask: Task) {
+internal fun Project.markAsMustRunAfterBuildConfigTasks(
+    forTask: NamedDomainObjectProvider<out Task>,
+) {
     plugins.withId(BUILD_CONFIG_PLUGIN_ID) {
-        try {
-            forTask.mustRunAfter(tasks.withType<BuildConfigTask>())
-        } catch (e: NoClassDefFoundError) {
-            // Name-based fallback
-            /** @see com.github.gmazzo.buildconfig.BuildConfigPlugin.configureSourceSet */
-            tasks.configureEach {
-                val name = name
-                if (name.startsWith("generate") && name.endsWith("BuildConfig")) {
-                    forTask.mustRunAfter(this)
-                }
-            }
+        // NOTE: tasks.withType<BuildConfigTask>() fails here with NoClassDefFoundError.
+        // So find the tasks by name instead.
+        /** @see com.github.gmazzo.buildconfig.BuildConfigPlugin.configureSourceSet */
+        val buildConfigTasks = tasks.matching {
+            val name = it.name
+            name.startsWith("generate") && name.endsWith("BuildConfig")
+        }
+        forTask.configure {
+            mustRunAfter(buildConfigTasks)
         }
     }
 }

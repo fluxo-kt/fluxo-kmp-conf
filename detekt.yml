@@ -48,3 +48,7 @@ formatting:
     active: false
   ParameterListWrapping:
     maxLineLength: 100
+  ImportOrdering:
+    active: true
+    autoCorrect: true
+    layout: '*'

@@ -2,10 +2,13 @@ package fluxo.conf.dsl
 
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 
+// TODO: Make an immutable resulting class
+
 @Suppress("LongParameterList")
 public data class FluxoPublicationConfig(
     public var group: String,
     public var version: String,
+    /** Artifact ID, basically */
     public var projectName: String? = null,
 
     public var projectDescription: String? = null,

@@ -7,6 +7,7 @@ import fluxo.conf.impl.w
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
+@Suppress("LongParameterList")
 public fun Project.setupGradlePlugin(
     pluginName: String? = null,
     pluginClass: String? = null,
@@ -17,8 +18,11 @@ public fun Project.setupGradlePlugin(
     kotlin: (KotlinJvmProjectExtension.() -> Unit)? = null,
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
 ): Unit = fluxoConfiguration configuration@{
-    explicitApi()
-    enableApiValidation = true
+    configureAsLibrary()
+
+    if (pluginName != null) {
+        projectName = pluginName
+    }
 
     kotlin?.let { kotlinJvmConfiguration ->
         onConfiguration {

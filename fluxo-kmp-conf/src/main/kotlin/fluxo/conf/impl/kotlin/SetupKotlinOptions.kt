@@ -39,6 +39,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         compilerArgs.addAll(LATEST_OPTS)
     }
 
+    // Required for multiplatform projects since Kotlin 1.9.20.
     if (isMultiplatform && kotlinPluginVersion >= KOTLIN_1_9_20) {
         compilerArgs.add("-Xexpect-actual-classes")
     }

@@ -36,14 +36,21 @@ internal fun <T : Any> NamedDomainObjectContainer<T>.maybeRegister(
     name: String,
     configure: (T.() -> Unit)? = null,
 ): NamedDomainObjectProvider<T> {
-    val entity = if (name in names) {
-        named(name)
-    } else {
-        register(name)
+    val entity = when {
+        has(name) -> named(name)
+        else -> register(name)
     }
     if (configure != null) entity.configure(configure)
     return entity
 }
+
+internal fun <T : Any> NamedDomainObjectContainer<T>.namedOrNull(
+    name: String,
+): NamedDomainObjectProvider<T>? {
+    return if (has(name)) named(name) else null
+}
+
+internal fun NamedDomainObjectContainer<*>.has(name: String): Boolean = name in names
 
 
 internal inline fun <reified T : Any> PolymorphicDomainObjectContainer<in T>.register(

@@ -63,12 +63,14 @@ public interface FluxoConfigurationExtension :
     public fun defaults(action: KmpDsl.() -> Unit)
 
 
-    /*
-    // TODO: Add remaining functionality from the old DSL
-
-    setupBinaryCompatibilityValidator
-    setupPublication
+    /**
+     * Declares the default configuration suitable for a published library.
      */
+    public fun configureAsLibrary() {
+        explicitApi()
+        enableApiValidation = true
+        setupDependencies = false
+    }
 
 
     public companion object {

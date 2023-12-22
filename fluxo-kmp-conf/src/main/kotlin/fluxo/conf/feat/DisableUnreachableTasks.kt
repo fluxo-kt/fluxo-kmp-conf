@@ -32,14 +32,18 @@ internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
     project.gradle.taskGraph.whenReady {
         val start = currentTimeMillis()
         if (!isProjectInSyncRun) {
+            val allTasks = allTasks
             if (SHOW_DEBUG_LOGS || DEBUG_LOGS) {
-                logger.v("DisableUnreachableTasks.apply")
+                logger.v("ensureUnreachableTasksDisabled")
             }
 
-            DisableUnreachableTasks(graph = this, logger = logger)
+            DisableUnreachableTasks(graph = this, allTasks = allTasks, logger = logger)
                 .apply()
 
-            logger.d("DisableUnreachableTasks.apply took ${currentTimeMillis() - start} ms")
+            logger.d(
+                "ensureUnreachableTasksDisabled took ${currentTimeMillis() - start} ms" +
+                    " (${allTasks.size} tasks total)",
+            )
         }
     }
 }
@@ -47,6 +51,7 @@ internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
 private class DisableUnreachableTasks(
     private val graph: TaskExecutionGraph,
     private val logger: Logger,
+    private val allTasks: List<Task>,
 ) {
     private val rootTasks = findRootTasks()
     private val results = HashMap<Pair<Task, Task>, Boolean>()
@@ -54,12 +59,12 @@ private class DisableUnreachableTasks(
     private fun findRootTasks(): List<Task> {
         val rootTasks = ArrayList<Task>()
 
-        val children = HashSet<Task>()
-        graph.allTasks.forEach {
+        val children = HashSet<Task>(allTasks.size)
+        allTasks.forEach {
             children += graph.getDependencies(it)
         }
 
-        graph.allTasks.forEach {
+        allTasks.forEach {
             if (it !in children) {
                 rootTasks += it
             }
@@ -69,7 +74,7 @@ private class DisableUnreachableTasks(
     }
 
     fun apply() {
-        for (it in graph.allTasks) {
+        for (it in allTasks) {
             // Disable inaccessible dependencies of enabled tasks
             if (it.enabled) {
                 disableInaccessibleChildren(it)
