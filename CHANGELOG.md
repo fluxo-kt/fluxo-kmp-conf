@@ -7,6 +7,7 @@
 
 ### Added
 - highlight publication setup in logs.
+- verify that publication artifact version is set.
 
 ### Changed
 - remove tests & checks from the `release` CI workflow.
