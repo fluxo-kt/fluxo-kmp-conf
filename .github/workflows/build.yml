@@ -92,7 +92,7 @@ jobs:
 
       - name: 'Run check-main'
         working-directory: checks/main
-        run: ./gradlew build assemble check --continue --stacktrace --scan
+        run: ./gradlew build assemble check printKotlinSourceSetsGraph --continue --stacktrace --scan
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
