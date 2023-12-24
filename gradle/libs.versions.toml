@@ -8,7 +8,7 @@
 
 [versions]
 
-version = "0.5.0"
+version = "0.6.0-SNAPSHOT"
 fluxo-conf = "0.5.0"
 
 # Java/Kotlin compatibility
