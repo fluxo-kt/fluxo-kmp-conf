@@ -40,7 +40,8 @@ com.savvasdalkitsis:module-dependency-graph:0.12
 com.squareup.moshi:moshi-adapters:1.14.0
 com.squareup.moshi:moshi:1.14.0
 com.squareup.okhttp3:okhttp:3.14.9
-com.squareup.okio:okio:2.10.0
+com.squareup.okio:okio-jvm:3.7.0
+com.squareup.okio:okio:3.7.0
 com.squareup.retrofit2:retrofit:2.9.0
 com.squareup:javawriter:2.5.0
 dev.zacsweers.moshix:moshi-sealed-runtime:0.19.0
@@ -74,9 +75,9 @@ org.jetbrains.kotlin:kotlin-gradle-plugins-bom:1.9.21
 org.jetbrains.kotlin:kotlin-native-utils:1.9.21
 org.jetbrains.kotlin:kotlin-project-model:1.9.21
 org.jetbrains.kotlin:kotlin-sam-with-receiver:1.9.21
-org.jetbrains.kotlin:kotlin-stdlib-common:1.4.20
 org.jetbrains.kotlin:kotlin-tooling-core:1.9.21
 org.jetbrains.kotlin:kotlin-util-io:1.9.21
 org.jetbrains.kotlin:kotlin-util-klib:1.9.21
 org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.13.2
 org.jetbrains.kotlinx:binary-compatibility-validator:0.13.2
+org.ow2.asm:asm:9.2

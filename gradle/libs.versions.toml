@@ -124,6 +124,7 @@ gradle-intellij-plugin = "1.16.1"
 # KMP I/O library
 # https://github.com/advisories/GHSA-w33c-445m-f8w7
 # https://square.github.io/okio/changelog/
+# WARN: the version is pinned, so no rich syntax supported!
 okio = "3.7.0"
 
 

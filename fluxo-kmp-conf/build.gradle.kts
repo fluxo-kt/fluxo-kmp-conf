@@ -55,10 +55,7 @@ setupGradlePlugin(
 // Exclude Kotlin stdlib from the implementation classpath entirely
 configurations.implementation {
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
-    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-metadata-jvm")
-    exclude(group = "org.ow2.asm")
 }
 
 dependencies {
@@ -127,7 +124,7 @@ buildConfig {
     buildConfigField("DOKKA", libs.plugins.dokka)
     buildConfigField("GRADLE_PLUGIN_PUBLISH", libs.plugins.gradle.plugin.publish)
     buildConfigField("COMPLETE_KOTLIN", libs.plugins.complete.kotlin)
-    buildConfigField("DEPS_VERSIONS", libs.plugins.deps.versions)
+    buildConfigField("DEPS_VERSIONS", libs.plugins.deps.versions, implementation = true)
     buildConfigField("DEPS_ANALYSIS", libs.plugins.deps.analysis)
     buildConfigField("DEPS_GUARD", libs.plugins.deps.guard, implementation = true)
     buildConfigField("TASK_TREE", libs.plugins.task.tree)

@@ -31,7 +31,11 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
 
     val kotlinPluginVersion = context.kotlinPluginVersion
     val (lang) = kc.langAndApiVersions(isTest = isTest, latestSettings = useLatestSettings)
-    if (if (lang != null) lang <= KotlinLangVersion.KOTLIN_1_9 else kotlinPluginVersion <= KOTLIN_1_9) {
+    val kotlin19 = when {
+        lang != null -> lang <= KotlinLangVersion.KOTLIN_1_9
+        else -> kotlinPluginVersion <= KOTLIN_1_9
+    }
+    if (kotlin19) {
         compilerArgs.addAll(KOTLIN_UP_TO_1_9_OPTS)
     }
 

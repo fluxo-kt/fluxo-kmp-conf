@@ -14,7 +14,7 @@ import fluxo.conf.feat.prepareDependencyAnalysisPlugin
 import fluxo.conf.feat.prepareDependencyAnalysisTasks
 import fluxo.conf.feat.prepareDependencyGuardPlugin
 import fluxo.conf.feat.prepareDependencyPinningBundle
-import fluxo.conf.feat.prepareGradleVersionsPlugin
+import fluxo.conf.feat.prepareDependencyUpdatesPlugin
 import fluxo.conf.feat.prepareKmpBuildConfigPlugin
 import fluxo.conf.feat.prepareKotlinSetupDiagnosticTasks
 import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
@@ -87,7 +87,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         }
 
         context.prepareCompleteKotlinPlugin()
-        context.prepareGradleVersionsPlugin()
+        context.prepareDependencyUpdatesPlugin()
         context.prepareDependencyAnalysisPlugin()
         context.prepareDependencyGuardPlugin()
         context.prepareDependencyAnalysisTasks()

@@ -6,28 +6,50 @@ import fluxo.conf.data.BuildConstants.DEPS_VERSIONS_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.DEPS_VERSIONS_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.DEPS_VERSIONS_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
+import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.l
 import fluxo.conf.impl.withType
+import org.gradle.api.Project
 
 // Gradle Versions Plugin, provides a task to find, which dependencies have updates.
 // https://github.com/ben-manes/gradle-versions-plugin/releases
 // https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-internal fun FluxoKmpConfContext.prepareGradleVersionsPlugin() {
+internal fun FluxoKmpConfContext.prepareDependencyUpdatesPlugin() {
     // The plugin itself does register the task only on call.
-    if (!hasStartTaskCalled(DEPS_VERSIONS_TASK_NAME)) {
-        return
+    val isCalled = hasStartTaskCalled(DEPS_VERSIONS_TASK_NAME)
+    if (isCalled) {
+        markProjectInSync()
     }
-    rootProject.logger.l("prepareGradleVersionsPlugin, :$DEPS_VERSIONS_TASK_NAME task")
+    onProjectInSyncRun(forceIf = isCalled) {
+        val logger = rootProject.logger
+        val taskName = DEPS_VERSIONS_TASK_NAME
+        logger.l("prepareGradleVersionsPlugin, :$taskName task")
 
-    loadAndApplyPluginIfNotApplied(
-        id = DEPS_VERSIONS_PLUGIN_ID,
-        className = DEPS_VERSIONS_CLASS_NAME,
-        version = DEPS_VERSIONS_PLUGIN_VERSION,
-        catalogPluginId = DEPS_VERSIONS_PLUGIN_ALIAS,
-    )
+        val result = loadAndApplyPluginIfNotApplied(
+            id = DEPS_VERSIONS_PLUGIN_ID,
+            className = DEPS_VERSIONS_PLUGIN_CLASS_NAME,
+            version = DEPS_VERSIONS_PLUGIN_VERSION,
+            catalogPluginId = DEPS_VERSIONS_PLUGIN_ALIAS,
+            lookupClassName = false,
+            canLoadDynamically = false,
+        )
 
-    rootProject.tasks.withType<DependencyUpdatesTask> {
-        if (REJECT_CANDIDATE_RELEASES) {
+        if (isCalled) {
+            logger.l(":$taskName call preparation")
+            result.orThrow()
+            rootProject.allprojects {
+                setupGradleVersionsProject()
+            }
+        }
+    }
+}
+
+private fun Project.setupGradleVersionsProject() {
+    if (!isRootProject) {
+        pluginManager.apply(DEPS_VERSIONS_PLUGIN_ID)
+    }
+    tasks.withType<DependencyUpdatesTask> {
+         if (REJECT_CANDIDATE_RELEASES) {
             rejectVersionIf {
                 !isNonStable(currentVersion) && isNonStable(candidate.version)
             }
@@ -40,7 +62,8 @@ internal fun FluxoKmpConfContext.prepareGradleVersionsPlugin() {
 private const val DEPS_VERSIONS_TASK_NAME = "dependencyUpdates"
 
 /** @see com.github.benmanes.gradle.versions.VersionsPlugin */
-private const val DEPS_VERSIONS_CLASS_NAME = "com.github.benmanes.gradle.versions.VersionsPlugin"
+private const val DEPS_VERSIONS_PLUGIN_CLASS_NAME =
+    "com.github.benmanes.gradle.versions.VersionsPlugin"
 
 
 // Disallow release candidates as upgradable versions from stable versions
@@ -69,9 +92,6 @@ private fun isNonStable(version: String): Boolean {
     val hasStableKeyword = STABLE_KEYWORDS.any {
         version.contains(it, ignoreCase = true)
     }
-    return !hasStableKeyword && (
-        !STABLE_REGEX.matches(version) || UNSTABLE_REGEX.matches(
-            version,
-        )
-        )
+    return !hasStableKeyword &&
+        (!STABLE_REGEX.matches(version) || UNSTABLE_REGEX.matches(version))
 }
