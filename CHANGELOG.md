@@ -10,6 +10,7 @@
 
 ### Changed
 - remove tests & checks from the `release` CI workflow.
+- remove explicit gradle plugin configuration, which isn't needed anymore.
 
 ### Updated
 - bump Kotlin from _1.9.21_ to _1.9.22_.

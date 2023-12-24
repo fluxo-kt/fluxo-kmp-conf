@@ -8,4 +8,6 @@ plugins {
 group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
 
-setupGradlePlugin()
+setupGradlePlugin {
+    allWarningsAsErrors = true
+}
