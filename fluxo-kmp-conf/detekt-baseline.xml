@@ -29,7 +29,6 @@
     <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
     <ID>ForbiddenComment:FluxoPublicationConfig.kt$// TODO: Make an immutable resulting class</ID>
     <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt$// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
-    <ID>ForbiddenComment:KmpHierarchyTemplate.kt$// TODO: commonWasm group for wasmWasi and wasmJs</ID>
     <ID>ForbiddenComment:KmpTargetContainer.kt$KmpTargetContainer$// TODO: Create common bundle once and reuse?</ID>
     <ID>ForbiddenComment:KotlinConfig.kt$// TODO: Add env flag for dynamic switch-on when needed</ID>
     <ID>ForbiddenComment:KotlinSetupDiagnosticTasks.kt$// TODO: @DisableCachingByDefault(because = "Not worth caching")</ID>

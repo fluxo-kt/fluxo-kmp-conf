@@ -267,6 +267,8 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
             apiValidationProp.set(value)
         }
 
+    override fun apiValidation(configure: BinaryCompatibilityValidatorConfig.() -> Unit)
+
 
     @get:Input
     val setupVerificationProp: Property<Boolean?>

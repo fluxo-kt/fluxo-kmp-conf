@@ -136,4 +136,4 @@ internal class KmpConfigurationContainerDslImpl(
 private fun isGradleNotFailingOnImplicitTaskDependencies() =
     GradleVersion.current() < GradleVersion.version("8.0")
 
-private const val ENABLE_WASM_WASI = false
+private const val ENABLE_WASM_WASI = true
