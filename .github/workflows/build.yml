@@ -87,7 +87,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         continue-on-error: true
         with:
-          sarif_file: fluxo-kmp-conf/build/reports/detekt/detekt.sarif
+          sarif_file: build/detekt-merged.sarif
           category: detekt
 
       - name: 'Run check-main'

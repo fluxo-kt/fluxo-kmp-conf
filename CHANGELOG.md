@@ -8,6 +8,7 @@
 ### Added
 - highlight publication setup in logs.
 - verify that publication artifact version is set.
+- both WasmWasi and WasmJS can be used together since Kotlin 2.0.
 
 ### Changed
 - remove tests & checks from the `release` CI workflow.

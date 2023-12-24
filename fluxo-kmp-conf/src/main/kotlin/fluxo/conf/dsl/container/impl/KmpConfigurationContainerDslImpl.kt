@@ -111,8 +111,9 @@ internal class KmpConfigurationContainerDslImpl(
         ) {
             wasmJs()
 
-            // Usage of both Wasi and JS targets lead to problems atm.
-            if (ENABLE_WASM_WASI && kotlinPluginVersion >= KOTLIN_1_9_20) {
+            // WASI target is available since Kotlin 1.9.20.
+            // Both WASI and JS can be used together since Kotlin 2.0.
+            if (ENABLE_WASM_WASI && kotlinPluginVersion >= KOTLIN_2_0) {
                 wasmWasi()
             }
         }
@@ -132,7 +133,8 @@ internal class KmpConfigurationContainerDslImpl(
 
     // https://docs.gradle.org/current/userguide/validation_problems.html#implicit_dependency
     private fun isGradleNotFailingOnImplicitTaskDependencies() =
-        GradleVersion.version(holder.project.gradle.gradleVersion) < GradleVersion.version("8.0")
+        GradleVersion.current() < GradleVersion.version("8.0")
 }
 
 private const val ENABLE_WASM_WASI = false
+
