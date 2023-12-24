@@ -71,6 +71,7 @@
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: &amp;&amp; kotlinLang >= KotlinLangVersion.KOTLIN_1_7</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 once it is supported</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.</ID>
+    <ID>ForbiddenComment:SetupPublication.kt$// FIXME: provide sources for KMP publications</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple developers</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple licenses</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Decorate the build logs with maven coordinates of published artifacts</ID>
@@ -92,6 +93,7 @@
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: should androidUnitTestDebug depend on androidUnitTest?</ID>
+    <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>Indentation:PropsAndEnv.kt$ </ID>
     <ID>Indentation:SetupKotlin.kt$ </ID>
@@ -101,7 +103,6 @@
     <ID>LongMethod:SetupKotlin.kt$internal fun configureKotlinJvm( type: ConfigurationType, configuration: FluxoConfigurationExtensionImpl, containers: Array&lt;Container>, ): Boolean</ID>
     <ID>LongMethod:SetupTestsReport.kt$internal fun FluxoKmpConfContext.setupTestsReport()</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>LongParameterList:SetupIdeaPlugin.kt$( config: (FluxoConfigurationExtension.() -> Unit)? = null, group: String? = null, version: String? = null, sinceBuild: String, intellijVersion: String, body: (KotlinJvmProjectExtension.() -> Unit)? = null, )</ID>
     <ID>LoopWithTooManyJumpStatements:FluxoConfigurationExtensionImpl.kt$FluxoConfigurationExtensionImpl$while</ID>
     <ID>MagicNumber:SetupKotlin.kt$11</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
@@ -116,7 +117,6 @@
     <ID>MaxLineLength:PropsAndEnv.kt$if</ID>
     <ID>MaxLineLength:SetupJvmCompatibility.kt$(this as? ExtensionAware)</ID>
     <ID>MaxLineLength:SetupKotlinDependencies.kt$implementationAndLog(if (isApplication) dh.enforcedPlatform(it) else dh.platform(it))</ID>
-    <ID>MaxLineLength:SetupKotlinOptions.kt$if</ID>
     <ID>MaxLineLength:SetupMultiplatform.kt$*</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$description = "Combines all tests reports from all modules to the published root one"</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$if</ID>
@@ -127,7 +127,6 @@
     <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
     <ID>MaximumLineLength:SetupJvmCompatibility.kt$ </ID>
     <ID>MaximumLineLength:SetupKotlinDependencies.kt$ </ID>
-    <ID>MaximumLineLength:SetupKotlinOptions.kt$ </ID>
     <ID>MaximumLineLength:SetupTestsReport.kt$ </ID>
     <ID>MaximumLineLength:VersionCatalogUtils.kt$internal</ID>
     <ID>MultiLineIfElse:DependencyPinningBundle.kt$for (alias in bundleAliases) { // Filter "pinned and "pinned.*" bundles alias.startsWith(ALIAS, ignoreCase = true) &amp;&amp; alias.run { val l = length l == ALIAS.length || l > ALIAS.length &amp;&amp; this[ALIAS.length] == '.' } || continue val bundle = libs.b(alias)?.get() if (bundle.isNullOrEmpty()) { continue } logger.l("Pinning ${bundle.size} dependencies from version catalog bundle '$alias'") val reason = "$PIN_REASON from bundle '$alias'" for (dep in bundle) { val constraint = dep.versionConstraint.toString() with(rootProject) { logDependency("pinned", dep, " ('$alias' constraint)") } pinnedDeps[dep.module] = Pair(constraint, reason) } }</ID>

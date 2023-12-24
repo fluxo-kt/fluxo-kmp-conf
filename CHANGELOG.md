@@ -5,6 +5,15 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Fixed
+
+- correct publication configuration.
+- workaround Gradle 8+ problems with publication.
+- correct the Gradle Versions Plugin setup.
+
+### Updated
+- pin Okio version to 3.7.0 due to the Security Advisory [CVE-2023-3635](https://github.com/advisories/GHSA-w33c-445m-f8w7).
+
 
 ## [0.4.0] - 2023-12-20
 

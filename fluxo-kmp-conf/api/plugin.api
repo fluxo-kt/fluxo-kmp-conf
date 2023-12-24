@@ -213,6 +213,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionAndroi
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon {
 	public abstract fun getEnableBuildConfig ()Z
+	public abstract fun getEnableDetektAutoCorrect ()Ljava/lang/Boolean;
 	public abstract fun getEnableDetektCompilerPlugin ()Ljava/lang/Boolean;
 	public abstract fun getEnableSpotless ()Ljava/lang/Boolean;
 	public fun getEnableVerification ()Ljava/lang/Boolean;
@@ -220,6 +221,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon
 	public abstract fun getSetupKnownBoms ()Z
 	public abstract fun getSetupVerification ()Ljava/lang/Boolean;
 	public abstract fun setEnableBuildConfig (Z)V
+	public abstract fun setEnableDetektAutoCorrect (Ljava/lang/Boolean;)V
 	public abstract fun setEnableDetektCompilerPlugin (Ljava/lang/Boolean;)V
 	public abstract fun setEnableSpotless (Ljava/lang/Boolean;)V
 	public fun setEnableVerification (Ljava/lang/Boolean;)V
@@ -230,6 +232,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin : fluxo/conf/dsl/FluxoConfigurationExtensionKotlinOptions {
 	public fun apiValidation (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun apiValidation$default (Lfluxo/conf/dsl/FluxoConfigurationExtensionKotlin;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun getAddStdlibDependency ()Z
 	public abstract fun getApiValidation ()Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;
 	public abstract fun getEnableApiValidation ()Ljava/lang/Boolean;

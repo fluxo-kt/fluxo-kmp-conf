@@ -22,7 +22,6 @@ import fluxo.conf.impl.get
 import fluxo.conf.impl.getByName
 import fluxo.conf.impl.has
 import fluxo.conf.impl.hasExtension
-import fluxo.conf.impl.kotlin.KOTLIN_EXT
 import fluxo.conf.impl.kotlin.multiplatformExtension
 import fluxo.conf.impl.l
 import fluxo.conf.impl.namedOrNull
@@ -48,7 +47,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 
@@ -154,8 +153,14 @@ private fun Project.setupPublicationMultiplatform(
         return
     }
 
+    // FIXME: provide sources for KMP publications
     val publishing = applyMavenPublishPlugin(config)
-    setupPublicationExtension(publishing, config, useDokka = useDokka)
+    setupPublicationExtension(
+        publishing = publishing,
+        config = config,
+        useDokka = useDokka,
+        type = ConfigurationType.GRADLE_PLUGIN,
+    )
     setupPublicationRepositoryAndSigning(config, publishing)
 
     multiplatformExtension.apply {
@@ -184,20 +189,21 @@ private fun Project.setupPublicationAndroidLibrary(
 
     val androidExtension = the<LibraryExtension>()
 
-    val sourcePaths = androidExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).java.srcDirs
+    val sourcePaths = androidExtension.sourceSets[MAIN_SOURCE_SET_NAME].java.srcDirs
     val sourceJarTask = registerSourceJarTask(sourcePaths)
+    val javadocTask = setupJavadocTask(config, useDokka = useDokka)
 
     fun PublicationContainer.createMavenPublication(name: String, artifactIdSuffix: String) {
         create<MavenPublication>(name) {
             from(components[name])
             artifact(sourceJarTask)
+            artifact(javadocTask)
 
             val project = project
             groupId = config.group
             version = config.version
             artifactId = "${project.name}$artifactIdSuffix"
 
-            setupJavadocTask(project, config, useDokka = useDokka)
             setupPublicationPom(project, config)
         }
     }
@@ -228,11 +234,18 @@ private fun Project.setupPublicationGradlePlugin(
         config.publicationUrl?.let { vcsUrl.set(it) }
     }
 
-    val sourcePaths = gradlePluginExtension.pluginSourceSet.java.srcDirs
+    val sourcePaths = gradlePluginExtension.pluginSourceSet.java.srcDirs +
+        kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
     val sourceJarTask = registerSourceJarTask(sourcePaths)
 
     // TODO: Should wrap `setupPublicationExtension` in afterEvaluate?
-    setupPublicationExtension(publishing, config, sourceJarTask, useDokka = useDokka)
+    setupPublicationExtension(
+        publishing = publishing,
+        config = config,
+        useDokka = useDokka,
+        sourceJarTask = sourceJarTask,
+        type = ConfigurationType.GRADLE_PLUGIN,
+    )
 
     setupPublicationRepositoryAndSigning(config, publishing, mavenRepo = false)
 }
@@ -248,12 +261,10 @@ private fun Project.setupPublicationKotlinJvm(
 
     val publishing = applyMavenPublishPlugin(config)
 
-    val kotlinExtension = extensions.getByName<KotlinJvmProjectExtension>(KOTLIN_EXT)
-
-    val sourcePaths = kotlinExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).kotlin.srcDirs
+    val sourcePaths = kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
     val sourceJarTask = registerSourceJarTask(sourcePaths)
 
-    setupPublicationExtension(publishing, config, sourceJarTask, useDokka = useDokka)
+    setupPublicationExtension(publishing, config, useDokka = useDokka, sourceJarTask)
     setupPublicationRepositoryAndSigning(config, publishing)
 }
 
@@ -267,10 +278,10 @@ private fun Project.setupPublicationJava(config: FluxoPublicationConfig) {
 
     val javaPluginExtension = the<JavaPluginExtension>()
 
-    val sourcePaths = javaPluginExtension.sourceSets.getByName(MAIN_SOURCE_SET_NAME).java.srcDirs
+    val sourcePaths = javaPluginExtension.sourceSets[MAIN_SOURCE_SET_NAME].java.srcDirs
     val sourceJarTask = registerSourceJarTask(sourcePaths)
 
-    setupPublicationExtension(publishing, config, sourceJarTask, useDokka = false)
+    setupPublicationExtension(publishing, config, useDokka = false, sourceJarTask)
     setupPublicationRepositoryAndSigning(config, publishing)
 }
 
@@ -402,25 +413,34 @@ context(FluxoKmpConfContext)
 private fun Project.setupPublicationExtension(
     publishing: PublishingExtension,
     config: FluxoPublicationConfig,
-    sourceJarTask: Any? = null,
     useDokka: Boolean,
+    sourceJarTask: Any? = null,
+    type: ConfigurationType? = null,
 ) {
+    val javadocTask = setupJavadocTask(config, useDokka = useDokka, type)
     publishing.publications.withType<MavenPublication> {
-        val project = project
+        val pName = name
 
         config.projectName?.let { projectName ->
-            if (artifactId.isNullOrBlank() || !projectName.equals(artifactId, ignoreCase = true)) {
+            val aid = artifactId
+            if (aid.isNullOrBlank() || !aid.startsWith(projectName, ignoreCase = true)) {
+                logger.l("publication '$pName': artifactId replace ($aid -> $projectName)")
                 artifactId = projectName
             }
         }
-        if (groupId.isNullOrBlank()) {
-            groupId = config.group
+
+        // Skip manual artifacts control for Gradle plugins
+        val skipArtifacts = type === ConfigurationType.GRADLE_PLUGIN
+
+        val coords = "$groupId:$artifactId:$version"
+        val artifacts = if (skipArtifacts) "" else "; artifacts added"
+        logger.l("setup maven publication '$pName': '$coords'$artifacts")
+
+        if (!skipArtifacts) {
+            sourceJarTask?.let { artifact(it) }
+            artifact(javadocTask)
         }
 
-        project.logger.l("setup maven publication '$name': '$groupId:$artifactId:$version'")
-
-        sourceJarTask?.let { artifact(it) }
-        setupJavadocTask(project, config, useDokka = useDokka)
         setupPublicationPom(project, config)
     }
 }
@@ -456,11 +476,11 @@ internal val Project.gradlePluginExt: GradlePluginDevelopmentExtension
 
 
 context(FluxoKmpConfContext)
-private fun MavenPublication.setupJavadocTask(
-    project: Project,
+private fun Project.setupJavadocTask(
     config: FluxoPublicationConfig,
     useDokka: Boolean,
-): Any {
+    type: ConfigurationType? = null,
+): NamedDomainObjectProvider<out Task> {
     // Publish docs with each artifact.
     // Dokka artifacts are pretty big, so use them only for release builds, not for snapshots.
     if (useDokka && !config.isSnapshot) {
@@ -470,33 +490,36 @@ private fun MavenPublication.setupJavadocTask(
                 id = BuildConstants.DOKKA_PLUGIN_ID,
                 version = BuildConstants.DOKKA_PLUGIN_VERSION,
                 catalogPluginId = BuildConstants.DOKKA_PLUGIN_ALIAS,
-                project = project,
+                project = this,
             )
             if (result.applied) {
-                project.logger.l("setup Dokka publication")
-                return project.getOrCreateDokkaTask().also {
-                    artifact(it)
-                }
+                logger.l("setup Dokka publication")
+                return getOrCreateDokkaTask(type)
             }
         } catch (e: Throwable) {
-            project.logger.w("Fallback to Javadoc due to Dokka setup error: $e", e)
+            logger.w("Fallback to Javadoc due to Dokka setup error: $e", e)
         }
     }
-    project.logger.l("setup Javadoc publication fallback")
-    return project.getOrCreateJavadocTask().also {
-        artifact(it)
-    }
+    logger.l("setup Javadoc publication fallback")
+    return getOrCreateJavadocTask()
 }
 
-private fun Project.getOrCreateDokkaTask(): NamedDomainObjectProvider<out Task> {
+private fun Project.getOrCreateDokkaTask(
+    type: ConfigurationType?,
+): NamedDomainObjectProvider<out Task> {
     val tasks = tasks
     val taskName = if (tasks.has(JAVADOC_TASK_NAME)) "dokkaHtmlJar" else JAVADOC_TASK_NAME
     return tasks.namedOrNull(JAVADOC_TASK_NAME)
         ?: tasks.register<Jar>(taskName) {
             configureJavadocTask()
             description = "Assembles Kotlin docs with Dokka into a Javadoc jar"
-            // Collect all `DokkaTask` tasks
-            from(project.tasks.named("dokkaHtml"))
+            // Collect Dokka output
+            val dokkaTaskName = when (type) {
+                ConfigurationType.KOTLIN_MULTIPLATFORM -> "dokkaHtml"
+                // Use Javadoc-like format for all non-KMP projects
+                else -> "dokkaJavadoc"
+            }
+            from(project.tasks.named(dokkaTaskName))
         }
 }
 
@@ -516,13 +539,13 @@ private const val JAVADOC_TASK_NAME = "javadocJar"
 
 private fun Project.registerSourceJarTask(sourcePaths: Any): NamedDomainObjectProvider<out Task> {
     val taskName = "sourcesJar"
-    val provider = tasks.namedOrNull(taskName)
-        ?: tasks.register<Jar>(taskName) {
-            from(sourcePaths)
-            group = LifecycleBasePlugin.BUILD_GROUP
-            description = "Assembles a project sources jar."
-            archiveClassifier.set("sources")
-        }
+    val existing = tasks.namedOrNull(taskName)
+    val provider = existing ?: tasks.register<Jar>(taskName) {
+        from(sourcePaths)
+        group = LifecycleBasePlugin.BUILD_GROUP
+        description = "Assembles a project sources jar."
+        archiveClassifier.set("sources")
+    }
 
     // Gradle 8+ workaround
     markAsMustRunAfterBuildConfigTasks(provider)
