@@ -234,7 +234,7 @@ internal abstract class KotlinSourceSetsReportTask :
         var progressiveMode: Boolean by attrs
         var targetName: String? by attrs
         var platformType: String? by attrs
-        var isDeprecatedTarget: Boolean by attrs
+        var isDeprecatedTarget: Boolean? by attrs
     }
 
     internal class SourceSetNodeRenderer(showTests: Boolean) : SimpleNodeRenderer(showTests) {
@@ -269,7 +269,7 @@ internal abstract class KotlinSourceSetsReportTask :
                 items.add("progressive")
             }
 
-            val isDeprecatedTarget = node.isDeprecatedTarget
+            val isDeprecatedTarget = node.isDeprecatedTarget == true
             if (isDeprecatedTarget && parent?.isDeprecatedTarget != true) {
                 hasWarning = true
                 items.add("deprecated target")
