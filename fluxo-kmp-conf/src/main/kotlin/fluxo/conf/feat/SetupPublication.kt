@@ -462,11 +462,16 @@ private fun Project.applyMavenPublishPlugin(config: FluxoPublicationConfig): Pub
         throw GradleException("Publication artifact group is not set!")
     }
 
+    val v = config.version
+    if (v.contains("unspecified", ignoreCase = true)) {
+        throw GradleException("Publication artifact version is not set!")
+    }
+
     group = config.group
-    version = config.version
+    version = v
     description = config.projectDescription
 
-    logger.lifecycle(formatSummary("Publication setup: v${config.version}"))
+    logger.lifecycle(formatSummary("Publication setup: v$v"))
 
     pluginManager.apply("maven-publish")
     return extensions.getByName<PublishingExtension>(PUBLISHING_EXT_NAME)
