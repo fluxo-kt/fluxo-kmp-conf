@@ -11,6 +11,9 @@
 ### Changed
 - remove tests & checks from the `release` CI workflow.
 
+### Updated
+- bump Kotlin from _1.9.21_ to _1.9.22_.
+
 
 ## [0.5.0] - 2023-12-24
 
