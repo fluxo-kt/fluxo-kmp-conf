@@ -29,6 +29,7 @@ import fluxo.conf.impl.register
 import fluxo.conf.impl.the
 import fluxo.conf.impl.w
 import fluxo.conf.impl.withType
+import fluxo.test.formatSummary
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectProvider
@@ -457,8 +458,6 @@ private const val PUBLISHING_EXT_NAME = "publishing"
 private const val GRADLE_PLUGIN_EXT_NAME = "gradlePlugin"
 
 private fun Project.applyMavenPublishPlugin(config: FluxoPublicationConfig): PublishingExtension {
-    logger.l("setupPublication")
-
     if (config.group.isBlank()) {
         throw GradleException("Publication artifact group is not set!")
     }
@@ -466,6 +465,8 @@ private fun Project.applyMavenPublishPlugin(config: FluxoPublicationConfig): Pub
     group = config.group
     version = config.version
     description = config.projectDescription
+
+    logger.lifecycle(formatSummary("Publication setup: v${config.version}"))
 
     pluginManager.apply("maven-publish")
     return extensions.getByName<PublishingExtension>(PUBLISHING_EXT_NAME)

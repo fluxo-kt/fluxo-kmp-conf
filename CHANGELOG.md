@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Added
+- highlight publication setup in logs.
+
 
 ## [0.5.0] - 2023-12-24
 

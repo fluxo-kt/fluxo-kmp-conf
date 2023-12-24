@@ -204,7 +204,7 @@ internal abstract class TestReportsMergeTask : DefaultTask() {
     }
 }
 
-internal fun formatSummary(summary: String, fails: List<String>): String {
+internal fun formatSummary(summary: String, fails: List<String> = emptyList()): String {
     val maxLength = summary.lines().maxOf { it.length + 1 }
 
     @Suppress("MagicNumber")
