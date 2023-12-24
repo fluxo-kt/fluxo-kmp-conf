@@ -20,17 +20,17 @@
 ### Fixed
 - correct search for non-available extensions, handle more edge-cases overall.
 - correct setup for the Binary Compatibility Validator.
-- configure Gradle plugin eagerly to avoid issues with composite builds.
+- configure the Gradle plugin eagerly to avoid issues with composite builds.
 - fix release workflow permissions.
 
 ### Changed
 - log all configured dependencies.
-- cleanup code, fix some detekt warnings.
-- use plugin to configure and build itself.
+- cleanup code, fix some Detekt warnings.
+- use the plugin to configure and build itself.
 
 ### Updated
 - build-config gradle plugin 5.1.0
-- ktlint 1.1.0
+- KtLint 1.1.0
 
 
 ## [0.3.0] - 2023-12-15
