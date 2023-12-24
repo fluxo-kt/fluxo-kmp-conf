@@ -8,6 +8,9 @@
 ### Added
 - highlight publication setup in logs.
 
+### Changed
+- remove tests & checks from the `release` CI workflow.
+
 
 ## [0.5.0] - 2023-12-24
 
