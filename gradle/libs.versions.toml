@@ -14,23 +14,23 @@ fluxo-conf = "0.5.0"
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
 # javaLangTarget 11 required for Android Gradle Plugin and Android Lint.
-javaLangTarget = "11"
-kotlinLangVersion = "1.8"
-kotlinApiVersion = "1.8"
-kotlinCoreLibraries = "1.8.22"
+javaLangTarget = "17"
+kotlinLangVersion = "2.0"
+kotlinApiVersion = "2.0"
+kotlinCoreLibraries = "1.9.22"
 
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
 # WARNING: Do not forget to update the version badge and examples in `README.md`!
-kotlin = "1.9.22"
+kotlin = "2.0.0-Beta2"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
 jetbrains-compose = "1.5.11"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.21-1.0.16"
+ksp = "2.0.0-Beta2-1.0.16"
 
 # region Android specific
 

@@ -16,8 +16,10 @@ public val KotlinHierarchyTemplate.Templates.fluxoKmpConf: KotlinHierarchyBuilde
             group("nonJvm") {
                 group("commonJs") {
                     withJs()
-                    withWasm()
-                    // TODO: commonWasm group for wasmWasi and wasmJs
+                    group("commonWasi") {
+                        withWasmJs()
+                        withWasmWasi()
+                    }
                 }
                 group("native")
             }
