@@ -58,6 +58,17 @@ jobs:
         with:
           cache-read-only: true
 
+      - name: GitHub Release
+        # https://github.com/anton-yurchenko/git-release#readme
+        uses: docker://antonyurchenko/git-release:latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_RELEASE: "true"
+          PRE_RELEASE: "${{ env.RELEASE_PRE }}"
+          RELEASE_NAME_SUFFIX: "${{ env.RELEASE_SUFFIX }}"
+          CHANGELOG_FILE: "CHANGELOG.md"
+          ALLOW_EMPTY_CHANGELOG: "false"
+
       - name: Check and publish plugin
         if: github.repository == 'fluxo-kt/fluxo-kmp-conf'
         env:
@@ -69,17 +80,6 @@ jobs:
           --no-build-cache --no-configuration-cache --stacktrace --scan
           -Pgradle.publish.key="${{ secrets.GRADLE_PUBLISH_KEY }}"
           -Pgradle.publish.secret="${{ secrets.GRADLE_PUBLISH_SECRET }}"
-
-      - name: GitHub Release
-        # https://github.com/anton-yurchenko/git-release#readme
-        uses: docker://antonyurchenko/git-release:latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRAFT_RELEASE: "true"
-          PRE_RELEASE: "${{ env.RELEASE_PRE }}"
-          RELEASE_NAME_SUFFIX: "${{ env.RELEASE_SUFFIX }}"
-          CHANGELOG_FILE: "CHANGELOG.md"
-          ALLOW_EMPTY_CHANGELOG: "false"
 
 # References
 # https://github.com/studiometa/vue-mapbox-gl/blob/8c3ca5a/.github/workflows/release.yml#L26

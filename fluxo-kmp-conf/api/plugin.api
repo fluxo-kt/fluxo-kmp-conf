@@ -172,6 +172,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtension : flu
 	public static synthetic fun asMultiplatform$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun configure (Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun configure$default (Lfluxo/conf/dsl/FluxoConfigurationExtension;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun configureAsLibrary ()V
 	public abstract fun defaults (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun getSkipDefaultConfigurations ()Z
 	public abstract fun setSkipDefaultConfigurations (Z)V
