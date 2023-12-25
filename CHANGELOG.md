@@ -20,6 +20,7 @@
 
 ### Updated
 - bump Kotlin from _1.9.21_ to _1.9.22_.
+- pin OkHttp (4.12.0), Guava (33.0.0-jre), and Json (20231013) versions due to the Security Advisories.
 
 
 ## [0.5.0] - 2023-12-24

@@ -45,6 +45,7 @@ setupGradlePlugin(
 configurations.implementation {
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
+    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-common")
 }
 
 dependencies {
@@ -52,6 +53,8 @@ dependencies {
     implementation(libs.plugin.spotless)
     // Detekt ReportMergeTask is used internally
     implementation(libs.plugin.detekt)
+
+    implementation(platform(libs.okhttp.bom))
 
     compileOnly(libs.detekt.core)
     compileOnly(libs.ktlint)

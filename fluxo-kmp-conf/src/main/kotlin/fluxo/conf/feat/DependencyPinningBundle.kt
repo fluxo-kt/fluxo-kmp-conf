@@ -7,6 +7,7 @@ import fluxo.conf.impl.d
 import fluxo.conf.impl.l
 import fluxo.conf.impl.logDependency
 import org.gradle.api.artifacts.ModuleIdentifier
+import org.gradle.api.logging.Logger
 
 internal fun FluxoKmpConfContext.prepareDependencyPinningBundle() {
     val libs = libs ?: return
@@ -14,26 +15,9 @@ internal fun FluxoKmpConfContext.prepareDependencyPinningBundle() {
 
     val pinnedDeps = HashMap<ModuleIdentifier, Pair<String, String>>()
     val bundleAliases = libs.bundleAliases
-    if (bundleAliases.isNotEmpty()) for (alias in bundleAliases) {
-        // Filter "pinned and "pinned.*" bundles
-        alias.startsWith(ALIAS, ignoreCase = true) && alias.run {
-            val l = length
-            l == ALIAS.length || l > ALIAS.length && this[ALIAS.length] == '.'
-        } || continue
-
-        val bundle = libs.b(alias)?.get()
-        if (bundle.isNullOrEmpty()) {
-            continue
-        }
-        logger.l("Pinning ${bundle.size} dependencies from version catalog bundle '$alias'")
-
-        val reason = "$PIN_REASON from bundle '$alias'"
-        for (dep in bundle) {
-            val constraint = dep.versionConstraint.toString()
-            with(rootProject) {
-                logDependency("pinned", dep, " ('$alias' constraint)")
-            }
-            pinnedDeps[dep.module] = Pair(constraint, reason)
+    if (bundleAliases.isNotEmpty()) {
+        for (alias in bundleAliases) {
+            collectPinnedDependencies(alias, logger, pinnedDeps)
         }
     }
 
@@ -50,6 +34,32 @@ internal fun FluxoKmpConfContext.prepareDependencyPinningBundle() {
                 because(reason)
             }
         }
+    }
+}
+
+private fun FluxoKmpConfContext.collectPinnedDependencies(
+    alias: String,
+    logger: Logger,
+    pinnedDeps: HashMap<ModuleIdentifier, Pair<String, String>>,
+) {
+    // Filter "pinned and "pinned.*" bundles
+    alias.startsWith(ALIAS, ignoreCase = true) && alias.run {
+        val l = length
+        l == ALIAS.length || l > ALIAS.length && this[ALIAS.length] == '.'
+    } || return
+
+    val bundle = libs.b(alias)?.get()
+    if (bundle.isNullOrEmpty()) {
+        return
+    }
+    logger.l("Pinning ${bundle.size} dependencies from version catalog bundle '$alias'")
+
+    val reason = "$PIN_REASON from bundle '$alias'"
+    for (dep in bundle) {
+        with(rootProject) {
+            logDependency("pinned", dep)
+        }
+        pinnedDeps[dep.module] = Pair(dep.versionConstraint.toString(), reason)
     }
 }
 

@@ -21,11 +21,11 @@ com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin:5.1.0
 com.github.gmazzo.buildconfig:plugin:5.1.0
 com.google.code.findbugs:jsr305:3.0.2
 com.google.devtools.ksp:symbol-processing-gradle-plugin:1.9.22-1.0.16
-com.google.errorprone:error_prone_annotations:2.11.0
-com.google.guava:failureaccess:1.0.1
-com.google.guava:guava:31.1-jre
+com.google.errorprone:error_prone_annotations:2.23.0
+com.google.guava:failureaccess:1.0.2
+com.google.guava:guava:33.0.0-jre
 com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
-com.google.j2objc:j2objc-annotations:1.3
+com.google.j2objc:j2objc-annotations:2.8
 com.gradle.enterprise:com.gradle.enterprise.gradle.plugin:3.16.1
 com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin:1.2.1
 com.gradle.publish:plugin-publish-plugin:1.2.1
@@ -39,7 +39,8 @@ com.savvasdalkitsis.module-dependency-graph:com.savvasdalkitsis.module-dependenc
 com.savvasdalkitsis:module-dependency-graph:0.12
 com.squareup.moshi:moshi-adapters:1.14.0
 com.squareup.moshi:moshi:1.14.0
-com.squareup.okhttp3:okhttp:3.14.9
+com.squareup.okhttp3:okhttp-bom:4.12.0
+com.squareup.okhttp3:okhttp:4.12.0
 com.squareup.okio:okio-jvm:3.7.0
 com.squareup.okio:okio:3.7.0
 com.squareup.retrofit2:retrofit:2.9.0
@@ -59,7 +60,7 @@ org.apache.maven:maven-model:3.6.3
 org.barfuin.gradle.taskinfo:gradle-taskinfo:2.1.0
 org.barfuin.gradle.taskinfo:org.barfuin.gradle.taskinfo.gradle.plugin:2.1.0
 org.barfuin.texttree:text-tree:2.1.2
-org.checkerframework:checker-qual:3.12.0
+org.checkerframework:checker-qual:3.41.0
 org.jetbrains.compose:compose-gradle-plugin:1.5.11
 org.jetbrains.dokka:dokka-core:1.9.10
 org.jetbrains.dokka:dokka-gradle-plugin:1.9.10

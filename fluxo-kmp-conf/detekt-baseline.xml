@@ -4,7 +4,6 @@
   <CurrentIssues>
     <ID>ArgumentListWrapping:LoadAndApplyPluginIfNotApplied.kt$("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")</ID>
     <ID>ComplexCondition:SetupTestsReport.kt$!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()</ID>
-    <ID>CyclomaticComplexMethod:DependencyPinningBundle.kt$internal fun FluxoKmpConfContext.prepareDependencyPinningBundle()</ID>
     <ID>CyclomaticComplexMethod:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget$// FIXME: Implement API for source sets.</ID>
@@ -107,8 +106,6 @@
     <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
     <ID>MaximumLineLength:SetupTestsReport.kt$ </ID>
     <ID>MaximumLineLength:VersionCatalogUtils.kt$internal</ID>
-    <ID>MultiLineIfElse:DependencyPinningBundle.kt$for (alias in bundleAliases) { // Filter "pinned and "pinned.*" bundles alias.startsWith(ALIAS, ignoreCase = true) &amp;&amp; alias.run { val l = length l == ALIAS.length || l > ALIAS.length &amp;&amp; this[ALIAS.length] == '.' } || continue val bundle = libs.b(alias)?.get() if (bundle.isNullOrEmpty()) { continue } logger.l("Pinning ${bundle.size} dependencies from version catalog bundle '$alias'") val reason = "$PIN_REASON from bundle '$alias'" for (dep in bundle) { val constraint = dep.versionConstraint.toString() with(rootProject) { logDependency("pinned", dep, " ('$alias' constraint)") } pinnedDeps[dep.module] = Pair(constraint, reason) } }</ID>
-    <ID>NestedBlockDepth:DependencyPinningBundle.kt$internal fun FluxoKmpConfContext.prepareDependencyPinningBundle()</ID>
     <ID>NestedBlockDepth:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$fun buildTrees(): List&lt;GraphNode></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.getPluginIdAndVersion( id: String, version: String?, catalogPluginIds: Array&lt;out String>? = null, catalogPluginId: String?, logger: Logger, catalogVersionIds: Array&lt;out String>?, catalogVersionId: String?, ): Triple&lt;String, String?, String?></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
