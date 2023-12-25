@@ -1,19 +1,18 @@
 package fluxo.conf.dsl.container.impl
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 
 internal open class ContainerContext(
-    configuration: FluxoConfigurationExtensionImpl,
-    val context: FluxoKmpConfContext = configuration.context,
-    val project: Project = configuration.project,
+    val conf: FluxoConfigurationExtensionImpl,
 ) {
-    val fluxoConfiguration: FluxoConfigurationExtension = configuration
+    val project: Project get() = conf.project
 
-    val kotlinPluginVersion: KotlinVersion get() = context.kotlinPluginVersion
+    val ctx: FluxoKmpConfContext get() = conf.ctx
 
-    val objects: ObjectFactory = project.objects
+    val kotlinPluginVersion: KotlinVersion get() = ctx.kotlinPluginVersion
+
+    val objects: ObjectFactory get() = project.objects
 }

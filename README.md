@@ -180,6 +180,10 @@ pluginManagement {
 * https://github.com/gmazzo/gradle-codeowners-plugin
 * https://github.com/gmazzo/gradle-docker-compose-plugin
 * https://github.com/gmazzo/gradle-report-publications-plugin
+* CI security scanning of Android app using AppSweep (API KEY REQUIRED)
+  * https://github.com/guardsquare/appsweep-gradle
+  * https://appsweep.guardsquare.com/
+  * https://plugins.gradle.org/plugin/com.guardsquare.appsweep
 </details>
 
 

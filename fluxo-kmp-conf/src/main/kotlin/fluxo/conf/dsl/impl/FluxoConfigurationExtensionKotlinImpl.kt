@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExtensionKotlin {
 
-    val context: FluxoKmpConfContext
+    val ctx: FluxoKmpConfContext
     val parent: FluxoConfigurationExtension?
 
 
@@ -28,7 +28,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     val kotlinLangVersionProp: Property<String?>
     override var kotlinLangVersion: String?
         get() {
-            return kotlinLangVersionProp.orNull ?: parent?.kotlinLangVersion ?: context.libs
+            return kotlinLangVersionProp.orNull ?: parent?.kotlinLangVersion ?: ctx.libs
                 .v("kotlinLangVersion", "kotlinLang", "kotlinLanguage")
         }
         set(value) = kotlinLangVersionProp.set(value)
@@ -37,7 +37,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     val kotlinApiVersionProp: Property<String?>
     override var kotlinApiVersion: String?
         get() {
-            return kotlinApiVersionProp.orNull ?: parent?.kotlinApiVersion ?: context.libs
+            return kotlinApiVersionProp.orNull ?: parent?.kotlinApiVersion ?: ctx.libs
                 .v("kotlinApiVersion", "kotlinApi") ?: kotlinLangVersion
         }
         set(value) = kotlinApiVersionProp.set(value)
@@ -48,7 +48,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
         get() {
             return kotlinTestsLangVersionProp.orNull
                 ?: parent?.kotlinTestsLangVersion
-                ?: context.libs.v("testsKotlinLangVersion", "testsKotlinLang")
+                ?: ctx.libs.v("testsKotlinLangVersion", "testsKotlinLang")
         }
         set(value) = kotlinTestsLangVersionProp.set(value)
 
@@ -56,7 +56,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     val kotlinCoreLibrariesProp: Property<String?>
     override var kotlinCoreLibraries: String?
         get() {
-            return kotlinCoreLibrariesProp.orNull ?: parent?.kotlinCoreLibraries ?: context.libs.v(
+            return kotlinCoreLibrariesProp.orNull ?: parent?.kotlinCoreLibraries ?: ctx.libs.v(
                 "kotlinCoreLibraries", "kotlinCoreLibrariesVersion",
                 "kotlinStdlib", "kotlin", "kotlinVersion",
             )
@@ -68,7 +68,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     val javaLangTargetProp: Property<String?>
     override var javaLangTarget: String?
         get() {
-            return javaLangTargetProp.orNull ?: parent?.javaLangTarget ?: context.libs.v(
+            return javaLangTargetProp.orNull ?: parent?.javaLangTarget ?: ctx.libs.v(
                 "jvmTarget", "javaLangTarget", "javaLangSource", "javaToolchain",
                 "sourceCompatibility", "targetCompatibility",
             )
@@ -79,7 +79,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
     val javaTestsLangTargetProp: Property<String?>
     override var javaTestsLangTarget: String?
         get() {
-            return javaTestsLangTargetProp.orNull ?: parent?.javaTestsLangTarget ?: context.libs
+            return javaTestsLangTargetProp.orNull ?: parent?.javaTestsLangTarget ?: ctx.libs
                 .v("jvmTestsTarget", "javaTestsLangTarget")
         }
         set(value) = javaTestsLangTargetProp.set(value)

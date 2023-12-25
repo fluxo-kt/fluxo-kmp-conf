@@ -66,7 +66,7 @@ internal fun Project.setupDetekt(
     ignoredBuildTypes: List<String>,
     ignoredFlavors: List<String>,
 ) {
-    val context = conf.context
+    val context = conf.ctx
     val testsDisabled = context.testsDisabled
     if (!testsDisabled) {
         logger.l("setup Detekt")
@@ -95,7 +95,7 @@ internal fun Project.setupDetekt(
     val baselineIntermediateDir = project.layout.buildDirectory.dir("intermediates/detekt")
     configureExtensionIfAvailable<DetektExtension>(DetektPlugin.DETEKT_EXTENSION) {
         @Suppress("NAME_SHADOWING")
-        val context = conf.context
+        val context = conf.ctx
 
         parallel = true
         buildUponDefaultConfig = true
@@ -116,7 +116,7 @@ internal fun Project.setupDetekt(
             rootProject.file("detekt.yml"),
             rootProject.file("detekt-formatting.yml"),
         )
-        if (context.kotlinConfig.setupCompose) {
+        if (conf.kotlinConfig.setupCompose) {
             files += rootProject.file("detekt-compose.yml")
         }
         files.retainAll { it.exists() && it.canRead() }
@@ -135,10 +135,10 @@ internal fun Project.setupDetekt(
         }
     }
 
+    val kc = conf.kotlinConfig
     val baselineTasks = tasks.withType<DetektCreateBaselineTask> {
         // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
 
-        val kc = context.kotlinConfig
         kc.jvmTarget?.let { jvmTarget = it }
 
         val (lang) = kc.langAndApiVersions(isTest = false)
@@ -169,7 +169,6 @@ internal fun Project.setupDetekt(
             }
         } else {
             // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
-            val kc = context.kotlinConfig
             kc.jvmTarget?.let { jvmTarget = it }
 
             val (lang) = kc.langAndApiVersions(isTest = false)
@@ -207,7 +206,7 @@ internal fun Project.setupDetekt(
             dependencies {
                 onLibrary("detekt-formatting") { detektPlugins(it) }
 
-                if (context.kotlinConfig.setupCompose) {
+                if (kc.setupCompose) {
                     onLibrary("detekt-compose") { detektPlugins(it) }
                 }
             }
@@ -234,7 +233,7 @@ private fun Detekt.taskPlatform(): DetectedTaskPlatform {
         ?: DetectedTaskPlatform.UNKNOWN
 }
 
-private fun Detekt.isDetektTaskAllowed(context: FluxoKmpConfContext): Boolean = with(context) {
+private fun Detekt.isDetektTaskAllowed(ctx: FluxoKmpConfContext): Boolean = with(ctx) {
     getTaskDetailsFromName(name).platform.isTaskAllowed()
 }
 

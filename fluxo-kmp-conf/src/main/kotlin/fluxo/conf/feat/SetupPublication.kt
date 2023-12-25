@@ -7,7 +7,6 @@ import com.android.build.gradle.LibraryExtension
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.BuildConstants
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
@@ -85,40 +84,38 @@ private val CALL_TASK_PREFIXES = arrayOf(
 )
 
 internal fun setupGradleProjectPublication(
-    configuration: FluxoConfigurationExtensionImpl,
-    type: ConfigurationType,
+    conf: FluxoConfigurationExtensionImpl,
 ) {
-    val config = configuration.publicationConfig
-    if (configuration.enablePublication == false || config == null) {
+    val config = conf.publicationConfig
+    if (conf.enablePublication == false || config == null) {
         return
     }
-    val context = configuration.context
-    val isCalled = context.startTaskNames.any { name ->
+    val ctx = conf.ctx
+    val isCalled = ctx.startTaskNames.any { name ->
         CALL_TASK_PREFIXES.any { prefix -> name.startsWith(prefix) }
     }
-    context.onProjectInSyncRun(forceIf = isCalled) {
-        configuration.project.setupGradleProjectPublication(config, configuration, type)
+    ctx.onProjectInSyncRun(forceIf = isCalled) {
+        conf.project.setupGradleProjectPublication(config, conf)
     }
 }
 
 context(FluxoKmpConfContext)
 private fun Project.setupGradleProjectPublication(
     config: FluxoPublicationConfig,
-    configuration: FluxoConfigurationExtension,
-    type: ConfigurationType,
+    conf: FluxoConfigurationExtensionImpl,
 ) {
-    val useDokka = configuration.useDokka != false
-    when {
-        type === ConfigurationType.KOTLIN_MULTIPLATFORM ->
+    val useDokka = conf.useDokka != false
+    when (val type = conf.mode) {
+        ConfigurationType.KOTLIN_MULTIPLATFORM ->
             setupPublicationMultiplatform(config, useDokka)
 
-        type === ConfigurationType.ANDROID_LIB ->
+        ConfigurationType.ANDROID_LIB ->
             setupPublicationAndroidLibrary(config, useDokka)
 
-        type === ConfigurationType.GRADLE_PLUGIN ->
+        ConfigurationType.GRADLE_PLUGIN ->
             setupPublicationGradlePlugin(config, useDokka)
 
-        type === ConfigurationType.KOTLIN_JVM ->
+        ConfigurationType.KOTLIN_JVM ->
             setupPublicationKotlinJvm(config, useDokka)
 
         else -> {
@@ -135,7 +132,7 @@ private fun Project.setupGradleProjectPublication(
     // Reproducible builds setup, produce deterministic output.
     // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
     // https://github.com/JetBrains/kotlin/commit/68fdeaf
-    if (configuration.reproducibleArtifacts != false) {
+    if (conf.reproducibleArtifacts != false) {
         logger.l("setup reproducibleArtifacts")
         tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false

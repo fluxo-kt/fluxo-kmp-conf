@@ -47,7 +47,7 @@ internal fun Project.setupAndroidLint(
     ignoredBuildTypes: List<String>,
     ignoredFlavors: List<String>,
 ) {
-    val context = conf.context
+    val context = conf.ctx
     val disableLint = context.testsDisabled || !context.isTargetEnabled(KmpTargetCode.ANDROID)
     configureExtension(ANDROID_EXT_NAME, CommonExtension::class) {
         lint {

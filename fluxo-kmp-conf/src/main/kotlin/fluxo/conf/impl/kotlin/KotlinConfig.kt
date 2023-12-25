@@ -13,6 +13,11 @@ import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 
+/**
+ * Per-project Kotlin configuration.
+ *
+ * @see FluxoConfigurationExtensionImpl.KotlinConfig
+ */
 @Suppress("LongParameterList")
 internal class KotlinConfig(
     // https://kotlinlang.org/docs/compatibility-modes.html
@@ -83,7 +88,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     project: Project,
     k: KotlinProjectExtension,
 ): KotlinConfig {
-    val context = context
+    val context = ctx
     val pluginVersion = context.kotlinPluginVersion
     val coreLibs = kotlinCoreLibraries
         ?.takeIf { it.isNotBlank() && it != pluginVersion.toString() }
@@ -111,10 +116,10 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     val progressive = progressiveMode ?: true
 
-    val canUseLatestSettings = progressive && pluginVersion >= KOTLIN_1_4 &&
-        (lang == null || lang >=
-            @Suppress("DEPRECATION")
-            KotlinLangVersion.KOTLIN_1_4)
+    val canUseLatestSettings = progressive &&
+        pluginVersion >= KOTLIN_1_4 &&
+        @Suppress("DEPRECATION")
+        (lang == null || lang >= KotlinLangVersion.KOTLIN_1_4)
 
 
     var tests = kotlinTestsLangVersion?.toKotlinLangVersion()
@@ -138,7 +143,8 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     // Experimental test compilation with the latest Kotlin settings.
     // Don't try it for sources with old compatibility settings.
-    // FIXME: Add env flag for dynamic switch-on when needed (and enable by a task name if called directly)
+    // TODO: Add env flag for dynamic switch-on when needed
+    //  (and enable by a task name if called directly)
     val latestCompilation = canUseLatestSettings &&
         !context.isInCompositeBuild &&
         !context.testsDisabled &&

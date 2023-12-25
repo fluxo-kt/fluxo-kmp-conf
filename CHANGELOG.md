@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Fixed
+- move `kotlinConfig` computed property to the project-level configuration extension from the root-level context.
+
 ### Added
 - highlight publication setup in logs.
 - verify that publication artifact version is set.
@@ -22,7 +25,6 @@
 ## [0.5.0] - 2023-12-24
 
 ### Fixed
-
 - correct publication configuration.
 - workaround Gradle 8+ problems with publication.
 - correct the Gradle Versions Plugin setup.

@@ -82,7 +82,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         context.prepareBuildScanPlugin()
         context.ensureUnreachableTasksDisabled()
 
-        if (context.testsDisabled) {
+        if (context.testsDisabled || context.isInCompositeBuild) {
             return
         }
 
@@ -105,33 +105,32 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
      * @see ConfigureContainers
      */
     private fun configureContainers(
-        type: ConfigurationType,
-        configuration: FluxoConfigurationExtensionImpl,
+        conf: FluxoConfigurationExtensionImpl,
         containers: Collection<Container>,
     ) {
         val containerArray = containers.toTypedArray()
-        val configured = when (type) {
+        val configured = when (conf.mode) {
             ConfigurationType.KOTLIN_MULTIPLATFORM ->
-                configureKotlinMultiplatform(configuration, containerArray)
+                configureKotlinMultiplatform(conf, containerArray)
 
             else ->
-                configureKotlinJvm(type, configuration, containerArray)
+                configureKotlinJvm(conf, containerArray)
         }
         if (!configured) {
             return
         }
 
         // Public API validation
-        if (configuration.enableApiValidation != false) {
-            setupBinaryCompatibilityValidator(configuration.apiValidation, configuration, type)
+        if (conf.enableApiValidation != false) {
+            setupBinaryCompatibilityValidator(conf.apiValidation, conf)
         }
 
         // Gradle project atifacts publication
-        setupGradleProjectPublication(configuration, type)
+        setupGradleProjectPublication(conf)
 
         // Generic custom lazy configuration
-        configuration.onConfiguration?.let { action ->
-            configuration.project.configureExtension(KOTLIN_EXT, action = action)
+        conf.onConfiguration?.let { action ->
+            conf.project.configureExtension(KOTLIN_EXT, action = action)
         }
     }
 

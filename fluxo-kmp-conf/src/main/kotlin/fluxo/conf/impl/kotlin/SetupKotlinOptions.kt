@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 
-@Suppress("LongParameterList", "ComplexMethod", "LongMethod")
+@Suppress("LongParameterList", "ComplexMethod", "LongMethod", "NestedBlockDepth")
 internal fun KotlinCommonOptions.setupKotlinOptions(
     conf: FluxoConfigurationExtensionImpl,
     compilationName: String,
@@ -18,13 +18,13 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     isMultiplatform: Boolean,
     jvmTargetVersion: String?,
 ) {
-    val context = conf.context
+    val context = conf.ctx
     val isCI = context.isCI
     val isRelease = context.isRelease
     val isReleaseTask = compilationName.contains("Release", ignoreCase = true)
     val releaseSettings = isCI || isRelease || isReleaseTask
     val useLatestSettings = !releaseSettings && latestSettings
-    val kc = context.kotlinConfig
+    val kc = conf.kotlinConfig
 
     val compilerArgs = freeCompilerArgs.toMutableList()
     compilerArgs.addAll(DEFAULT_OPTS)
@@ -56,8 +56,8 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             isJs = false
 
             // FIXME: Move to JvmCompatibility?
-            jvmTargetVersion?.let {
-                setupJvmCompatibility(it)
+            jvmTargetVersion?.let { jvmTarget ->
+                setupJvmCompatibility(jvmTarget)
 
                 // Compile against the specified JDK API version, similarly to javac's `-release`.
                 // Controls the target bytecode version and limits the API of the JDK in the
@@ -68,14 +68,15 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
                 // https://youtrack.jetbrains.com/issue/KT-29974
                 // FIXME: Move to KotlinConfig and configure in the context
                 //  by default (null) only for useLatestSettings, true/false for broader control.
+                @Suppress("ComplexCondition")
                 if (useLatestSettings &&
                     JRE_VERSION >= JRE_1_9 &&
-                    kotlinPluginVersion >= KOTLIN_1_7
-                // TODO: && kotlinLang >= KotlinLangVersion.KOTLIN_1_7
+                    kotlinPluginVersion >= KOTLIN_1_7 &&
+                    kc.lang.let { it == null || it >= KotlinLangVersion.KOTLIN_1_7 }
                 ) {
-                    compilerArgs.add("-Xjdk-release=$it")
+                    compilerArgs.add("-Xjdk-release=$jvmTarget")
 
-                    // TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 once it is supported
+                    // FIXME: Allow -Xjdk-release=1.6 with -jvm-target 1.8 once it is supported
                     //  https://youtrack.jetbrains.com/issue/KT-59098/Support-Xjdk-release1.6-with-jvm-target-1.8
                 }
             }
@@ -145,7 +146,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
 private fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
     compilerArgs: MutableList<String>,
 ) {
-    val ctx = context
+    val ctx = ctx
     val p = "plugin:androidx.compose.compiler.plugins.kotlin"
     if (suppressKotlinComposeCompatibilityCheck == true) {
         val kotlin = ctx.kotlinPluginVersion.toString()
@@ -174,6 +175,7 @@ private fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
     return
 }
 
+@Suppress("SameParameterValue")
 private fun langFeature(name: String) = "-XXLanguage:+$name"
 
 
@@ -259,7 +261,7 @@ private val LATEST_OPTS = arrayOf(
 
 private val LATEST_JVM_OPTS = arrayOf(
     // Enhance not null annotated type parameter's types to definitely not null types
-    // (@NotNull T => T & Any)
+    // (@NotNull T → T & Any)
     "-Xenhance-type-parameter-types-to-def-not-null",
 
     // Allow using features from Java language that are in the preview phase.

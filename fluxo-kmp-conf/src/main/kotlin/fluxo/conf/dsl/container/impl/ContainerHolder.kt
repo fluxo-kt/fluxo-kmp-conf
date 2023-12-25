@@ -7,12 +7,12 @@ import fluxo.conf.impl.uncheckedCast
 import org.gradle.api.NamedDomainObjectSet
 
 internal class ContainerHolder(
-    configuration: FluxoConfigurationExtensionImpl,
+    conf: FluxoConfigurationExtensionImpl,
     private val onlyTarget: KmpTargetCode?,
-) : ContainerContext(configuration) {
+) : ContainerContext(conf) {
 
     private val KmpTargetCode.isEnabled: Boolean
-        get() = context.isTargetEnabled(this)
+        get() = ctx.isTargetEnabled(this)
 
     val containers: NamedDomainObjectSet<Container> =
         objects.namedDomainObjectSet(Container::class.java)

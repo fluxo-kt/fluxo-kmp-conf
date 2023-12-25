@@ -23,7 +23,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     FluxoConfigurationExtensionPublication {
 
     val project: Project
-    val context: FluxoKmpConfContext
+    val ctx: FluxoKmpConfContext
     val parent: FluxoConfigurationExtension?
 
 
@@ -60,7 +60,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     override var androidVersionCode: Int
         get() = androidVersionCodeProp.orNull
             ?: parent?.androidVersionCode
-            ?: context.libs.vInt("versionCode", "androidVersionCode")
+            ?: ctx.libs.vInt("versionCode", "androidVersionCode")
             ?: 0
         set(value) = androidVersionCodeProp.set(value)
 
@@ -106,11 +106,11 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
 
     private fun av(type: String, default: Int): Any {
         val lType = type[0].lowercaseChar() + type.substring(1)
-        val preview = context.libs
+        val preview = ctx.libs
             .v("androidPreviewSdk", "android${type}SdkPreview", "${lType}SdkPreview")
         return when {
             !preview.isNullOrEmpty() && preview != "0" -> preview
-            else -> context.libs.vInt("android${type}Sdk", "${lType}Sdk") ?: default
+            else -> ctx.libs.vInt("android${type}Sdk", "${lType}Sdk") ?: default
         }
     }
 
@@ -121,7 +121,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
         get() = androidBuildToolsVersionProp.orNull
             ?: parent?.androidBuildToolsVersion
             ?: run {
-                context.libs.v("androidBuildTools", "buildToolsVersion", "androidBuildToolsVersion")
+                ctx.libs.v("androidBuildTools", "buildToolsVersion", "androidBuildToolsVersion")
             }
         set(value) = androidBuildToolsVersionProp.set(value)
 

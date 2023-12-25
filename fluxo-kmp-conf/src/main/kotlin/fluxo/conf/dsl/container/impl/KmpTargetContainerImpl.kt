@@ -34,7 +34,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
     final override fun getName(): String = name
 
     override val allowManualHierarchy: Boolean
-        get() = context.context.kotlinConfig.allowManualHierarchy
+        get() = context.conf.kotlinConfig.allowManualHierarchy
 
     private val lazyTarget = context.objects.set<T.() -> Unit>()
 

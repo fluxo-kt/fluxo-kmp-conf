@@ -2,20 +2,11 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>AnnotationOnSeparateLine:KotlinConfig.kt$@Suppress("DEPRECATION") KotlinLangVersion.KOTLIN_1_4</ID>
-    <ID>AnnotationOnSeparateLine:SetupKotlin.kt$@Suppress("InstanceOfCheckForException") e</ID>
-    <ID>ArgumentListWrapping:FluxoConfigurationExtensionImpl.kt$FluxoConfigurationExtensionImpl$(":${type.builderMethod} configuration took ${currentTimeMillis() - start} ms")</ID>
     <ID>ArgumentListWrapping:LoadAndApplyPluginIfNotApplied.kt$("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")</ID>
-    <ID>ArgumentListWrapping:SetupJvmCompatibility.kt$("kotlinOptions")</ID>
-    <ID>ArgumentListWrapping:SetupKotlinDependencies.kt$(if (isApplication) dh.enforcedPlatform(it) else dh.platform(it))</ID>
-    <ID>ArgumentListWrapping:SetupKotlinDependencies.kt$(it)</ID>
     <ID>ComplexCondition:SetupTestsReport.kt$!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()</ID>
     <ID>CyclomaticComplexMethod:DependencyPinningBundle.kt$internal fun FluxoKmpConfContext.prepareDependencyPinningBundle()</ID>
     <ID>CyclomaticComplexMethod:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
-    <ID>CyclomaticComplexMethod:SetupKotlin.kt$internal fun configureKotlinJvm( type: ConfigurationType, configuration: FluxoConfigurationExtensionImpl, containers: Array&lt;Container>, ): Boolean</ID>
-    <ID>CyclomaticComplexMethod:SetupKotlin.kt$internal fun configureKotlinMultiplatform( configuration: FluxoConfigurationExtensionImpl, containers: Array&lt;Container>, ): Boolean</ID>
-    <ID>CyclomaticComplexMethod:SetupKotlin.kt$private fun KotlinProjectExtension.setupTargets( conf: FluxoConfigurationExtensionImpl, isMultiplatform: Boolean = this is KotlinMultiplatformExtension, )</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget.Configure$// TODO: Detect applied plugin (lib/app) and use appropriate container?</ID>
     <ID>ForbiddenComment:AppleIosTarget.kt$// FIXME: Public hierarchy of targets for easier configuration</ID>
@@ -35,7 +26,7 @@
     <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt$// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
     <ID>ForbiddenComment:KmpHierarchyTemplate.kt$// TODO: commonWasm group for wasmWasi and wasmJs</ID>
     <ID>ForbiddenComment:KmpTargetContainer.kt$KmpTargetContainer$// TODO: Create common bundle once and reuse?</ID>
-    <ID>ForbiddenComment:KotlinConfig.kt$// FIXME: Add env flag for dynamic switch-on when needed (and enable by a task name if called directly)</ID>
+    <ID>ForbiddenComment:KotlinConfig.kt$// TODO: Add env flag for dynamic switch-on when needed</ID>
     <ID>ForbiddenComment:KotlinSetupDiagnosticTasks.kt$// TODO: @DisableCachingByDefault(because = "Not worth caching")</ID>
     <ID>ForbiddenComment:KotlinSourceSetsReportTask.kt$// TODO: Mark source sets with deprectaed or 3rd tier targets</ID>
     <ID>ForbiddenComment:LoadAndApplyPluginIfNotApplied.kt$// TODO: Check version for correctness</ID>
@@ -66,10 +57,9 @@
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: With coil-bom:2.2.2 doesn't work as enforcedPlatform for Android and/or KMP</ID>
     <ID>ForbiddenComment:SetupKotlinExperimentalTestCompilation.kt$// TODO: Find a solution for KMP 2.0</ID>
+    <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Allow -Xjdk-release=1.6 with -jvm-target 1.8 once it is supported</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to JvmCompatibility?</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to KotlinConfig and configure in the context</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: &amp;&amp; kotlinLang >= KotlinLangVersion.KOTLIN_1_7</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 once it is supported</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: provide sources for KMP publications</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple developers</ID>
@@ -96,37 +86,25 @@
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>Indentation:PropsAndEnv.kt$ </ID>
-    <ID>Indentation:SetupKotlin.kt$ </ID>
-    <ID>Indentation:SetupKotlinOptions.kt$ </ID>
     <ID>LongMethod:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
     <ID>LongMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
-    <ID>LongMethod:SetupKotlin.kt$internal fun configureKotlinJvm( type: ConfigurationType, configuration: FluxoConfigurationExtensionImpl, containers: Array&lt;Container>, ): Boolean</ID>
     <ID>LongMethod:SetupTestsReport.kt$internal fun FluxoKmpConfContext.setupTestsReport()</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>LoopWithTooManyJumpStatements:FluxoConfigurationExtensionImpl.kt$FluxoConfigurationExtensionImpl$while</ID>
-    <ID>MagicNumber:SetupKotlin.kt$11</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.validatePluginConfiguration */</ID>
     <ID>MaxLineLength:DomainObjectUtils.kt$*</ID>
-    <ID>MaxLineLength:FluxoConfigurationExtensionImpl.kt$FluxoConfigurationExtensionImpl$project.logger.i(":${type.builderMethod} configuration took ${currentTimeMillis() - start} ms")</ID>
-    <ID>MaxLineLength:KotlinConfig.kt$// FIXME: Add env flag for dynamic switch-on when needed (and enable by a task name if called directly)</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$"You may want to add it to the classpath in the root build.gradle.kts instead! $example"</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$logger.v("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")</ID>
     <ID>MaxLineLength:MergeDetektBaselinesTask.kt$MergeDetektBaselinesTask$*</ID>
     <ID>MaxLineLength:MergeDetektBaselinesTask.kt$MergeDetektBaselinesTask$manuallySuppressedIssues = acc.manuallySuppressedIssues + baseline.manuallySuppressedIssues</ID>
     <ID>MaxLineLength:PropsAndEnv.kt$if</ID>
-    <ID>MaxLineLength:SetupJvmCompatibility.kt$(this as? ExtensionAware)</ID>
-    <ID>MaxLineLength:SetupKotlinDependencies.kt$implementationAndLog(if (isApplication) dh.enforcedPlatform(it) else dh.platform(it))</ID>
     <ID>MaxLineLength:SetupMultiplatform.kt$*</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$description = "Combines all tests reports from all modules to the published root one"</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$if</ID>
     <ID>MaxLineLength:VersionCatalogUtils.kt$internal</ID>
-    <ID>MaximumLineLength:FluxoConfigurationExtensionImpl.kt$FluxoConfigurationExtensionImpl$ </ID>
     <ID>MaximumLineLength:LoadAndApplyPluginIfNotApplied.kt$ </ID>
     <ID>MaximumLineLength:MergeDetektBaselinesTask.kt$MergeDetektBaselinesTask$ </ID>
     <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
-    <ID>MaximumLineLength:SetupJvmCompatibility.kt$ </ID>
-    <ID>MaximumLineLength:SetupKotlinDependencies.kt$ </ID>
     <ID>MaximumLineLength:SetupTestsReport.kt$ </ID>
     <ID>MaximumLineLength:VersionCatalogUtils.kt$internal</ID>
     <ID>MultiLineIfElse:DependencyPinningBundle.kt$for (alias in bundleAliases) { // Filter "pinned and "pinned.*" bundles alias.startsWith(ALIAS, ignoreCase = true) &amp;&amp; alias.run { val l = length l == ALIAS.length || l > ALIAS.length &amp;&amp; this[ALIAS.length] == '.' } || continue val bundle = libs.b(alias)?.get() if (bundle.isNullOrEmpty()) { continue } logger.l("Pinning ${bundle.size} dependencies from version catalog bundle '$alias'") val reason = "$PIN_REASON from bundle '$alias'" for (dep in bundle) { val constraint = dep.versionConstraint.toString() with(rootProject) { logDependency("pinned", dep, " ('$alias' constraint)") } pinnedDeps[dep.module] = Pair(constraint, reason) } }</ID>
@@ -135,15 +113,12 @@
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.getPluginIdAndVersion( id: String, version: String?, catalogPluginIds: Array&lt;out String>? = null, catalogPluginId: String?, logger: Logger, catalogVersionIds: Array&lt;out String>?, catalogVersionId: String?, ): Triple&lt;String, String?, String?></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
     <ID>NestedBlockDepth:SetupAndroidLint.kt$private fun Task.reportLintVersion(lintTool: LintTool?): Boolean</ID>
-    <ID>NestedBlockDepth:SetupKotlin.kt$internal fun configureKotlinMultiplatform( configuration: FluxoConfigurationExtensionImpl, containers: Array&lt;Container>, ): Boolean</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>
     <ID>ReturnCount:SetupAndroidLint.kt$private fun Task.reportLintVersion(lintTool: LintTool?): Boolean</ID>
-    <ID>ReturnCount:SetupKotlinExperimentalTestCompilation.kt$internal fun KotlinTarget.setupExperimentalLatestCompilation( conf: FluxoConfigurationExtensionImpl, isMultiplatform: Boolean, )</ID>
     <ID>SwallowedException:DependencyHandlerUtils.kt$e: Throwable</ID>
     <ID>TooManyFunctions:LoggerUtils.kt$fluxo.conf.impl.LoggerUtils.kt</ID>
     <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>
-    <ID>Wrapping:KotlinConfig.kt$(</ID>
   </CurrentIssues>
 </SmellBaseline>

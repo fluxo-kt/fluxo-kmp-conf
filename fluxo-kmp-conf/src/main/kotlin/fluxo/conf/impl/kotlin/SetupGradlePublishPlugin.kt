@@ -7,8 +7,8 @@ import fluxo.conf.data.BuildConstants.GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import org.gradle.api.Project
 
-internal fun Project.setupGradlePublishPlugin(context: FluxoKmpConfContext) {
-    context.loadAndApplyPluginIfNotApplied(
+internal fun Project.setupGradlePublishPlugin(ctx: FluxoKmpConfContext) {
+    ctx.loadAndApplyPluginIfNotApplied(
         id = GRADLE_PLUGIN_PUBLISH_PLUGIN_ID,
         version = GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION,
         catalogPluginId = GRADLE_PLUGIN_PUBLISH_PLUGIN_ALIAS,

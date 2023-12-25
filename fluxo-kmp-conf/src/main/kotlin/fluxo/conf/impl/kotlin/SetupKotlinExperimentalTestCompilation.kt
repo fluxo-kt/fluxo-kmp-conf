@@ -14,11 +14,12 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 internal val KotlinCompilation<*>.isExperimentalLatestCompilation: Boolean
     get() = name.let { it.startsWith(PREFIX) && it.endsWith(POSTFIX) }
 
+@Suppress("ReturnCount")
 internal fun KotlinTarget.setupExperimentalLatestCompilation(
     conf: FluxoConfigurationExtensionImpl,
     isMultiplatform: Boolean,
 ) {
-    val kc = conf.context.kotlinConfig
+    val kc = conf.kotlinConfig
     if (!kc.latestCompilation) {
         return
     }

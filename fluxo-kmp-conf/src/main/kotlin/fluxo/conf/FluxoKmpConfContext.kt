@@ -14,7 +14,6 @@ import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.d
 import fluxo.conf.impl.e
 import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
-import fluxo.conf.impl.kotlin.KotlinConfig
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
 import fluxo.conf.impl.kotlin.mppAndroidSourceSetLayoutVersion
 import fluxo.conf.impl.l
@@ -38,6 +37,12 @@ import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import useKotlinDebug
 
+/**
+ * Internal configuration context for the Fluxo KMP plugin.
+ * It's a root-project-based singleton.
+ *
+ * @see FluxoKmpConfPlugin
+ */
 internal abstract class FluxoKmpConfContext
 @Inject constructor(
     val rootProject: Project,
@@ -57,9 +62,6 @@ internal abstract class FluxoKmpConfContext
     val libs: VersionCatalog? = rootProject.libsCatalogOptional
 
     val kotlinPluginVersion: KotlinVersion = rootProject.logger.kotlinPluginVersion()
-
-    lateinit var kotlinConfig: KotlinConfig
-        internal set
 
     /**
      * [Kotlin 1.8](https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema)
@@ -206,6 +208,7 @@ internal abstract class FluxoKmpConfContext
                     rootProject.logger.e("Failed to run onProjectInSyncRun action: $e", e)
                 }
             }
+
             else -> projectInSyncSet.all {
                 try {
                     context.action()
@@ -240,8 +243,7 @@ internal abstract class FluxoKmpConfContext
 
     internal companion object {
         internal fun getFor(target: Project): FluxoKmpConfContext {
-            return target.rootProject.extensions
-                .create(NAME, FluxoKmpConfContext::class.java, target)
+            return target.extensions.create(NAME, FluxoKmpConfContext::class.java, target)
         }
 
         private const val NAME = "fluxoInternalConfigurationContext"

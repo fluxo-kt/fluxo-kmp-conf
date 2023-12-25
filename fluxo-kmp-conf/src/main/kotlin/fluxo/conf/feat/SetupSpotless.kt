@@ -18,7 +18,7 @@ import org.gradle.api.Project
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun Project.setupSpotless(
-    context: FluxoKmpConfContext,
+    ctx: FluxoKmpConfContext,
     enableDiktat: Boolean = false,
 ) {
     logger.l("setup Spotless")
@@ -54,7 +54,7 @@ internal fun Project.setupSpotless(
             // TODO: Use ktlint directly?
             // https://github.com/search?q=setEditorConfigPath+path%3A*.kt&type=code
             try {
-                ktlint(context.libs.v("ktlint") ?: KtLintStep.defaultVersion())
+                ktlint(ctx.libs.v("ktlint") ?: KtLintStep.defaultVersion())
             } catch (e: Throwable) {
                 logger.warn("ktlint version error: $e", e)
                 ktlint()
@@ -62,7 +62,7 @@ internal fun Project.setupSpotless(
 
             if (enableDiktat) {
                 try {
-                    val v = context.libs.v("diktat") ?: DiktatStep.defaultVersionDiktat()
+                    val v = ctx.libs.v("diktat") ?: DiktatStep.defaultVersionDiktat()
                     diktat(v)
                 } catch (e: Throwable) {
                     logger.warn("diktat version error: $e", e)
@@ -77,7 +77,7 @@ internal fun Project.setupSpotless(
         }
         kotlinGradle {
             try {
-                ktlint(context.libs.v("ktlint") ?: KtLintStep.defaultVersion())
+                ktlint(ctx.libs.v("ktlint") ?: KtLintStep.defaultVersion())
             } catch (e: Throwable) {
                 logger.warn("ktlint version error: $e", e)
                 ktlint()
@@ -85,7 +85,7 @@ internal fun Project.setupSpotless(
 
             if (enableDiktat) {
                 try {
-                    val v = context.libs.v("diktat") ?: DiktatStep.defaultVersionDiktat()
+                    val v = ctx.libs.v("diktat") ?: DiktatStep.defaultVersionDiktat()
                     diktat(v)
                 } catch (e: Throwable) {
                     logger.warn("diktat version error: $e", e)

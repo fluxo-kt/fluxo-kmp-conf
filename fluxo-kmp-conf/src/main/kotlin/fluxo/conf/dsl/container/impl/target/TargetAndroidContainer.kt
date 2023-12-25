@@ -53,7 +53,7 @@ internal abstract class TargetAndroidContainer<T>(
 
     protected fun T.setupAndroidExtension() {
         // Set before executing action so that they may be overridden if desired.
-        setupAndroidCommon(context)
+        setupAndroidCommon(context.conf)
     }
 
 
@@ -75,7 +75,7 @@ internal abstract class TargetAndroidContainer<T>(
             return
         }
 
-        val layoutV2 = context.context.androidLayoutV2
+        val layoutV2 = context.ctx.androidLayoutV2
         val bundle = k.sourceSets.bundleFor(target, androidLayoutV2 = layoutV2)
         setupParentSourceSet(k, bundle)
 

@@ -17,6 +17,7 @@ import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_JVM
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.impl.i
+import fluxo.conf.impl.kotlin.KotlinConfig
 import fluxo.conf.impl.uncheckedCast
 import java.lang.System.currentTimeMillis
 import javax.inject.Inject
@@ -30,12 +31,12 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 /** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */
 internal typealias ConfigureContainers =
-    (ConfigurationType, FluxoConfigurationExtensionImpl, Collection<Container>) -> Unit
+    (FluxoConfigurationExtensionImpl, Collection<Container>) -> Unit
 
 @FluxoKmpConfDsl
 internal abstract class FluxoConfigurationExtensionImpl
 @Inject internal constructor(
-    override val context: FluxoKmpConfContext,
+    override val ctx: FluxoKmpConfContext,
 
     /** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */
     private val configureContainers: ConfigureContainers,
@@ -57,9 +58,24 @@ internal abstract class FluxoConfigurationExtensionImpl
                 ?.also { parentCache = it }
         }
 
+
+    @get:Input
+    protected abstract val configurationTypeProperty: Property<ConfigurationType>
+
+    /**
+     * Current project configuration type.
+     */
+    internal val mode: ConfigurationType
+        get() = configurationTypeProperty.get()
+
+
     @get:Input
     @get:Internal
-    protected abstract val hasConfigurationAction: Property<Boolean?>
+    protected abstract val kotlinConfigProp: Property<KotlinConfig>
+    internal var kotlinConfig: KotlinConfig
+        get() = kotlinConfigProp.get()
+        set(value) = kotlinConfigProp.set(value)
+
 
     @get:Input
     protected abstract val defaultConfiguration: Property<(KmpDsl.() -> Unit)?>
@@ -78,12 +94,13 @@ internal abstract class FluxoConfigurationExtensionImpl
 
 
     private fun configureAs(type: ConfigurationType, action: KmpDsl.() -> Unit) {
-        if (hasConfigurationAction.orNull == true) {
-            throw GradleException(
-                "${FluxoConfigurationExtension.NAME}.configure* can only be invoked once",
-            )
+        configurationTypeProperty.apply {
+            if (isPresent) {
+                throw GradleException("${type.builderMethod} can only be invoked once")
+            }
+            set(type)
+            disallowChanges()
         }
-        hasConfigurationAction.set(true)
 
         val start = currentTimeMillis()
         val onlyTarget = when (type) {
@@ -92,7 +109,7 @@ internal abstract class FluxoConfigurationExtensionImpl
             KOTLIN_JVM, GRADLE_PLUGIN, IDEA_PLUGIN -> KmpTargetCode.JVM
         }
 
-        val holder = ContainerHolder(configuration = this, onlyTarget)
+        val holder = ContainerHolder(conf = this, onlyTarget)
         val dsl = KmpConfigurationContainerDslImpl(holder)
 
         // Default configurations
@@ -111,9 +128,10 @@ internal abstract class FluxoConfigurationExtensionImpl
         action(dsl)
 
         /** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */
-        configureContainers(type, this, holder.containers.sorted())
+        configureContainers(this, holder.containers.sorted())
 
-        project.logger.i(":${type.builderMethod} configuration took ${currentTimeMillis() - start} ms")
+        val elapsed = currentTimeMillis() - start
+        project.logger.i(":${type.builderMethod} configuration took $elapsed ms")
     }
 
     override fun asKmp(action: KmpDsl.() -> Unit) =
@@ -137,6 +155,7 @@ internal abstract class FluxoConfigurationExtensionImpl
         val defaults = mutableListOf<FluxoConfigurationExtension>()
         var p: Project? = project
         var ext: FluxoConfigurationExtensionImpl? = this
+        @Suppress("LoopWithTooManyJumpStatements")
         chain@ while (p != null) {
             if (ext != null) {
                 if (ext.skipDefaultConfigurations) {

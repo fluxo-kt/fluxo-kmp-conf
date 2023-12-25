@@ -93,14 +93,14 @@ internal fun DependencyHandler.setupKotlinDependencies(
 }
 
 context(Project)
+@Suppress("CyclomaticComplexMethod")
 internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
-    configuration: FluxoConfigurationExtensionImpl,
-    isApplication: Boolean = configuration.project.hasAndroidAppPlugin,
+    conf: FluxoConfigurationExtensionImpl,
+    isApplication: Boolean = conf.project.hasAndroidAppPlugin,
 ) {
-    val context = configuration.context
-    val kc = context.kotlinConfig
-    val libs = context.libs
-    val project = configuration.project
+    val libs = conf.ctx.libs
+    val kc = conf.kotlinConfig
+    val project = conf.project
     val dh = project.dependencies
     val sourceSets = sourceSets
 
@@ -110,7 +110,11 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
             implementationAndLog(if (isApplication) dh.enforcedPlatform(bom) else dh.platform(bom))
 
             val bomImplementation: (Provider<MinimalExternalModuleDependency>) -> Unit = {
-                implementationAndLog(if (isApplication) dh.enforcedPlatform(it) else dh.platform(it))
+                val platformNotation = when {
+                    isApplication -> dh.enforcedPlatform(it)
+                    else -> dh.platform(it)
+                }
+                implementationAndLog(platformNotation)
             }
             if (kc.setupCoroutines) {
                 libs?.onLibrary("kotlinx-coroutines-bom", bomImplementation)

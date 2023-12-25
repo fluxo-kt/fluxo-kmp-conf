@@ -9,8 +9,8 @@ import org.gradle.api.HasImplicitReceiver
 import org.gradle.api.Project
 import org.jetbrains.kotlin.samWithReceiver.gradle.SamWithReceiverExtension
 
-internal fun Project.setupSamWithReceiver(context: FluxoKmpConfContext) {
-    val result = context.loadAndApplyPluginIfNotApplied(
+internal fun Project.setupSamWithReceiver(ctx: FluxoKmpConfContext) {
+    val result = ctx.loadAndApplyPluginIfNotApplied(
         id = KOTLIN_SAM_RECEIVER_PLUGIN_ID,
         className = KT_SAM_RECEIVER_PLUGIN_CLASS,
         version = runCatching { KOTLIN_PLUGIN_VERSION_RAW }.getOrNull(),

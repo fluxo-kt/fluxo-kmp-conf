@@ -23,7 +23,7 @@ internal fun KCompilation.setupKotlinCompatibility(
     isTest: Boolean,
     isExperimentalTest: Boolean,
 ) {
-    val kc = conf.context.kotlinConfig
+    val kc = conf.kotlinConfig
     kotlinOptions.apply {
         val (lang, api) = kc
             .langAndApiVersions(isTest = isTest, latestSettings = isExperimentalTest)

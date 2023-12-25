@@ -73,7 +73,8 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
             }
         }
         /** `android.kotlinOptions` */
-        (this as? ExtensionAware)?.configureExtensionIfAvailable<KotlinJvmOptions>("kotlinOptions") {
+        val ext = this as? ExtensionAware
+        ext?.configureExtensionIfAvailable<KotlinJvmOptions>("kotlinOptions") {
             setupJvmCompatibility(jvmTarget)
         }
     }
@@ -105,6 +106,8 @@ internal val KotlinCompilation<*>.compileJavaTaskProvider: TaskProvider<out Java
 internal const val JRE_1_8 = 8
 
 internal const val JRE_1_9 = 9
+
+internal const val JRE_11 = 11
 
 // https://www.oracle.com/java/technologies/downloads/
 private const val LTS_JDK_VERSION = 17

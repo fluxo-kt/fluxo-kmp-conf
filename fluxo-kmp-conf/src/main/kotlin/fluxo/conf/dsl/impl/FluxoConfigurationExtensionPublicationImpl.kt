@@ -20,7 +20,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     FluxoConfigurationExtensionPublication {
 
     val project: Project
-    val context: FluxoKmpConfContext
+    val ctx: FluxoKmpConfContext
     val parent: FluxoConfigurationExtension?
 
 
@@ -36,7 +36,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     override var version: String
         get() = versionProp.orNull
             ?: parent?.version?.takeIf { it.isNotBlank() }
-            ?: context.libs.v("version", "versionName", "app", "appVersion", "v")
+            ?: ctx.libs.v("version", "versionName", "app", "appVersion", "v")
             ?: project.version.toString()
         set(value) = versionProp.set(value)
 
@@ -45,7 +45,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     override var group: String
         get() = groupProp.orNull
             ?: parent?.group?.takeIf { it.isNotBlank() }
-            ?: context.libs.v("group", "package")
+            ?: ctx.libs.v("group", "package")
             ?: project.group.toString()
         set(value) = groupProp.set(value)
 

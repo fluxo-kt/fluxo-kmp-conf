@@ -48,44 +48,45 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
+@Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun configureKotlinJvm(
-    type: ConfigurationType,
-    configuration: FluxoConfigurationExtensionImpl,
+    conf: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
 ): Boolean {
+    val type = conf.mode
     require(type != KOTLIN_MULTIPLATFORM) { "Unexpected Kotlin Multiplatform configuration" }
-    if (!checkIfNeedToConfigure(type, configuration, containers)) {
+    if (!checkIfNeedToConfigure(type, conf, containers)) {
         return false
     }
 
-    val project = configuration.project
-    val context = configuration.context
+    val project = conf.project
+    val ctx = conf.ctx
 
     val isApp = type === ANDROID_APP
     if (isApp) {
-        context.loadAndApplyPluginIfNotApplied(id = ANDROID_APP_PLUGIN_ID, project = project)
+        ctx.loadAndApplyPluginIfNotApplied(id = ANDROID_APP_PLUGIN_ID, project = project)
     } else if (type === ANDROID_LIB) {
-        context.loadAndApplyPluginIfNotApplied(id = ANDROID_LIB_PLUGIN_ID, project = project)
+        ctx.loadAndApplyPluginIfNotApplied(id = ANDROID_LIB_PLUGIN_ID, project = project)
     } else if (type === IDEA_PLUGIN) {
-        context.loadAndApplyPluginIfNotApplied(id = INTELLIJ_PLUGIN_ID, project = project)
+        ctx.loadAndApplyPluginIfNotApplied(id = INTELLIJ_PLUGIN_ID, project = project)
 
         // IDEA plugins require Java 11
-        val jvmTarget = configuration.jvmTarget
-        if (jvmTarget == null || jvmTarget.asJvmMajorVersion() < 11) {
-            configuration.jvmTarget = "11"
+        val jvmTarget = conf.jvmTarget
+        if (jvmTarget == null || jvmTarget.asJvmMajorVersion() < JRE_11) {
+            conf.jvmTarget = JRE_11.toString()
         }
     }
 
-    context.loadAndApplyPluginIfNotApplied(id = KOTLIN_JVM_PLUGIN_ID, project = project)
+    ctx.loadAndApplyPluginIfNotApplied(id = KOTLIN_JVM_PLUGIN_ID, project = project)
 
     if (type === GRADLE_PLUGIN) {
         // Gradle Kotlin DSL uses the same compiler plugin (sam.with.receiver).
         // Allow the same ease of use for Gradle plugins.
         // Works for Gradle Action and potentially other similar types.
-        project.setupSamWithReceiver(context)
+        project.setupSamWithReceiver(ctx)
 
         // Main plugin for Gradle plugins authoring and publication
-        project.setupGradlePublishPlugin(context)
+        project.setupGradlePublishPlugin(ctx)
     }
 
     // Add all plugins first, for configuring in next steps.
@@ -101,15 +102,15 @@ internal fun configureKotlinJvm(
         }
 
         // Set Kotlin settings before the containers so that they may be overridden if desired.
-        setupKotlinExtensionAndProject(configuration)
+        setupKotlinExtensionAndProject(conf)
 
-        if (configuration.setupDependencies) {
+        if (conf.setupDependencies) {
             val deps = project.dependencies
             with(project) {
                 deps.setupKotlinDependencies(
-                        context.libs,
-                        context.kotlinConfig,
-                        isApplication = isApp,
+                    ctx.libs,
+                    conf.kotlinConfig,
+                    isApplication = isApp,
                 )
             }
         } else {
@@ -141,7 +142,7 @@ internal fun configureKotlinJvm(
 
         if (!androidSetUp) {
             project.configureExtensionIfAvailable<TestedExtension>(ANDROID_EXT_NAME) {
-                setupAndroidCommon(configuration.project, configuration, configuration.context)
+                setupAndroidCommon(conf)
             }
         }
     }
@@ -158,17 +159,18 @@ private fun KotlinProjectExtension.applyKmpContainer(
 }
 
 
+@Suppress("NestedBlockDepth", "CyclomaticComplexMethod")
 internal fun configureKotlinMultiplatform(
-    configuration: FluxoConfigurationExtensionImpl,
+    conf: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
 ): Boolean {
-    if (!checkIfNeedToConfigure(KOTLIN_MULTIPLATFORM, configuration, containers)) {
+    if (!checkIfNeedToConfigure(KOTLIN_MULTIPLATFORM, conf, containers)) {
         return false
     }
 
-    val project = configuration.project
-    val context = configuration.context
-    context.loadAndApplyPluginIfNotApplied(id = KMP_PLUGIN_ID, project = project)
+    val project = conf.project
+    val ctx = conf.ctx
+    ctx.loadAndApplyPluginIfNotApplied(id = KMP_PLUGIN_ID, project = project)
 
     // Add all plugins first, for configuring in next steps.
     val pluginManager = project.pluginManager
@@ -183,11 +185,13 @@ internal fun configureKotlinMultiplatform(
 
                 var logException = true
                 var msg = e.toString()
+
+                @Suppress("InstanceOfCheckForException")
+                val isAndroidPluginUnknown = e is UnknownPluginException && "com.android." in msg
                 msg = when {
                     // Special case for Android plugin.
-                    @Suppress("InstanceOfCheckForException")
-                    e is UnknownPluginException && "com.android." in msg -> {
-                        logException = context.isMaxDebug
+                    isAndroidPluginUnknown -> {
+                        logException = ctx.isMaxDebug
                         ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
                     }
 
@@ -203,11 +207,11 @@ internal fun configureKotlinMultiplatform(
 
     project.configureExtension<KotlinMultiplatformExtension>(KOTLIN_EXT) {
         // Set Kotlin settings before the containers so that they may be overridden if desired.
-        setupKotlinExtensionAndProject(configuration)
+        setupKotlinExtensionAndProject(conf)
 
-        if (configuration.setupDependencies) {
+        if (conf.setupDependencies) {
             with(project) {
-                setupMultiplatformDependencies(configuration)
+                setupMultiplatformDependencies(conf)
             }
         } else {
             project.logger.v("Configuring Kotlin dependencies disabled")
@@ -234,12 +238,12 @@ internal fun configureKotlinMultiplatform(
 
 private fun checkIfNeedToConfigure(
     type: ConfigurationType,
-    configuration: FluxoConfigurationExtensionImpl,
+    conf: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
 ): Boolean {
     // TODO: Detect if KMP is already applied and what targets are already configured.
 
-    val logger = configuration.project.logger
+    val logger = conf.project.logger
     val hasAnyTarget = containers.any { it is KmpTargetContainer<*> }
     val label = ':' + type.builderMethod
     if (!hasAnyTarget) {
@@ -257,9 +261,9 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     val project = conf.project
     project.logger.v("Configuring Kotlin extension")
 
-    val ctx = conf.context
+    val ctx = conf.ctx
     val kc = conf.KotlinConfig(project, k = this)
-    ctx.kotlinConfig = kc
+    conf.kotlinConfig = kc
 
     if (!conf.setupKotlin) {
         project.logger.l("Finishing Kotlin extension configuration early (disabled)")
@@ -295,6 +299,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     }
 }
 
+@Suppress("CyclomaticComplexMethod")
 private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,
     isMultiplatform: Boolean = this is KotlinMultiplatformExtension,
@@ -310,8 +315,8 @@ private fun KotlinProjectExtension.setupTargets(
             isExperimentalTest = isExperimentalTest,
         )
 
-        val context = conf.context
-        val kc = context.kotlinConfig
+        val context = conf.ctx
+        val kc = conf.kotlinConfig
         kotlinOptions.run {
             val platformType = target.platformType
             val isAndroid = platformType.let { KotlinPlatformType.androidJvm === it }
@@ -374,7 +379,7 @@ private fun KotlinTarget.checkForDisabledTarget(conf: FluxoConfigurationExtensio
     val project = conf.project
     val logger = project.logger
     val kmpTargetCode = KmpTargetCode.fromKotlinTarget(target, logger)
-    if (kmpTargetCode == null || conf.context.isTargetEnabled(kmpTargetCode)) {
+    if (kmpTargetCode == null || conf.ctx.isTargetEnabled(kmpTargetCode)) {
         return
     }
 

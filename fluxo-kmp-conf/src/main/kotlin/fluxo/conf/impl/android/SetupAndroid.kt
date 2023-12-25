@@ -9,9 +9,7 @@ import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.TestedExtension
 import com.android.build.gradle.internal.lint.AndroidLintTask
 import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
-import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.dsl.FluxoConfigurationExtension
-import fluxo.conf.dsl.container.impl.ContainerContext
+import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.e
 import fluxo.conf.impl.get
@@ -23,23 +21,12 @@ import fluxo.conf.impl.onVersion
 import fluxo.conf.impl.the
 import org.gradle.api.Project
 
-internal fun TestedExtension.setupAndroidCommon(context: ContainerContext) {
-    setupAndroidCommon(
-        project = context.project,
-        conf = context.fluxoConfiguration,
-        ctx = context.context,
-    )
-}
-
 /**
  * @see com.android.build.api.dsl.TestedExtension
  * @see com.android.build.gradle.TestedExtension
  */
-internal fun TestedExtension.setupAndroidCommon(
-    project: Project,
-    conf: FluxoConfigurationExtension,
-    ctx: FluxoKmpConfContext,
-) {
+internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensionImpl) {
+    val project = conf.project
     conf.androidNamespace.let { ns ->
         if (ns.isEmpty()) {
             project.logger.e("Required Android namespace IS EMPTY!")
@@ -58,6 +45,7 @@ internal fun TestedExtension.setupAndroidCommon(
         }
     }
 
+    val ctx = conf.ctx
     val pseudoLocales = ctx.isMaxDebug && !ctx.isRelease && !ctx.isCI
     defaultConfig {
         conf.androidMinSdk.let { if (it is Int) minSdk = it else minSdkPreview = it.toString() }
@@ -72,7 +60,7 @@ internal fun TestedExtension.setupAndroidCommon(
 
         // Explicit list of the locales to keep in the final app.
         // Doing this strips out extra locales from libraries like
-        // Google Play Services and Firebase, which add unnecessary bloat.
+        // Google Play Services and Firebase, which add an unnecessary bloat.
         // https://developer.android.com/studio/build/shrink-code#unused-alt-resources
         // https://gist.github.com/amake/0ac7724681ac1c178c6f95a5b09f03ce
         // https://stackoverflow.com/questions/42937870/what-does-b-stand-for-and-what-is-the-syntax-behind-bsrlatn
@@ -85,7 +73,7 @@ internal fun TestedExtension.setupAndroidCommon(
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // testInstrumentationRunner = "androidx.benchmark.junit4.AndroidBenchmarkRunner"
 
-        if (ctx.kotlinConfig.setupRoom) {
+        if (conf.kotlinConfig.setupRoom) {
             // Exported Room DB schemas
             // Enable incremental compilation for Room
             val roomSchemasDir = "${project.projectDir}/schemas"
@@ -211,7 +199,7 @@ internal fun TestedExtension.setupAndroidCommon(
         project.dependencies.setupAndroidDependencies(
             ctx.libs,
             isApplication = isApplication,
-            kc = ctx.kotlinConfig,
+            kc = conf.kotlinConfig,
         )
     }
 

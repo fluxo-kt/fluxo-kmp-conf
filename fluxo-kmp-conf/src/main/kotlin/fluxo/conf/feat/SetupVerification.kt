@@ -23,7 +23,7 @@ internal fun FluxoKmpConfContext.setupVerificationRoot() {
 }
 
 internal fun Project.setupVerification(conf: FluxoConfigurationExtensionImpl) {
-    val context = conf.context
+    val context = conf.ctx
     if (context.testsDisabled && !isRootProject && conf.enableSpotless == true) {
         setupSpotless(context)
     }

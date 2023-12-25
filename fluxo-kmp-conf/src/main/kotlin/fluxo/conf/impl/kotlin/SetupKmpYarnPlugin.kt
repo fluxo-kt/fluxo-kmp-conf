@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion
 // Fix Kotlin/JS incompatibilities by pinning the versions of dependencies.
 // Workaround for https://youtrack.jetbrains.com/issue/KT-52776.
 // Also see https://github.com/rjaros/kvision/blob/d9044ab/build.gradle.kts#L28
-internal fun Project.setupKmpYarnPlugin(context: FluxoKmpConfContext) = afterEvaluate {
+internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluate {
     // YarnPlugin can be applied only to the root project.
     checkIsRootProject("setupKmpYarnPlugin")
     plugins.withType<YarnPlugin> configuration@{
@@ -30,8 +30,8 @@ internal fun Project.setupKmpYarnPlugin(context: FluxoKmpConfContext) = afterEva
         logger.l("YarnPlugin configuration")
         val setupDependencies = conf.setupDependencies
 
-        val libs = context.libs
-        val testsDisabled = context.testsDisabled
+        val libs = ctx.libs
+        val testsDisabled = ctx.testsDisabled
         configureExtension<YarnRootExtension>(YarnRootExtension.YARN) {
             lockFileDirectory = rootDir.resolve(".kotlin-js-store")
 

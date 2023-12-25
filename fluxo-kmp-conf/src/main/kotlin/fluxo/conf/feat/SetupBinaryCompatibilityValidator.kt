@@ -22,14 +22,13 @@ import org.gradle.api.Project
 
 internal fun setupBinaryCompatibilityValidator(
     config: BinaryCompatibilityValidatorConfig?,
-    configuration: FluxoConfigurationExtensionImpl,
-    type: ConfigurationType,
-    project: Project = configuration.project,
+    conf: FluxoConfigurationExtensionImpl,
+    project: Project = conf.project,
 ) = project.run r@{
-    val context = configuration.context
-    val disabledByRelease = context.isRelease && config?.disableForNonRelease == true
-    if (disabledByRelease || context.testsDisabled) {
-        val calledExplicitly = context.startTaskNames.any {
+    val ctx = conf.ctx
+    val disabledByRelease = ctx.isRelease && config?.disableForNonRelease == true
+    if (disabledByRelease || ctx.testsDisabled) {
+        val calledExplicitly = ctx.startTaskNames.any {
             it.endsWith(CHECK_TASK, ignoreCase = false) ||
                 it.startsWith(DUMP_TASK, ignoreCase = false)
         }
@@ -39,14 +38,14 @@ internal fun setupBinaryCompatibilityValidator(
         }
     }
 
-    when (type) {
+    when (val type = conf.mode) {
         ConfigurationType.KOTLIN_MULTIPLATFORM ->
-            setupKmpBinaryCompatibilityValidator(config, context)
+            setupKmpBinaryCompatibilityValidator(config, ctx)
 
         ConfigurationType.ANDROID_LIB,
         ConfigurationType.KOTLIN_JVM,
         ConfigurationType.GRADLE_PLUGIN,
-        -> setupBinaryCompatibilityValidator(config, context)
+        -> setupBinaryCompatibilityValidator(config, ctx)
 
         else ->
             error("Unsupported project type for BinaryCompatibilityValidator checks: $type")
@@ -55,13 +54,13 @@ internal fun setupBinaryCompatibilityValidator(
 
 private fun Project.setupKmpBinaryCompatibilityValidator(
     config: BinaryCompatibilityValidatorConfig?,
-    context: FluxoKmpConfContext,
+    ctx: FluxoKmpConfContext,
 ) {
-    setupBinaryCompatibilityValidator(config, context)
+    setupBinaryCompatibilityValidator(config, ctx)
 
-    if (config?.jsApiChecks != false && context.isTargetEnabled(KmpTargetCode.JS)) {
+    if (config?.jsApiChecks != false && ctx.isTargetEnabled(KmpTargetCode.JS)) {
         logger.l("Setup Fluxo TS-based BinaryCompatibilityValidator for JS")
-        context.loadAndApplyPluginIfNotApplied(
+        ctx.loadAndApplyPluginIfNotApplied(
             id = FLUXO_BCV_JS_PLUGIN_ID,
             className = FLUXO_BCV_JS_PLUGIN_CLASS_NAME,
             version = FLUXO_BCV_JS_PLUGIN_VERSION,
@@ -73,7 +72,7 @@ private fun Project.setupKmpBinaryCompatibilityValidator(
     tasks.withType<KotlinApiCompareTask> {
         val target = getTargetForTaskName(taskName = name)
         if (target != null) {
-            enabled = context.isMultiplatformApiTargetAllowed(target)
+            enabled = ctx.isMultiplatformApiTargetAllowed(target)
             if (!enabled) {
                 logger.l("API check $this disabled!")
             }
@@ -83,11 +82,11 @@ private fun Project.setupKmpBinaryCompatibilityValidator(
 
 private fun Project.setupBinaryCompatibilityValidator(
     config: BinaryCompatibilityValidatorConfig?,
-    context: FluxoKmpConfContext,
+    ctx: FluxoKmpConfContext,
 ) {
     logger.l("Setup BinaryCompatibilityValidator")
 
-    context.loadAndApplyPluginIfNotApplied(
+    ctx.loadAndApplyPluginIfNotApplied(
         id = KOTLINX_BCV_PLUGIN_ID,
         className = KOTLINX_BCV_PLUGIN_CLASS_NAME,
         version = KOTLINX_BCV_PLUGIN_VERSION,

@@ -22,9 +22,9 @@ import org.gradle.api.Project
  * @see com.android.build.api.variant.AndroidComponentsExtension
  * @see com.android.build.api.variant.DslLifecycle.finalizeDsl
  */
-internal fun Project.setupFinalizeAndroidDsl(context: FluxoKmpConfContext) {
-    val libs = context.libs
-    val isMaxDebug = context.isMaxDebug
+internal fun Project.setupFinalizeAndroidDsl(ctx: FluxoKmpConfContext) {
+    val libs = ctx.libs
+    val isMaxDebug = ctx.isMaxDebug
 
     val enableMaxDebug = isMaxDebug.toString()
     the(AndroidComponentsExtension::class).finalizeDsl { a ->
