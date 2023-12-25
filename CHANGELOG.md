@@ -9,6 +9,7 @@
 - highlight publication setup in logs.
 - verify that publication artifact version is set.
 - both WasmWasi and WasmJS can be used together since Kotlin 2.0.
+- register `depsAll` task as a rememberable alias for `allDeps`.
 
 ### Changed
 - remove tests & checks from the `release` CI workflow.
