@@ -8,6 +8,8 @@ import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.impl.v
+import fluxo.minification.FluxoMinificationConfig
+import fluxo.minification.FluxoMinificationConfigImpl
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.gradle.api.Project
@@ -87,6 +89,32 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         get() = reproducibleSnapshotsProp.orNull ?: parent?.reproducibleArtifacts
         set(value) = reproducibleSnapshotsProp.set(value)
 
+
+    @get:Input
+    val minifyArtifactsProp: Property<Boolean?>
+    override var minifyArtifacts: Boolean
+        get() = minifyArtifactsProp.orNull ?: parent?.minifyArtifacts ?: false
+        set(value) = minifyArtifactsProp.set(value)
+
+
+    @get:Input
+    val minificationConfigProp: Property<FluxoMinificationConfig?>
+    override var minificationConfig: FluxoMinificationConfig
+        get() {
+            var mc = minificationConfigProp.orNull ?: parent?.minificationConfig
+            if (mc != null) {
+                return mc
+            }
+            val objects = project.objects
+            mc = objects.newInstance(FluxoMinificationConfigImpl::class.java, objects)
+            minificationConfigProp.set(mc)
+            return mc
+        }
+        set(value) = minificationConfigProp.set(value)
+
+    override fun minificationConfig(configure: FluxoMinificationConfig.() -> Unit) {
+        minificationConfig.apply(configure)
+    }
 
     @get:Input
     val publicationConfigProp: Property<FluxoPublicationConfig?>

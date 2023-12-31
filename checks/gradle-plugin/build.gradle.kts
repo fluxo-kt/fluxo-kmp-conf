@@ -10,4 +10,5 @@ version = libs.versions.version.get()
 
 setupGradlePlugin {
     allWarningsAsErrors = true
+    minifyArtifacts = true
 }

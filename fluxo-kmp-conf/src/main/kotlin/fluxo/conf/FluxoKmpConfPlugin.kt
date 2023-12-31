@@ -20,6 +20,7 @@ import fluxo.conf.feat.prepareKotlinSetupDiagnosticTasks
 import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
 import fluxo.conf.feat.prepareTaskInfoPlugin
 import fluxo.conf.feat.prepareTaskTreePlugin
+import fluxo.conf.feat.setupArtifactsMinification
 import fluxo.conf.feat.setupBinaryCompatibilityValidator
 import fluxo.conf.feat.setupGradleProjectPublication
 import fluxo.conf.feat.setupSpotless
@@ -118,6 +119,9 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         if (conf.enableApiValidation != false) {
             setupBinaryCompatibilityValidator(conf.apiValidation, conf)
         }
+
+        // Artifacts minification
+        setupArtifactsMinification(conf)
 
         // Gradle project atifacts publication
         setupGradleProjectPublication(conf)

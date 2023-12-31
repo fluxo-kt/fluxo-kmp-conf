@@ -312,10 +312,13 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionPublic
 	public abstract fun getEnablePublication ()Ljava/lang/Boolean;
 	public abstract fun getGithubProject ()Ljava/lang/String;
 	public abstract fun getGroup ()Ljava/lang/String;
+	public abstract fun getMinificationConfig ()Lfluxo/minification/FluxoMinificationConfig;
+	public abstract fun getMinifyArtifacts ()Z
 	public abstract fun getProjectName ()Ljava/lang/String;
 	public abstract fun getPublicationConfig ()Lfluxo/conf/dsl/FluxoPublicationConfig;
 	public abstract fun getReproducibleArtifacts ()Ljava/lang/Boolean;
 	public abstract fun getVersion ()Ljava/lang/String;
+	public abstract fun minificationConfig (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun publicationConfig (Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun publicationConfig$default (Lfluxo/conf/dsl/FluxoConfigurationExtensionPublication;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun setDefaultGitBranchName (Ljava/lang/String;)V
@@ -323,6 +326,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionPublic
 	public abstract fun setEnablePublication (Ljava/lang/Boolean;)V
 	public abstract fun setGithubProject (Ljava/lang/String;)V
 	public abstract fun setGroup (Ljava/lang/String;)V
+	public abstract fun setMinifyArtifacts (Z)V
 	public abstract fun setProjectName (Ljava/lang/String;)V
 	public abstract fun setPublicationConfig (Lfluxo/conf/dsl/FluxoPublicationConfig;)V
 	public abstract fun setReproducibleArtifacts (Ljava/lang/Boolean;)V
@@ -589,5 +593,13 @@ public abstract interface class fluxo/conf/kmp/SourceSetBundle {
 	public abstract fun getMain ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 	public fun getMoreTests ()[Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 	public abstract fun getTest ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+}
+
+public abstract interface class fluxo/minification/FluxoMinificationConfig {
+	public abstract fun getConfigurationFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getMaxHeapSize ()Lorg/gradle/api/provider/Property;
+	public abstract fun getObfuscate ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOptimize ()Lorg/gradle/api/provider/Property;
+	public abstract fun isEnabled ()Lorg/gradle/api/provider/Property;
 }
 

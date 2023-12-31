@@ -126,4 +126,15 @@ buildConfig {
 
     // FIXME: Add support for plugin:
     buildConfigField("ABOUT_LIBRARIES", libs.plugins.about.libraries)
+
+    fun buildConfigField(
+        fieldName: String,
+        p: Provider<MinimalExternalModuleDependency>,
+    ) {
+        p.get().apply {
+            buildConfigField("String", fieldName, "\"$group:$name:$version\"")
+        }
+    }
+    buildConfigField("PROGUARD_PLUGIN", libs.proguard.plugin)
+    buildConfigField("PROGUARD_CORE", libs.proguard.core)
 }

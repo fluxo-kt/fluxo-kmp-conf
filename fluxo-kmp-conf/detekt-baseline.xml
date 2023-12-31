@@ -6,9 +6,15 @@
     <ID>ComplexCondition:SetupTestsReport.kt$!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()</ID>
     <ID>CyclomaticComplexMethod:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
+    <ID>ForbiddenComment:AbstractMinificationTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
+    <ID>ForbiddenComment:AbstractMinificationTask.kt$AbstractMinificationTask$// FIXME: Move mapping to the output dir</ID>
+    <ID>ForbiddenComment:AbstractMinificationTask.kt$AbstractMinificationTask$// TODO: Debugging</ID>
+    <ID>ForbiddenComment:AbstractMinificationTask.kt$AbstractMinificationTask$// TODO: Process output and print only main information if not verbose</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget.Configure$// TODO: Detect applied plugin (lib/app) and use appropriate container?</ID>
     <ID>ForbiddenComment:AppleIosTarget.kt$// FIXME: Public hierarchy of targets for easier configuration</ID>
+    <ID>ForbiddenComment:ConfigureProguardTask.kt$// TODO: Allow to configure ProGuard version</ID>
+    <ID>ForbiddenComment:ConfigureProguardTask.kt$// TODO: dProtect obfuscator</ID>
     <ID>ForbiddenComment:ContainerImpl.kt$ContainerImpl$// TODO: Utilize version available from PluginDependency</ID>
     <ID>ForbiddenComment:DependencyAnalysisPlugin.kt$// TODO: no need to declare transitive dependencies for the final app module</ID>
     <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Allow to customize configurations auto-filtration</ID>
@@ -16,11 +22,11 @@
     <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Opt-out configurable switch via `fluxoKmpConf { depsGuard = false }`</ID>
     <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Update when resolved (https://github.com/dropbox/dependency-guard/issues/3)</ID>
     <ID>ForbiddenComment:DependencyUtils.kt$// TODO: Support rich VersionConstraint</ID>
-    <ID>ForbiddenComment:DisableUnreachableTasks.kt$// FIXME: Check if this is actually useful</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$// TODO: Avoid casting</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionKotlin.kt$FluxoConfigurationExtensionKotlin$// FIXME: koverReport settings</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$// TODO: Add validation for value. Shouldn't be url, but `namespace/name`</ID>
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.</ID>
+    <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
     <ID>ForbiddenComment:FluxoPublicationConfig.kt$// TODO: Make an immutable resulting class</ID>
     <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt$// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
     <ID>ForbiddenComment:KmpHierarchyTemplate.kt$// TODO: commonWasm group for wasmWasi and wasmJs</ID>
@@ -37,13 +43,16 @@
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
+    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// TODO: Support Android minification with ProGuard</ID>
+    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// TODO: Support KMP JVM target minification with ProGuard</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Improve detekt task platform detection.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$DetectedTaskPlatform$// TODO: Detect common/metadata tasks?</ID>
+    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Check BuildConfig tasks (not called on IDE sync!)</ID>
+    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Spotless stup</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: apiDump/apiCheck</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: check all features</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: detekt plugins https://detekt.dev/marketplace/</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: git hooks</ID>
@@ -60,6 +69,7 @@
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to JvmCompatibility?</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to KotlinConfig and configure in the context</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.</ID>
+    <ID>ForbiddenComment:SetupPublication.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: provide sources for KMP publications</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple developers</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple licenses</ID>
@@ -82,6 +92,7 @@
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: should androidUnitTestDebug depend on androidUnitTest?</ID>
+    <ID>ImportOrdering:ExternalToolRunner.kt$import fluxo.util.alsoOutputTo import fluxo.gradle.ioFile import java.io.ByteArrayInputStream import java.io.File import java.time.LocalDateTime import java.time.format.DateTimeFormatter import org.gradle.api.GradleException import org.gradle.api.file.Directory import org.gradle.api.provider.Property import org.gradle.api.provider.Provider import org.gradle.process.ExecOperations import org.gradle.process.ExecResult</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>Indentation:PropsAndEnv.kt$ </ID>
@@ -90,32 +101,30 @@
     <ID>LongMethod:SetupTestsReport.kt$internal fun FluxoKmpConfContext.setupTestsReport()</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
-    <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.validatePluginConfiguration */</ID>
     <ID>MaxLineLength:DomainObjectUtils.kt$*</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$"You may want to add it to the classpath in the root build.gradle.kts instead! $example"</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$logger.v("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")</ID>
-    <ID>MaxLineLength:MergeDetektBaselinesTask.kt$MergeDetektBaselinesTask$*</ID>
-    <ID>MaxLineLength:MergeDetektBaselinesTask.kt$MergeDetektBaselinesTask$manuallySuppressedIssues = acc.manuallySuppressedIssues + baseline.manuallySuppressedIssues</ID>
     <ID>MaxLineLength:PropsAndEnv.kt$if</ID>
     <ID>MaxLineLength:SetupMultiplatform.kt$*</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$description = "Combines all tests reports from all modules to the published root one"</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$if</ID>
     <ID>MaxLineLength:VersionCatalogUtils.kt$internal</ID>
     <ID>MaximumLineLength:LoadAndApplyPluginIfNotApplied.kt$ </ID>
-    <ID>MaximumLineLength:MergeDetektBaselinesTask.kt$MergeDetektBaselinesTask$ </ID>
     <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
     <ID>MaximumLineLength:SetupTestsReport.kt$ </ID>
     <ID>MaximumLineLength:VersionCatalogUtils.kt$internal</ID>
     <ID>NestedBlockDepth:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$fun buildTrees(): List&lt;GraphNode></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.getPluginIdAndVersion( id: String, version: String?, catalogPluginIds: Array&lt;out String>? = null, catalogPluginId: String?, logger: Logger, catalogVersionIds: Array&lt;out String>?, catalogVersionId: String?, ): Triple&lt;String, String?, String?></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
-    <ID>NestedBlockDepth:SetupAndroidLint.kt$private fun Task.reportLintVersion(lintTool: LintTool?): Boolean</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>
-    <ID>ReturnCount:SetupAndroidLint.kt$private fun Task.reportLintVersion(lintTool: LintTool?): Boolean</ID>
+    <ID>SpreadOperator:ConfigureProguardTask.kt$(*coords)</ID>
+    <ID>SpreadOperator:ConfigureProguardTask.kt$(*it)</ID>
+    <ID>SpreadOperator:DetachedDependency.kt$( *dependencyNotations.mapToArray { dependencies.create(it) }, )</ID>
+    <ID>SpreadOperator:ExternalToolRunner.kt$ExternalToolRunner$(*args.toTypedArray())</ID>
+    <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>SwallowedException:DependencyHandlerUtils.kt$e: Throwable</ID>
-    <ID>TooManyFunctions:LoggerUtils.kt$fluxo.conf.impl.LoggerUtils.kt</ID>
     <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>
   </CurrentIssues>
 </SmellBaseline>

@@ -12,7 +12,15 @@ private const val CONF = "> Conf"
 internal var SHOW_DEBUG_LOGS = false
 
 
-internal fun Logger.t(message: String, e: Throwable? = null) {
+internal fun Logger.t(message: String) {
+    if (SHOW_DEBUG_LOGS) {
+        lifecycle("> Fv: {}", message)
+    } else {
+        trace("> {} {}", TAG, message)
+    }
+}
+
+internal fun Logger.t(message: String, e: Throwable?) {
     if (SHOW_DEBUG_LOGS) {
         lifecycle("> Fv: $message", e)
     } else {
@@ -50,9 +58,9 @@ internal fun Logger.d(message: String, arg1: Any?, arg2: Any?, arg3: Any?) {
 
 internal fun Logger.i(message: String) {
     if (SHOW_DEBUG_LOGS) {
-        lifecycle("> Fi: $message")
+        lifecycle("> Fi: {}", message)
     } else {
-        debug("$CONF $message")
+        debug("{} {}", CONF, message)
     }
 }
 
@@ -65,12 +73,17 @@ internal fun Logger.i(message: String, arg1: Any?) {
 }
 
 
-internal fun Logger.l(message: String) = lifecycle("$CONF $message")
+internal fun Logger.l(message: String) = lifecycle("{} {}", CONF, message)
 internal fun Logger.l(message: String, vararg args: Any) = lifecycle("$CONF $message", *args)
 
 
-internal fun Logger.w(message: String, e: Throwable? = null) = warn("$CONF! $message", e)
+internal fun Logger.w(message: String, e: Throwable? = null) = warn("w: $CONF! $message", e)
 
-internal fun Logger.e(message: String, e: Throwable? = null) = error("$CONF! $message", e)
 
-internal fun Logger.e(message: String, arg1: Any?) = error("{}! $message", CONF, arg1)
+internal fun Logger.e(message: String) = error("e: {}! {}", CONF, message)
+
+internal fun Logger.e(message: String, e: Throwable?) = error("e: $CONF! $message", e)
+
+internal fun Logger.e(message: String, arg1: Any?) = error("e: {}! $message", CONF, arg1)
+
+internal fun Logger.e(message: String, vararg args: Any?) = error("e: $CONF! $message", *args)

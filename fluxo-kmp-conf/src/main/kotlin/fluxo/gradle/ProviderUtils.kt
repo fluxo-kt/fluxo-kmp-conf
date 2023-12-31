@@ -1,7 +1,6 @@
 package fluxo.gradle
 
 import fluxo.conf.impl.uncheckedCast
-import org.gradle.api.Task
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -24,9 +23,6 @@ internal inline fun <reified T : Any> ObjectFactory.notNullProperty(
 
 internal inline fun <reified T> Provider<T>.toProperty(objects: ObjectFactory): Property<T> =
     objects.property(T::class.java).value(this)
-
-internal inline fun <reified T> Task.provider(noinline fn: () -> T): Provider<T> =
-    project.provider(fn)
 
 internal fun Provider<String?>.toBooleanProvider(defaultValue: Boolean): Provider<Boolean> =
     orElse(defaultValue.toString()).map { "true" == it }

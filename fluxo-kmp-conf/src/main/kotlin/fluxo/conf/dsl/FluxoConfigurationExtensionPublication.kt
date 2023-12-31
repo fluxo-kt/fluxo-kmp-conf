@@ -1,6 +1,7 @@
 package fluxo.conf.dsl
 
 import fluxo.conf.impl.EMPTY_FUN
+import fluxo.minification.FluxoMinificationConfig
 
 public interface FluxoConfigurationExtensionPublication {
 
@@ -70,11 +71,26 @@ public interface FluxoConfigurationExtensionPublication {
 
 
     /**
-     * Flag to disable reproducible artifact generation.
+     * Flag to control reproducible artifact generation.
      *
      * Defaults to `true`.
      */
     public var reproducibleArtifacts: Boolean?
+
+
+    /**
+     * Flag to control minification of the artifacts.
+     *
+     * Defaults to `false`.
+     */
+    public var minifyArtifacts: Boolean
+
+    /**
+     * Config for the project artifacts publication.
+     */
+    public val minificationConfig: FluxoMinificationConfig
+
+    public fun minificationConfig(configure: FluxoMinificationConfig.() -> Unit)
 
 
     /**
@@ -85,6 +101,8 @@ public interface FluxoConfigurationExtensionPublication {
     /**
      * Reasonably configures the [FluxoPublicationConfig]
      * with provided values with possibility for customization.
+     *
+     * Enables publication once called!
      *
      * @see publicationConfig
      */
