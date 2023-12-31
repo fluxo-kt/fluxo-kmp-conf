@@ -148,6 +148,7 @@ private fun Task.reportLintVersion() {
     }
 }
 
+@Suppress("NestedBlockDepth", "ReturnCount")
 private fun Task.reportLintVersion(lintTool: LintTool?): Boolean {
     var lintVersion: String? = null
     var versionKey: Property<String>? = null

@@ -184,6 +184,10 @@ pluginManagement {
   * https://github.com/guardsquare/appsweep-gradle
   * https://appsweep.guardsquare.com/
   * https://plugins.gradle.org/plugin/com.guardsquare.appsweep
+* Java 9 modularity support
+  * https://github.com/Kotlin/kotlinx.coroutines/blob/d12eb45/buildSrc/src/main/kotlin/Java9Modularity.kt
+* Common utils
+  * https://github.com/aminography/CommonUtils/tree/1bfbe2d/library/src/main/java/com/aminography/commonutils
 </details>
 
 

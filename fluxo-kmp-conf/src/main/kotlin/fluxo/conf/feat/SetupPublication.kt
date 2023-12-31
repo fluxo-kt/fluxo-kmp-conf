@@ -21,7 +21,7 @@ import fluxo.conf.impl.get
 import fluxo.conf.impl.getByName
 import fluxo.conf.impl.has
 import fluxo.conf.impl.hasExtension
-import fluxo.conf.impl.kotlin.multiplatformExtension
+import fluxo.conf.impl.kotlin.mppExt
 import fluxo.conf.impl.l
 import fluxo.conf.impl.namedOrNull
 import fluxo.conf.impl.register
@@ -63,6 +63,8 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
  * - https://getstream.io/blog/publishing-libraries-to-mavencentral-2021/
  * - https://dev.to/kotlin/how-to-build-and-publish-a-kotlin-multiplatform-library-going-public-4a8k
  */
+
+// FIXME: Disambiguate existing javadoc and sources tasks
 
 // TODO: Set RC/alpha/beta releases status to Ivy's: milestone/integration when it will be possible
 //  https://github.com/gradle/gradle/issues/12600
@@ -161,7 +163,7 @@ private fun Project.setupPublicationMultiplatform(
     )
     setupPublicationRepositoryAndSigning(config, publishing)
 
-    multiplatformExtension.apply {
+    mppExt.apply {
         if (targets.any { it.platformType == KotlinPlatformType.androidJvm }) {
             try {
                 // Kotlin before 1.9

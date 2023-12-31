@@ -17,7 +17,7 @@ import org.gradle.api.Task
 // Designed for KTS scripts, with experimental support for Kotlin's multi-platform plugin
 // https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 // https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
-internal fun FluxoKmpConfContext.prepareKmpBuildConfigPlugin(project: Project) {
+internal fun FluxoKmpConfContext.prepareBuildConfigKmpPlugin(project: Project) {
     plugins.withId(BUILD_CONFIG_PLUGIN_ID) {
         // Automatically build configs during Gradle sync in IDE
         onProjectInSyncRun {

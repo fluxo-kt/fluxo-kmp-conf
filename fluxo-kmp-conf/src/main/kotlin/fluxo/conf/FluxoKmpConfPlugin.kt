@@ -8,6 +8,7 @@ import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.ConfigureContainers
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.ensureUnreachableTasksDisabled
+import fluxo.conf.feat.prepareBuildConfigKmpPlugin
 import fluxo.conf.feat.prepareBuildScanPlugin
 import fluxo.conf.feat.prepareCompleteKotlinPlugin
 import fluxo.conf.feat.prepareDependencyAnalysisPlugin
@@ -15,7 +16,6 @@ import fluxo.conf.feat.prepareDependencyAnalysisTasks
 import fluxo.conf.feat.prepareDependencyGuardPlugin
 import fluxo.conf.feat.prepareDependencyPinningBundle
 import fluxo.conf.feat.prepareDependencyUpdatesPlugin
-import fluxo.conf.feat.prepareKmpBuildConfigPlugin
 import fluxo.conf.feat.prepareKotlinSetupDiagnosticTasks
 import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
 import fluxo.conf.feat.prepareTaskInfoPlugin
@@ -38,20 +38,14 @@ import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
-@Suppress("unused", "EmptyFunctionBlock", "ktPropBy")
 public class FluxoKmpConfPlugin : Plugin<Project> {
-
-    // References:
-    // https://docs.gradle.org/current/userguide/custom_gradle_types.html
-    // https://docs.gradle.org/current/userguide/custom_plugins.html
-    // https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/SpotlessPlugin.java
 
     override fun apply(target: Project) {
         target.checkIsRootProject("\"$PLUGIN_ID\" plugin")
         checkGradleLifecycleBase(target)
         checkKotlinPlugin()
 
-        val context = FluxoKmpConfContext.getFor(target)
+        val ctx = FluxoKmpConfContext.getFor(target)
 
         target.allprojects {
             val configureContainers: ConfigureContainers = ::configureContainers
@@ -59,44 +53,44 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
                 FluxoConfigurationExtension::class.java,
                 FluxoConfigurationExtension.NAME,
                 FluxoConfigurationExtensionImpl::class.java,
-                context,
+                ctx,
                 configureContainers,
             )
 
-            if (isRootProject && !context.testsDisabled) {
+            if (isRootProject && !ctx.testsDisabled) {
                 afterEvaluate {
                     val enableVerification = conf.enableVerification == true
                     if (enableVerification && conf.enableSpotless == true) {
-                        target.setupSpotless(context)
+                        target.setupSpotless(ctx)
                     }
                 }
             }
 
-            context.prepareKmpBuildConfigPlugin(project = this)
+            ctx.prepareBuildConfigKmpPlugin(project = this)
         }
 
-        target.setupKmpYarnPlugin(context)
+        target.setupKmpYarnPlugin(ctx)
 
         FluxoCache.bindToProjectLifecycle(target)
-        context.prepareDependencyPinningBundle()
-        context.prepareBuildScanPlugin()
-        context.ensureUnreachableTasksDisabled()
+        ctx.prepareDependencyPinningBundle()
+        ctx.prepareBuildScanPlugin()
+        ctx.ensureUnreachableTasksDisabled()
 
-        if (context.testsDisabled || context.isInCompositeBuild) {
+        if (ctx.testsDisabled || ctx.isInCompositeBuild) {
             return
         }
 
-        context.prepareCompleteKotlinPlugin()
-        context.prepareDependencyUpdatesPlugin()
-        context.prepareDependencyAnalysisPlugin()
-        context.prepareDependencyGuardPlugin()
-        context.prepareDependencyAnalysisTasks()
-        context.prepareTaskTreePlugin()
-        context.prepareTaskInfoPlugin()
-        context.prepareKotlinSetupDiagnosticTasks()
-        context.prepareModuleDependencyGraphPlugin()
-        context.setupTestsReport()
-        context.setupVerificationRoot()
+        ctx.prepareCompleteKotlinPlugin()
+        ctx.prepareDependencyUpdatesPlugin()
+        ctx.prepareDependencyAnalysisPlugin()
+        ctx.prepareDependencyGuardPlugin()
+        ctx.prepareDependencyAnalysisTasks()
+        ctx.prepareTaskTreePlugin()
+        ctx.prepareTaskInfoPlugin()
+        ctx.prepareKotlinSetupDiagnosticTasks()
+        ctx.prepareModuleDependencyGraphPlugin()
+        ctx.setupTestsReport()
+        ctx.setupVerificationRoot()
     }
 
     /**
@@ -140,9 +134,8 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
      * @see org.gradle.api.plugins.BasePlugin ('base')
      * @see org.gradle.language.base.plugins.LifecycleBasePlugin
      */
-    private fun checkGradleLifecycleBase(target: Project) {
+    private fun checkGradleLifecycleBase(target: Project) =
         target.pluginManager.apply(LifecycleBasePlugin::class.java)
-    }
 
     /**
      * Make sure there's a Kotlin plugin in the classpath.
@@ -154,6 +147,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         try {
             KotlinVersion.DEFAULT
         } catch (e: Throwable) {
+            // TODO: Support version catalog declarations if available
             val msg = """
                 Kotlin plugin not found in classpath.
                 Please apply any Kotlin plugin before applying the "$PLUGIN_ID" plugin.

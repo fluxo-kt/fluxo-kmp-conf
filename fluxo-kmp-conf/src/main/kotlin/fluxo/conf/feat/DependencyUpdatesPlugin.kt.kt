@@ -18,7 +18,7 @@ internal fun FluxoKmpConfContext.prepareDependencyUpdatesPlugin() {
     // The plugin itself does register the task only on call.
     val isCalled = hasStartTaskCalled(DEPS_VERSIONS_TASK_NAME)
     if (isCalled) {
-        markProjectInSync()
+        markProjectInSync(":$DEPS_VERSIONS_TASK_NAME task is called")
     }
     onProjectInSyncRun(forceIf = isCalled) {
         val logger = rootProject.logger

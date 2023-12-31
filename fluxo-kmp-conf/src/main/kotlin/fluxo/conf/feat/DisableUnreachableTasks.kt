@@ -6,24 +6,22 @@ import fluxo.conf.impl.d
 import fluxo.conf.impl.l
 import fluxo.conf.impl.v
 import java.lang.System.currentTimeMillis
-import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.logging.Logger
 
-
-private val unreachableTasksDisabled = AtomicBoolean(false)
-
-// Disable unreachable tasks
-// FIXME: Check if this is actually useful
+/**
+ * Disable unreachable tasks to speed up Gradle build.
+ */
 internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
-    if (!unreachableTasksDisabled.compareAndSet(false, true)) {
-        return
-    }
+    // Usually, can be useful when:
+    // - Not all targets are enabled;
+    // - Tests are disabled;
+    val canBeUsefull = testsDisabled || !allTargetsEnabled ||
+        SHOW_DEBUG_LOGS || DEBUG_LOGS || isCI
 
-    // Run only for CI.
-    // Takes time and not so useful during local development.
-    if (!(isCI || SHOW_DEBUG_LOGS) || isProjectInSyncRun) {
+    // Don't run on IDE sync.
+    if (!canBeUsefull || isProjectInSyncRun) {
         return
     }
 
@@ -32,18 +30,20 @@ internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
     project.gradle.taskGraph.whenReady {
         val start = currentTimeMillis()
         if (!isProjectInSyncRun) {
-            val allTasks = allTasks
+            val allTasks = allTasks.toTypedArray()
             if (SHOW_DEBUG_LOGS || DEBUG_LOGS) {
-                logger.v("ensureUnreachableTasksDisabled")
+                logger.v(NAME)
             }
 
-            DisableUnreachableTasks(graph = this, allTasks = allTasks, logger = logger)
-                .apply()
+            DisableUnreachableTasks(
+                graph = this,
+                allTasks = allTasks,
+                logger = logger,
+            ).run()
 
-            logger.d(
-                "ensureUnreachableTasksDisabled took ${currentTimeMillis() - start} ms" +
-                    " (${allTasks.size} tasks total)",
-            )
+            val n = allTasks.size
+            val elapsed = currentTimeMillis() - start
+            logger.d("ensureUnreachableTasksDisabled took $elapsed ms ($n tasks total)")
         }
     }
 }
@@ -51,7 +51,7 @@ internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
 private class DisableUnreachableTasks(
     private val graph: TaskExecutionGraph,
     private val logger: Logger,
-    private val allTasks: List<Task>,
+    private val allTasks: Array<Task>,
 ) {
     private val rootTasks = findRootTasks()
     private val results = HashMap<Pair<Task, Task>, Boolean>()
@@ -73,7 +73,7 @@ private class DisableUnreachableTasks(
         return rootTasks
     }
 
-    fun apply() {
+    fun run() {
         for (it in allTasks) {
             // Disable inaccessible dependencies of enabled tasks
             if (it.enabled) {
@@ -130,4 +130,5 @@ private class DisableUnreachableTasks(
         }
 }
 
+private const val NAME = "ensureUnreachableTasksDisabled"
 private const val DEBUG_LOGS = false

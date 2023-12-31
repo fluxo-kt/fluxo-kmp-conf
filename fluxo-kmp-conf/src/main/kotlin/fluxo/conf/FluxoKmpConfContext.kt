@@ -48,8 +48,8 @@ internal abstract class FluxoKmpConfContext
     val rootProject: Project,
 ) : PluginAware by rootProject {
 
-    private val projectInSyncSet: DomainObjectSet<ProjectInSyncMarker> =
-        rootProject.objects.domainObjectSet(ProjectInSyncMarker::class.java)
+    private val projectInSyncFlag: DomainObjectSet<String> =
+        rootProject.objects.domainObjectSet(String::class.java)
 
     internal val provisioner: Provisioner = GradleProvisioner.DedupingProvisioner(
         GradleProvisioner.forRootProjectBuildscript(rootProject),
@@ -84,7 +84,7 @@ internal abstract class FluxoKmpConfContext
     val composeMetricsEnabled by rootProject.areComposeMetricsEnabled()
 
     private val kmpTargets: Set<KmpTargetCode> = getSetOfRequestedKmpTargets()
-    private val allTargetsEnabled = rootProject.allKmpTargetsEnabled() || kmpTargets.isEmpty()
+    val allTargetsEnabled: Boolean = rootProject.allKmpTargetsEnabled() || kmpTargets.isEmpty()
     fun isTargetEnabled(code: KmpTargetCode): Boolean = allTargetsEnabled || code in kmpTargets
 
 
@@ -125,7 +125,12 @@ internal abstract class FluxoKmpConfContext
             logger.l(m)
         }
 
-        if (SHOW_DEBUG_LOGS) onProjectInSyncRun { logger.v("onProjectInSyncRun") }
+        if (SHOW_DEBUG_LOGS) {
+            onProjectInSyncRun {
+                val reason = projectInSyncFlag.firstOrNull()
+                logger.v("onProjectInSyncRun, because of $reason")
+            }
+        }
 
         val start = gradle.startParameter
         startTaskNames = start.taskNames.let { taskNames ->
@@ -139,8 +144,8 @@ internal abstract class FluxoKmpConfContext
         }
 
         val isInIde = start.systemPropertiesArgs["idea.active"].tryAsBoolean()
-        if (isInIde && startTaskNames.isEmpty()) {
-            markProjectInSync()
+        if (isInIde && startTaskNames.isEmpty() && !isInCompositeBuild) {
+            markProjectInSync("IDE & no start tasks")
         } else {
             taskGraphBasedProjectSyncDetection()
         }
@@ -154,9 +159,14 @@ internal abstract class FluxoKmpConfContext
         if (isDesugaringEnabled) logger.w("DESUGARING is enabled!")
         if (project.isR8Disabled().get()) logger.w("R8 is disabled! (DISABLE_R8)")
 
-        testsDisabled = project.disableTests().get() || start.excludedTaskNames.let {
-            CHECK_TASK_NAME in it || TEST_TASK_NAME in it
-        }
+        // Disable all tests if:
+        //  - `DISABLE_TESTS` is enabled;
+        //  - `check` or `test` tasks are excluded from the build;
+        //  - the project is in a composite build.
+        testsDisabled = isInCompositeBuild ||
+            project.disableTests().get() ||
+            start.excludedTaskNames.let { CHECK_TASK_NAME in it || TEST_TASK_NAME in it }
+
         if (testsDisabled) {
             var reported = false
             for (name in startTaskNames) {
@@ -182,7 +192,7 @@ internal abstract class FluxoKmpConfContext
     // region Project IDE synchronization detection
 
     internal val isProjectInSyncRun: Boolean
-        get() = projectInSyncSet.isNotEmpty()
+        get() = projectInSyncFlag.isNotEmpty()
 
     /**
      * Configures the project to apply everything that can be applied.
@@ -190,7 +200,10 @@ internal abstract class FluxoKmpConfContext
      *
      * @return `false` if was already done earlier.
      */
-    fun markProjectInSync(): Boolean = projectInSyncSet.add(ProjectInSyncMarker)
+    fun markProjectInSync(reason: String): Boolean =
+        projectInSyncFlag.let { set ->
+            if (set.isEmpty()) set.add(reason) else false
+        }
 
     /**
      * Runs provided `action` if the project is in sync mode now or will be marked for it later.
@@ -209,7 +222,7 @@ internal abstract class FluxoKmpConfContext
                 }
             }
 
-            else -> projectInSyncSet.all {
+            else -> projectInSyncFlag.all {
                 try {
                     context.action()
                 } catch (e: Throwable) {
@@ -231,8 +244,9 @@ internal abstract class FluxoKmpConfContext
                     }
                 }
                 if (hasImportTasksInGraph && !isProjectInSyncRun) {
-                    logger.d("IDE project sync")
-                    markProjectInSync()
+                    val message = "IDE project sync"
+                    logger.d(message)
+                    markProjectInSync(message)
                 }
             }
         }
@@ -252,6 +266,4 @@ internal abstract class FluxoKmpConfContext
         internal const val KOTLIN_IDEA_IMPORT_TASK = "prepareKotlinIdeaImport"
         internal const val KOTLIN_IDEA_BSM_TASK = "prepareKotlinBuildScriptModel"
     }
-
-    private object ProjectInSyncMarker
 }

@@ -22,7 +22,7 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisTasks() {
 private fun FluxoKmpConfContext.registerListDependenciesTasks() {
     val isCalled = hasStartTaskCalled(ALL_DEPS_TASK_NAME, ALL_DEPS_TASK_ALT_NAME)
     if (isCalled) {
-        markProjectInSync()
+        markProjectInSync(":$ALL_DEPS_TASK_NAME task is called")
         rootProject.subprojects { registerTaskAllDeps() }
     }
     onProjectInSyncRun(forceIf = isCalled) {

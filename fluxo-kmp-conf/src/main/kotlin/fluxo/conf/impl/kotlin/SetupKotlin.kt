@@ -170,7 +170,7 @@ internal fun configureKotlinMultiplatform(
 
     val project = conf.project
     val ctx = conf.ctx
-    ctx.loadAndApplyPluginIfNotApplied(id = KMP_PLUGIN_ID, project = project)
+    ctx.loadAndApplyPluginIfNotApplied(id = KOTLIN_MPP_PLUGIN_ID, project = project)
 
     // Add all plugins first, for configuring in next steps.
     val pluginManager = project.pluginManager
@@ -294,7 +294,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
         sourceSets[TEST_SOURCE_SET_NAME].kotlin.srcDir("build/generated/ksp/test/kotlin")
     }
 
-    if (conf.setupVerification != false) {
+    if (conf.setupVerification != false && !ctx.testsDisabled) {
         project.setupVerification(conf)
     }
 }
@@ -315,7 +315,7 @@ private fun KotlinProjectExtension.setupTargets(
             isExperimentalTest = isExperimentalTest,
         )
 
-        val context = conf.ctx
+        val ctx = conf.ctx
         val kc = conf.kotlinConfig
         kotlinOptions.run {
             val platformType = target.platformType
@@ -324,7 +324,7 @@ private fun KotlinProjectExtension.setupTargets(
                 .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
 
             val warningsAsErrors = kc.warningsAsErrors &&
-                !isJs && !isTest && (context.isCI || context.isRelease)
+                !isJs && !isTest && (ctx.isCI || ctx.isRelease)
 
             if (warningsAsErrors) {
                 allWarningsAsErrors = true
@@ -349,7 +349,7 @@ private fun KotlinProjectExtension.setupTargets(
         }
 
         // Disable test compilation if tests are disabled.
-        if (isTest && context.testsDisabled) {
+        if (isTest && ctx.testsDisabled) {
             disableCompilation()
         }
     }

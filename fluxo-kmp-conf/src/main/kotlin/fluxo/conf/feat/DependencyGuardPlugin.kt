@@ -23,7 +23,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
     val isCalled = hasStartTaskCalled(DEPS_GUARD_TASK_NAMES)
     if (isCalled) {
-        markProjectInSync()
+        markProjectInSync("$DEPS_GUARD_EXTENSION_NAME is called")
     }
 
     onProjectInSyncRun(forceIf = isCalled) {
@@ -54,6 +54,7 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
             loadAndApplyPluginIfNotApplied(project = project)
 
             // Guard all non-test, non-benchmark, non-meta configurations
+            @Suppress("MaxLineLength")
             /** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.validatePluginConfiguration */
             dependencyGuard {
                 // TODO: Allow to customize configurations auto-filtration
