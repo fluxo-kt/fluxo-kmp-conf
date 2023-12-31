@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package fluxo.conf.impl
 
 import org.gradle.api.logging.Logger
@@ -64,6 +66,7 @@ internal fun Logger.i(message: String, arg1: Any?) {
 
 
 internal fun Logger.l(message: String) = lifecycle("$CONF $message")
+internal fun Logger.l(message: String, vararg args: Any) = lifecycle("$CONF $message", *args)
 
 
 internal fun Logger.w(message: String, e: Throwable? = null) = warn("$CONF! $message", e)

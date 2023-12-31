@@ -2,6 +2,7 @@ package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
+import fluxo.gradle.ioFile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
@@ -161,7 +162,7 @@ private fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
     // Output Compose Compiler metrics to the specified directory.
     // https://chris.banes.dev/composable-metrics/
     // https://github.com/androidx/androidx/blob/androidx-main/compose/compiler/design/compiler-metrics.md#interpreting-compose-compiler-metrics
-    val buildDir = project.layout.buildDirectory.get().asFile.absolutePath
+    val buildDir = project.layout.buildDirectory.ioFile.absolutePath
     val reportsDir = "$buildDir/reports/compose"
     compilerArgs.addAll("-P", "$p:metricsDestination=$reportsDir")
     compilerArgs.addAll("-P", "$p:reportsDestination=$reportsDir")

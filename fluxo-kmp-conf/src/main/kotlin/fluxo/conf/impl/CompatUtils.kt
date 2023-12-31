@@ -13,7 +13,7 @@ internal inline fun <T, C : Collection<T>, O> C.ifNotEmpty(body: C.() -> O?): O?
     if (isNotEmpty()) body() else null
 
 
-internal fun String.lowercase(): String = toLowerCase(Locale.US)
+internal fun String.lc(): String = toLowerCase(Locale.US)
 
 internal fun Char.uppercaseChar(): Char = toUpperCase()
 

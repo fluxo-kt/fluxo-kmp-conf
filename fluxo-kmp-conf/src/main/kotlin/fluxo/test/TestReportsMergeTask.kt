@@ -1,5 +1,6 @@
 package fluxo.test
 
+import fluxo.gradle.ioFile
 import groovy.time.TimeCategory
 import java.io.FileOutputStream
 import java.util.Date
@@ -39,7 +40,7 @@ internal abstract class TestReportsMergeTask : DefaultTask() {
         reportService.clear()
 
         logger.info("{} tests", testResults.size)
-        val outputFile = output.get().asFile.absoluteFile
+        val outputFile = output.ioFile.absoluteFile
         logger.info("Output = {}", outputFile)
 
         var totalTests = 0L

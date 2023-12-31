@@ -3,6 +3,7 @@ package fluxo.conf
 import fluxo.conf.MergeDetektBaselinesTask.Companion.TASK_NAME
 import fluxo.conf.impl.i
 import fluxo.conf.impl.l
+import fluxo.gradle.ioFile
 import io.github.detekt.tooling.api.BaselineProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
@@ -19,11 +20,14 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 /**
  * Collects all generated baselines and merges them into the global one.
  *
- * This is only configured to run when the [TASK_NAME] task name is passed in, as detekt reuses the
- * `baseline` argument for both the input file to regular detekt tasks and output file of its `create*` tasks. Since we
- * don't want the created tasks to overwrite each other into the same output task, we dynamically configure this as
- * needed. When [TASK_NAME] is specified, all detekt baselines are pointed to an intermediate output file in that
- * project's build directory, and the misc "detektBaseline" tasks are wired to have their outputs to be inputs to this
+ * This is only configured to run when the [TASK_NAME] task name is passed in,
+ * as detekt reuses the `baseline` argument for both the input file to regular
+ * detekt tasks and output file of its `create*` tasks.
+ * Since we don't want the created tasks to overwrite each other into the same
+ * output task, we dynamically configure this as needed.
+ * When [TASK_NAME] is specified, all detekt baselines are pointed to an
+ * intermediate output file in that project's build directory, and the misc
+ * "detektBaseline" tasks are wired to have their outputs to be inputs to this
  * task's [baselineFiles].
  *
  * Usage:
@@ -75,8 +79,10 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
                 bp.read(it.toPath())
             }
             .reduce { acc, baseline ->
+                val manuallySuppressed = acc.manuallySuppressedIssues +
+                    baseline.manuallySuppressedIssues
                 bp.of(
-                    manuallySuppressedIssues = acc.manuallySuppressedIssues + baseline.manuallySuppressedIssues,
+                    manuallySuppressedIssues = manuallySuppressed,
                     currentIssues = acc.currentIssues + baseline.currentIssues,
                 )
             }
@@ -85,7 +91,7 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
             currentIssues = merged.currentIssues.toSortedSet(),
         )
 
-        val outputFile = outputFile.get().asFile
+        val outputFile = outputFile.ioFile
         bp.write(targetPath = outputFile.toPath(), baseline = sorted)
         logger.l("Merged Detekt baseline files to ${outputFile.absolutePath}")
     }
