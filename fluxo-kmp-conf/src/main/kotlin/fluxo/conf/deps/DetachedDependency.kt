@@ -18,8 +18,9 @@ internal fun Project.detachedDependency(dependencyNotation: Any): Configuration 
 internal fun Project.detachedDependency(vararg dependencyNotation: Any): Configuration =
     detachedDependency(dependencyNotation)
 
+@Suppress("SpreadOperator")
 @JvmName("detachedDependencyArray")
 internal fun Project.detachedDependency(dependencyNotations: Array<out Any>): Configuration =
     configurations.detachedConfiguration(
-        *dependencyNotations.mapToArray { dependencies.create(it) },
+        *dependencyNotations.mapToArray(dependencies::create),
     )

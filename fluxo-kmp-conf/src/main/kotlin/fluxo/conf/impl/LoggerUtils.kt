@@ -6,7 +6,9 @@ import org.gradle.api.logging.Logger
 
 
 private const val TAG = "FluxoKmpConf"
-private const val CONF = "> Conf"
+private const val LOG_TASK_PREFIX = "> "
+private const val CONF = LOG_TASK_PREFIX + "Conf"
+private const val FLUXO = "Fluxo"
 
 @Volatile
 internal var SHOW_DEBUG_LOGS = false
@@ -14,17 +16,17 @@ internal var SHOW_DEBUG_LOGS = false
 
 internal fun Logger.t(message: String) {
     if (SHOW_DEBUG_LOGS) {
-        lifecycle("> Fv: {}", message)
+        lifecycle("{}Fv: {}", LOG_TASK_PREFIX, message)
     } else {
-        trace("> {} {}", TAG, message)
+        trace("{}{} {}", LOG_TASK_PREFIX, TAG, message)
     }
 }
 
 internal fun Logger.t(message: String, e: Throwable?) {
     if (SHOW_DEBUG_LOGS) {
-        lifecycle("> Fv: $message", e)
+        lifecycle("${LOG_TASK_PREFIX}Fv: $message", e)
     } else {
-        trace("> $TAG: $message", e)
+        trace("$LOG_TASK_PREFIX$TAG: $message", e)
     }
 }
 
@@ -33,42 +35,42 @@ internal fun Logger.v(message: String, e: Throwable? = null) = t(message, e)
 
 internal fun Logger.d(message: String, e: Throwable? = null) {
     if (SHOW_DEBUG_LOGS) {
-        lifecycle("> F: $message", e)
+        lifecycle("${LOG_TASK_PREFIX}F: $message", e)
     } else {
-        debug("> $TAG: $message", e)
+        debug("$LOG_TASK_PREFIX$TAG: $message", e)
     }
 }
 
 internal fun Logger.d(message: String, arg1: Any?, arg2: Any?) {
     if (SHOW_DEBUG_LOGS) {
-        lifecycle("> F: $message", arg1, arg2)
+        lifecycle("{}F: $message", LOG_TASK_PREFIX, arg1, arg2)
     } else {
-        debug("> $TAG: $message", arg1, arg2)
+        debug("{}$TAG: $message", LOG_TASK_PREFIX, arg1, arg2)
     }
 }
 
 internal fun Logger.d(message: String, arg1: Any?, arg2: Any?, arg3: Any?) {
     if (SHOW_DEBUG_LOGS) {
-        lifecycle("> F: $message", arg1, arg2, arg3)
+        lifecycle("{}F: $message", LOG_TASK_PREFIX, arg1, arg2, arg3)
     } else {
-        debug("> $TAG: $message", arg1, arg2, arg3)
+        debug("{}$TAG: $message", LOG_TASK_PREFIX, arg1, arg2, arg3)
     }
 }
 
 
 internal fun Logger.i(message: String) {
     if (SHOW_DEBUG_LOGS) {
-        lifecycle("> Fi: {}", message)
+        lifecycle("${LOG_TASK_PREFIX}Fi: {}", message)
     } else {
-        debug("{} {}", CONF, message)
+        info("{} {}", CONF, message)
     }
 }
 
 internal fun Logger.i(message: String, arg1: Any?) {
     if (SHOW_DEBUG_LOGS) {
-        lifecycle("> Fi: $message", arg1)
+        lifecycle("{}Fi: $message", LOG_TASK_PREFIX, arg1)
     } else {
-        debug("$CONF $message", arg1)
+        info("{} $message", CONF, arg1)
     }
 }
 
@@ -80,10 +82,10 @@ internal fun Logger.l(message: String, vararg args: Any) = lifecycle("$CONF $mes
 internal fun Logger.w(message: String, e: Throwable? = null) = warn("w: $CONF! $message", e)
 
 
-internal fun Logger.e(message: String) = error("e: {}! {}", CONF, message)
+internal fun Logger.e(message: String) = error("e: {} {}", FLUXO, message)
 
-internal fun Logger.e(message: String, e: Throwable?) = error("e: $CONF! $message", e)
+internal fun Logger.e(message: String, e: Throwable?) = error("e: $FLUXO $message", e)
 
-internal fun Logger.e(message: String, arg1: Any?) = error("e: {}! $message", CONF, arg1)
+internal fun Logger.e(message: String, arg1: Any?) = error("e : {} $message", FLUXO, arg1)
 
-internal fun Logger.e(message: String, vararg args: Any?) = error("e: $CONF! $message", *args)
+internal fun Logger.e(message: String, vararg args: Any?) = error("e: $FLUXO $message", *args)

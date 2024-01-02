@@ -116,8 +116,8 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         }
 
         // Public API validation
-        if (conf.enableApiValidation != false) {
-            setupBinaryCompatibilityValidator(conf.apiValidation, conf)
+        if (conf.enableApiValidation) {
+            setupBinaryCompatibilityValidator(conf.apiValidationGetter, conf)
         }
 
         // Artifacts minification

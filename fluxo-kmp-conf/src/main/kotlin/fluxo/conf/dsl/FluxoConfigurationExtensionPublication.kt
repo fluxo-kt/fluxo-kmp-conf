@@ -1,7 +1,7 @@
 package fluxo.conf.dsl
 
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.minification.FluxoMinificationConfig
+import fluxo.minification.FluxoShrinkerConfig
 
 public interface FluxoConfigurationExtensionPublication {
 
@@ -88,9 +88,9 @@ public interface FluxoConfigurationExtensionPublication {
     /**
      * Config for the project artifacts publication.
      */
-    public val minificationConfig: FluxoMinificationConfig
+    public val minificationConfig: FluxoShrinkerConfig
 
-    public fun minificationConfig(configure: FluxoMinificationConfig.() -> Unit)
+    public fun minificationConfig(configure: FluxoShrinkerConfig.() -> Unit)
 
 
     /**

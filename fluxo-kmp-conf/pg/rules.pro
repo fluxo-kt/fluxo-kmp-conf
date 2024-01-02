@@ -38,11 +38,15 @@
 
 -verbose
 
--optimizationpasses 5
--mergeinterfacesaggressively
--overloadaggressively
--allowaccessmodification
+-optimizationpasses 7
 -repackageclasses
+
+# Not safe for Android
+-overloadaggressively
+# Suboptimal for library projects
+-allowaccessmodification
+# Can reduce the performance of the processed code on some JVMs
+-mergeinterfacesaggressively
 
 # Dangerous, can increase size of the artifact!
 # https://www.guardsquare.com/manual/configuration/optimizations#aggressive-optimization

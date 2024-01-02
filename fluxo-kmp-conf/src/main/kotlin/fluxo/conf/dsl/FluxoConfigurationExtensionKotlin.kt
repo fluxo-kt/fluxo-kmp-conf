@@ -84,15 +84,32 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
 
     /**
-     * Flag to turn on the KotlinX BinaryCompatibilityValidator plugin
+     * Flag to turn on the KotlinX BinaryCompatibilityValidator plugin.
+     *
+     * API dump is also used to generate R8/ProGuard keep rules!
+     *
+     * Default value: `true`.
+     *
+     * @see fluxo.minification.FluxoShrinkerConfig.autoGenerateKeepRulesFromApis
      */
-    public var enableApiValidation: Boolean?
+    public var enableApiValidation: Boolean
 
-    public var apiValidation: BinaryCompatibilityValidatorConfig?
+    /**
+     * Return the KotlinX BinaryCompatibilityValidator plugin configuration.
+     * Switches on the [enableApiValidation] flag on access.
+     *
+     * @see enableApiValidation
+     */
+    public var apiValidation: BinaryCompatibilityValidatorConfig
 
+    /**
+     * Configure the KotlinX BinaryCompatibilityValidator plugin.
+     * Switches on the [enableApiValidation] flag on call.
+     *
+     * @see enableApiValidation
+     */
     public fun apiValidation(configure: BinaryCompatibilityValidatorConfig.() -> Unit = EMPTY_FUN) {
-        enableApiValidation = true
-        apiValidation = (apiValidation ?: BinaryCompatibilityValidatorConfig()).apply(configure)
+        apiValidation = apiValidation.apply(configure)
     }
 
 

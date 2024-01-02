@@ -211,7 +211,7 @@ internal fun formatSummary(summary: String, fails: List<String> = emptyList()): 
     @Suppress("MagicNumber")
     val sb = StringBuilder(maxLength * (6 + fails.size))
     for (i in 1..(maxLength + 2)) sb.append('_')
-    sb.append('\n')
+    sb.appendLine()
 
     summary.lines().joinTo(sb, separator = "\n", postfix = "\n") {
         "| " + it + " ".repeat(maxLength - it.length) + '|'
@@ -220,9 +220,9 @@ internal fun formatSummary(summary: String, fails: List<String> = emptyList()): 
     for (i in 1..(maxLength + 2)) sb.append('-')
 
     if (fails.isNotEmpty()) {
-        sb.append('\n')
+        sb.appendLine()
         for (fail in fails) {
-            sb.append("| FAILED ").append(fail).append('\n')
+            sb.append("| FAILED ").append(fail).appendLine()
         }
         for (i in 1..(maxLength + 2)) sb.append('-')
     }

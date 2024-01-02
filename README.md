@@ -146,7 +146,21 @@ pluginManagement {
 * https://github.com/mikepenz/AboutLibraries
 * https://github.com/gradle/gradle/issues/26091#issuecomment-1798137734
 * https://github.com/BenWoodworth/Parameterize
-* https://github.com/hbmartin/hbmartin-detekt-rules
+* Detekt rules
+  * Enable more rules aside from baseline
+  * https://github.com/hbmartin/hbmartin-detekt-rules
+  * https://github.com/woltapp/arrow-detekt-rules
+  * https://detekt.dev/docs/rules/libraries/
+  * https://detekt.dev/docs/rules/ruleauthors
+  * https://github.com/topics/detekt-rules
+  * https://detekt.dev/marketplace
+    * https://detekt.dev/marketplace/#unpublished
+  * Create detekt rules for Gradle plugins best practices
+    * e.g., not to use `org.gradle.api.tasks.TaskCollection.matching` when `named` or `withType` is enough.
+    * e.g., a task must not use any Project objects at execution time.
+    * https://docs.gradle.org/8.5/userguide/configuration_cache.html#config_cache:requirements
+* https://github.com/ashtanko/kotlin-app-template/tree/main
+  * Github Action + git-hook + Issues Template
 * https://github.com/slackhq/slack-gradle-plugin/
   * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.13.0
   * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.14.0
@@ -163,7 +177,7 @@ pluginManagement {
   * https://t.me/c/1198043993/3696
   * https://edmundkirwan.com/general/cdd.html
   * https://edmundkirwan.com/general/c-and-c.html
-* https://github.com/VKCOM/vkompose/
+* __https://github.com/VKCOM/vkompose/__
   * https://mobiusconf.com/talks/0beebbbd16bf4358ab2a1b60cabf57a1
   * https://t.me/compose_broadcast/202
   * https://t.me/int_ax/47
@@ -188,6 +202,8 @@ pluginManagement {
   * https://github.com/Kotlin/kotlinx.coroutines/blob/d12eb45/buildSrc/src/main/kotlin/Java9Modularity.kt
 * Common utils
   * https://github.com/aminography/CommonUtils/tree/1bfbe2d/library/src/main/java/com/aminography/commonutils
+* States and Events
+  * Circuit: https://slackhq.github.io/circuit/states-and-events/
 </details>
 
 

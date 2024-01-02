@@ -8,8 +8,8 @@ import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.impl.v
-import fluxo.minification.FluxoMinificationConfig
-import fluxo.minification.FluxoMinificationConfigImpl
+import fluxo.minification.FluxoShrinkerConfig
+import fluxo.minification.FluxoShrinkerConfigImpl
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.gradle.api.Project
@@ -98,21 +98,21 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
 
 
     @get:Input
-    val minificationConfigProp: Property<FluxoMinificationConfig?>
-    override var minificationConfig: FluxoMinificationConfig
+    val minificationConfigProp: Property<FluxoShrinkerConfig?>
+    override var minificationConfig: FluxoShrinkerConfig
         get() {
             var mc = minificationConfigProp.orNull ?: parent?.minificationConfig
             if (mc != null) {
                 return mc
             }
             val objects = project.objects
-            mc = objects.newInstance(FluxoMinificationConfigImpl::class.java, objects)
+            mc = objects.newInstance(FluxoShrinkerConfigImpl::class.java, objects)
             minificationConfigProp.set(mc)
             return mc
         }
         set(value) = minificationConfigProp.set(value)
 
-    override fun minificationConfig(configure: FluxoMinificationConfig.() -> Unit) {
+    override fun minificationConfig(configure: FluxoShrinkerConfig.() -> Unit) {
         minificationConfig.apply(configure)
     }
 

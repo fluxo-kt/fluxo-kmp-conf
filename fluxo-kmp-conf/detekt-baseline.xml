@@ -6,14 +6,14 @@
     <ID>ComplexCondition:SetupTestsReport.kt$!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()</ID>
     <ID>CyclomaticComplexMethod:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
-    <ID>ForbiddenComment:AbstractMinificationTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
-    <ID>ForbiddenComment:AbstractMinificationTask.kt$AbstractMinificationTask$// FIXME: Move mapping to the output dir</ID>
-    <ID>ForbiddenComment:AbstractMinificationTask.kt$AbstractMinificationTask$// TODO: Debugging</ID>
-    <ID>ForbiddenComment:AbstractMinificationTask.kt$AbstractMinificationTask$// TODO: Process output and print only main information if not verbose</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Move mapping to the output dir</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Debugging</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Process output and print only main information if not verbose</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget.Configure$// TODO: Detect applied plugin (lib/app) and use appropriate container?</ID>
     <ID>ForbiddenComment:AppleIosTarget.kt$// FIXME: Public hierarchy of targets for easier configuration</ID>
-    <ID>ForbiddenComment:ConfigureProguardTask.kt$// TODO: Allow to configure ProGuard version</ID>
+    <ID>ForbiddenComment:ConfigureProguardTask.kt$// TODO: ProGuard/R8 configuration improvements</ID>
     <ID>ForbiddenComment:ConfigureProguardTask.kt$// TODO: dProtect obfuscator</ID>
     <ID>ForbiddenComment:ContainerImpl.kt$ContainerImpl$// TODO: Utilize version available from PluginDependency</ID>
     <ID>ForbiddenComment:DependencyAnalysisPlugin.kt$// TODO: no need to declare transitive dependencies for the final app module</ID>
@@ -43,6 +43,10 @@
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
+    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// FIXME: Finalize API reports generation with this task</ID>
+    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// FIXME: Run tests with minified artifacts</ID>
+    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// FIXME: Support R8 minification</ID>
+    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// FIXME: Support replacing original artifacts with minified ones</ID>
     <ID>ForbiddenComment:SetupArtifactsMinification.kt$// TODO: Support Android minification with ProGuard</ID>
     <ID>ForbiddenComment:SetupArtifactsMinification.kt$// TODO: Support KMP JVM target minification with ProGuard</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
@@ -119,9 +123,6 @@
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>
-    <ID>SpreadOperator:ConfigureProguardTask.kt$(*coords)</ID>
-    <ID>SpreadOperator:ConfigureProguardTask.kt$(*it)</ID>
-    <ID>SpreadOperator:DetachedDependency.kt$( *dependencyNotations.mapToArray { dependencies.create(it) }, )</ID>
     <ID>SpreadOperator:ExternalToolRunner.kt$ExternalToolRunner$(*args.toTypedArray())</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>SwallowedException:DependencyHandlerUtils.kt$e: Throwable</ID>

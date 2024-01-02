@@ -10,6 +10,8 @@ import fluxo.conf.data.BuildConstants.KOTLINX_BCV_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.KOTLINX_BCV_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
+import fluxo.conf.dsl.DEFAULT_CONSTRUCTOR_MARKER_CLASS
+import fluxo.conf.dsl.JVM_SYNTHETIC_CLASS
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
@@ -19,6 +21,7 @@ import fluxo.conf.impl.withType
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 internal fun setupBinaryCompatibilityValidator(
     config: BinaryCompatibilityValidatorConfig?,
@@ -69,12 +72,16 @@ private fun Project.setupKmpBinaryCompatibilityValidator(
         )
     }
 
-    tasks.withType<KotlinApiCompareTask> {
-        val target = getTargetForTaskName(taskName = name)
-        if (target != null) {
-            enabled = ctx.isMultiplatformApiTargetAllowed(target)
-            if (!enabled) {
-                logger.l("API check $this disabled!")
+    // API checks are available only for JVM and Android targets.
+    if (!ctx.isTargetEnabled(KmpTargetCode.JVM) || !ctx.isTargetEnabled(KmpTargetCode.ANDROID)) {
+        tasks.withType<KotlinApiCompareTask> {
+            val target = getTargetForTaskName(taskName = name)
+            if (target != null) {
+                val isAllowed = ctx.isMultiplatformApiTargetAllowed(target)
+                if (!isAllowed && enabled) {
+                    enabled = false
+                    logger.l("API check $this disabled!")
+                }
             }
         }
     }
@@ -92,14 +99,20 @@ private fun Project.setupBinaryCompatibilityValidator(
         version = KOTLINX_BCV_PLUGIN_VERSION,
         catalogPluginIds = arrayOf(KOTLINX_BCV_PLUGIN_ALIAS, KOTLINX_BCV_PLUGIN_ALIAS2),
         project = this,
+        // Explicit classpath for direct plugin classes interaction.
         canLoadDynamically = false,
     ).orThrow()
 
-    config ?: return
     configureExtension<ApiValidationExtension>(KOTLINX_BCV_EXTENSION_NAME) {
-        ignoredPackages += config.ignoredPackages
-        nonPublicMarkers += config.nonPublicMarkers
-        ignoredClasses += config.ignoredClasses
+        if (config != null) {
+            ignoredPackages += config.ignoredPackages
+            nonPublicMarkers += config.nonPublicMarkers
+            ignoredClasses += config.ignoredClasses
+        } else {
+            nonPublicMarkers.add(JVM_SYNTHETIC_CLASS)
+            // Sealed classes constructors are not actually public
+            ignoredClasses.add(DEFAULT_CONSTRUCTOR_MARKER_CLASS)
+        }
     }
 }
 
@@ -121,11 +134,29 @@ private fun FluxoKmpConfContext.isMultiplatformApiTargetAllowed(target: ApiTarge
         ApiTarget.JS -> isTargetEnabled(KmpTargetCode.JS)
     }
 
+
 private enum class ApiTarget {
     ANDROID,
     JVM,
     JS,
 }
+
+
+/**
+ * @see kotlinx.validation.configureCheckTasks
+ * @see kotlinx.validation.KotlinApiBuildTask
+ */
+internal fun Task.bindToApiDumpTasks() {
+    val project = project
+    val tasks = project.tasks
+    project.plugins.withId(KOTLINX_BCV_PLUGIN_ID) {
+        val apiDumpTasks = tasks.matching {
+            it.name.run { startsWith("api") && endsWith("Dump") }
+        }
+        dependsOn(apiDumpTasks)
+    }
+}
+
 
 /** @see fluxo.bcvjs.FluxoBcvJsPlugin */
 private const val FLUXO_BCV_JS_PLUGIN_CLASS_NAME = "fluxo.bcvjs.FluxoBcvJsPlugin"
@@ -138,3 +169,5 @@ private const val KOTLINX_BCV_EXTENSION_NAME = "apiValidation"
 
 private const val CHECK_TASK = "apiCheck"
 private const val DUMP_TASK = "apiDump"
+
+internal const val API_DIR = kotlinx.validation.API_DIR // "api"

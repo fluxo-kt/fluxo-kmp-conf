@@ -1,9 +1,15 @@
 
-# Keep and adapt Kotlin metadata, allow reflection to work
+# Keep and adapt Kotlin metadata, allow reflection to work.
 #-keep,allowoptimization class kotlin.Metadata
 
 -keep,allowoptimization public class * {
     public protected *;
+}
+
+# Allow unused input files parameters for Gradle tasks.
+# Needed for cache invalidation.
+-keepclassmembers,allowoptimization class * {
+    @org.gradle.api.tasks.InputFiles ** get**();
 }
 
 -keepclassmembers,allowoptimization enum * {

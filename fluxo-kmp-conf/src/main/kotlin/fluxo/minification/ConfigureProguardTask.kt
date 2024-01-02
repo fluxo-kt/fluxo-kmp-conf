@@ -5,16 +5,19 @@ import fluxo.conf.data.BuildConstants.PROGUARD_CORE
 import fluxo.conf.data.BuildConstants.PROGUARD_PLUGIN
 import fluxo.conf.deps.detachedDependency
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.get
 import fluxo.conf.impl.kotlin.KOTLIN_JVM_PLUGIN_ID
 import fluxo.conf.impl.kotlin.KOTLIN_MPP_PLUGIN_ID
 import fluxo.conf.impl.kotlin.javaSourceSets
 import fluxo.conf.impl.kotlin.mppExt
+import fluxo.conf.impl.lc
+import fluxo.conf.impl.logDependency
 import fluxo.conf.impl.register
+import fluxo.conf.impl.v
 import fluxo.conf.jvm.JvmFiles
 import fluxo.conf.jvm.JvmFilesProvider
 import fluxo.gradle.ioFile
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -22,29 +25,18 @@ import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal fun Project.registerProguardTask(
     conf: FluxoConfigurationExtensionImpl,
-    parents: Array<out Any>? = null,
-) = tasks.register<AbstractMinificationTask>(PRO_GUARD_TASK_NAME) {
-    configureProguardTask(conf, parents)
-}
-
-private fun AbstractMinificationTask.configureProguardTask(
-    conf: FluxoConfigurationExtensionImpl,
-    parents: Array<out Any>?,
-) {
-    if (SHOW_DEBUG_LOGS) {
+    parents: List<Any>? = null,
+) = tasks.register<AbstractShrinkerTask>(PRO_GUARD_TASK_NAME) {
+    val isVerbose = logger.isInfoEnabled
+    if (isVerbose) {
         verbose.set(true)
     }
 
-    parents?.let { dependsOn(*it) }
+    parents?.let { dependsOn(it) }
 
-    val tool = "ProGuard"
-    toolName.set(tool)
+    toolName.set(TOOL_NAME)
 
-    // TODO: Allow to configure ProGuard version
-    val project = project
-    val coords = arrayOf(PROGUARD_PLUGIN, PROGUARD_CORE)
-    toolCoordinates.set(coords.joinToString())
-    toolJars.from(project.detachedDependency(*coords))
+    configureProguardMavenCoordinates(conf, isVerbose)
 
     val settings = conf.minificationConfig
     configurationFiles.from(settings.configurationFiles)
@@ -53,9 +45,9 @@ private fun AbstractMinificationTask.configureProguardTask(
     // We want to disable obfuscation by default, because often
     // it is not needed, but makes troubleshooting much harder.
     // If obfuscation is turned off by default,
-    // enabling (`isObfuscationEnabled.set(true)`) seems much better,
+    // enabling (`isObfuscationEnabled.set(true)`) seems much better
     // than disabling obfuscation disabling (`dontObfuscate.set(false)`).
-    // That's why a task property is follows ProGuard design,
+    // That's why a task property follows ProGuard design,
     // when our DSL does the opposite.
     dontobfuscate.set(settings.obfuscate.map { !it })
     dontoptimize.set(settings.optimize.map { !it })
@@ -75,8 +67,46 @@ private fun AbstractMinificationTask.configureProguardTask(
     }
 }
 
-private fun AbstractMinificationTask.useClasspathFiles(
-    fn: AbstractMinificationTask.(JvmFiles) -> Unit,
+private fun AbstractShrinkerTask.configureProguardMavenCoordinates(
+    conf: FluxoConfigurationExtensionImpl,
+    isVerbose: Boolean,
+) {
+    val tool = TOOL_NAME
+    val toolLc = tool.lc()
+    val project = project
+    val coords = PROGUARD_PLUGIN.let {
+        var coords = it
+        var version = conf.ctx.libs.v(toolLc)
+        val parts = it.split(':', limit = 3)
+        @Suppress("MagicNumber")
+        if (parts.size == 3) {
+            when (version) {
+                null -> version = parts[2]
+                else -> coords = "${parts[0]}:${parts[1]}:$version"
+            }
+        } else if (version != null) {
+            coords += ":$version"
+        }
+        if (!isVerbose) {
+            notifyThatToolIsRunning(tool, version)
+        }
+        arrayOf(coords, PROGUARD_CORE)
+    }.onEach { notation ->
+        project.logDependency(toolLc, notation)
+    }
+    toolCoordinates.set(coords.joinToString())
+    toolJars.from(project.detachedDependency(coords))
+}
+
+private fun DefaultTask.notifyThatToolIsRunning(tool: String, version: String? = null) {
+    doFirst {
+        val v = if (version != null) " v$version" else ""
+        logger.lifecycle("$tool$v running ...")
+    }
+}
+
+private fun AbstractShrinkerTask.useClasspathFiles(
+    fn: AbstractShrinkerTask.(JvmFiles) -> Unit,
 ) {
     val project = project
     if (project.pluginManager.hasPlugin(KOTLIN_MPP_PLUGIN_ID)) {
@@ -110,22 +140,25 @@ private fun AbstractMinificationTask.useClasspathFiles(
     }
 }
 
-private fun AbstractMinificationTask.useClasspathFiles(
+private fun AbstractShrinkerTask.useClasspathFiles(
     provider: JvmFilesProvider,
-    fn: AbstractMinificationTask.(JvmFiles) -> Unit,
+    fn: AbstractShrinkerTask.(JvmFiles) -> Unit,
 ) {
     provider.jvmCompileFiles(project)
         .configureUsageBy(this, fn)
 }
 
+private const val TOOL_NAME = "ProGuard"
 
-private const val PRO_GUARD_TASK_NAME = "minifyWithProguardJar"
+// minifyWithProguardJar
+private const val PRO_GUARD_TASK_NAME = SHRINKER_TASK_PREFIX + "ProguardJar"
 
-// https://github.com/Guardsquare/proguard/tree/8afa59e/gradle-plugin/src/main
-// https://github.com/JetBrains/kotlin/blob/0926eba/libraries/tools/kotlin-main-kts/build.gradle.kts#L84
-// https://github.com/JetBrains/compose-multiplatform/blob/50d45f3/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/internal/configureJvmApplication.kt#L241
-// https://github.com/JetBrains/compose-multiplatform/blob/b67dde7/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/tasks/AbstractProguardTask.kt#L22
-// https://github.com/TWiStErRob/net.twisterrob.inventory/blob/cc4eb02/gradle/plugins-inventory/src/main/kotlin/net/twisterrob/inventory/build/unfuscation/UnfuscateTask.kt#L33
+// TODO: ProGuard/R8 configuration improvements
+//  https://github.com/Guardsquare/proguard/tree/8afa59e/gradle-plugin/src/main
+//  https://github.com/JetBrains/kotlin/blob/0926eba/libraries/tools/kotlin-main-kts/build.gradle.kts#L84
+//  https://github.com/JetBrains/compose-multiplatform/blob/50d45f3/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/internal/configureJvmApplication.kt#L241
+//  https://github.com/JetBrains/compose-multiplatform/blob/b67dde7/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/tasks/AbstractProguardTask.kt#L22
+//  https://github.com/TWiStErRob/net.twisterrob.inventory/blob/cc4eb02/gradle/plugins-inventory/src/main/kotlin/net/twisterrob/inventory/build/unfuscation/UnfuscateTask.kt#L33
 
 // TODO: dProtect obfuscator
 //  https://github.com/open-obfuscator/dProtect

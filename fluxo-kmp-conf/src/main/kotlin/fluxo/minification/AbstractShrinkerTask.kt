@@ -4,7 +4,6 @@ package fluxo.minification
 
 import fluxo.conf.impl.e
 import fluxo.conf.impl.jvmToolFile
-import fluxo.conf.impl.l
 import fluxo.conf.impl.lc
 import fluxo.conf.impl.w
 import fluxo.external.AbstractExternalFluxoTask
@@ -21,6 +20,7 @@ import java.io.Writer
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -47,7 +47,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
  */
 @CacheableTask
 @Suppress("LeakingThis")
-internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
+internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:InputFiles
     @get:CompileClasspath
@@ -82,6 +82,19 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val defaultRulesFile: RegularFileProperty = objects.fileProperty()
 
+    /**
+     * Internal dependency on all R8/ProGuard rules files.
+     * Needed to invalidate the task when any of the rules files is changed.
+     */
+    @get:Optional
+    @get:InputFiles
+    @Suppress("unused")
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val rulesFile: Provider<FileCollection> = defaultRulesFile.map { file ->
+        objects.fileTree().from(file.asFile.parentFile)
+            .filter { it.path.endsWith(".pro") }
+    }
+
     @get:Input
     val toolCoordinates: Property<String> = objects.notNullProperty()
 
@@ -115,15 +128,21 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
     @get:LocalState
     protected val workingTmpDir: Provider<Directory>
 
+    @get:LocalState
+    protected val reportsDir: Provider<Directory>
+
     init {
         group = LifecycleBasePlugin.BUILD_GROUP
-        description = "Minify final JVM artifact"
+        description = "Shrink and optimize final JVM artifact"
 
         val layout = project.layout
         val buildDir = layout.buildDirectory
         val toolNameLc = toolName.map { it.lc() }
         workingTmpDir = buildDir.zip(toolNameLc) { d, tool ->
             d.dir("tmp/minify/$tool")
+        }
+        reportsDir = buildDir.zip(toolNameLc) { d, tool ->
+            d.dir("reports/minify/$tool")
         }
         logsDir.set(
             buildDir.zip(toolNameLc) { d, tool ->
@@ -136,7 +155,8 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
             },
         )
 
-        defaultRulesFile.set(layout.projectDirectory.file("pg/rules.pro"))
+        val projectDirectory = layout.projectDirectory
+        defaultRulesFile.set(projectDirectory.file("pg/rules.pro"))
     }
 
     @TaskAction
@@ -144,7 +164,8 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
         val javaHome = File(javaHome.get())
         val destinationDir = destinationDir.ioFile.absoluteFile
         val workingDir = workingTmpDir.get()
-        fileOperations.clearDirs(destinationDir, workingDir.asFile)
+        val reportsDir = reportsDir.get()
+        fileOperations.clearDirs(destinationDir, workingDir.asFile, reportsDir.asFile)
 
         // todo: can be cached for a jdk
         val jmods = getJmods(javaHome)
@@ -190,7 +211,7 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
         writeJarsConfigurationFile(jarsConfFile, inputToOutputJars, libraryJarsFilter, jmods)
 
         val rootConfigurationFile = workingDir.file("root-config.pro").asFile
-        writeRootConfiguration(rootConfigurationFile, workingDir, jarsConfFile)
+        writeRootConfiguration(rootConfigurationFile, reportsDir, jarsConfFile)
 
         val javaBinary = jvmToolFile(toolName = "java", javaHome = javaHome)
         val args = getArgs(rootConfigurationFile)
@@ -199,7 +220,7 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
         runExternalTool(
             tool = javaBinary,
             args = args,
-            logToConsole = ExternalToolRunner.LogToConsole.Always,
+            logToConsole = ExternalToolRunner.LogToConsole.OnlyWhenVerbose,
         ).assertNormalExitValue()
 
         reportSavings(destinationDir, initialSize)
@@ -228,8 +249,8 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
         @Suppress("MagicNumber")
         val savedPercent = (1f - (finalSize / initialSize.toFloat())) * 100f
         val savedBytes = readableByteSize(initialSize - finalSize)
-        logger.l(
-            "{} results: {} -> {} (saved {}%, {})",
+        logger.lifecycle(
+            "> {} results: {} -> {} (saved {}%, {})",
             toolName.get(),
             initial,
             final,
@@ -259,7 +280,7 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
 
     private fun writeRootConfiguration(
         file: File,
-        workingDir: Directory,
+        reportsDir: Directory,
         jarsConfigurationFile: File,
     ) = file.bufferedWriter().use { writer ->
         jvmTarget.orNull?.let { jvmTarget ->
@@ -275,16 +296,16 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
         }
 
         // FIXME: Move mapping to the output dir
-        val mappingFile = workingDir.file("mapping.txt").asFile
+        val mappingFile = reportsDir.file("mapping.txt").asFile
         writer.ln("-printmapping '${mappingFile.normalizedPath()}'")
 
-        val seedsFile = workingDir.file("seeds.txt").asFile
+        val seedsFile = reportsDir.file("seeds.txt").asFile
         writer.ln("-printseeds '${seedsFile.normalizedPath()}'")
 
-        val usageFile = workingDir.file("usage.txt").asFile
+        val usageFile = reportsDir.file("usage.txt").asFile
         writer.ln("-printusage '${usageFile.normalizedPath()}'")
 
-        val finalConfFile = workingDir.file("final-config.pro").asFile
+        val finalConfFile = reportsDir.file("final-config.pro").asFile
         writer.ln("-printconfiguration '${finalConfFile.normalizedPath()}'")
 
         // TODO: Debugging
@@ -342,16 +363,15 @@ internal abstract class AbstractMinificationTask : AbstractExternalFluxoTask() {
         }
     }
 
-    private fun Writer.ln(s: String) {
-        write(s)
-        write("\n")
-    }
+    private fun Writer.ln(s: String) = appendLine(s)
 }
 
 private fun getJmods(javaHome: File) =
     javaHome.resolve("jmods").walk().filter {
         it.isFile && it.path.endsWith("jmod", ignoreCase = true)
     }
+
+internal const val SHRINKER_TASK_PREFIX = "minifyWith"
 
 // TODO: Move into a separate file, loaded from resources
 // language=ShrinkerConfig

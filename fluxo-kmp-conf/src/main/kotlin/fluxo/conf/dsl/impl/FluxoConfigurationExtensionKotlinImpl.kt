@@ -236,15 +236,28 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
 
     @get:Input
     val enableApiValidationProp: Property<Boolean?>
-    override var enableApiValidation: Boolean?
-        get() = enableApiValidationProp.orNull ?: parent?.enableApiValidation
+    override var enableApiValidation: Boolean
+        get() = enableApiValidationProp.orNull ?: parent?.enableApiValidation ?: true
         set(value) = enableApiValidationProp.set(value)
 
     @get:Input
     val apiValidationProp: Property<BinaryCompatibilityValidatorConfig?>
-    override var apiValidation: BinaryCompatibilityValidatorConfig?
-        get() = apiValidationProp.orNull ?: parent?.apiValidation
-        set(value) = apiValidationProp.set(value)
+    val apiValidationGetter: BinaryCompatibilityValidatorConfig?
+        get() {
+            return apiValidationProp.orNull
+                ?: (parent as FluxoConfigurationExtensionKotlinImpl?)?.apiValidationGetter
+        }
+    override var apiValidation: BinaryCompatibilityValidatorConfig
+        get() {
+            return apiValidationGetter
+                ?: BinaryCompatibilityValidatorConfig().also {
+                    apiValidation = it
+                }
+        }
+        set(value) {
+            enableApiValidation = true
+            apiValidationProp.set(value)
+        }
 
 
     @get:Input
