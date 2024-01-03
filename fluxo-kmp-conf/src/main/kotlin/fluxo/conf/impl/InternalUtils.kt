@@ -30,9 +30,8 @@ private fun Project.envVarValue(name: String): String? {
 }
 
 
-internal fun Project.envOrPropFlag(name: String): Provider<Boolean> {
-    return provider { envOrPropFlagValue(name) }.memoize()
-}
+internal fun Project.envOrPropFlag(name: String): Provider<Boolean> =
+    provider { envOrPropFlagValue(name) }.memoizeSafe()
 
 internal fun Project.envOrPropFlagValue(name: String): Boolean {
     return envVarValue(name) != null || stringPropValue(name).tryAsBoolean()
@@ -40,7 +39,7 @@ internal fun Project.envOrPropFlagValue(name: String): Boolean {
 
 
 internal fun Project.envOrProp(name: String): Provider<String?> {
-    return provider { envOrPropValue(name) }.memoize()
+    return provider { envOrPropValue(name) }.memoizeSafe()
 }
 
 internal fun Project.envOrPropValue(name: String): String? {

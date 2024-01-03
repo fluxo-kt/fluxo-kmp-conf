@@ -8,7 +8,7 @@ import fluxo.conf.impl.envOrPropFlag
 import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.conf.impl.envOrPropValue
 import fluxo.conf.impl.envOrPropValueLenient
-import fluxo.conf.impl.memoize
+import fluxo.conf.impl.memoizeSafe
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
 import org.gradle.api.Project
@@ -96,7 +96,7 @@ public fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
             result = result.substring(0, 7)
         }
         result
-    }.memoize()
+    }.memoizeSafe()
 }
 
 @Suppress("UnstableApiUsage")

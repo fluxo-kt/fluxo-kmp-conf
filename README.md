@@ -160,6 +160,7 @@ pluginManagement {
      is enough (don't early create tasks).
       * https://github.com/gmazzo/gradle-buildconfig-plugin/commit/a21a8b9
     * e.g., a task must not use any Project objects at execution time.
+    * Also, warn on any `org.gradle.internal` usage because its is internal API.
     * https://docs.gradle.org/8.5/userguide/configuration_cache.html#config_cache:requirements
 * https://github.com/ashtanko/kotlin-app-template/tree/main
   * Github Action + git-hook + Issues Template
@@ -196,6 +197,13 @@ pluginManagement {
 * https://github.com/gmazzo/gradle-codeowners-plugin
 * https://github.com/gmazzo/gradle-docker-compose-plugin
 * https://github.com/gmazzo/gradle-report-publications-plugin
+* GitHub CI/CD
+  * Add automatic adding PR comment with Gradle Job Summary
+    * https://github.com/gradle/gradle-build-action/pull/1021/files
+    * https://github.com/gradle/gradle-build-action/issues/1020
+* Stores publishing
+  * https://github.com/chippmann/androidpublisher/
+    * https://github.com/chippmann/androidpublisher/releases/tag/0.3.3
 * CI security scanning of Android app using AppSweep (API KEY REQUIRED)
   * https://github.com/guardsquare/appsweep-gradle
   * https://appsweep.guardsquare.com/

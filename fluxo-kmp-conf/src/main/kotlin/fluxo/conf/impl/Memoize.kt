@@ -2,11 +2,23 @@
 
 package fluxo.conf.impl
 
+import org.gradle.api.Project
 import org.gradle.api.internal.provider.AbstractMinimalProvider
 import org.gradle.api.internal.provider.DefaultValueSourceProviderFactory
 import org.gradle.api.internal.provider.ProviderInternal
 import org.gradle.api.internal.provider.ValueSupplier
 import org.gradle.api.provider.Provider
+
+/** @see memoize */
+context(Project)
+internal fun <T> Provider<T>.memoizeSafe(): Provider<T> {
+    return try {
+        memoize()
+    } catch (e: Throwable) {
+        logger.e("Failed to memoize provider: $e", e)
+        this
+    }
+}
 
 /** @see org.jetbrains.intellij.memoize */
 internal fun <T> Provider<T>.memoize(): Provider<T> = when (this) {
@@ -35,8 +47,6 @@ private class MemoizedProvider<T>(private val delegate: ProviderInternal<T>) :
 
     // the producer is from the source provider
     override fun getProducer() = delegate.producer
-
-    override fun toString(): String = "memoized($delegate)"
 
     override fun calculateOwnValue(valueConsumer: ValueSupplier.ValueConsumer) = memoizedValue.value
 }
