@@ -252,9 +252,9 @@ module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", 
 # Generating BuildConstants for any kind of project
 # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
-build-config = { id = "com.github.gmazzo.buildconfig", version = "5.1.0" }
+build-config = { id = "com.github.gmazzo.buildconfig", version = "5.3.2" }
 
 # Resolve all dependencies used in a Gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases
 # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
-about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.9.2" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.10.0" }

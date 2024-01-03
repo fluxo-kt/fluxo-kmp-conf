@@ -2,7 +2,6 @@ package fluxo.conf.feat
 
 import com.github.gmazzo.buildconfig.BuildConfigTask
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.FluxoKmpConfContext.Companion.KOTLIN_IDEA_BSM_TASK
 import fluxo.conf.FluxoKmpConfContext.Companion.KOTLIN_IDEA_IMPORT_TASK
 import fluxo.conf.data.BuildConstants.BUILD_CONFIG_PLUGIN_ID
 import fluxo.conf.impl.l
@@ -28,8 +27,13 @@ internal fun FluxoKmpConfContext.prepareBuildConfigKmpPlugin(project: Project) {
             val configureSyncTasks: Task.() -> Unit = {
                 dependsOn(buildConfigTasks)
             }
+
+            // Since 5.3.0 it generates build config class at Gradle Sync (IDEA) itself.
+            // But only `prepareKotlinBuildScriptModel` task is used.
+            // https://github.com/gmazzo/gradle-buildconfig-plugin/pull/113/files
+            // https://github.com/gmazzo/gradle-buildconfig-plugin/pull/114/files
             tasks.maybeRegister(KOTLIN_IDEA_IMPORT_TASK, configureSyncTasks)
-            tasks.maybeRegister(KOTLIN_IDEA_BSM_TASK, configureSyncTasks)
+            // tasks.maybeRegister(KOTLIN_IDEA_BSM_TASK, configureSyncTasks)
         }
     }
 }

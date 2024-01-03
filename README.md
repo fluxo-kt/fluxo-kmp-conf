@@ -156,7 +156,9 @@ pluginManagement {
   * https://detekt.dev/marketplace
     * https://detekt.dev/marketplace/#unpublished
   * Create detekt rules for Gradle plugins best practices
-    * e.g., not to use `org.gradle.api.tasks.TaskCollection.matching` when `named` or `withType` is enough.
+    * e.g., not to use `org.gradle.api.tasks.TaskCollection.matching`, `findByName`, etc. when `named` or `withType`
+     is enough (don't early create tasks).
+      * https://github.com/gmazzo/gradle-buildconfig-plugin/commit/a21a8b9
     * e.g., a task must not use any Project objects at execution time.
     * https://docs.gradle.org/8.5/userguide/configuration_cache.html#config_cache:requirements
 * https://github.com/ashtanko/kotlin-app-template/tree/main
