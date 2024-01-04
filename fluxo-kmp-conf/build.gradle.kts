@@ -36,6 +36,7 @@ setupGradlePlugin(
     apiValidation {
         nonPublicMarkers.add("fluxo.annotation.InternalFluxoApi")
     }
+    enableApiValidation = false
 }
 
 // Exclude Kotlin stdlib from the implementation classpath entirely

@@ -14,10 +14,10 @@ fluxo-conf = "0.5.0"
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
 # javaLangTarget 11 required for Android Gradle Plugin and Android Lint.
-javaLangTarget = "11"
-kotlinLangVersion = "1.8"
-kotlinApiVersion = "1.8"
-kotlinCoreLibraries = "1.8.22"
+javaLangTarget = "17"
+kotlinLangVersion = "2.1"
+kotlinApiVersion = "2.1"
+kotlinCoreLibraries = "2.0.0-Beta2"
 
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
