@@ -96,6 +96,7 @@
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: should androidUnitTestDebug depend on androidUnitTest?</ID>
+    <ID>ForbiddenComment:TaskContainerUtils.kt$// TODO: Add method usage when compile against Gradle 8.6+.</ID>
     <ID>ImportOrdering:ExternalToolRunner.kt$import fluxo.util.alsoOutputTo import fluxo.gradle.ioFile import java.io.ByteArrayInputStream import java.io.File import java.time.LocalDateTime import java.time.format.DateTimeFormatter import org.gradle.api.GradleException import org.gradle.api.file.Directory import org.gradle.api.provider.Property import org.gradle.api.provider.Provider import org.gradle.process.ExecOperations import org.gradle.process.ExecResult</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
@@ -105,7 +106,6 @@
     <ID>LongMethod:SetupTestsReport.kt$internal fun FluxoKmpConfContext.setupTestsReport()</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
-    <ID>MaxLineLength:DomainObjectUtils.kt$*</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$"You may want to add it to the classpath in the root build.gradle.kts instead! $example"</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$logger.v("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")</ID>
     <ID>MaxLineLength:PropsAndEnv.kt$if</ID>

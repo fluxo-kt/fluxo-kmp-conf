@@ -44,13 +44,14 @@ internal fun <T : Any> NamedDomainObjectContainer<T>.maybeRegister(
     return entity
 }
 
-internal fun <T : Any> NamedDomainObjectContainer<T>.namedOrNull(
+
+internal fun <T : Any> NamedDomainObjectCollection<T>.namedOrNull(
     name: String,
 ): NamedDomainObjectProvider<T>? {
     return if (has(name)) named(name) else null
 }
 
-internal fun NamedDomainObjectContainer<*>.has(name: String): Boolean = name in names
+internal fun NamedDomainObjectCollection<*>.has(name: String): Boolean = name in names
 
 
 internal inline fun <reified T : Any> PolymorphicDomainObjectContainer<in T>.register(
@@ -76,7 +77,8 @@ internal inline fun <reified U : Any> PolymorphicDomainObjectContainer<in U>.may
 
 
 /**
- * Creates a new [NamedDomainObjectContainer] for managing **named** objects of the specified type [T].
+ * Creates a new [NamedDomainObjectContainer]
+ * for managing **named** objects of the specified type [T].
  *
  * @see org.gradle.api.model.ObjectFactory.domainObjectContainer
  */
