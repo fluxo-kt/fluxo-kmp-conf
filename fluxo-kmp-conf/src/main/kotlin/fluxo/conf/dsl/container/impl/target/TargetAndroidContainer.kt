@@ -31,7 +31,7 @@ internal abstract class TargetAndroidContainer<T>(
 ) : KmpTargetContainerImpl<KotlinAndroidTarget>(context, name, ANDROID_SORT_ORDER),
     KmpTargetContainerImpl.CommonJvm<KotlinAndroidTarget>,
     AndroidTarget<T>
-    where T : CommonExtension<*, *, *, *, *>, T : TestedExtension {
+    where T : CommonExtension<*, *, *, *, *, *>, T : TestedExtension {
 
     internal val lazyAndroid = context.objects.set<T.() -> Unit>()
 

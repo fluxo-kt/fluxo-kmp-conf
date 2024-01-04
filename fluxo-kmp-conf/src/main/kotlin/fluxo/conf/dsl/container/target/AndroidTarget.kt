@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
 public interface AndroidTarget<out T> :
     KotlinTargetContainer<KotlinAndroidTarget>
-    where T : CommonExtension<*, *, *, *, *>, T : TestedExtension {
+    where T : CommonExtension<*, *, *, *, *, *>, T : TestedExtension {
 
     @Deprecated(
         message = "Use `onAndroidExtension` instead.",
