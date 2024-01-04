@@ -7,6 +7,7 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.isRootProject
+import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.withAnyPlugin
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
@@ -17,7 +18,7 @@ internal fun FluxoKmpConfContext.setupVerificationRoot() {
     val mergeLint = mergeLintTask
     val mergeDetekt = mergeDetektTask
     if (mergeLint != null && mergeDetekt != null) {
-        rootProject.tasks.matching { it.name == CHECK_TASK_NAME }
+        rootProject.tasks.namedCompat { it == CHECK_TASK_NAME }
             .configureEach { dependsOn(mergeDetekt, mergeLint) }
     }
 }

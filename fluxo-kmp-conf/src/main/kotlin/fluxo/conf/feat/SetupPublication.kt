@@ -23,6 +23,7 @@ import fluxo.conf.impl.has
 import fluxo.conf.impl.hasExtension
 import fluxo.conf.impl.kotlin.mppExt
 import fluxo.conf.impl.l
+import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.namedOrNull
 import fluxo.conf.impl.register
 import fluxo.conf.impl.the
@@ -391,7 +392,7 @@ private fun Project.setupPublicationRepositoryAndSigning(
     val tasks = tasks
     val jarTasks = arrayOf(
         tasks.withType<JarJvm>(),
-        tasks.matching { it.name.endsWith("Jar") },
+        tasks.namedCompat { it.endsWith("Jar") },
     )
     val signingTasks = when {
         !isSigningEnabled -> null
