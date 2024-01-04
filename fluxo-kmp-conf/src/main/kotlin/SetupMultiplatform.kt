@@ -18,7 +18,7 @@ public fun Project.setupMultiplatform(
     setupCompose: Boolean? = null,
     enableBuildConfig: Boolean? = null,
     optIns: List<String>? = null,
-    configureAndroid: (CommonExtension<*, *, *, *, *>.() -> Unit)? = null,
+    configureAndroid: (CommonExtension<*, *, *, *, *, *>.() -> Unit)? = null,
     kmp: (KmpConfigurationContainerDsl.() -> Unit)? = null,
     body: MultiplatformConfigurator? = null,
 ): Unit = fluxoConfiguration c@{

@@ -1,11 +1,11 @@
-com.android.tools.build:apksig:8.2.0
-com.android.tools.build:apkzlib:8.2.0
-com.android.tools.build:builder-model:8.2.0
-com.android.tools.build:builder:8.2.0
-com.android.tools.build:gradle-api:8.2.0
-com.android.tools.build:gradle:8.2.0
-com.android.tools.build:manifest-merger:31.2.0
-com.android:zipflinger:8.2.0
+com.android.tools.build:apksig:8.4.0-alpha02
+com.android.tools.build:apkzlib:8.4.0-alpha02
+com.android.tools.build:builder-model:8.4.0-alpha02
+com.android.tools.build:builder:8.4.0-alpha02
+com.android.tools.build:gradle-api:8.4.0-alpha02
+com.android.tools.build:gradle:8.4.0-alpha02
+com.android.tools.build:manifest-merger:31.4.0-alpha02
+com.android:zipflinger:8.4.0-alpha02
 com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:1.28.0
 com.autonomousapps:dependency-analysis-gradle-plugin:1.28.0
 com.diffplug.spotless:spotless-lib-extra:2.43.1
@@ -81,4 +81,4 @@ org.jetbrains.kotlin:kotlin-util-io:1.9.22
 org.jetbrains.kotlin:kotlin-util-klib:1.9.22
 org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.13.2
 org.jetbrains.kotlinx:binary-compatibility-validator:0.13.2
-org.ow2.asm:asm:9.2
+org.ow2.asm:asm:9.6
