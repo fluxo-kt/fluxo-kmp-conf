@@ -22,7 +22,7 @@ public interface AppleIosTarget<out T : KotlinNativeTarget> : KotlinTargetContai
         public fun ios(configure: AppleIosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN) {
             iosArm64(configure = configure)
             iosX64(configure = configure)
-            iosSimulatorArm64(action = configure)
+            iosSimulatorArm64(configure = configure)
         }
 
 
@@ -44,7 +44,7 @@ public interface AppleIosTarget<out T : KotlinNativeTarget> : KotlinTargetContai
 
         public fun iosSimulatorArm64(
             targetName: String = "iosSimulatorArm64",
-            action: AppleIosTarget<KotlinNativeTargetWithSimulatorTests>.() -> Unit = EMPTY_FUN,
+            configure: AppleIosTarget<KotlinNativeTargetWithSimulatorTests>.() -> Unit = EMPTY_FUN,
         )
     }
 }

@@ -37,9 +37,9 @@ internal abstract class TargetAppleIosContainer<T : KNT>(
 
         override fun iosSimulatorArm64(
             targetName: String,
-            action: AppleIosTarget<KNTS>.() -> Unit,
+            configure: AppleIosTarget<KNTS>.() -> Unit,
         ) {
-            holder.configure(targetName, ::SimulatorArm64, IOS_SIMULATOR_ARM64, action)
+            holder.configure(targetName, ::SimulatorArm64, IOS_SIMULATOR_ARM64, configure)
         }
     }
 
