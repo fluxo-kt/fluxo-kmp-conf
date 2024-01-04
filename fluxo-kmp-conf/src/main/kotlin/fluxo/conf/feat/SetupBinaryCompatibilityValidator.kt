@@ -27,11 +27,11 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskProvider
 
 internal fun setupBinaryCompatibilityValidator(
-    config: BinaryCompatibilityValidatorConfig?,
     conf: FluxoConfigurationExtensionImpl,
     project: Project = conf.project,
 ) = project.run r@{
     val ctx = conf.ctx
+    val config = conf.apiValidationGetter
     val disabledByRelease = ctx.isRelease && config?.disableForNonRelease == true
     if (disabledByRelease || ctx.testsDisabled) {
         val calledExplicitly = ctx.startTaskNames.any {

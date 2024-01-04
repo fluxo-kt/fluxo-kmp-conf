@@ -5,6 +5,7 @@ import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoConfigurationExtensionKotlin
 import fluxo.conf.impl.v
+import org.gradle.api.GradleException
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -255,6 +256,13 @@ internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExt
                 }
         }
         set(value) {
+            if (enableApiValidationProp.orNull == false) {
+                throw GradleException(
+                    "BinaryCompatibilityValidator is explicitly disabled, " +
+                        "but you are trying to configure it. " +
+                        "Please, enable it first!",
+                )
+            }
             enableApiValidation = true
             apiValidationProp.set(value)
         }
