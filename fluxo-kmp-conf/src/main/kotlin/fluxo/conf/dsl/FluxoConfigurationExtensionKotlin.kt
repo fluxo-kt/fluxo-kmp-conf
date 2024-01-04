@@ -109,7 +109,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * @see enableApiValidation
      */
     public fun apiValidation(configure: BinaryCompatibilityValidatorConfig.() -> Unit = EMPTY_FUN) {
-        apiValidation = apiValidation.apply(configure)
+        apiValidation.apply(configure)
     }
 
 

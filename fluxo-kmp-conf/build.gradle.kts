@@ -35,9 +35,6 @@ setupGradlePlugin(
 
     apiValidation {
         nonPublicMarkers.add("fluxo.annotation.InternalFluxoApi")
-        nonPublicMarkers.add("kotlin.jvm.JvmSynthetic")
-        // sealed classes constructors are not actually public
-        ignoredClasses.add("kotlin.jvm.internal.DefaultConstructorMarker")
     }
 }
 

@@ -130,11 +130,10 @@ internal class KmpConfigurationContainerDslImpl(
             setupBackgroundNativeTests()
         }
     }
-
-    // https://docs.gradle.org/current/userguide/validation_problems.html#implicit_dependency
-    private fun isGradleNotFailingOnImplicitTaskDependencies() =
-        GradleVersion.current() < GradleVersion.version("8.0")
 }
 
-private const val ENABLE_WASM_WASI = false
+// https://docs.gradle.org/current/userguide/validation_problems.html#implicit_dependency
+private fun isGradleNotFailingOnImplicitTaskDependencies() =
+    GradleVersion.current() < GradleVersion.version("8.0")
 
+private const val ENABLE_WASM_WASI = false
