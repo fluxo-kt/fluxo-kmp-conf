@@ -152,7 +152,7 @@ private fun AbstractShrinkerTask.useClasspathFiles(
 
 private const val TOOL_NAME = "ProGuard"
 
-// minifyWithProguardJar
+// shrinkWithProguardJar
 private const val PRO_GUARD_TASK_NAME = SHRINKER_TASK_PREFIX + "ProguardJar"
 
 // TODO: ProGuard/R8 configuration improvements

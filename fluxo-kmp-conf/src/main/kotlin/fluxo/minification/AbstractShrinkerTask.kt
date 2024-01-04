@@ -139,19 +139,19 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val buildDir = layout.buildDirectory
         val toolNameLc = toolName.map { it.lc() }
         workingTmpDir = buildDir.zip(toolNameLc) { d, tool ->
-            d.dir("tmp/minify/$tool")
+            d.dir("tmp/shrink/$tool")
         }
         reportsDir = buildDir.zip(toolNameLc) { d, tool ->
-            d.dir("reports/minify/$tool")
+            d.dir("reports/shrink/$tool")
         }
         logsDir.set(
             buildDir.zip(toolNameLc) { d, tool ->
-                d.dir("logs/minify/$tool")
+                d.dir("logs/shrink/$tool")
             },
         )
         destinationDir.set(
             buildDir.zip(toolNameLc) { d, tool ->
-                d.dir("output/minify/$tool")
+                d.dir("output/shrink/$tool")
             },
         )
 

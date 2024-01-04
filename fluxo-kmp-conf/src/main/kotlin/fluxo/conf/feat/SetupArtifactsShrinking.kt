@@ -16,8 +16,8 @@ internal fun setupArtifactsShrinking(
     val isCalled = conf.ctx.startTaskNames.any {
         it.startsWith(SHRINKER_TASK_PREFIX) || it == SHRINKER_KEEP_GEN_TASK_NAME
     }
-    val minifyArtifacts = conf.shrinkArtifacts
-    if (!minifyArtifacts && !isCalled) {
+    val shrinkArtifacts = conf.shrinkArtifacts
+    if (!shrinkArtifacts && !isCalled) {
         return
     }
 
@@ -43,7 +43,7 @@ internal fun setupArtifactsShrinking(
     // Auto-generate keep rules from API reports
     if (conf.shrinkingConfig.autoGenerateKeepRulesFromApis.get()) {
         val rulesGenRask = p.registerShrinkerKeepRulesGenTask()
-        if (!minifyArtifacts) {
+        if (!shrinkArtifacts) {
             parents += rulesGenRask
         } else {
             runAfter += rulesGenRask
@@ -52,7 +52,7 @@ internal fun setupArtifactsShrinking(
 
     val task = p.registerProguardTask(conf, parents, runAfter)
 
-    if (minifyArtifacts) {
+    if (shrinkArtifacts) {
         tasks.named(CHECK_TASK_NAME) {
             dependsOn(task)
         }
