@@ -6,9 +6,11 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.KotlinSourceSetsReportTask
 import fluxo.conf.impl.ifNotEmpty
 import fluxo.conf.impl.l
+import fluxo.conf.impl.namedOrNull
 import fluxo.conf.impl.register
 import fluxo.conf.impl.withType
 import org.gradle.api.Project
+import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.mpp.HasBinaries
@@ -27,21 +29,25 @@ internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
         rootProject.allprojects {
             plugins.withType<KotlinBasePlugin> {
                 // TODO: @DisableCachingByDefault(because = "Not worth caching")
+                val checkTask = tasks.namedOrNull(CHECK_TASK_NAME)
 
                 tasks.register(TARGETS_TASK) {
                     group = TASK_GROUP
                     description = printTaskDescriptionFor("targets")
                     doLast { printKotlinTargetsInfo() }
+                    checkTask?.let { mustRunAfter(it) }
                 }
                 tasks.register(SOURCES_TASK) {
                     group = TASK_GROUP
                     description = printTaskDescriptionFor("source sets")
                     doLast { printKotlinSourceSetsInfo() }
+                    checkTask?.let { mustRunAfter(it) }
                 }
 
                 tasks.register<KotlinSourceSetsReportTask>(SOURCES_GRAPH_TASK) {
                     group = TASK_GROUP
                     description = printTaskDescriptionFor("source sets", "graph")
+                    checkTask?.let { mustRunAfter(it) }
                 }
             }
         }

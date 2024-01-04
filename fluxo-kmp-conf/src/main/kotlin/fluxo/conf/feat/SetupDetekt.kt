@@ -13,6 +13,7 @@ import fluxo.conf.impl.dependencies
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.e
 import fluxo.conf.impl.l
+import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.register
 import fluxo.conf.impl.splitCamelCase
@@ -194,7 +195,7 @@ internal fun Project.setupDetekt(
             description = "Calls all available Detekt tasks for this project"
             dependsOn(detektTasks)
         }
-        tasks.matching { it.name == CHECK_TASK_NAME }
+        tasks.namedCompat { it == CHECK_TASK_NAME }
             .configureEach { dependsOn(detektAll) }
 
         context.mergeDetektTask?.configure {

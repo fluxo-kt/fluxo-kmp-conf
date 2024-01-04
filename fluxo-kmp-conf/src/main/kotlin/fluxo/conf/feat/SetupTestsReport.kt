@@ -8,6 +8,7 @@ import fluxo.conf.impl.closureOf
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.e
 import fluxo.conf.impl.l
+import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.register
 import fluxo.conf.impl.splitCamelCase
 import fluxo.conf.impl.withType
@@ -59,7 +60,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
 
     project.allprojects {
         if (mergedReportTask != null) {
-            tasks.matching { it.name in COMMON_TEST_TASKS_NAMES }
+            tasks.namedCompat { it in COMMON_TEST_TASKS_NAMES }
                 .configureEach { finalizedBy(mergedReportTask) }
 
             try {
