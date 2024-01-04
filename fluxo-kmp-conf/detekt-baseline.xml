@@ -68,6 +68,7 @@
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: With coil-bom:2.2.2 doesn't work as enforcedPlatform for Android and/or KMP</ID>
     <ID>ForbiddenComment:SetupKotlinExperimentalTestCompilation.kt$// TODO: Find a solution for KMP 2.0</ID>
+    <ID>ForbiddenComment:SetupKotlinJs.kt$// TODO: Uncomment once compiled for Kotlin 2.0</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Allow -Xjdk-release=1.6 with -jvm-target 1.8 once it is supported</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to JvmCompatibility?</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to KotlinConfig and configure in the context</ID>

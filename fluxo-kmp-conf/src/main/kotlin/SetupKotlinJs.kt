@@ -1,5 +1,4 @@
 import fluxo.conf.dsl.container.KotlinTargetContainer
-import org.gradle.api.attributes.Attribute
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
@@ -8,67 +7,62 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 
 
-private val WASM_ATTRIBUTE = Attribute.of("wasmType", String::class.java)
-
 internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget>.() -> Unit =
     {
         target(DEFAULT_COMMON_JS_CONF)
     }
 
 public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
-    if (this is KotlinJsTargetDsl) {
-        defaults()
-    } else if (this is KotlinTargetWithNodeJsDsl) {
-        nodejs {
-            testTimeout(seconds = TEST_TIMEOUT)
-        }
-    }
-
-    // Workaround the attribute error when used both wasmJs and wasmWasi targets.
-    if (this is KotlinWasmTargetDsl) {
-        attributes.attribute(WASM_ATTRIBUTE, targetName)
-    }
-}
-
-public fun KotlinJsTargetDsl.defaults() {
     // set up browser & nodejs environment + test timeouts
-    testTimeout()
+    if (this is KotlinJsTargetDsl) {
+        browser {
+            testTimeout()
+        }
 
-    // Apply Binaryen optimizer to the WASM target
-    if (this is KotlinWasmJsTargetDsl) {
-        applyBinaryen()
+        compilations.configureEach {
+            kotlinOptions {
+                moduleKind = "es"
+                useEsClasses = true
+                sourceMap = true
+                metaInfo = true
+            }
+        }
+        try {
+            useEsModules()
+        } catch (_: Error) {
+        }
+
+        // Generate TypeScript declaration files
+        // https://kotlinlang.org/docs/js-ir-compiler.html#preview-generation-of-typescript-declaration-files-d-ts
+        binaries.executable()
+        generateTypeScriptDefinitions()
     }
 
-    compilations.configureEach {
-        kotlinOptions {
-            moduleKind = "es"
-            useEsClasses = true
-            sourceMap = true
-            metaInfo = true
+    if (this is KotlinTargetWithNodeJsDsl) {
+        nodejs {
+            testTimeout()
         }
     }
 
-    try {
-        useEsModules()
-    } catch (_: Error) {
-    }
-
-    // Generate TypeScript declaration files
-    // https://kotlinlang.org/docs/js-ir-compiler.html#preview-generation-of-typescript-declaration-files-d-ts
-    binaries.executable()
-    generateTypeScriptDefinitions()
-}
-
-public fun KotlinJsTargetDsl.testTimeout(seconds: Int = TEST_TIMEOUT) {
-    browser {
-        testTimeout(seconds)
-    }
-    nodejs {
-        testTimeout(seconds)
-    }
-    if (ENABLE_D8 && this is KotlinWasmJsTargetDsl) {
-        d8 {
-            testTimeout(seconds)
+    if (this is KotlinWasmJsTargetDsl) {
+        if (ENABLE_D8) {
+            d8 {
+                testTimeout()
+            }
+        }
+        // Apply Binaryen optimizer to the WASM target
+        applyBinaryen()
+    } else {
+        try {
+            @Suppress("ControlFlowWithEmptyBody")
+            if (this is KotlinWasmTargetDsl) {
+                // TODO: Uncomment once compiled for Kotlin 2.0
+                // Apply Binaryen optimizer to the WASM target
+//                applyBinaryen()
+//
+//                binaries.executable()
+            }
+        } catch (_: Error) {
         }
     }
 }
