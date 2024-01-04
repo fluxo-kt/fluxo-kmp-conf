@@ -10,13 +10,13 @@ import fluxo.minification.registerShrinkerKeepRulesGenTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 @Suppress("ReturnCount")
-internal fun setupArtifactsMinification(
+internal fun setupArtifactsShrinking(
     conf: FluxoConfigurationExtensionImpl,
 ) {
     val isCalled = conf.ctx.startTaskNames.any {
         it.startsWith(SHRINKER_TASK_PREFIX) || it == SHRINKER_KEEP_GEN_TASK_NAME
     }
-    val minifyArtifacts = conf.minifyArtifacts
+    val minifyArtifacts = conf.shrinkArtifacts
     if (!minifyArtifacts && !isCalled) {
         return
     }
@@ -38,19 +38,28 @@ internal fun setupArtifactsMinification(
 
     val tasks = p.tasks
     val parents = mutableListOf<Any>("jar")
+    val runAfter = mutableListOf<Any>()
 
     // Auto-generate keep rules from API reports
-    if (conf.minificationConfig.autoGenerateKeepRulesFromApis.get()) {
-        // FIXME: Finalize API reports generation with this task
-        parents += p.registerShrinkerKeepRulesGenTask()
+    if (conf.shrinkingConfig.autoGenerateKeepRulesFromApis.get()) {
+        val rulesGenRask = p.registerShrinkerKeepRulesGenTask()
+        if (!minifyArtifacts) {
+            parents += rulesGenRask
+        } else {
+            runAfter += rulesGenRask
+        }
     }
 
-    val task = p.registerProguardTask(conf, parents)
+    val task = p.registerProguardTask(conf, parents, runAfter)
 
     if (minifyArtifacts) {
         tasks.named(CHECK_TASK_NAME) {
             dependsOn(task)
         }
     }
+
+    // FIXME: Support R8 minification
+    // FIXME: Support replacing original artifacts with minified ones
+    // FIXME: Run tests with minified artifacts
 }
 

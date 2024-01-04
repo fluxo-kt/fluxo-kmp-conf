@@ -397,14 +397,14 @@ private fun Project.setupPublicationRepositoryAndSigning(
         !isSigningEnabled -> null
         else -> tasks.withType<Sign> {
             // logger.v("setup signing task '$name' ('$path')")
-            jarTasks.forEach { shouldRunAfter(it) }
+            jarTasks.forEach { mustRunAfter(it) }
         }
     }
     // AbstractPublishToMaven is a parent for PublishToMavenRepository
     tasks.withType<AbstractPublishToMaven> {
         // logger.v("setup publication task '$name' ('$path')")
         signingTasks?.let { dependsOn(it) } // `shouldRunAfter` is not enough
-        jarTasks.forEach { shouldRunAfter(it) }
+        jarTasks.forEach { mustRunAfter(it) }
     }
 }
 

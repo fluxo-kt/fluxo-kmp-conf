@@ -91,29 +91,29 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
 
 
     @get:Input
-    val minifyArtifactsProp: Property<Boolean?>
-    override var minifyArtifacts: Boolean
-        get() = minifyArtifactsProp.orNull ?: parent?.minifyArtifacts ?: false
-        set(value) = minifyArtifactsProp.set(value)
+    val shrinkArtifactProp: Property<Boolean?>
+    override var shrinkArtifacts: Boolean
+        get() = shrinkArtifactProp.orNull ?: parent?.shrinkArtifacts ?: false
+        set(value) = shrinkArtifactProp.set(value)
 
 
     @get:Input
-    val minificationConfigProp: Property<FluxoShrinkerConfig?>
-    override var minificationConfig: FluxoShrinkerConfig
+    val shrinkingConfigProp: Property<FluxoShrinkerConfig?>
+    override var shrinkingConfig: FluxoShrinkerConfig
         get() {
-            var mc = minificationConfigProp.orNull ?: parent?.minificationConfig
+            var mc = shrinkingConfigProp.orNull ?: parent?.shrinkingConfig
             if (mc != null) {
                 return mc
             }
             val objects = project.objects
             mc = objects.newInstance(FluxoShrinkerConfigImpl::class.java, objects)
-            minificationConfigProp.set(mc)
+            shrinkingConfigProp.set(mc)
             return mc
         }
-        set(value) = minificationConfigProp.set(value)
+        set(value) = shrinkingConfigProp.set(value)
 
-    override fun minificationConfig(configure: FluxoShrinkerConfig.() -> Unit) {
-        minificationConfig.apply(configure)
+    override fun shrinkingConfig(configure: FluxoShrinkerConfig.() -> Unit) {
+        shrinkingConfig.apply(configure)
     }
 
     @get:Input

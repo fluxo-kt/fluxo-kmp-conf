@@ -17,11 +17,14 @@ import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.l
+import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.withType
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.specs.Spec
+import org.gradle.api.tasks.TaskProvider
 
 internal fun setupBinaryCompatibilityValidator(
     config: BinaryCompatibilityValidatorConfig?,
@@ -32,8 +35,7 @@ internal fun setupBinaryCompatibilityValidator(
     val disabledByRelease = ctx.isRelease && config?.disableForNonRelease == true
     if (disabledByRelease || ctx.testsDisabled) {
         val calledExplicitly = ctx.startTaskNames.any {
-            it.endsWith(CHECK_TASK, ignoreCase = false) ||
-                it.startsWith(DUMP_TASK, ignoreCase = false)
+            API_DUMP_SPEC.isSatisfiedBy(it) || API_CHECK_SPEC.isSatisfiedBy(it)
         }
         if (!calledExplicitly) {
             logger.l("BinaryCompatibilityValidator checks are disabled")
@@ -146,14 +148,22 @@ private enum class ApiTarget {
  * @see kotlinx.validation.configureCheckTasks
  * @see kotlinx.validation.KotlinApiBuildTask
  */
-internal fun Task.bindToApiDumpTasks() {
-    val project = project
-    val tasks = project.tasks
-    project.plugins.withId(KOTLINX_BCV_PLUGIN_ID) {
-        val apiDumpTasks = tasks.matching {
-            it.name.run { startsWith("api") && endsWith("Dump") }
+context(Project)
+internal fun TaskProvider<out Task>.bindToApiDumpTasks() {
+    val tasks = tasks
+    val task = this
+    plugins.withId(KOTLINX_BCV_PLUGIN_ID) {
+        val apiDumpTasks = tasks.namedCompat(API_DUMP_SPEC)
+        apiDumpTasks.configureEach { finalizedBy(task) }
+        configure { dependsOn(apiDumpTasks) }
+
+        // Fix the issue with Gradle:
+        //  "Task 'apiCheck' uses this output of task 'apiDump'
+        //  without declaring an explicit or implicit dependency."
+        val apiCheckTasks = tasks.namedCompat(API_CHECK_SPEC)
+        apiCheckTasks.configureEach {
+            mustRunAfter(apiDumpTasks)
         }
-        dependsOn(apiDumpTasks)
     }
 }
 
@@ -167,7 +177,16 @@ private const val KOTLINX_BCV_PLUGIN_CLASS_NAME =
 
 private const val KOTLINX_BCV_EXTENSION_NAME = "apiValidation"
 
-private const val CHECK_TASK = "apiCheck"
-private const val DUMP_TASK = "apiDump"
+
+// apiDump
+private val API_DUMP_SPEC = Spec<String> {
+    it.startsWith("api") && it.endsWith("Dump")
+}
+
+// apiCheck
+private val API_CHECK_SPEC = Spec<String> {
+    it.startsWith("api") && it.endsWith("Check")
+}
+
 
 internal const val API_DIR = kotlinx.validation.API_DIR // "api"

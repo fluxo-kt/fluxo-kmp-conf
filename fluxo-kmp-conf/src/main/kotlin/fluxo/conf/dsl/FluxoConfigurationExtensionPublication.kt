@@ -79,18 +79,50 @@ public interface FluxoConfigurationExtensionPublication {
 
 
     /**
-     * Flag to control minification of the artifacts.
+     * Flag to enable shrinking (minification & optimization) of the artifacts.
      *
      * Defaults to `false`.
      */
-    public var minifyArtifacts: Boolean
+    public var shrinkArtifacts: Boolean
 
     /**
-     * Config for the project artifacts publication.
+     * Alias for [shrinkArtifacts].
+     */
+    public var minifyArtifacts: Boolean
+        get() = shrinkArtifacts
+        set(value) {
+            shrinkArtifacts = value
+        }
+
+    /**
+     * Config for the project artifacts shrinking.
+     * Inherited from the parent project if not set.
+     * Enables shrinking once called!
+     *
+     * @see shrinkArtifacts
+     */
+    public val shrinkingConfig: FluxoShrinkerConfig
+
+    /**
+     * Alias for [shrinkingConfig].
      */
     public val minificationConfig: FluxoShrinkerConfig
+        get() = shrinkingConfig
 
-    public fun minificationConfig(configure: FluxoShrinkerConfig.() -> Unit)
+    /**
+     * Allows customizing the [FluxoShrinkerConfig].
+     * Enables shrinking once called!
+     *
+     * @see shrinkArtifacts
+     */
+    public fun shrinkingConfig(configure: FluxoShrinkerConfig.() -> Unit)
+
+    /**
+     * Alias for [shrinkingConfig].
+     */
+    public fun minificationConfig(configure: FluxoShrinkerConfig.() -> Unit) {
+        shrinkingConfig(configure)
+    }
 
 
     /**

@@ -43,12 +43,11 @@
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
-    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// FIXME: Finalize API reports generation with this task</ID>
-    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// FIXME: Run tests with minified artifacts</ID>
-    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// FIXME: Support R8 minification</ID>
-    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// FIXME: Support replacing original artifacts with minified ones</ID>
-    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// TODO: Support Android minification with ProGuard</ID>
-    <ID>ForbiddenComment:SetupArtifactsMinification.kt$// TODO: Support KMP JVM target minification with ProGuard</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Run tests with minified artifacts</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support R8 minification</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support replacing original artifacts with minified ones</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support Android minification with ProGuard</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support KMP JVM target minification with ProGuard</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
@@ -123,6 +122,7 @@
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>
+    <ID>SpacingAroundParens:ShrinkerKeepRulesFromApiTask.kt$(</ID>
     <ID>SpreadOperator:ExternalToolRunner.kt$ExternalToolRunner$(*args.toTypedArray())</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>SwallowedException:DependencyHandlerUtils.kt$e: Throwable</ID>

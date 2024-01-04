@@ -201,6 +201,7 @@ pluginManagement {
   * Add automatic adding PR comment with Gradle Job Summary
     * https://github.com/gradle/gradle-build-action/pull/1021/files
     * https://github.com/gradle/gradle-build-action/issues/1020
+  * https://github.com/actions/dependency-review-action
 * Stores publishing
   * https://github.com/chippmann/androidpublisher/
     * https://github.com/chippmann/androidpublisher/releases/tag/0.3.3

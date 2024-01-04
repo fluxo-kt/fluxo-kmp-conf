@@ -371,7 +371,7 @@ private fun getJmods(javaHome: File) =
         it.isFile && it.path.endsWith("jmod", ignoreCase = true)
     }
 
-internal const val SHRINKER_TASK_PREFIX = "minifyWith"
+internal const val SHRINKER_TASK_PREFIX = "shrinkWith"
 
 // TODO: Move into a separate file, loaded from resources
 // language=ShrinkerConfig
@@ -385,27 +385,38 @@ private val DEFAULT_PROGUARD_RULES =
     -dontnote javax.annotation.**
     -dontnote javax.inject.**
     -dontnote javax.xml.**
+    -dontnote org.jetbrains.annotations.**
     -dontnote org.jetbrains.kotlin.**
     -dontnote org.jetbrains.org.objectweb.asm.**
     -dontnote org.w3c.dom.**
     -dontnote org.xml.sax.**
 
+    -dontnote kotlin.**
+
+    #-ignorewarnings
+
     -verbose
 
-    -optimizationpasses 5
-    -mergeinterfacesaggressively
-    -overloadaggressively
-    -allowaccessmodification
+    -optimizationpasses 7
     -repackageclasses
 
-    -skipnonpubliclibraryclasses
+    # Not safe for Android
+    -overloadaggressively
+    # Suboptimal for library projects
+    -allowaccessmodification
+    # Can reduce the performance of the processed code on some JVMs
+    -mergeinterfacesaggressively
 
     # Dangerous, can increase size of the artifact!
     # https://www.guardsquare.com/manual/configuration/optimizations#aggressive-optimization
-    #-optimizeaggressively
+    -optimizeaggressively
 
     # Horizontal class merging increases size of the artifact.
     -optimizations !class/merging/horizontal
+
+    #-whyareyoukeeping class **
+
+    -skipnonpubliclibraryclasses
 
     -adaptresourcefilenames    **.properties,**.gif,**.jpg,**.png,**.webp,**.svg,**.ttf,**.otf,**.txt,**.xml
     -adaptresourcefilecontents **.properties,**.MF

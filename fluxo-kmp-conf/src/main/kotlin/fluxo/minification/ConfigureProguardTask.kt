@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 internal fun Project.registerProguardTask(
     conf: FluxoConfigurationExtensionImpl,
     parents: List<Any>? = null,
+    runAfter: List<Any>? = null,
 ) = tasks.register<AbstractShrinkerTask>(PRO_GUARD_TASK_NAME) {
     val isVerbose = logger.isInfoEnabled
     if (isVerbose) {
@@ -33,12 +34,13 @@ internal fun Project.registerProguardTask(
     }
 
     parents?.let { dependsOn(it) }
+    runAfter?.let { mustRunAfter(it) }
 
     toolName.set(TOOL_NAME)
 
     configureProguardMavenCoordinates(conf, isVerbose)
 
-    val settings = conf.minificationConfig
+    val settings = conf.shrinkingConfig
     configurationFiles.from(settings.configurationFiles)
 
     // ProGuard uses -dontobfuscate option to turn off obfuscation, which is enabled by default
