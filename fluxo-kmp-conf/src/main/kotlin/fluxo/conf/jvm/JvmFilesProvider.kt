@@ -19,11 +19,10 @@ internal sealed class JvmFilesProvider {
         override fun jvmCompileFiles(project: Project): JvmFiles {
             val jarTask = project.tasks.named(jarTaskName, Jar::class.java)
             val mainJar = jarTask.flatMap { it.archiveFile }
-            val runtimeJarFiles = project.objects.fileCollection().apply {
-                from(mainJar)
+            val jarFiles = project.objects.fileCollection().apply {
                 from(compileFiles.filter { it.path.endsWith(".jar") })
             }
-            return JvmFiles(runtimeJarFiles, mainJar, arrayOf(jarTask))
+            return JvmFiles(mainJar, jarFiles, arrayOf(jarTask))
         }
     }
 

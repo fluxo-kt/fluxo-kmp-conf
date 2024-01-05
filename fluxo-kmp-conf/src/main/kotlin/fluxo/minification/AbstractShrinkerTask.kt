@@ -24,6 +24,7 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -52,6 +53,9 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 @CacheableTask
 @Suppress("LeakingThis", "TooManyFunctions")
 internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
+
+    @get:Input
+    val shrinker: Property<Shrinker> = objects.notNullProperty()
 
     @get:InputFiles
     @get:CompileClasspath
@@ -130,8 +134,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:OutputDirectory
     val destinationDir: DirectoryProperty = objects.directoryProperty()
 
-    @get:Input
-    val shrinker: Property<Shrinker> = objects.notNullProperty()
+    /** Primary destination file */
+    @get:LocalState
+    internal val destinationFile: Provider<RegularFile> = destinationDir.zip(mainJar) { dir, jar ->
+        dir.file(jar.asFile.name)
+    }
 
     @get:LocalState
     protected val workingTmpDir: Provider<Directory>
@@ -193,7 +200,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
         // Avoid mangling mainJar
         mainJar.ioFile.let { mainJar ->
-            inputToOutputJars[mainJar] = destinationDir.resolve(mainJar.name)
+            inputToOutputJars[mainJar] = destinationFile.get().asFile
             initialSize += mainJar.length()
         }
 
@@ -322,7 +329,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                     add("--release") // (default) vs --debug
                     add("--classfile") // vs --dex (default)
                     cliArg("--lib", javaHome)
-                    cliArg("--output", outJars.first())
+                    cliArg("--output", outJars.single())
 
                     // Only for DEX output
                     // androidMinSdk.orNull?.let { cliArg("--min-api", it) }

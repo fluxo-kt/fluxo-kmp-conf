@@ -69,7 +69,7 @@ internal fun Project.registerShrinkerTask(
     conf.kotlinConfig.jvmTarget?.let { jvmTarget.set(it) }
 
     useClasspathFiles { files ->
-        inputFiles.from(files.allRuntimeJars)
+        inputFiles.from(files.allJars)
         mainJar.set(files.mainJar)
     }
 

@@ -10,6 +10,20 @@ import org.gradle.api.provider.Property
 public interface FluxoShrinkerConfig {
 
     /**
+     * Replaces the default jar in outgoingVariants with the shrinked one.
+     *
+     * `true` by default.
+     *
+     * Note: Because it replaces the existing jar, the variant will keep
+     * the dependencies and attributes of the java component.
+     * In particular, "org.gradle.dependency.bundling" will be "external" despite
+     * the shrinked version can shade some dependencies.
+     *
+     * See [org.gradle.api.artifacts.dsl.ArtifactHandler] for more details.
+     */
+    public val replaceOutgoingJar: Property<Boolean>
+
+    /**
      * The maximum heap size for the shrinker process.
      * Only used for unbundled R8 or ProGuard.
      *
@@ -80,7 +94,7 @@ public interface FluxoShrinkerConfig {
 internal abstract class FluxoShrinkerConfigImpl @Inject constructor(
     objects: ObjectFactory,
 ) : FluxoShrinkerConfig {
-    override val maxHeapSize: Property<String?> = objects.nullableProperty()
+    override val replaceOutgoingJar: Property<Boolean> = objects.notNullProperty(true)
     override val configurationFiles: ConfigurableFileCollection = objects.fileCollection()
     override val obfuscate: Property<Boolean> = objects.notNullProperty(false)
     override val optimize: Property<Boolean> = objects.notNullProperty(true)
@@ -88,4 +102,5 @@ internal abstract class FluxoShrinkerConfigImpl @Inject constructor(
     override val useBothShrinkers: Property<Boolean> = objects.notNullProperty(false)
     override val forceUnbundledShrinker: Property<Boolean> = objects.notNullProperty(false)
     override val autoGenerateKeepRulesFromApis: Property<Boolean> = objects.notNullProperty(true)
+    override val maxHeapSize: Property<String?> = objects.nullableProperty()
 }

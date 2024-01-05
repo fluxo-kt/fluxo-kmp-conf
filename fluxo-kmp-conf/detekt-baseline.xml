@@ -45,7 +45,6 @@
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Run tests with minified artifacts</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support replacing original artifacts with minified ones</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Allow to call any shrinker by task name</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support Android minification with ProGuard</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support KMP JVM target minification with ProGuard</ID>

@@ -14,7 +14,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 // https://r8.googlesource.com/r8/
 // https://r8-docs.preemptive.com/
 // https://www.guardsquare.com/manual/configuration/usage
-// https://github.com/GradleUp/gr8/blob/cb007cd/plugin-common/src/main/kotlin/com/gradleup/gr8/Gr8Configurator.kt#L19
+// https://github.com/GradleUp/gr8/blob/cb007cd/plugin-common/src/main/kotlin/com/gradleup/gr8/Gr8Configurator.kt#L183
 // https://android.googlesource.com/platform/tools/base/+/0d60339/build-system/gradle-core/src/main/java/com/android/build/gradle/internal/tasks/R8Task.kt
 // https://github.com/avito-tech/avito-android/blob/a1949b4/subprojects/assemble/proguard-guard/src/main/kotlin/com/avito/android/proguard_guard/shadowr8/ShadowR8TaskCreator.kt
 // https://github.com/lowasser/kotlinx.coroutines/blob/fcaa6df/buildSrc/src/main/kotlin/RunR8.kt
@@ -27,7 +27,6 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 // https://github.com/TWiStErRob/net.twisterrob.inventory/blob/cc4eb02/gradle/plugins-inventory/src/main/kotlin/net/twisterrob/inventory/build/unfuscation/UnfuscateTask.kt#L33
 // endregion
 
-@Suppress("ReturnCount")
 internal fun setupArtifactsShrinking(
     conf: FluxoConfigurationExtensionImpl,
 ) {
@@ -36,24 +35,13 @@ internal fun setupArtifactsShrinking(
         it.startsWith(SHRINKER_TASK_PREFIX) || it == SHRINKER_KEEP_GEN_TASK_NAME
     }
     val shrinkArtifacts = conf.shrinkArtifacts
-    if (!shrinkArtifacts && !isCalled) {
+    if (!shrinkArtifacts && !isCalled || modeIsNotSupported(conf)) {
         return
     }
 
-    when (conf.mode) {
-        // TODO: Support KMP JVM target minification with ProGuard
-        ConfigurationType.KOTLIN_MULTIPLATFORM -> return
-
-        // TODO: Support Android minification with ProGuard
-        ConfigurationType.ANDROID_LIB,
-        ConfigurationType.ANDROID_APP,
-        -> return
-
-        else -> {}
-    }
-
     val p = conf.project
-    p.logger.l("setup artifacts minification with ProGuard")
+    val logger = p.logger
+    logger.l("Setup artifacts shrinking")
 
     val tasks = p.tasks
     val parents = mutableListOf<Any>("jar")
@@ -70,11 +58,11 @@ internal fun setupArtifactsShrinking(
         }
     }
 
-    val shrinkTasks = mutableListOf(
-        p.registerShrinkerTask(conf, parents, runAfter),
-    )
+    val shrinkTask = p.registerShrinkerTask(conf, parents, runAfter)
+    val shrinkTasks = mutableListOf(shrinkTask)
 
     if (USE_BOTH || settings.useBothShrinkers.get()) {
+        logger.l("Both shrinker tasks added!")
         val shrinker = if (settings.useR8.get()) Shrinker.ProGuard else Shrinker.R8
         shrinkTasks += p.registerShrinkerTask(conf, parents, runAfter, forceShrinker = shrinker)
     }
@@ -85,8 +73,37 @@ internal fun setupArtifactsShrinking(
         }
     }
 
-    // FIXME: Support replacing original artifacts with minified ones
+    // Replace the original artifact with shrinked one.
+    // Replaces the default jar in outgoingVariants.
+    if (settings.replaceOutgoingJar.get()) {
+        logger.l("Replace outgoing jar with shrinked one")
+        p.configurations.configureEach {
+            outgoing {
+                val removed = artifacts.removeIf { it.classifier.isNullOrEmpty() }
+                if (removed) {
+                    artifact(shrinkTask.flatMap { it.destinationFile }) {
+                        // Pom and maven consumers do not like the
+                        // `-all` or `-shadowed` classifiers.
+                        classifier = ""
+                    }
+                }
+            }
+        }
+    }
+
     // FIXME: Run tests with minified artifacts
+}
+
+private fun modeIsNotSupported(conf: FluxoConfigurationExtensionImpl) = when (conf.mode) {
+    // TODO: Support KMP JVM target minification with ProGuard
+    ConfigurationType.KOTLIN_MULTIPLATFORM -> true
+
+    // TODO: Support Android minification with ProGuard
+    ConfigurationType.ANDROID_LIB,
+    ConfigurationType.ANDROID_APP,
+    -> true
+
+    else -> false
 }
 
 private const val USE_BOTH = false
