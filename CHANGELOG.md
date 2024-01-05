@@ -8,15 +8,12 @@
 
 ## [0.6.0] - 2024-01-05
 
-_Important release adding support for shrinking artifacts with ProGuard and/or R8,
-auto-generating R8/ProGuard keep rules from `BinaryCompatibilityValidator` API reports,
-and replacing the original artifact with shrinked one!_
+_Important release that adds advanced shrinking functionality!_
 
 ### Added
-- **add functionality to shrink (minify & optimize) artifacts with ProGuard.**
+- **support for shrinking artifacts with ProGuard and/or R8 (ProGuard is used as a default optimal choice)!**
 - **auto-generate R8/ProGuard keep rules from `BinaryCompatibilityValidator` API reports!**
-- **support R8 as a shrinker (ProGuard is still used as a default optimal choice).**
-- **support for replacing the original artifact with shrinked one.**
+- **support for replacing the original artifact with a shrunken one!**
 - highlight publication setup in logs.
 - verify that publication artifact version is set.
 - both WasmWasi and WasmJS can be used together since Kotlin 2.0.
@@ -44,7 +41,7 @@ and replacing the original artifact with shrinked one!_
 ### Updated
 - bump Kotlin from _1.9.21_ to _1.9.22_.
 - pin OkHttp (_4.12.0_), Guava (_33.0.0-jre_), and Json (_20231013_) versions due to the Security Advisories.
-- bump github/codeql-action from 2 to 3.
+- bump github/codeql-action from 2 to 3 by @dependabot in https://github.com/fluxo-kt/fluxo-kmp-conf/pull/23
 - bump BuildConfig plugin from _5.1.0_ to _5.3.2_.
 - bump Android Gradle Plugin from _8.2.0_ to _8.4.0-alpha02_ (compile-only dependency).
 
