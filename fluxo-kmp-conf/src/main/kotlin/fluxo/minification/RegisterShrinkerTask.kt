@@ -51,6 +51,7 @@ internal fun Project.registerShrinkerTask(
 
     // TODO: Support R8 or ProgGuard available in the classpath (bundled)
     //  + notifyThatToolIsRunning
+    //  https://github.com/tuuzed/LightTunnel/blob/680d3bc/buildSrc/src/main/kotlin/Compiler.kt
 
     configureShrinkerMavenCoordinates(conf, isVerbose = isVerbose, shrinker)
 

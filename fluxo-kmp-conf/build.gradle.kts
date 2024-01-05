@@ -25,6 +25,7 @@ setupGradlePlugin(
     githubProject = "fluxo-kt/fluxo-kmp-conf"
     enableSpotless = true
     setupCoroutines = false
+    shrinkArtifacts = true
     experimentalLatestCompilation = true
 
     publicationConfig {
