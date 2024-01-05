@@ -65,5 +65,5 @@
                 Deprecated,SourceFile,LineNumberTable
 
 -include keep.pro
--include assumptions.pro
--include nosideeffects.pro
+#-include assumptions.pro
+#-include nosideeffects.pro
