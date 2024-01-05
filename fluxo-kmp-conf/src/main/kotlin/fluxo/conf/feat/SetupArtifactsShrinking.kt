@@ -5,14 +5,33 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.l
 import fluxo.minification.SHRINKER_KEEP_GEN_TASK_NAME
 import fluxo.minification.SHRINKER_TASK_PREFIX
-import fluxo.minification.registerProguardTask
+import fluxo.minification.Shrinker
 import fluxo.minification.registerShrinkerKeepRulesGenTask
+import fluxo.minification.registerShrinkerTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
+
+// region Notes and references:
+// https://r8.googlesource.com/r8/
+// https://r8-docs.preemptive.com/
+// https://www.guardsquare.com/manual/configuration/usage
+// https://github.com/GradleUp/gr8/blob/cb007cd/plugin-common/src/main/kotlin/com/gradleup/gr8/Gr8Configurator.kt#L19
+// https://android.googlesource.com/platform/tools/base/+/0d60339/build-system/gradle-core/src/main/java/com/android/build/gradle/internal/tasks/R8Task.kt
+// https://github.com/avito-tech/avito-android/blob/a1949b4/subprojects/assemble/proguard-guard/src/main/kotlin/com/avito/android/proguard_guard/shadowr8/ShadowR8TaskCreator.kt
+// https://github.com/lowasser/kotlinx.coroutines/blob/fcaa6df/buildSrc/src/main/kotlin/RunR8.kt
+//
+// ProGuard/R8 configuration improvements
+// https://github.com/Guardsquare/proguard/tree/8afa59e/gradle-plugin/src/main
+// https://github.com/JetBrains/kotlin/blob/0926eba/libraries/tools/kotlin-main-kts/build.gradle.kts#L84
+// https://github.com/JetBrains/compose-multiplatform/blob/50d45f3/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/internal/configureJvmApplication.kt#L241
+// https://github.com/JetBrains/compose-multiplatform/blob/b67dde7/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/tasks/AbstractProguardTask.kt#L22
+// https://github.com/TWiStErRob/net.twisterrob.inventory/blob/cc4eb02/gradle/plugins-inventory/src/main/kotlin/net/twisterrob/inventory/build/unfuscation/UnfuscateTask.kt#L33
+// endregion
 
 @Suppress("ReturnCount")
 internal fun setupArtifactsShrinking(
     conf: FluxoConfigurationExtensionImpl,
 ) {
+    // TODO: Allow to call any shrinker by task name
     val isCalled = conf.ctx.startTaskNames.any {
         it.startsWith(SHRINKER_TASK_PREFIX) || it == SHRINKER_KEEP_GEN_TASK_NAME
     }
@@ -41,7 +60,8 @@ internal fun setupArtifactsShrinking(
     val runAfter = mutableListOf<Any>()
 
     // Auto-generate keep rules from API reports
-    if (conf.shrinkingConfig.autoGenerateKeepRulesFromApis.get()) {
+    val settings = conf.shrinkingConfig
+    if (settings.autoGenerateKeepRulesFromApis.get()) {
         val rulesGenRask = p.registerShrinkerKeepRulesGenTask()
         if (!shrinkArtifacts) {
             parents += rulesGenRask
@@ -50,16 +70,23 @@ internal fun setupArtifactsShrinking(
         }
     }
 
-    val task = p.registerProguardTask(conf, parents, runAfter)
+    val shrinkTasks = mutableListOf(
+        p.registerShrinkerTask(conf, parents, runAfter),
+    )
+
+    if (USE_BOTH || settings.useBothShrinkers.get()) {
+        val shrinker = if (settings.useR8.get()) Shrinker.ProGuard else Shrinker.R8
+        shrinkTasks += p.registerShrinkerTask(conf, parents, runAfter, forceShrinker = shrinker)
+    }
 
     if (shrinkArtifacts) {
         tasks.named(CHECK_TASK_NAME) {
-            dependsOn(task)
+            dependsOn(shrinkTasks)
         }
     }
 
-    // FIXME: Support R8 minification
     // FIXME: Support replacing original artifacts with minified ones
     // FIXME: Run tests with minified artifacts
 }
 
+private const val USE_BOTH = false

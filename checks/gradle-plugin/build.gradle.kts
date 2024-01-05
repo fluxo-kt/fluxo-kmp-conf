@@ -11,4 +11,5 @@ version = libs.versions.version.get()
 setupGradlePlugin {
     allWarningsAsErrors = true
     shrinkArtifacts = true
+    shrinkingConfig.useBothShrinkers.set(true)
 }

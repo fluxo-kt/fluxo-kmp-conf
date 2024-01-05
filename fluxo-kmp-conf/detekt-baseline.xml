@@ -7,14 +7,14 @@
     <ID>CyclomaticComplexMethod:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Move mapping to the output dir</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Move mapping to the output dir?</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Debugging</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Process output and print only main information if not verbose</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget.Configure$// TODO: Detect applied plugin (lib/app) and use appropriate container?</ID>
     <ID>ForbiddenComment:AppleIosTarget.kt$// FIXME: Public hierarchy of targets for easier configuration</ID>
-    <ID>ForbiddenComment:ConfigureProguardTask.kt$// TODO: ProGuard/R8 configuration improvements</ID>
-    <ID>ForbiddenComment:ConfigureProguardTask.kt$// TODO: dProtect obfuscator</ID>
     <ID>ForbiddenComment:ContainerImpl.kt$ContainerImpl$// TODO: Utilize version available from PluginDependency</ID>
     <ID>ForbiddenComment:DependencyAnalysisPlugin.kt$// TODO: no need to declare transitive dependencies for the final app module</ID>
     <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Allow to customize configurations auto-filtration</ID>
@@ -38,14 +38,15 @@
     <ID>ForbiddenComment:MultiplatformSourceSetUtils.kt$// TODO: Create bundles once and reuse or at least make them lazy evaluatable.</ID>
     <ID>ForbiddenComment:NodeGraphsRenderer.kt$NodeGraphsRenderer.LegendRenderer$// FIXME: This is not implemented yet.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// TODO: Optimize, make lazy accessible via root project</ID>
+    <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: Support R8 or ProgGuard available in the classpath (bundled)</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Run tests with minified artifacts</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support R8 minification</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support replacing original artifacts with minified ones</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Allow to call any shrinker by task name</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support Android minification with ProGuard</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support KMP JVM target minification with ProGuard</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
@@ -112,11 +113,9 @@
     <ID>MaxLineLength:SetupMultiplatform.kt$*</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$description = "Combines all tests reports from all modules to the published root one"</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$if</ID>
-    <ID>MaxLineLength:VersionCatalogUtils.kt$internal</ID>
     <ID>MaximumLineLength:LoadAndApplyPluginIfNotApplied.kt$ </ID>
     <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
     <ID>MaximumLineLength:SetupTestsReport.kt$ </ID>
-    <ID>MaximumLineLength:VersionCatalogUtils.kt$internal</ID>
     <ID>NestedBlockDepth:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$fun buildTrees(): List&lt;GraphNode></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.getPluginIdAndVersion( id: String, version: String?, catalogPluginIds: Array&lt;out String>? = null, catalogPluginId: String?, logger: Logger, catalogVersionIds: Array&lt;out String>?, catalogVersionId: String?, ): Triple&lt;String, String?, String?></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>

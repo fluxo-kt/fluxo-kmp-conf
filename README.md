@@ -134,6 +134,7 @@ pluginManagement {
 * [Slack-Gradle-Plugin](https://github.com/slackhq/slack-gradle-plugin) ([docs](https://slackhq.github.io/slack-gradle-plugin/))
 * [Gradle-Spotless-Plugin](https://github.com/diffplug/spotless/tree/main/plugin-gradle) from @diffplug
 * [AndroidX Baseline Profile Gradle Plugin](https://github.com/androidx/androidx/blob/7222fd3/benchmark/baseline-profile-gradle-plugin/src/main/kotlin/androidx/baselineprofile/gradle/utils/AgpPlugin.kt)
+* [Avito android infrastructure](https://github.com/avito-tech/avito-android) ([docs](https://avito-tech.github.io/avito-android/))
 
 
 ### Research roadmap
@@ -164,13 +165,15 @@ pluginManagement {
     * https://docs.gradle.org/8.5/userguide/configuration_cache.html#config_cache:requirements
 * https://github.com/ashtanko/kotlin-app-template/tree/main
   * Github Action + git-hook + Issues Template
-* https://github.com/slackhq/slack-gradle-plugin/
-  * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.13.0
-  * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.14.0
+* __Infrastructure plugins__
+  * https://github.com/slackhq/slack-gradle-plugin/
+    * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.13.0
+    * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.14.0
+  * https://github.com/avito-tech/avito-android
+    * https://github.com/avito-tech/avito-android/blob/a1949b4/subprojects/assemble/proguard-guard/src/main/kotlin/com/avito/android/proguard_guard/shadowr8/ShadowR8TaskCreator.kt
+    * GIT hooks: https://github.com/avito-tech/avito-android/tree/develop/.git_hooks
 * https://github.com/BenWoodworth/Parameterize
 * https://github.com/kotlin-hands-on/kotlin-swift-interopedia
-* https://slackhq.github.io/keeper/
-  * https://github.com/slackhq/Keeper
 * https://github.com/drewhamilton/poko/
   * https://github.com/saket/telephoto/releases/tag/0.7.1
 * https://telegra.ph/Compose-stabilityConfigurationPath-11-30
@@ -197,11 +200,27 @@ pluginManagement {
 * https://github.com/gmazzo/gradle-codeowners-plugin
 * https://github.com/gmazzo/gradle-docker-compose-plugin
 * https://github.com/gmazzo/gradle-report-publications-plugin
+* Shadowing + minification
+  * https://github.com/GradleUp/gr8 (Gr8 = Gradle + R8)
+  * Task used by the UI and Android tests to check minification results and keep track of binary size.
+    * https://github.com/lowasser/kotlinx.coroutines/blob/fcaa6df/buildSrc/src/main/kotlin/RunR8.kt
+  * A Gradle plugin that infers Proguard/R8 keep rules for androidTest sources.
+    * https://slackhq.github.io/keeper/
+      * https://github.com/slackhq/Keeper
+  * dProtect obfuscator
+    * https://github.com/open-obfuscator/dProtect
+  * Optimize app images
+    * https://tinypng.com/
+* Control licenses
+  * https://github.com/JetBrains/intellij-community/blob/8b5ce28/platform/build-scripts/src/org/jetbrains/intellij/build/CommunityLibraryLicenses.kt
+  * https://github.com/mikepenz/AboutLibraries
 * GitHub CI/CD
   * Add automatic adding PR comment with Gradle Job Summary
     * https://github.com/gradle/gradle-build-action/pull/1021/files
     * https://github.com/gradle/gradle-build-action/issues/1020
   * https://github.com/actions/dependency-review-action
+  * Compare artifacts in the commit (with prev commit) or PR (with upstream)
+    * https://github.com/JakeWharton/diffuse
 * Stores publishing
   * https://github.com/chippmann/androidpublisher/
     * https://github.com/chippmann/androidpublisher/releases/tag/0.3.3

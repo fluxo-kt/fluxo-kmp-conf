@@ -134,4 +134,5 @@ buildConfig {
     }
     buildConfigField("PROGUARD_PLUGIN", libs.proguard.plugin)
     buildConfigField("PROGUARD_CORE", libs.proguard.core)
+    buildConfigField("R8", libs.r8)
 }

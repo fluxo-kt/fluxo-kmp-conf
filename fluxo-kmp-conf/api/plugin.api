@@ -603,8 +603,11 @@ public abstract interface class fluxo/conf/kmp/SourceSetBundle {
 public abstract interface class fluxo/minification/FluxoShrinkerConfig {
 	public abstract fun getAutoGenerateKeepRulesFromApis ()Lorg/gradle/api/provider/Property;
 	public abstract fun getConfigurationFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getForceUnbundledShrinker ()Lorg/gradle/api/provider/Property;
 	public abstract fun getMaxHeapSize ()Lorg/gradle/api/provider/Property;
 	public abstract fun getObfuscate ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOptimize ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUseBothShrinkers ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUseR8 ()Lorg/gradle/api/provider/Property;
 }
 

@@ -29,16 +29,10 @@
 # Can reduce the performance of the processed code on some JVMs
 -mergeinterfacesaggressively
 
-# Dangerous, can increase size of the artifact!
-# https://www.guardsquare.com/manual/configuration/optimizations#aggressive-optimization
--optimizeaggressively
-
 # Horizontal class merging increases size of the artifact.
 -optimizations !class/merging/horizontal
 
 #-whyareyoukeeping class **
-
--skipnonpubliclibraryclasses
 
 -adaptresourcefilenames    **.properties,**.gif,**.jpg,**.png,**.webp,**.svg,**.ttf,**.otf,**.txt,**.xml
 -adaptresourcefilecontents **.properties,**.MF

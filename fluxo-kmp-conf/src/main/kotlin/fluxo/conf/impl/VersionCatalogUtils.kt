@@ -41,18 +41,18 @@ internal fun VersionCatalog.onLibrary(
     return false
 }
 
-internal fun VersionCatalog.lib(alias: String): Provider<MinimalExternalModuleDependency> {
-    return findLibrary(alias).get()
-}
+internal fun VersionCatalog?.l(alias: String): MinimalExternalModuleDependency? =
+    this?.findLibrary(alias)?.getOrNull()?.orNull
+
+internal fun VersionCatalog.lib(alias: String): Provider<MinimalExternalModuleDependency> =
+    findLibrary(alias).get()
 
 
-internal fun VersionCatalog?.b(alias: String?): Provider<ExternalModuleDependencyBundle>? {
-    return if (!alias.isNullOrEmpty()) this?.findBundle(alias)?.getOrNull() else null
-}
+internal fun VersionCatalog?.b(alias: String?): Provider<ExternalModuleDependencyBundle>? =
+    if (!alias.isNullOrEmpty()) this?.findBundle(alias)?.getOrNull() else null
 
-internal fun VersionCatalog.bundle(alias: String): Provider<ExternalModuleDependencyBundle> {
-    return findBundle(alias).get()
-}
+internal fun VersionCatalog.bundle(alias: String): Provider<ExternalModuleDependencyBundle> =
+    findBundle(alias).get()
 
 internal fun VersionCatalog.onBundle(
     alias: String,
@@ -67,11 +67,12 @@ internal fun VersionCatalog.onBundle(
 }
 
 
-internal fun VersionCatalog?.p(alias: String?): Provider<PluginDependency>? {
-    return if (!alias.isNullOrEmpty()) this?.findPlugin(alias)?.getOrNull() else null
-}
+internal fun VersionCatalog?.p(alias: String?): Provider<PluginDependency>? =
+    if (!alias.isNullOrEmpty()) this?.findPlugin(alias)?.getOrNull() else null
 
-internal fun VersionCatalog?.p(aliases: Array<out String>?): Pair<Provider<PluginDependency>, String>? {
+internal fun VersionCatalog?.p(
+    aliases: Array<out String>?,
+): Pair<Provider<PluginDependency>, String>? {
     if (this != null && aliases != null) {
         for (alias in aliases) {
             val pluginDep = p(alias)
@@ -83,9 +84,8 @@ internal fun VersionCatalog?.p(aliases: Array<out String>?): Pair<Provider<Plugi
     return null
 }
 
-internal fun VersionCatalog.plugin(alias: String): Provider<PluginDependency> {
-    return findPlugin(alias).get()
-}
+internal fun VersionCatalog.plugin(alias: String): Provider<PluginDependency> =
+    findPlugin(alias).get()
 
 internal inline fun VersionCatalog.onPlugin(
     alias: String,
@@ -142,13 +142,11 @@ internal fun VersionCatalog?.v(aliases: Array<out String>?): String? {
     return null
 }
 
-internal fun VersionCatalog?.v(alias: String?): String? {
-    return if (!alias.isNullOrEmpty()) this?.findVersion(alias)?.getOrNull()?.toString() else null
-}
+internal fun VersionCatalog?.v(alias: String?): String? =
+    if (!alias.isNullOrEmpty()) this?.findVersion(alias)?.getOrNull()?.toString() else null
 
-internal fun VersionCatalog.version(alias: String): String {
-    return findVersion(alias).get().toString()
-}
+internal fun VersionCatalog.version(alias: String): String =
+    findVersion(alias).get().toString()
 
 internal inline fun VersionCatalog.onVersion(alias: String, body: (String) -> Unit): Boolean {
     val opt = findVersion(alias)

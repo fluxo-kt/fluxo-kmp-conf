@@ -1,15 +1,18 @@
 package fluxo.minification
 
 import MAIN_SOURCE_SET_NAME
+import fluxo.conf.data.BuildConstants
 import fluxo.conf.data.BuildConstants.PROGUARD_CORE
 import fluxo.conf.data.BuildConstants.PROGUARD_PLUGIN
 import fluxo.conf.deps.detachedDependency
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.conf.impl.get
 import fluxo.conf.impl.kotlin.KOTLIN_JVM_PLUGIN_ID
 import fluxo.conf.impl.kotlin.KOTLIN_MPP_PLUGIN_ID
 import fluxo.conf.impl.kotlin.javaSourceSets
 import fluxo.conf.impl.kotlin.mppExt
+import fluxo.conf.impl.l
 import fluxo.conf.impl.lc
 import fluxo.conf.impl.logDependency
 import fluxo.conf.impl.register
@@ -17,17 +20,22 @@ import fluxo.conf.impl.v
 import fluxo.conf.jvm.JvmFiles
 import fluxo.conf.jvm.JvmFilesProvider
 import fluxo.gradle.ioFile
+import fluxo.minification.Shrinker.ProGuard
+import fluxo.minification.Shrinker.R8
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
-internal fun Project.registerProguardTask(
+internal fun Project.registerShrinkerTask(
     conf: FluxoConfigurationExtensionImpl,
     parents: List<Any>? = null,
     runAfter: List<Any>? = null,
-) = tasks.register<AbstractShrinkerTask>(PRO_GUARD_TASK_NAME) {
+    forceShrinker: Shrinker? = null,
+) = tasks.register<AbstractShrinkerTask>(
+    name = getShrinkerTaskName(conf, forceShrinker),
+) {
     val isVerbose = logger.isInfoEnabled
     if (isVerbose) {
         verbose.set(true)
@@ -36,26 +44,28 @@ internal fun Project.registerProguardTask(
     parents?.let { dependsOn(it) }
     runAfter?.let { mustRunAfter(it) }
 
-    toolName.set(TOOL_NAME)
-
-    configureProguardMavenCoordinates(conf, isVerbose)
-
     val settings = conf.shrinkingConfig
+
+    val shrinker = shrinker(forceShrinker, settings)
+    this.shrinker.set(shrinker)
+
+    // TODO: Support R8 or ProgGuard available in the classpath (bundled)
+    //  + notifyThatToolIsRunning
+
+    configureShrinkerMavenCoordinates(conf, isVerbose = isVerbose, shrinker)
+
     configurationFiles.from(settings.configurationFiles)
 
     // ProGuard uses -dontobfuscate option to turn off obfuscation, which is enabled by default
-    // We want to disable obfuscation by default, because often
-    // it is not needed, but makes troubleshooting much harder.
-    // If obfuscation is turned off by default,
-    // enabling (`isObfuscationEnabled.set(true)`) seems much better
-    // than disabling obfuscation disabling (`dontObfuscate.set(false)`).
-    // That's why a task property follows ProGuard design,
-    // when our DSL does the opposite.
+    // Disable obfuscation by default as often suboptimal with much harder troubleshooting.
+    // If disabled by default, cleaner API uses flag name without a negation.
+    // That's why a task property follows ProGuard design, when DSL does the opposite.
     dontobfuscate.set(settings.obfuscate.map { !it })
     dontoptimize.set(settings.optimize.map { !it })
 
     maxHeapSize.set(settings.maxHeapSize)
 
+    (conf.androidMinSdk as? Int)?.let { androidMinSdk.set(it) }
     conf.kotlinConfig.jvmTarget?.let { jvmTarget.set(it) }
 
     useClasspathFiles { files ->
@@ -64,40 +74,61 @@ internal fun Project.registerProguardTask(
     }
 
     val defaultRulesFile = defaultRulesFile.ioFile
-    if (!defaultRulesFile.exists()) {
+    val shrinkerSpecificConf = defaultRulesFile.parentFile.resolve(shrinker.name.lc())
+    if (shrinkerSpecificConf.exists()) {
+        configurationFiles.from(shrinkerSpecificConf)
+    } else if (!defaultRulesFile.exists()) {
         writeDefaultRulesFile(defaultRulesFile)
     }
 }
 
-private fun AbstractShrinkerTask.configureProguardMavenCoordinates(
+private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
     conf: FluxoConfigurationExtensionImpl,
     isVerbose: Boolean,
+    shrinker: Shrinker,
 ) {
-    val tool = TOOL_NAME
-    val toolLc = tool.lc()
+    val toolLc = shrinker.name.lc()
     val project = project
-    val coords = PROGUARD_PLUGIN.let {
-        var coords = it
-        var version = conf.ctx.libs.v(toolLc)
-        val parts = it.split(':', limit = 3)
-        @Suppress("MagicNumber")
-        if (parts.size == 3) {
-            when (version) {
-                null -> version = parts[2]
-                else -> coords = "${parts[0]}:${parts[1]}:$version"
+
+    var coords = when (shrinker) {
+        ProGuard -> PROGUARD_PLUGIN
+        R8 -> BuildConstants.R8
+    }
+    val libs = conf.ctx.libs
+    var version = libs.v(toolLc) ?: libs.l(toolLc)?.version
+    val parts = coords.split(':', limit = 3)
+    @Suppress("MagicNumber")
+    if (parts.size == 3) {
+        val prev = parts[2]
+        when (version) {
+            null -> version = prev
+            else -> {
+                if (version != prev) {
+                    project.logger.l(
+                        "Override $shrinker version by libs.versions.toml " +
+                            "to $version from $prev",
+                    )
+                }
+                coords = "${parts[0]}:${parts[1]}:$version"
             }
-        } else if (version != null) {
-            coords += ":$version"
         }
-        if (!isVerbose) {
-            notifyThatToolIsRunning(tool, version)
-        }
-        arrayOf(coords, PROGUARD_CORE)
+    } else if (version != null) {
+        coords += ":$version"
+    }
+    if (!isVerbose) {
+        notifyThatToolIsRunning(shrinker.name, version)
+    }
+
+    // For ProGuard, we want to upgrade to the latest version of the core library.
+    when (shrinker) {
+        ProGuard -> arrayOf(coords, PROGUARD_CORE)
+        else -> arrayOf(coords)
     }.onEach { notation ->
         project.logDependency(toolLc, notation)
+    }.let {
+        toolCoordinates.set(it.joinToString())
+        toolJars.from(project.detachedDependency(it))
     }
-    toolCoordinates.set(coords.joinToString())
-    toolJars.from(project.detachedDependency(coords))
 }
 
 private fun DefaultTask.notifyThatToolIsRunning(tool: String, version: String? = null) {
@@ -150,17 +181,23 @@ private fun AbstractShrinkerTask.useClasspathFiles(
         .configureUsageBy(this, fn)
 }
 
-private const val TOOL_NAME = "ProGuard"
+
+internal enum class Shrinker {
+    ProGuard,
+    R8,
+}
+
+private fun shrinker(
+    forceShrinker: Shrinker?,
+    settings: FluxoShrinkerConfig,
+) = forceShrinker ?: if (settings.useR8.get()) R8 else ProGuard
 
 // shrinkWithProguardJar
-private const val PRO_GUARD_TASK_NAME = SHRINKER_TASK_PREFIX + "ProguardJar"
-
-// TODO: ProGuard/R8 configuration improvements
-//  https://github.com/Guardsquare/proguard/tree/8afa59e/gradle-plugin/src/main
-//  https://github.com/JetBrains/kotlin/blob/0926eba/libraries/tools/kotlin-main-kts/build.gradle.kts#L84
-//  https://github.com/JetBrains/compose-multiplatform/blob/50d45f3/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/internal/configureJvmApplication.kt#L241
-//  https://github.com/JetBrains/compose-multiplatform/blob/b67dde7/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/tasks/AbstractProguardTask.kt#L22
-//  https://github.com/TWiStErRob/net.twisterrob.inventory/blob/cc4eb02/gradle/plugins-inventory/src/main/kotlin/net/twisterrob/inventory/build/unfuscation/UnfuscateTask.kt#L33
-
-// TODO: dProtect obfuscator
-//  https://github.com/open-obfuscator/dProtect
+// shrinkWithR8Jar
+private fun getShrinkerTaskName(
+    conf: FluxoConfigurationExtensionImpl,
+    forceShrinker: Shrinker? = null,
+): String {
+    val shrinker = shrinker(forceShrinker, conf.shrinkingConfig)
+    return SHRINKER_TASK_PREFIX + shrinker.name.lc().capitalizeAsciiOnly() + "Jar"
+}
