@@ -5,22 +5,48 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
-### Fixed
-- move `kotlinConfig` computed property to the project-level configuration extension from the root-level context.
+
+## [0.6.0] - 2024-01-05
+
+_Important release adding support for shrinking artifacts with ProGuard and/or R8,
+auto-generating R8/ProGuard keep rules from `BinaryCompatibilityValidator` API reports,
+and replacing the original artifact with shrinked one!_
 
 ### Added
+- **add functionality to shrink (minify & optimize) artifacts with ProGuard.**
+- **auto-generate R8/ProGuard keep rules from `BinaryCompatibilityValidator` API reports!**
+- **support R8 as a shrinker (ProGuard is still used as a default optimal choice).**
+- **support for replacing the original artifact with shrinked one.**
 - highlight publication setup in logs.
 - verify that publication artifact version is set.
 - both WasmWasi and WasmJS can be used together since Kotlin 2.0.
 - register `depsAll` task as a rememberable alias for `allDeps`.
+- save and show the reason, why the project is in IDE sync mode.
+- add Gradle file and I/O utils.
+- add util methods for detached dependencies in Gradle.
+- add `ExternalToolRunner` and `AbstractExternalFluxoTask` for external tooling.
+- add `JvmFiles` and `JvmFilesProvider` classes for easier universal JVM targets manupulations.
+- add compatibility method `TaskCollection<T>.named {}` for Gradle 8.6+ and older.
+- add minor improvements for `BinaryCompatibilityValidator` configuration safety.
+
+### Fixed
+- move `kotlinConfig` computed property to the project-level configuration extension from the root-level context.
+- remove MemoizedProvider incompatibility with Gradle 8.6, prevent crashes on future usage, but log the errors.
+- correct apiDump/apiCheck tasks dependency and finalize API reports generation with keep rules generation.
+- aligh `iosSimulatorArm64` parameter name with all others (_action_ => _configure_).
+- correct default JS/WASM targets setup for Kotlin 2.0.
 
 ### Changed
 - remove tests & checks from the `release` CI workflow.
 - remove explicit gradle plugin configuration, which isn't needed anymore.
+- simplify logging, remove custom log markers completely.
 
 ### Updated
 - bump Kotlin from _1.9.21_ to _1.9.22_.
-- pin OkHttp (4.12.0), Guava (33.0.0-jre), and Json (20231013) versions due to the Security Advisories.
+- pin OkHttp (_4.12.0_), Guava (_33.0.0-jre_), and Json (_20231013_) versions due to the Security Advisories.
+- bump github/codeql-action from 2 to 3.
+- bump BuildConfig plugin from _5.1.0_ to _5.3.2_.
+- bump Android Gradle Plugin from _8.2.0_ to _8.4.0-alpha02_ (compile-only dependency).
 
 
 ## [0.5.0] - 2023-12-24
@@ -79,6 +105,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.6.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.6.0
 [0.5.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.5.0
 [0.4.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.4.0
 [0.3.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.3.0
