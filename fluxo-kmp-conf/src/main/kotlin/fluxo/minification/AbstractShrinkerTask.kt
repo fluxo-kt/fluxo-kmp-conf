@@ -483,10 +483,14 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     private fun Writer.ln(s: String) = appendLine(s)
 }
 
-private fun getJmods(javaHome: File) =
-    javaHome.resolve("jmods").walk().filter {
+private fun getJmods(javaHome: File): Sequence<File> {
+    // FIXME: Before Java 9, the runtime classes were packaged in a single jar file.
+    //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
+
+    return javaHome.resolve("jmods").walk().filter {
         it.isFile && it.path.endsWith("jmod", ignoreCase = true)
     }
+}
 
 internal const val SHRINKER_TASK_PREFIX = "shrinkWith"
 

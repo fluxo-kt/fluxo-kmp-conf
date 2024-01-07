@@ -33,6 +33,7 @@ import fluxo.conf.impl.kotlin.KOTLIN_EXT
 import fluxo.conf.impl.kotlin.configureKotlinJvm
 import fluxo.conf.impl.kotlin.configureKotlinMultiplatform
 import fluxo.conf.impl.kotlin.setupKmpYarnPlugin
+import isR8Disabled
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -121,14 +122,17 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         }
 
         // Artifacts minification
-        setupArtifactsShrinking(conf)
+        val project = conf.project
+        if (!project.isR8Disabled().get()) {
+            setupArtifactsShrinking(conf)
+        }
 
         // Gradle project atifacts publication
         setupGradleProjectPublication(conf)
 
         // Generic custom lazy configuration
         conf.onConfiguration?.let { action ->
-            conf.project.configureExtension(KOTLIN_EXT, action = action)
+            project.configureExtension(KOTLIN_EXT, action = action)
         }
     }
 
@@ -137,9 +141,28 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
      *
      * @see org.gradle.api.plugins.BasePlugin ('base')
      * @see org.gradle.language.base.plugins.LifecycleBasePlugin
+     * @see org.gradle.api.plugins.JavaPlugin
+     * @see org.gradle.api.plugins.JavaBasePlugin
+     * @see org.gradle.api.plugins.JavaPlatformPlugin
+     * @see org.gradle.api.plugins.JavaLibraryPlugin
+     * @see org.gradle.api.plugins.JavaTestFixturesPlugin
+     * @see org.gradle.api.plugins.JvmEcosystemPlugin
+     * @see org.gradle.api.plugins.JvmTestSuitePlugin
+     * @see org.gradle.api.plugins.JvmToolchainManagementPlugin
+     * @see org.gradle.api.plugins.JvmToolchainsPlugin
+     * @see org.gradle.api.plugins.catalog.VersionCatalogPlugin
+     * @see org.gradle.api.plugins.ReportingBasePlugin
+     * @see org.gradle.api.plugins.ProjectReportsPlugin
+     * @see org.gradle.api.plugins.TestReportAggregationPlugin
+     * @see org.gradle.api.plugins.HelpTasksPlugin
      */
-    private fun checkGradleLifecycleBase(target: Project) =
+    @Suppress("UnstableApiUsage")
+    private fun checkGradleLifecycleBase(target: Project) {
+        // https://docs.gradle.org/current/userguide/base_plugin.html
+        // https://github.com/gradle/gradle/tree/a300b86/platforms/documentation/docs/src/docs/userguide/core-plugins
+
         target.pluginManager.apply(LifecycleBasePlugin::class.java)
+    }
 
     /**
      * Make sure there's a Kotlin plugin in the classpath.

@@ -6,6 +6,7 @@ import fluxo.conf.data.BuildConstants.PROGUARD_CORE
 import fluxo.conf.data.BuildConstants.PROGUARD_PLUGIN
 import fluxo.conf.deps.detachedDependency
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.conf.impl.get
 import fluxo.conf.impl.kotlin.KOTLIN_JVM_PLUGIN_ID
@@ -36,7 +37,7 @@ internal fun Project.registerShrinkerTask(
 ) = tasks.register<AbstractShrinkerTask>(
     name = getShrinkerTaskName(conf, forceShrinker),
 ) {
-    val isVerbose = logger.isInfoEnabled
+    val isVerbose = SHOW_DEBUG_LOGS || logger.isInfoEnabled
     if (isVerbose) {
         verbose.set(true)
     }

@@ -7,6 +7,13 @@
 
 ### Added
 - allow switching on/off the R8 full mode, also called "non-compat mode." Disabled by default.
+- add `FLUXO_VERBOSE` flag to enable verbose output without enabling the `MAX_DEBUG` mode.
+- report a version of the bundled/classpath ProGuard version.
+- report `includedBuilds` number during the composite build.
+- add some documentation and to-do notes.
+
+### Changed
+- `DISABLE_R8` now disables all shrinking altogether.
 
 
 ## [0.6.0] - 2024-01-05

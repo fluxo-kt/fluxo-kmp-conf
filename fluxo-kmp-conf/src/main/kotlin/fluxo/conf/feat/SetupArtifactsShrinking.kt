@@ -25,8 +25,17 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 // https://github.com/JetBrains/compose-multiplatform/blob/50d45f3/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/internal/configureJvmApplication.kt#L241
 // https://github.com/JetBrains/compose-multiplatform/blob/b67dde7/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/desktop/application/tasks/AbstractProguardTask.kt#L22
 // https://github.com/TWiStErRob/net.twisterrob.inventory/blob/cc4eb02/gradle/plugins-inventory/src/main/kotlin/net/twisterrob/inventory/build/unfuscation/UnfuscateTask.kt#L33
+// https://github.com/SgtSilvio/gradle-proguard/blob/36e9437/src/main/kotlin/io/github/sgtsilvio/gradle/proguard/ProguardTask.kt#L39
+// https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
 // endregion
 
+/**
+ *
+ * @see com.android.tools.r8.R8
+ * @see com.android.tools.r8.Version
+ * @see proguard.ProGuard
+ * @see proguard.ProGuard.getVersion
+ */
 internal fun setupArtifactsShrinking(
     conf: FluxoConfigurationExtensionImpl,
 ) {
@@ -92,6 +101,7 @@ internal fun setupArtifactsShrinking(
     }
 
     // FIXME: Run tests with minified artifacts
+    //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
 }
 
 private fun modeIsNotSupported(conf: FluxoConfigurationExtensionImpl) = when (conf.mode) {

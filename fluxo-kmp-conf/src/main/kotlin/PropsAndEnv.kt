@@ -44,6 +44,8 @@ public fun Project.isDesugaringEnabled(): Provider<Boolean> = envOrPropFlag("DES
 
 public fun Project.isMaxDebugEnabled(): Provider<Boolean> = envOrPropFlag("MAX_DEBUG")
 
+internal fun Project.isFluxoVerbose(): Provider<Boolean> = envOrPropFlag("FLUXO_VERBOSE")
+
 public fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8")
 
 public fun Project?.buildNumber(): String? = envOrPropValueLenient("BUILD_NUMBER")

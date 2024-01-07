@@ -24,6 +24,7 @@ import fluxo.conf.impl.w
 import getValue
 import isCI
 import isDesugaringEnabled
+import isFluxoVerbose
 import isMaxDebugEnabled
 import isR8Disabled
 import isRelease
@@ -103,7 +104,8 @@ internal abstract class FluxoKmpConfContext
         val gradle = project.gradle
         val logger = project.logger
 
-        if (isMaxDebug) SHOW_DEBUG_LOGS = true
+        val isVerbose = isMaxDebug || logger.isInfoEnabled || project.isFluxoVerbose().get()
+        if (isVerbose) SHOW_DEBUG_LOGS = true
 
         // Log environment
         run {
@@ -112,13 +114,20 @@ internal abstract class FluxoKmpConfContext
                 "Kotlin $kotlinPluginVersion, " +
                 "$CPUs CPUs"
 
-            // R8 version
+            // Bundled/Classpath R8 version
             try {
                 // https://r8.googlesource.com/r8/+refs
                 // https://issuetracker.google.com/issues/193543616#comment4
                 // https://mvnrepository.com/artifact/com.android.tools/r8
                 val r8 = com.android.tools.r8.Version.getVersionString().substringBefore(" (")
-                m += ", R8 $r8"
+                m += ", Bundled R8 $r8"
+            } catch (_: Throwable) {
+            }
+
+            // Bundled/Classpath ProGuard version
+            try {
+                val pg = proguard.ProGuard.getVersion()
+                m += ", Bundled ProGuard $pg"
             } catch (_: Throwable) {
             }
 
@@ -150,14 +159,23 @@ internal abstract class FluxoKmpConfContext
             taskGraphBasedProjectSyncDetection()
         }
 
+        if (isInCompositeBuild) {
+            val includedBuilds = gradle.includedBuilds.size
+            logger.l("COMPOSITE build is enabled! ($includedBuilds includedBuilds)")
+        }
         if (isCI) logger.l("CI mode is enabled!")
         if (isRelease) logger.l("RELEASE mode is enabled!")
         if (composeMetricsEnabled) logger.l("COMPOSE_METRICS are enabled!")
 
         if (useKotlinDebug) logger.w("USE_KOTLIN_DEBUG is enabled!")
-        if (isMaxDebug) logger.w("MAX_DEBUG is enabled!")
+        when {
+            isMaxDebug -> logger.w("MAX_DEBUG is enabled!")
+            isVerbose -> logger.w("FLUXO_VERBOSE is enabled!")
+        }
         if (isDesugaringEnabled) logger.w("DESUGARING is enabled!")
-        if (project.isR8Disabled().get()) logger.w("R8 is disabled! (DISABLE_R8)")
+        if (project.isR8Disabled().get()) {
+            logger.w("SHRINKING (R8/ProGuard) is disabled! (DISABLE_R8)")
+        }
 
         // Disable all tests if:
         //  - `DISABLE_TESTS` is enabled;
@@ -180,7 +198,7 @@ internal abstract class FluxoKmpConfContext
         }
 
         logger.v("Cleaned start task names: $startTaskNames")
-        logger.v("kotlinPluginVersion: $kotlinPluginVersion")
+        logger.v("Kotlin Plugin version: $kotlinPluginVersion")
         logger.v("isInIde: $isInIde")
     }
 

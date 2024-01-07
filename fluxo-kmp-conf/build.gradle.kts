@@ -128,9 +128,13 @@ buildConfig {
     fun buildConfigField(
         fieldName: String,
         p: Provider<MinimalExternalModuleDependency>,
+        compileOnly: Boolean = true,
     ) {
         p.get().apply {
             buildConfigField("String", fieldName, "\"$group:$name:$version\"")
+        }
+        if (compileOnly) {
+            dependencies.compileOnly(p)
         }
     }
     buildConfigField("PROGUARD_PLUGIN", libs.proguard.plugin)

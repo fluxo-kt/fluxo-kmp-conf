@@ -603,6 +603,7 @@
     public abstract org.gradle.api.provider.Property getMaxHeapSize();
     public abstract org.gradle.api.provider.Property getObfuscate();
     public abstract org.gradle.api.provider.Property getOptimize();
+    public abstract org.gradle.api.provider.Property getR8FullMode();
     public abstract org.gradle.api.provider.Property getReplaceOutgoingJar();
     public abstract org.gradle.api.provider.Property getUseBothShrinkers();
     public abstract org.gradle.api.provider.Property getUseR8();

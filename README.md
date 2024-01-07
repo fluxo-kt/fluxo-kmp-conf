@@ -172,6 +172,27 @@ pluginManagement {
   * https://github.com/avito-tech/avito-android
     * https://github.com/avito-tech/avito-android/blob/a1949b4/subprojects/assemble/proguard-guard/src/main/kotlin/com/avito/android/proguard_guard/shadowr8/ShadowR8TaskCreator.kt
     * GIT hooks: https://github.com/avito-tech/avito-android/tree/develop/.git_hooks
+  * Gradle Core plugins
+    * https://github.com/gradle/gradle/tree/a300b86/platforms/documentation/docs/src/docs/userguide/core-plugins
+  * Gradle configuration
+    * https://github.com/Kotlin/kotlinx.coroutines/blob/d12eb45/kotlinx-coroutines-core/build.gradle#L238
+    * SgtSilvio gradle plugins
+      * Example: https://github.com/SgtSilvio/gradle-proguard/blob/61e7230/build.gradle.kts
+      * Gradle plugin to ease using and producing (multi-arch) OCI (Open Container Initiative, prev. Docker) images.
+        without requiring external tools.
+        * https://github.com/SgtSilvio/gradle-oci
+        * https://github.com/SgtSilvio/oci-registry (OCI registry Java library that allows serving OCI artifacts to pull operations).
+        * https://github.com/SgtSilvio/gradle-oci-junit-jupiter.
+      * Gradle plugin to ease defining project metadata (urls, license, scm).
+        * module name, readable name, url, docUrl, organization, license, developers, issue management, github.
+        * https://github.com/SgtSilvio/gradle-metadata
+      * Gradle plugin to ease defining Javadoc links.
+        * https://github.com/SgtSilvio/gradle-javadoc-links
+      * Gradle plugin that configures sensible defaults.
+        * https://github.com/SgtSilvio/gradle-defaults
+        * UTF 8 for Java compilation and Javadoc
+        * Reproducible artifacts
+        * Granular test reports per test case (method instead of class)
 * https://github.com/BenWoodworth/Parameterize
 * https://github.com/kotlin-hands-on/kotlin-swift-interopedia
 * https://github.com/drewhamilton/poko/

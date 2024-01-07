@@ -5,6 +5,7 @@ com.android.tools.build:builder:8.4.0-alpha02
 com.android.tools.build:gradle-api:8.4.0-alpha02
 com.android.tools.build:gradle:8.4.0-alpha02
 com.android.tools.build:manifest-merger:31.4.0-alpha02
+com.android.tools:r8:8.2.33
 com.android:zipflinger:8.4.0-alpha02
 com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:1.28.0
 com.autonomousapps:dependency-analysis-gradle-plugin:1.28.0
@@ -30,6 +31,9 @@ com.gradle.enterprise:com.gradle.enterprise.gradle.plugin:3.16.1
 com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin:1.2.1
 com.gradle.publish:plugin-publish-plugin:1.2.1
 com.gradle:gradle-enterprise-gradle-plugin:3.16.1
+com.guardsquare:proguard-base:7.4.1
+com.guardsquare:proguard-core:9.1.1
+com.guardsquare:proguard-gradle:7.4.1
 com.louiscad.complete-kotlin:com.louiscad.complete-kotlin.gradle.plugin:1.1.0
 com.louiscad.complete-kotlin:plugin:1.1.0
 com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.10.0
@@ -81,4 +85,5 @@ org.jetbrains.kotlin:kotlin-util-io:1.9.22
 org.jetbrains.kotlin:kotlin-util-klib:1.9.22
 org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.13.2
 org.jetbrains.kotlinx:binary-compatibility-validator:0.13.2
+org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.0
 org.ow2.asm:asm:9.6
