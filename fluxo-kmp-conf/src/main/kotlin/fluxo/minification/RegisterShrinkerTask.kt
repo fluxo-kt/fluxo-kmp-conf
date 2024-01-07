@@ -49,6 +49,8 @@ internal fun Project.registerShrinkerTask(
     val shrinker = shrinker(forceShrinker, settings)
     this.shrinker.set(shrinker)
 
+    r8FulMode.set(settings.r8FullMode.orNull == true)
+
     // TODO: Support R8 or ProgGuard available in the classpath (bundled)
     //  + notifyThatToolIsRunning
     //  https://github.com/tuuzed/LightTunnel/blob/680d3bc/buildSrc/src/main/kotlin/Compiler.kt

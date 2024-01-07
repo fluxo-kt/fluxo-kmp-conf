@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Added
+- allow switching on/off the R8 full mode, also called "non-compat mode." Disabled by default.
+
 
 ## [0.6.0] - 2024-01-05
 

@@ -86,6 +86,10 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     val dontoptimize: Property<Boolean?> = objects.nullableProperty()
 
     @get:Optional
+    @get:Input
+    val r8FulMode: Property<Boolean?> = objects.nullableProperty()
+
+    @get:Optional
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val defaultRulesFile: RegularFileProperty = objects.fileProperty()
@@ -352,9 +356,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
                     // Compile with R8 in Proguard compatibility mode.
                     // Opposite of non-compat mode, also called "full mode".
-                    // 'android.enableR8.fullMode' disables it for android builds.
+                    // 'android.enableR8.fullMode' controls it for android builds.
                     // https://r8.googlesource.com/r8/+/refs/heads/main/compatibility-faq.md#r8-full-mode
-                    // add("--pg-compat")
+                    if (r8FulMode.orNull != true) {
+                        add("--pg-compat")
+                    }
                 }
             }
         }

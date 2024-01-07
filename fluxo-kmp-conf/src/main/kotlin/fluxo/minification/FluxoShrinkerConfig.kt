@@ -63,6 +63,17 @@ public interface FluxoShrinkerConfig {
     public val useR8: Property<Boolean>
 
     /**
+     * Whether to use R8 in full mode, also called "non-compat mode".
+     *
+     * `android.enableR8.fullMode` gradle property enables it for android builds.
+     *  See [docs](https://r8.googlesource.com/r8/+/refs/heads/main/compatibility-faq.md#r8-full-mode)
+     *  for more details.
+     *
+     * `false` by default.
+     */
+    public val r8FullMode: Property<Boolean>
+
+    /**
      * Whether to create tasks for both R8 and ProGuard.
      *
      * `false` by default.
@@ -99,6 +110,7 @@ internal abstract class FluxoShrinkerConfigImpl @Inject constructor(
     override val obfuscate: Property<Boolean> = objects.notNullProperty(false)
     override val optimize: Property<Boolean> = objects.notNullProperty(true)
     override val useR8: Property<Boolean> = objects.notNullProperty(false)
+    override val r8FullMode: Property<Boolean> = objects.notNullProperty(false)
     override val useBothShrinkers: Property<Boolean> = objects.notNullProperty(false)
     override val forceUnbundledShrinker: Property<Boolean> = objects.notNullProperty(false)
     override val autoGenerateKeepRulesFromApis: Property<Boolean> = objects.notNullProperty(true)
