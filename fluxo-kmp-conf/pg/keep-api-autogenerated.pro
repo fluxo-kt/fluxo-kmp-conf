@@ -319,13 +319,13 @@
     public abstract java.lang.Boolean getEnablePublication();
     public abstract java.lang.String getGithubProject();
     public abstract java.lang.String getGroup();
-    public fluxo.minification.FluxoShrinkerConfig getMinificationConfig();
+    public fluxo.shrink.FluxoShrinkerConfig getMinificationConfig();
     public boolean getMinifyArtifacts();
     public abstract java.lang.String getProjectName();
     public abstract fluxo.conf.dsl.FluxoPublicationConfig getPublicationConfig();
     public abstract java.lang.Boolean getReproducibleArtifacts();
     public abstract boolean getShrinkArtifacts();
-    public abstract fluxo.minification.FluxoShrinkerConfig getShrinkingConfig();
+    public abstract fluxo.shrink.FluxoShrinkerConfig getShrinkingConfig();
     public abstract java.lang.String getVersion();
     public void minificationConfig(kotlin.jvm.functions.Function1);
     public abstract void publicationConfig(kotlin.jvm.functions.Function1);
@@ -596,7 +596,7 @@
     public abstract org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet getTest();
 }
 
--keep,allowoptimization public interface fluxo.minification.FluxoShrinkerConfig {
+-keep,allowoptimization public interface fluxo.shrink.FluxoShrinkerConfig {
     public abstract org.gradle.api.provider.Property getAutoGenerateKeepRulesFromApis();
     public abstract org.gradle.api.file.ConfigurableFileCollection getConfigurationFiles();
     public abstract org.gradle.api.provider.Property getForceUnbundledShrinker();

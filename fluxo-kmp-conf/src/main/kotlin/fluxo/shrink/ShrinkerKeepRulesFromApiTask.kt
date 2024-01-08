@@ -1,4 +1,4 @@
-package fluxo.minification
+package fluxo.shrink
 
 import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks

@@ -3,11 +3,11 @@ package fluxo.conf.feat
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.l
-import fluxo.minification.SHRINKER_KEEP_GEN_TASK_NAME
-import fluxo.minification.SHRINKER_TASK_PREFIX
-import fluxo.minification.Shrinker
-import fluxo.minification.registerShrinkerKeepRulesGenTask
-import fluxo.minification.registerShrinkerTask
+import fluxo.shrink.SHRINKER_KEEP_GEN_TASK_NAME
+import fluxo.shrink.SHRINKER_TASK_PREFIX
+import fluxo.shrink.Shrinker
+import fluxo.shrink.registerShrinkerKeepRulesGenTask
+import fluxo.shrink.registerShrinkerTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 // region Notes and references:

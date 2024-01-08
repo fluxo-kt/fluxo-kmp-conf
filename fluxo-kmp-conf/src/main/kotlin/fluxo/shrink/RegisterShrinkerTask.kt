@@ -1,4 +1,4 @@
-package fluxo.minification
+package fluxo.shrink
 
 import MAIN_SOURCE_SET_NAME
 import fluxo.conf.data.BuildConstants
@@ -21,8 +21,8 @@ import fluxo.conf.impl.v
 import fluxo.conf.jvm.JvmFiles
 import fluxo.conf.jvm.JvmFilesProvider
 import fluxo.gradle.ioFile
-import fluxo.minification.Shrinker.ProGuard
-import fluxo.minification.Shrinker.R8
+import fluxo.shrink.Shrinker.ProGuard
+import fluxo.shrink.Shrinker.R8
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project

@@ -176,6 +176,51 @@ pluginManagement {
     * https://github.com/gradle/gradle/tree/a300b86/platforms/documentation/docs/src/docs/userguide/core-plugins
   * Gradle configuration
     * https://github.com/Kotlin/kotlinx.coroutines/blob/d12eb45/kotlinx-coroutines-core/build.gradle#L238
+    * Test Suites
+      * https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html
+      * https://github.com/unbroken-dome/gradle-testsets-plugin
+    * Testing Gradle Builds
+      * Gradle TestKit: https://docs.gradle.org/current/userguide/test_kit.html
+        * TODO: `testSourceSets(sourceSets.functionalTest)`
+    * Nebula-plugins
+      * Healthy defaults for a standard Gradle project.
+        * https://github.com/nebula-plugins/nebula-project-plugin
+        * Builds Javadoc and Sources jars.
+        * Doesn't fail javadoc if there are none found.
+        * Record information about the build and stores it in the .jar, via [gradle-info-plugin](https://github.com/nebula-plugins/gradle-info-plugin).
+        * Easy specification of people involved in a project via [gradle-contacts-plugin](https://github.com/nebula-plugins/gradle-contacts-plugin).
+        * Introduces Nebula Dependency Lock Plugin out of the box, supports Gradle's Locking dependency versions mechanism too.
+        * Introduces Nebula Facet Plugin. A routine pattern is wanting a new SourceSet with an accompanying Configuration for dependencies.
+        * Introduces IntegTest Plugin specifically for Integration Tests.
+      * Nebula Dependency Lock Plugin
+        * https://github.com/nebula-plugins/gradle-dependency-lock-plugin
+        * Allows people using dynamic dependency versions to lock them to specific versions.
+      * Plugin to gather information about the environment
+        * https://github.com/nebula-plugins/gradle-info-plugin
+        * Noninvasively collect information about the environment, and make information available to other plugins in a statically typed way.
+        * When possible lazily calculate info.
+        * https://github.com/nebula-plugins/gradle-contacts-plugin
+          * Structure to define the owners of a project, then contributing this back to other plugins.
+      * Linter tool for identifying and reporting on patterns of misuse or deprecations in Gradle scripts.
+        * https://github.com/nebula-plugins/gradle-lint-plugin
+      * Gradle plugin for providing reusable dependency resolution rules.
+        * https://github.com/nebula-plugins/gradle-resolution-rules-plugin
+      * Gradle capabilities and transforms to ease the migration from Java EE to Jakarta EE.
+        * https://github.com/nebula-plugins/gradle-jakartaee-migration-plugin
+      * Gradle plugin for constructing linux packages, specifically RPM and DEBs.
+        * https://github.com/nebula-plugins/gradle-ospackage-plugin
+      * Publishing related plugins
+        * https://github.com/nebula-plugins/nebula-publishing-plugin
+      * Test harness for Gradle plugins, leveraging [Spock](http://spockframework.org/).
+        * https://github.com/nebula-plugins/nebula-test
+      * Adds lot of NodeJS-based technologies as part of build without having Node.js installed locally.
+        * https://github.com/nebula-plugins/nebula-node-plugin
+      * Kotlin library providing extensions to assist with Gradle iterop and backwards compatibility.
+        * https://github.com/nebula-plugins/nebula-gradle-interop
+      * Gradle plugin introducing a provided dependency configuration and marking a dependency as optional.
+        * https://github.com/nebula-plugins/gradle-extra-configurations-plugin
+      * Base SCM Plugin for gathering information or performing actions (Archived).
+        * https://github.com/nebula-plugins/gradle-scm-plugin
     * SgtSilvio gradle plugins
       * Example: https://github.com/SgtSilvio/gradle-proguard/blob/61e7230/build.gradle.kts
       * Gradle plugin to ease using and producing (multi-arch) OCI (Open Container Initiative, prev. Docker) images.
@@ -235,13 +280,14 @@ pluginManagement {
 * Control licenses
   * https://github.com/JetBrains/intellij-community/blob/8b5ce28/platform/build-scripts/src/org/jetbrains/intellij/build/CommunityLibraryLicenses.kt
   * https://github.com/mikepenz/AboutLibraries
-* GitHub CI/CD
+* GitHub CI/CD, workflows and repo organization.
   * Add automatic adding PR comment with Gradle Job Summary
     * https://github.com/gradle/gradle-build-action/pull/1021/files
     * https://github.com/gradle/gradle-build-action/issues/1020
   * https://github.com/actions/dependency-review-action
   * Compare artifacts in the commit (with prev commit) or PR (with upstream)
     * https://github.com/JakeWharton/diffuse
+  * https://github.com/square/leakcanary/tree/main/.github
 * Stores publishing
   * https://github.com/chippmann/androidpublisher/
     * https://github.com/chippmann/androidpublisher/releases/tag/0.3.3

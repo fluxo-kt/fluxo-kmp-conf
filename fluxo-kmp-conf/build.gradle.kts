@@ -64,6 +64,17 @@ dependencies {
     compileOnly(libs.plugin.ksp)
 
     compileOnly(libs.plugins.gradle.enterprise.toModuleDependency())
+
+    testCompileOnly(libs.jetbrains.annotations)
+    testImplementation(libs.kotlin.compile.testing)
+    testImplementation(libs.proguard.plugin)
+    testImplementation(libs.proguard.core)
+    testImplementation(libs.r8)
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 buildConfig {

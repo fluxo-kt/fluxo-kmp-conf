@@ -1,6 +1,6 @@
 @file:Suppress("KDocUnresolvedReference")
 
-package fluxo.minification
+package fluxo.shrink
 
 import fluxo.conf.impl.e
 import fluxo.conf.impl.jvmToolFile
@@ -8,14 +8,14 @@ import fluxo.conf.impl.lc
 import fluxo.conf.impl.w
 import fluxo.external.AbstractExternalFluxoTask
 import fluxo.external.ExternalToolRunner
-import fluxo.gradle.clearDirs
 import fluxo.gradle.cliArg
 import fluxo.gradle.ioFile
+import fluxo.gradle.mkdirs
 import fluxo.gradle.normalizedPath
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty
-import fluxo.minification.Shrinker.ProGuard
-import fluxo.minification.Shrinker.R8
+import fluxo.shrink.Shrinker.ProGuard
+import fluxo.shrink.Shrinker.R8
 import fluxo.util.readableByteSize
 import java.io.File
 import java.io.Writer
@@ -185,7 +185,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val destinationDir = destinationDir.ioFile.absoluteFile
         val workingDir = workingTmpDir.get()
         val reportsDir = reportsDir.get()
-        fileOperations.clearDirs(destinationDir, workingDir.asFile, reportsDir.asFile)
+        fileOperations.mkdirs(destinationDir, workingDir.asFile, reportsDir.asFile)
 
         // FIXME: When java toolchain used or JDK target is specified, read the specified JDK.
         // TODO: Can be cached for a JDK.
@@ -317,6 +317,10 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
             when (checkNotNull(shrinker.get())) {
                 ProGuard -> {
+                    /**
+                     * @see proguard.ProGuard
+                     * @see proguard.ProGuard.main
+                     */
                     add("proguard.ProGuard")
 
                     // todo: consider separate flag
@@ -327,8 +331,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                 R8 -> {
                     // R8 is not command line compatible with ProGuard
                     // https://r8.googlesource.com/r8/#running-r8
-                    /** @see com.android.builder.dexing.runR8 */
 
+                    /**
+                     * @see com.android.tools.r8.R8
+                     * @see com.android.builder.dexing.runR8
+                     */
                     add("com.android.tools.r8.R8")
                     add("--release") // (default) vs --debug
                     add("--classfile") // vs --dex (default)

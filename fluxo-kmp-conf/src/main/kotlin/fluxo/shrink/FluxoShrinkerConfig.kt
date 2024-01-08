@@ -1,4 +1,4 @@
-package fluxo.minification
+package fluxo.shrink
 
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty

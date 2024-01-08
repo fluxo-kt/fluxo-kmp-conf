@@ -1,4 +1,4 @@
-package fluxo.minification
+package fluxo.shrink
 
 import fluxo.conf.impl.e
 import fluxo.conf.impl.i
@@ -199,7 +199,7 @@ internal class ClassSignature(
     val memberSignatures: MutableMap<ClassMemberSignature, ClassMemberSignature> = LinkedHashMap(),
 ) {
     fun writeTo(writer: Appendable) {
-        writer.append("-keep,allowoptimization ")
+        writer.append("-keep$KEEP_MODIFICATORS ")
         modifiers.joinTo(buffer = writer, separator = SPACE, postfix = SPACE)
         writer.append(name)
 
@@ -478,6 +478,11 @@ private enum class MemberType {
     Field,
     Method,
 }
+
+
+// https://r8-docs.preemptive.com/#keep-rules
+// https://www.guardsquare.com/manual/configuration/usage#keepoptionmodifiers
+private const val KEEP_MODIFICATORS = ",allowoptimization,includedescriptorclasses"
 
 private const val EXTENDS_DELIMITER = " : "
 

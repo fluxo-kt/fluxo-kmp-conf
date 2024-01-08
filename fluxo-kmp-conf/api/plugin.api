@@ -313,13 +313,13 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionPublic
 	public abstract fun getEnablePublication ()Ljava/lang/Boolean;
 	public abstract fun getGithubProject ()Ljava/lang/String;
 	public abstract fun getGroup ()Ljava/lang/String;
-	public fun getMinificationConfig ()Lfluxo/minification/FluxoShrinkerConfig;
+	public fun getMinificationConfig ()Lfluxo/shrink/FluxoShrinkerConfig;
 	public fun getMinifyArtifacts ()Z
 	public abstract fun getProjectName ()Ljava/lang/String;
 	public abstract fun getPublicationConfig ()Lfluxo/conf/dsl/FluxoPublicationConfig;
 	public abstract fun getReproducibleArtifacts ()Ljava/lang/Boolean;
 	public abstract fun getShrinkArtifacts ()Z
-	public abstract fun getShrinkingConfig ()Lfluxo/minification/FluxoShrinkerConfig;
+	public abstract fun getShrinkingConfig ()Lfluxo/shrink/FluxoShrinkerConfig;
 	public abstract fun getVersion ()Ljava/lang/String;
 	public fun minificationConfig (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun publicationConfig (Lkotlin/jvm/functions/Function1;)V
@@ -600,7 +600,7 @@ public abstract interface class fluxo/conf/kmp/SourceSetBundle {
 	public abstract fun getTest ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 }
 
-public abstract interface class fluxo/minification/FluxoShrinkerConfig {
+public abstract interface class fluxo/shrink/FluxoShrinkerConfig {
 	public abstract fun getAutoGenerateKeepRulesFromApis ()Lorg/gradle/api/provider/Property;
 	public abstract fun getConfigurationFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getForceUnbundledShrinker ()Lorg/gradle/api/provider/Property;

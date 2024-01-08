@@ -94,11 +94,11 @@
     <ID>ForbiddenComment:SetupSpotless.kt$// TODO: read base settings from .editorconfig ?</ID>
     <ID>ForbiddenComment:SetupTestsReport.kt$// TODO: Support Gradle before 8.0 (set service parameter and usesService) ?</ID>
     <ID>ForbiddenComment:SetupVerification.kt$// TODO: Test separate ktlint setup with gradle plugin</ID>
+    <ID>ForbiddenComment:ShrinkerTestBase.kt$// TODO: Optimized bytcode tests.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: should androidUnitTestDebug depend on androidUnitTest?</ID>
     <ID>ForbiddenComment:TaskContainerUtils.kt$// TODO: Add method usage when compile against Gradle 8.6+.</ID>
-    <ID>ImportOrdering:ExternalToolRunner.kt$import fluxo.util.alsoOutputTo import fluxo.gradle.ioFile import java.io.ByteArrayInputStream import java.io.File import java.time.LocalDateTime import java.time.format.DateTimeFormatter import org.gradle.api.GradleException import org.gradle.api.file.Directory import org.gradle.api.provider.Property import org.gradle.api.provider.Provider import org.gradle.process.ExecOperations import org.gradle.process.ExecResult</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>Indentation:PropsAndEnv.kt$ </ID>
@@ -123,7 +123,6 @@
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>
     <ID>SpacingAroundParens:ShrinkerKeepRulesFromApiTask.kt$(</ID>
-    <ID>SpreadOperator:ExternalToolRunner.kt$ExternalToolRunner$(*args.toTypedArray())</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>SwallowedException:DependencyHandlerUtils.kt$e: Throwable</ID>
     <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>

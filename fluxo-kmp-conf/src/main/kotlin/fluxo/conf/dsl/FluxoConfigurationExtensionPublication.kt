@@ -1,7 +1,7 @@
 package fluxo.conf.dsl
 
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.minification.FluxoShrinkerConfig
+import fluxo.shrink.FluxoShrinkerConfig
 
 public interface FluxoConfigurationExtensionPublication {
 

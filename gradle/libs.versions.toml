@@ -183,6 +183,15 @@ proguard-plugin = { module = "com.guardsquare:proguard-gradle", version.ref = "p
 proguard-core = { module = "com.guardsquare:proguard-core", version.ref = "proguard-core" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 
+# Testing Kotlin and Java annotation processors, compiler plugins, and code generation.
+# https://github.com/ZacSweers/kotlin-compile-testing/releases
+# https://github.com/tschuchortdev/kotlin-compile-testing/releases
+kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.4.0" }
+
+# Annotations for JVM-based languages
+# https://repo1.maven.org/maven2/org/jetbrains/annotations/
+jetbrains-annotations = { module = "org.jetbrains:annotations", version = "24.1.0" }
+
 
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }

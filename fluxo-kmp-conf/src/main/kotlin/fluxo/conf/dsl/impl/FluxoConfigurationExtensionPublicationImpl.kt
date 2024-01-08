@@ -8,8 +8,8 @@ import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.impl.v
-import fluxo.minification.FluxoShrinkerConfig
-import fluxo.minification.FluxoShrinkerConfigImpl
+import fluxo.shrink.FluxoShrinkerConfig
+import fluxo.shrink.FluxoShrinkerConfigImpl
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.gradle.api.Project
