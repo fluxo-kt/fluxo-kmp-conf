@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.text.appendLine as ln
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -41,7 +42,7 @@ import proguard.ProGuard
 @Tag("integration")
 @OptIn(ExperimentalCompilerApi::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Suppress("LongParameterList", "LongMethod", "UnnecessaryAbstractClass")
+@Suppress("LongParameterList", "LongMethod", "UnnecessaryAbstractClass", "ReturnCount")
 internal abstract class ShrinkerTestBase {
 
     // region state
@@ -70,10 +71,11 @@ internal abstract class ShrinkerTestBase {
         @Language("kotlin") code: String,
         @Language("pro") rules: String,
         @Language("seed") expected: String? = null,
-        @Language("seed") expectedR8Full: String? = expected,
-        @Language("seed") expectedR8: String? = expectedR8Full,
+        @Language("seed") expectedR8: String? = expected,
+        @Language("seed") expectedR8Compat: String? = expectedR8,
         @Language("seed") expectedProGuard: String? = expected,
         tempDir: Path = this.tempDir,
+        addNoArgConstructorForR8Compat: Boolean = true,
         sort: Boolean = true,
     ) {
         val assertions = mutableListOf<() -> Unit>()
@@ -86,7 +88,11 @@ internal abstract class ShrinkerTestBase {
                     tempDir = tempDir,
                     shrinker = Shrinker.ProGuard,
                 )
-                assertEquals(it.trimIndent().trim(), result.actualSeeds(sort), "ProGuard seeds")
+                assertEquals(
+                    expected = it.seeds(sort = sort),
+                    actual = result.actualSeeds(sort),
+                    message = "ProGuard seeds",
+                )
             }
         }
 
@@ -97,32 +103,77 @@ internal abstract class ShrinkerTestBase {
                     rules = rules,
                     tempDir = tempDir,
                     shrinker = Shrinker.R8,
-                    r8FullMode = false,
+                    r8FullMode = true,
                 )
-                assertEquals(it.trimIndent().trim(), result.actualSeeds(sort), "R8 seeds")
+                assertEquals(
+                    expected = it.seeds(sort = sort, r8 = true),
+                    actual = result.actualSeeds(sort),
+                    message = "R8 full-mode seeds",
+                )
             }
         }
 
-        expectedR8Full?.let {
+        expectedR8Compat?.let {
             assertions += {
                 val result = shrink(
                     code = code,
                     rules = rules,
                     tempDir = tempDir,
                     shrinker = Shrinker.R8,
-                    r8FullMode = true,
+                    r8FullMode = false,
                 )
-                assertEquals(it.trimIndent().trim(), result.actualSeeds(sort), "R8 full-mode seeds")
+                var expect = it.trimIndent().trim()
+                expect = when {
+                    !addNoArgConstructorForR8Compat -> expect
+                    // R8 compat always keeps no-argument constructor for kept classes!
+                    else -> addNoArgConstructorForR8Compat(expect)
+                }
+                assertEquals(
+                    expected = expect.seeds(sort = sort, r8 = true),
+                    actual = result.actualSeeds(sort),
+                    message = "R8 compat-mode seeds",
+                )
             }
         }
 
         assertAll(assertions)
     }
 
-    private fun ShrinkingResult.actualSeeds(sort: Boolean): String =
-        seeds.trimIndent().trim().let {
-            if (sort) it.lines().sorted().joinToString("\n") else it
+    // R8 compat always keeps no-argument constructor for kept classes!
+    private fun addNoArgConstructorForR8Compat(expect: String): String {
+        val lines = expect.trimStart().lineSequence()
+        val clazz = lines.first()
+        if (!clazz.none { it.isWhitespace() || it == ':' || it == '(' }) {
+            return expect
         }
+        assertTrue(clazz.isNotBlank(), "Class name is blank")
+        val noArgConstructor = "\n$clazz: $clazz()"
+        if (noArgConstructor in expect) {
+            return expect
+        }
+        val startLines = "$clazz$noArgConstructor\n"
+        return startLines + lines.drop(1).joinToString("\n")
+    }
+
+    private fun String.seeds(
+        sort: Boolean = true,
+        r8: Boolean = false,
+    ): String {
+        var seeds = trimIndent().trim()
+        if (sort) {
+            seeds = seeds.lines().sorted().joinToString("\n")
+        }
+        // NOTE: R8 doesn't save static class constructor `<clinit>` or doesn't show it in seeds!
+        if (r8) {
+            seeds = seeds.replace(CLINIT_REGEX, "")
+        }
+        // Help copy-pasting in raw string templates
+        seeds = seeds.replace("$", "\${D}")
+        return '\n' + seeds
+    }
+
+    private fun ShrinkingResult.actualSeeds(sort: Boolean): String =
+        seeds.seeds(sort = sort)
 
     private fun shrink(
         @Language("kotlin") code: String,
@@ -146,6 +197,8 @@ internal abstract class ShrinkerTestBase {
         val rootConf = confDir.resolve("root-config.pro")
 
         rootConf.bufferedWriter().use { writer ->
+            writer.ln("${rules.trimIndent().trim()}\n")
+
             writer.ln("-dontwarn java.lang.*")
             writer.ln("-dontwarn kotlin.*")
             writer.ln("-dontwarn kotlin.jvm.**")
@@ -188,8 +241,6 @@ internal abstract class ShrinkerTestBase {
             writer.ln("-printseeds '${seeds.np()}'")
             writer.ln("-printusage '${usage.np()}'")
             writer.ln("-printconfiguration '${finalConfig.np()}'")
-
-            writer.ln("\n${rules.trimIndent().trim()}")
         }
 
         runShrinker(shrinker) {
@@ -328,40 +379,93 @@ internal abstract class ShrinkerTestBase {
     }
 
     protected companion object {
+        @JvmStatic
+        protected val D = '$'
+
         private const val DEFAULT_FILE_NAME = "KClass.kt"
 
+        // R8 doesn't save static class constructor `<clinit>` or doesn't show it in seeds!
+        @JvmStatic
+        protected val CLINIT_REGEX = "(?im)\n?^[ \t]*[^\\s]+: void <clinit>\\(\\)".toRegex()
+
+        /**
+         * Default class for shrinker testing.
+         * Has diverse language things inside.
+         *
+         * @see KCLASS_ALL_SEEDS
+         */
         @JvmStatic
         protected val KCLASS_CODE = """
+            @Suppress("UNUSED_PARAMETER", "RedundantSuppression", "MayBeConstant")
             abstract class KClass
-            @kotlin.jvm.JvmOverloads
+            @JvmOverloads
             constructor(
-                @kotlin.jvm.JvmField
+                @JvmField
                 var i: Int = 0,
+                @Volatile
                 private var l: Long = 0,
             ) {
-                @kotlin.jvm.JvmSynthetic
+                protected constructor(sa: Array<String>) : this()
+                internal constructor(b: BooleanArray) : this()
+                private constructor(s: String) : this()
+                @Strictfp
+                @JvmSynthetic
                 fun bar(x: Byte, y: Float): Double { return y * x.toDouble() }
-                var s: String? = null
+                fun bar(a: String, b: Byte, c: IntArray): Int { return a.length * b.toInt() + c.size }
+                @Transient
+                open var s: String? = null
                 protected fun foo() {}
-                abstract fun baz(a: IntArray): IntArray
+                abstract fun baz(a: IntArray): LongArray
+                @Synchronized
+                private fun bazShort(a: Array<String>): Array<Short> = Array(a.size) { 0 }
+
+                companion object {
+                    const val CONST = 42
+                    @Suppress("something")
+                    val FIELD = "S"
+                    @JvmField
+                    protected val JVM_FIELD = "S"
+                    @JvmStatic
+                    val STATIC_FIELD = "S"
+                    @JvmStatic
+                    fun staticCoMethod() {}
+                }
             }
         """.trimIndent()
 
+        /**
+         * @see KCLASS_CODE
+         */
         @JvmStatic
         protected val KCLASS_ALL_SEEDS = """
             KClass
+            KClass: KClass${D}Companion Companion
             KClass: KClass()
+            KClass: KClass(boolean[])
             KClass: KClass(int)
             KClass: KClass(int,long)
             KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: KClass(java.lang.String)
+            KClass: KClass(java.lang.String[])
             KClass: double bar(byte,float)
+            KClass: int CONST
+            KClass: int bar(java.lang.String,byte,int[])
             KClass: int i
-            KClass: int[] baz(int[])
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
             KClass: java.lang.String getS()
+            KClass: java.lang.String getSTATIC_FIELD()
             KClass: java.lang.String s
             KClass: long l
+            KClass: long[] baz(int[])
+            KClass: void <clinit>()
             KClass: void foo()
             KClass: void setS(java.lang.String)
+            KClass: void staticCoMethod()
         """.trimIndent()
     }
 
