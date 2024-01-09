@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlin.text.appendLine as ln
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -68,8 +67,8 @@ internal abstract class ShrinkerTestBase {
     // region utility
 
     protected fun assertSeeds(
-        @Language("kotlin") code: String,
         @Language("pro") rules: String,
+        @Language("kotlin") code: String = KCLASS_CODE,
         @Language("seed") expected: String? = null,
         @Language("seed") expectedR8: String? = expected,
         @Language("seed") expectedR8Compat: String? = expectedR8,
@@ -126,7 +125,7 @@ internal abstract class ShrinkerTestBase {
                 expect = when {
                     !addNoArgConstructorForR8Compat -> expect
                     // R8 compat always keeps no-argument constructor for kept classes!
-                    else -> addNoArgConstructorForR8Compat(expect)
+                    else -> addNoArgConstructorsForR8Compat(expect)
                 }
                 assertEquals(
                     expected = expect.seeds(sort = sort, r8 = true),
@@ -140,19 +139,32 @@ internal abstract class ShrinkerTestBase {
     }
 
     // R8 compat always keeps no-argument constructor for kept classes!
-    private fun addNoArgConstructorForR8Compat(expect: String): String {
-        val lines = expect.trimStart().lineSequence()
-        val clazz = lines.first()
-        if (!clazz.none { it.isWhitespace() || it == ':' || it == '(' }) {
+    private fun addNoArgConstructorsForR8Compat(expect: String): String {
+        val lines = expect.lines()
+        val classes = lines.filterTo(ArrayList()) { c ->
+            c.none { it.isWhitespace() || it == ':' || it == '(' } &&
+                c.isNotBlank()
+        }
+        if (classes.isEmpty()) {
             return expect
         }
-        assertTrue(clazz.isNotBlank(), "Class name is blank")
-        val noArgConstructor = "\n$clazz: $clazz()"
-        if (noArgConstructor in expect) {
+        var added: String? = null
+        for (clazz in classes) {
+            val simpleName = clazz.substringAfterLast('.')
+            var noArgConstructorLine = "$clazz: $simpleName()"
+            if (noArgConstructorLine in lines) {
+                continue
+            }
+            noArgConstructorLine += '\n'
+            when (added) {
+                null -> added = noArgConstructorLine
+                else -> added += noArgConstructorLine
+            }
+        }
+        if (added == null) {
             return expect
         }
-        val startLines = "$clazz$noArgConstructor\n"
-        return startLines + lines.drop(1).joinToString("\n")
+        return added + expect
     }
 
     private fun String.seeds(
@@ -392,7 +404,7 @@ internal abstract class ShrinkerTestBase {
          * Default class for shrinker testing.
          * Has diverse language things inside.
          *
-         * @see KCLASS_ALL_SEEDS
+         * @see KCLASS_SEEDS
          */
         @JvmStatic
         protected val KCLASS_CODE = """
@@ -418,6 +430,8 @@ internal abstract class ShrinkerTestBase {
                 abstract fun baz(a: IntArray): LongArray
                 @Synchronized
                 private fun bazShort(a: Array<String>): Array<Short> = Array(a.size) { 0 }
+                @JvmName("fooString")
+                fun bazString(s: String): String = s
 
                 companion object {
                     const val CONST = 42
@@ -437,7 +451,7 @@ internal abstract class ShrinkerTestBase {
          * @see KCLASS_CODE
          */
         @JvmStatic
-        protected val KCLASS_ALL_SEEDS = """
+        protected val KCLASS_SEEDS = """
             KClass
             KClass: KClass${D}Companion Companion
             KClass: KClass()
@@ -457,6 +471,52 @@ internal abstract class ShrinkerTestBase {
             KClass: java.lang.String STATIC_FIELD
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+            KClass: java.lang.String fooString(java.lang.String)
+            KClass: java.lang.String getS()
+            KClass: java.lang.String getSTATIC_FIELD()
+            KClass: java.lang.String s
+            KClass: long l
+            KClass: long[] baz(int[])
+            KClass: void <clinit>()
+            KClass: void foo()
+            KClass: void setS(java.lang.String)
+            KClass: void staticCoMethod()
+        """.trimIndent()
+
+        /**
+         * @see KCLASS_CODE
+         * @see KCLASS_SEEDS
+         */
+        @JvmStatic
+        protected val KCLASS_ALL_SEEDS = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion()
+            KClass${D}Companion: KClass${D}Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass${D}Companion: java.lang.String getFIELD()
+            KClass${D}Companion: java.lang.String getSTATIC_FIELD()
+            KClass${D}Companion: void getFIELD${D}annotations()
+            KClass${D}Companion: void getSTATIC_FIELD${D}annotations()
+            KClass${D}Companion: void staticCoMethod()
+            KClass: KClass${D}Companion Companion
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: KClass(java.lang.String)
+            KClass: KClass(java.lang.String[])
+            KClass: double bar(byte,float)
+            KClass: int CONST
+            KClass: int bar(java.lang.String,byte,int[])
+            KClass: int i
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+            KClass: java.lang.String fooString(java.lang.String)
             KClass: java.lang.String getS()
             KClass: java.lang.String getSTATIC_FIELD()
             KClass: java.lang.String s
