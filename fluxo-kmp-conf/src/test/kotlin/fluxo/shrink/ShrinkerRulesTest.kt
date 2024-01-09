@@ -4,6 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertFails
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.DisplayName
 
@@ -704,8 +705,7 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
 
     // region fields
 
-    // WARN: ProGuard doesn't match lla fileds with `* *;` syntax as R8 does!
-    // https://r8-docs.preemptive.com/#wildcards-and-special-characters
+    // WARN: ProGuard doesn't match all fileds with `* *;` syntax as R8 does!
     @Test
     @DisplayName("DO NOT USE FOR ProGuard! -keep class KClass { * *; }")
     fun keepApprox_typeStarNameStar() = assertSeeds(
@@ -784,6 +784,456 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass: long l
         """,
     )
+
+    // endregion
+
+
+    // region flags
+    // https://r8-docs.preemptive.com/#modifiers
+    // https://www.guardsquare.com/manual/configuration/usage#classspecification
+
+    // WARN: ProGuard fails with syntax error here!
+    @Test
+    @DisplayName("DO NOT USE! -keep class * { abstract *; }")
+    fun keepApprox_abstractEverything() {
+        @Language("txt") // Uninject because of syntax error
+        val rules = "-keep class * { abstract *; }"
+
+        // ProGuard fails with syntax error if class is specified by name here!
+        assertFails {
+            assertSeeds(rules = rules, expectedProGuard = "")
+        }
+
+        assertSeeds(
+            code = KCLASS_CODE,
+            rules = rules,
+            expectedR8 = """
+                KClass
+                KClass${D}Companion
+                KClass: long[] baz(int[])
+            """,
+        )
+    }
+
+    @Test
+    @DisplayName("-keep class * { abstract <methods>; }")
+    fun keepApprox_abstractMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keep class * { abstract <methods>; }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass: long[] baz(int[])
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { abstract <methods>; }")
+    fun keepclasseswithmembersApprox_abstractMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { abstract <methods>; }",
+        expected = """
+            KClass
+            KClass: long[] baz(int[])
+        """,
+    )
+
+    // WARN: ProGuard doesn't match all final methods as R8 does this way!
+    @Test
+    @DisplayName("DO NOT USE! -keepclasseswithmembers class * { final *; }")
+    fun keepclasseswithmembersApprox_finalEverything() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { final *; }",
+        expected = """
+            KClass
+            KClass: KClass${D}Companion Companion
+            KClass: double bar(byte,float)
+            KClass: int CONST
+            KClass: int bar(java.lang.String,byte,int[])
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+            KClass: java.lang.String fooString(java.lang.String)
+            KClass: java.lang.String getSTATIC_FIELD()
+            KClass: void foo()
+            KClass: void staticCoMethod()
+        """,
+        expectedR8 = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: java.lang.String getFIELD()
+            KClass${D}Companion: java.lang.String getSTATIC_FIELD()
+            KClass${D}Companion: void staticCoMethod()
+            KClass: KClass${D}Companion Companion
+            KClass: double bar(byte,float)
+            KClass: int CONST
+            KClass: int bar(java.lang.String,byte,int[])
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+            KClass: java.lang.String fooString(java.lang.String)
+            KClass: java.lang.String getSTATIC_FIELD()
+            KClass: void foo()
+            KClass: void staticCoMethod()
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { final <methods>; }")
+    fun keepclasseswithmembersApprox_finalMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { final <methods>; }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: java.lang.String getFIELD()
+            KClass${D}Companion: java.lang.String getSTATIC_FIELD()
+            KClass${D}Companion: void staticCoMethod()
+            KClass: double bar(byte,float)
+            KClass: int bar(java.lang.String,byte,int[])
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+            KClass: java.lang.String fooString(java.lang.String)
+            KClass: java.lang.String getSTATIC_FIELD()
+            KClass: void foo()
+            KClass: void staticCoMethod()
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { final <fields>; }")
+    fun keepclasseswithmembersApprox_finalFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { final <fields>; }",
+        expected = """
+            KClass
+            KClass: KClass${D}Companion Companion
+            KClass: int CONST
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { native <methods>; }")
+    fun keepclasseswithmembersApprox_nativeMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = """
+            -keepclasseswithmembers class * { native <methods>; }
+            -keep class KClass # to not leave empty result. It fails the shrinker
+        """,
+        expected = "KClass",
+        expectedR8 = """
+            KClass
+            KClass: KClass()
+        """,
+    )
+
+    // WARN: ProGuard doesn't match all private things as R8 does this way!
+    @Test
+    @DisplayName("DO NOT USE! -keepclasseswithmembers class * { private *; }")
+    fun keepclasseswithmembersApprox_privateEverything() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { private *; }",
+        expected = """
+            KClass
+            KClass: KClass(java.lang.String)
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String s
+            KClass: long l
+        """,
+        expectedR8 = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion()
+            KClass: KClass(java.lang.String)
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String s
+            KClass: long l
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { private <methods>; }")
+    fun keepclasseswithmembersApprox_privateMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { private <methods>; }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion()
+            KClass: KClass(java.lang.String)
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { private <fields>; }")
+    fun keepclasseswithmembersApprox_privateFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { private <fields>; }",
+        expected = """
+            KClass
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String s
+            KClass: long l
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { private <init>(...); }")
+    fun keepclasseswithmembersApprox_privateConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { private <init>(...); }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion()
+            KClass: KClass(java.lang.String)
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { protected <methods>; }")
+    fun keepclasseswithmembersApprox_protectedMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { protected <methods>; }",
+        expected = """
+            KClass
+            KClass: KClass(java.lang.String[])
+            KClass: void foo()
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { protected <fields>; }")
+    fun keepclasseswithmembersApprox_protectedFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { protected <fields>; }",
+        expected = """
+            KClass
+            KClass: java.lang.String JVM_FIELD
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { protected <init>(...); }")
+    fun keepclasseswithmembersApprox_protectedConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { protected <init>(...); }",
+        expected = """
+            KClass
+            KClass: KClass(java.lang.String[])
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { public <methods>; }")
+    fun keepclasseswithmembersApprox_publicMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { public <methods>; }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass${D}Companion: java.lang.String getFIELD()
+            KClass${D}Companion: java.lang.String getSTATIC_FIELD()
+            KClass${D}Companion: void getFIELD${D}annotations()
+            KClass${D}Companion: void getSTATIC_FIELD${D}annotations()
+            KClass${D}Companion: void staticCoMethod()
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: double bar(byte,float)
+            KClass: int bar(java.lang.String,byte,int[])
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+            KClass: java.lang.String fooString(java.lang.String)
+            KClass: java.lang.String getS()
+            KClass: java.lang.String getSTATIC_FIELD()
+            KClass: long[] baz(int[])
+            KClass: void setS(java.lang.String)
+            KClass: void staticCoMethod()
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { public <fields>; }")
+    fun keepclasseswithmembersApprox_publicFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { public <fields>; }",
+        expected = """
+            KClass
+            KClass: KClass${D}Companion Companion
+            KClass: int CONST
+            KClass: int i
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { public <init>(...); }")
+    fun keepclasseswithmembersApprox_publicConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { public <init>(...); }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { static <methods>; }")
+    fun keepclasseswithmembersApprox_staticMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { static <methods>; }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: void getFIELD${D}annotations()
+            KClass${D}Companion: void getSTATIC_FIELD${D}annotations()
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+            KClass: java.lang.String getSTATIC_FIELD()
+            KClass: void <clinit>()
+            KClass: void staticCoMethod()
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { static <fields>; }")
+    fun keepclasseswithmembersApprox_staticFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { static <fields>; }",
+        expected = """
+            KClass
+            KClass: KClass${D}Companion Companion
+            KClass: int CONST
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { strictfp <methods>; }")
+    fun keepclasseswithmembersApprox_strictfpMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { strictfp <methods>; }",
+        expected = """
+            KClass
+            KClass: double bar(byte,float)
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { synchronized <methods>; }")
+    fun keepclasseswithmembersApprox_synchronizedMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { synchronized <methods>; }",
+        expected = """
+            KClass
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { transient <fields>; }")
+    fun keepclasseswithmembersApprox_transientFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { transient <fields>; }",
+        expected = """
+            KClass
+            KClass: java.lang.String s
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { volatile <fields>; }")
+    fun keepclasseswithmembersApprox_volatileFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { volatile <fields>; }",
+        expected = """
+            KClass
+            KClass: long l
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { synthetic <methods>; }")
+    fun keepclasseswithmembersApprox_syntheticMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { synthetic <methods>; }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass${D}Companion: void getFIELD${D}annotations()
+            KClass${D}Companion: void getSTATIC_FIELD${D}annotations()
+            KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { synthetic <fields>; }")
+    fun keepclasseswithmembersApprox_syntheticFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { synthetic <fields>; }",
+        expected = """
+            KClass
+            KClass: java.lang.String JVM_FIELD
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { synthetic <init>(...); }")
+    fun keepclasseswithmembersApprox_syntheticConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { synthetic <init>(...); }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+        """,
+    )
+
+    // R8 seems to not support `varargs` flag.
+    @Test
+    @DisplayName("DO NOT USE WITH R8! -keepclasseswithmembers class * { varargs <methods>; }")
+    fun keepclasseswithmembersApprox_varargsMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { varargs <methods>; }",
+        expected = """
+            KClass
+            KClass: java.lang.Short[] bazShort(java.lang.String[])
+        """,
+        expectedR8 = "",
+    )
+
+    // TODO: test 'bridge' flag https://stackoverflow.com/a/58515681/1816338
 
     // endregion
 }

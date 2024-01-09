@@ -181,7 +181,7 @@ internal abstract class ShrinkerTestBase {
         }
         // Help copy-pasting in raw string templates
         seeds = seeds.replace("$", "\${D}")
-        return '\n' + seeds
+        return seeds
     }
 
     private fun ShrinkingResult.actualSeeds(sort: Boolean): String =
@@ -421,7 +421,6 @@ internal abstract class ShrinkerTestBase {
                 internal constructor(b: BooleanArray) : this()
                 private constructor(s: String) : this()
                 @Strictfp
-                @JvmSynthetic
                 fun bar(x: Byte, y: Float): Double { return y * x.toDouble() }
                 fun bar(a: String, b: Byte, c: IntArray): Int { return a.length * b.toInt() + c.size }
                 @Transient
@@ -429,7 +428,7 @@ internal abstract class ShrinkerTestBase {
                 protected fun foo() {}
                 abstract fun baz(a: IntArray): LongArray
                 @Synchronized
-                private fun bazShort(a: Array<String>): Array<Short> = Array(a.size) { 0 }
+                private fun bazShort(vararg a: String): Array<Short> = Array(a.size) { 0 }
                 @JvmName("fooString")
                 fun bazString(s: String): String = s
 
@@ -438,6 +437,7 @@ internal abstract class ShrinkerTestBase {
                     @Suppress("something")
                     val FIELD = "S"
                     @JvmField
+                    @JvmSynthetic
                     protected val JVM_FIELD = "S"
                     @JvmStatic
                     val STATIC_FIELD = "S"
