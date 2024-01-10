@@ -29,7 +29,7 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
      *
      * `*` a sequence of zero or more characters, but NOT the package separators (.),
      *   when used with other symbols in a pattern.
-     *   Matches any reference type when used alone (not supported in all contexts in ProGuard).
+     *   Matches any reference type when alone (not supported in all contexts in ProGuard).
      *   (does not match primitive types or void).
      *
      * `**` a sequence of zero or more characters, INCLUDING package separators (.),
@@ -47,7 +47,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
      * `?` matches any single character in a class name, but not the package separator.
      *
      * `<integer>` integer (starting at 1) referencing the value that matched a wildcard
-     *   used earlier in the specification. For -if-predicated -keep* rules,
+     *   used earlier in the specification.
+     *   For `-if-predicated -keep*` rules,
      *   the index can reference any earlier wildcard match in the specification for either part.
      *   Neither R8 nor ProGuard seem to handle back references in the presence of wildcards
      *   in both the class name and class member names.
@@ -170,6 +171,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass: KClass(java.lang.String[])
             KClass: double bar(byte,float)
             KClass: int bar(java.lang.String,byte,int[])
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.Short[] bazShort(java.lang.String[])
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
@@ -377,6 +380,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass${D}Companion: void getSTATIC_FIELD${D}annotations()
             KClass${D}Companion: void staticCoMethod()
             KClass: KClass()
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
             KClass: java.lang.String getS()
@@ -404,6 +409,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             expectedR8 = """
                 KClass
                 KClass: KClass()
+                KClass: java.lang.Integer invoke()
+                KClass: java.lang.Object invoke()
                 KClass: java.lang.String access${D}getFIELD${D}cp()
                 KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
                 KClass: java.lang.String getS()
@@ -452,6 +459,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass: KClass(java.lang.String[])
             KClass: double bar(byte,float)
             KClass: int bar(java.lang.String,byte,int[])
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.Short[] bazShort(java.lang.String[])
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
@@ -491,6 +500,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
                 KClass: KClass(java.lang.String[])
                 KClass: double bar(byte,float)
                 KClass: int bar(java.lang.String,byte,int[])
+                KClass: java.lang.Integer invoke()
+                KClass: java.lang.Object invoke()
                 KClass: java.lang.Short[] bazShort(java.lang.String[])
                 KClass: java.lang.String access${D}getFIELD${D}cp()
                 KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
@@ -557,6 +568,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass${D}Companion
             KClass${D}Companion: java.lang.String getFIELD()
             KClass${D}Companion: java.lang.String getSTATIC_FIELD()
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
             KClass: java.lang.String fooString(java.lang.String)
@@ -576,6 +589,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         """,
         expectedR8 = """
             KClass
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
             KClass: java.lang.String fooString(java.lang.String)
@@ -591,6 +606,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         rules = "-keep class KClass { ** *(); }",
         expected = """
             KClass
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
             KClass: java.lang.String getS()
@@ -605,6 +622,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         rules = "-keep class KClass { ** *(...); }",
         expected = """
             KClass
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
             KClass: java.lang.String fooString(java.lang.String)
@@ -629,6 +648,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass: KClass(java.lang.String[])
             KClass: double bar(byte,float)
             KClass: int bar(java.lang.String,byte,int[])
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.Short[] bazShort(java.lang.String[])
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
@@ -1061,6 +1082,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
             KClass: double bar(byte,float)
             KClass: int bar(java.lang.String,byte,int[])
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
             KClass: java.lang.String fooString(java.lang.String)
@@ -1191,12 +1214,14 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass${D}Companion: void getFIELD${D}annotations()
             KClass${D}Companion: void getSTATIC_FIELD${D}annotations()
             KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: java.lang.Object invoke()
             KClass: java.lang.String access${D}getFIELD${D}cp()
             KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
         """,
     )
 
     @Test
+    @Language("txt") // Uninject because of syntax error
     @DisplayName("-keepclasseswithmembers class * { synthetic <fields>; }")
     fun keepclasseswithmembersApprox_syntheticFields() = assertSeeds(
         code = KCLASS_CODE,
@@ -1220,8 +1245,21 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         """,
     )
 
+    @Test
+    @Language("txt") // Uninject because of syntax error
+    @DisplayName("-keepclasseswithmembers class * { bridge <methods>; }")
+    fun keepclasseswithmembersApprox_bridgeMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { bridge <methods>; }",
+        expected = """
+            KClass
+            KClass: java.lang.Object invoke()
+        """,
+    )
+
     // R8 seems to not support `varargs` flag.
     @Test
+    @Language("txt") // Uninject because of syntax error
     @DisplayName("DO NOT USE WITH R8! -keepclasseswithmembers class * { varargs <methods>; }")
     fun keepclasseswithmembersApprox_varargsMethods() = assertSeeds(
         code = KCLASS_CODE,
@@ -1233,7 +1271,7 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         expectedR8 = "",
     )
 
-    // TODO: test 'bridge' flag https://stackoverflow.com/a/58515681/1816338
-
     // endregion
+
+    // TODO: tests for own complex keep rules and for the common ones from libs
 }

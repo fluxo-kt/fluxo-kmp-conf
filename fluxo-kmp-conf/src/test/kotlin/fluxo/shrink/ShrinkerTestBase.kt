@@ -398,7 +398,7 @@ internal abstract class ShrinkerTestBase {
 
         // R8 doesn't save static class constructor `<clinit>` or doesn't show it in seeds!
         @JvmStatic
-        protected val CLINIT_REGEX = "(?im)\n?^[ \t]*[^\\s]+: void <clinit>\\(\\)".toRegex()
+        protected val CLINIT_REGEX = "(?im)\n?^[ \t]*\\S+: void <clinit>\\(\\)".toRegex()
 
         /**
          * Default class for shrinker testing.
@@ -416,7 +416,7 @@ internal abstract class ShrinkerTestBase {
                 var i: Int = 0,
                 @Volatile
                 private var l: Long = 0,
-            ) {
+            ) : () -> Int {
                 protected constructor(sa: Array<String>) : this()
                 internal constructor(b: BooleanArray) : this()
                 private constructor(s: String) : this()
@@ -431,6 +431,7 @@ internal abstract class ShrinkerTestBase {
                 private fun bazShort(vararg a: String): Array<Short> = Array(a.size) { 0 }
                 @JvmName("fooString")
                 fun bazString(s: String): String = s
+                override fun invoke(): Int = 1
 
                 companion object {
                     const val CONST = 42
@@ -465,6 +466,8 @@ internal abstract class ShrinkerTestBase {
             KClass: int CONST
             KClass: int bar(java.lang.String,byte,int[])
             KClass: int i
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.Short[] bazShort(java.lang.String[])
             KClass: java.lang.String FIELD
             KClass: java.lang.String JVM_FIELD
@@ -510,6 +513,8 @@ internal abstract class ShrinkerTestBase {
             KClass: int CONST
             KClass: int bar(java.lang.String,byte,int[])
             KClass: int i
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
             KClass: java.lang.Short[] bazShort(java.lang.String[])
             KClass: java.lang.String FIELD
             KClass: java.lang.String JVM_FIELD
