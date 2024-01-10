@@ -33,7 +33,6 @@ import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
-import org.gradle.api.plugins.PluginAware
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import useKotlinDebug
@@ -47,7 +46,9 @@ import useKotlinDebug
 internal abstract class FluxoKmpConfContext
 @Inject constructor(
     val rootProject: Project,
-) : PluginAware by rootProject {
+) {
+    /** @see org.gradle.api.plugins.PluginAware.getPlugins */
+    internal val plugins get() = rootProject.plugins
 
     private val projectInSyncFlag: DomainObjectSet<String> =
         rootProject.objects.domainObjectSet(String::class.java)

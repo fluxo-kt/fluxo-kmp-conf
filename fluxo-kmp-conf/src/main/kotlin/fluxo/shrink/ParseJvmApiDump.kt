@@ -482,7 +482,8 @@ private enum class MemberType {
 
 // https://r8-docs.preemptive.com/#keep-rules
 // https://www.guardsquare.com/manual/configuration/usage#keepoptionmodifiers
-private const val KEEP_MODIFICATORS = ",allowoptimization,includedescriptorclasses"
+// 'allowoptimization' can break API sometimes, so don't use it here.
+private const val KEEP_MODIFICATORS = ",includedescriptorclasses"
 
 private const val EXTENDS_DELIMITER = " : "
 

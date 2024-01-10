@@ -2,6 +2,7 @@ package fluxo.external
 
 import fluxo.gradle.ioFile
 import fluxo.util.alsoOutputTo
+import fluxo.util.readableByteSize
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.time.LocalDateTime
@@ -122,21 +123,36 @@ internal class ExternalToolRunner(
         errFile: File,
         doLogToConsole: Boolean,
     ) {
-        // Print error output to console if it was not printed before.
-        if (!doLogToConsole) {
-            errFile.inputStream().buffered().use { s ->
-                s.copyTo(System.err)
-            }
-        }
-
         val errMsg = buildString {
             appendLine("External tool execution failed:")
             val cmd = (listOf(tool.absolutePath) + args).joinToString(", ")
             appendLine("* Command: [$cmd]")
             appendLine("* Working dir: [${workingDir?.absolutePath.orEmpty()}]")
             appendLine("* Exit code: ${result.exitValue}")
-            appendLine("* Standard output log: ${outFile.absolutePath}")
-            appendLine("* Error log: ${errFile.absolutePath}")
+            val outSize = readableByteSize(outFile)
+            appendLine("* Standard output log ($outSize): ${outFile.absolutePath}")
+            val errSize = readableByteSize(errFile)
+            appendLine("* Error log ($errSize): ${errFile.absolutePath}")
+
+            // Print output in the error message if it was not printed before.
+            if (!doLogToConsole) {
+                if (!alwaysPrintErrorOutput) {
+                    val error = errFile.readText().trim()
+                    if (error.isNotEmpty()) {
+                        appendLine("\nStandard error output:")
+                        appendLine(error)
+                    }
+                }
+
+                var out = outFile.readText().trim()
+                if (out.isNotEmpty()) {
+                    if (out.length > 4096) {
+                        out = "(truncated)\n ..." + out.takeLast(4096).trimStart()
+                    }
+                    appendLine("\nTool output:")
+                    appendLine(out)
+                }
+            }
         }
         throw GradleException(errMsg)
     }

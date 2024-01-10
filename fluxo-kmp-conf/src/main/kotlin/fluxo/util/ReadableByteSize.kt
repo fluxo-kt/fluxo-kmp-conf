@@ -1,8 +1,17 @@
 package fluxo.util
 
+import java.io.File
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.sign
+import org.jetbrains.annotations.Blocking
+
+@Blocking
+internal fun readableByteSize(file: File): String = try {
+    readableByteSize(file.length())
+} catch (_: Throwable) {
+    "err size"
+}
 
 /**
  * Returns a human-readable file size (e.g., "1.2 MB") from a number of bytes.
