@@ -45,6 +45,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 /**
  *
+ * @see fluxo.shrink.ShrinkerRulesTest
+ *
  * @see org.jetbrains.compose.desktop.application.tasks.AbstractProguardTask
  * @see com.android.build.gradle.internal.tasks.ProguardConfigurableTask
  * @see com.android.build.gradle.internal.tasks.R8Task
@@ -399,6 +401,12 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         writer.ln("-printusage '${getUsageFile(reportsDir)}'")
         writer.ln("-printconfiguration '${getFinalConfigFile(reportsDir)}'")
 
+        // TODO: Shared obfuscation dictionaries
+        //  https://github.com/Guardsquare/proguard/tree/master/examples/dictionaries
+        //  https://github.com/sarikayamehmet/AndroidSecureBlog/blob/f5c0898/DexguardTest/app/dictionary.txt
+        //  https://github.com/informationextraction/core-android/blob/095ffae/RCSAndroid/classdictionary.txt
+        //  https://github.com/informationextraction/core-android/blob/b05e3ec/RCSAndroid/compact.txt
+
         // TODO: Debugging
         //  -addconfigurationdebugging
         //  -dump
@@ -493,6 +501,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 private fun getJmods(javaHome: File): Sequence<File> {
     // FIXME: Before Java 9, the runtime classes were packaged in a single jar file.
     //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
+    //  https://github.com/Guardsquare/proguard?tab=readme-ov-file#gradle-task
 
     return javaHome.resolve("jmods").walk().filter {
         it.isFile && it.path.endsWith("jmod", ignoreCase = true)

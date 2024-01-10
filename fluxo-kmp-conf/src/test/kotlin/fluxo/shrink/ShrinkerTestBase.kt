@@ -216,12 +216,16 @@ internal abstract class ShrinkerTestBase {
             writer.ln("-dontwarn kotlin.jvm.**")
             writer.ln("-dontwarn org.jetbrains.annotations.*")
             writer.ln("-dontnote kotlin.**")
+
             writer.ln("-verbose")
 
-            writer.ln("-repackageclasses")
-            writer.ln("-overloadaggressively")
             writer.ln("-allowaccessmodification")
             writer.ln("-mergeinterfacesaggressively")
+            writer.ln("-overloadaggressively")
+            writer.ln("-repackageclasses")
+
+            writer.ln("-keepparameternames")
+            writer.ln("-keepattributes *")
 
             if (!optimize) {
                 writer.ln("-dontoptimize")
@@ -308,12 +312,12 @@ internal abstract class ShrinkerTestBase {
         return zip
     }
 
-    private fun <R> runShrinker(
+    private fun runShrinker(
         shrinker: Shrinker,
         out: ByteArrayOutputStream = ByteArrayOutputStream(),
         replaceStdout: Boolean = true,
-        cb: () -> R,
-    ): R {
+        cb: () -> Unit,
+    ) {
         val origOut = System.out
         val origErr = System.err
         try {
@@ -327,8 +331,16 @@ internal abstract class ShrinkerTestBase {
                 cb()
             }
         } catch (e: Throwable) {
+            // The output jar is empty. Did you specify the proper '-keep' options?
+            if (shrinker == Shrinker.ProGuard &&
+                "The output jar is empty." in e.message.orEmpty()
+            ) {
+                // Allow empty output for ProGuard.
+                return
+            }
+
             val message = buildString {
-                ln("$shrinker failed")
+                ln("$shrinker failed: ${e.message}")
                 ln("Output:")
                 ln(out.toString(Charsets.UTF_8).trim())
                 ln(e)

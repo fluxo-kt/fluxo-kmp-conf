@@ -10,6 +10,26 @@ import fluxo.shrink.registerShrinkerKeepRulesGenTask
 import fluxo.shrink.registerShrinkerTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
+// FIXME: Run tests with minified artifacts
+//  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
+
+// FIXME: Support R8 or ProgGuard available in the classpath (bundled)
+//  + notifyThatToolIsRunning
+//  https://github.com/tuuzed/LightTunnel/blob/680d3bc/buildSrc/src/main/kotlin/Compiler.kt
+
+// FIXME: Support auto-loading of the shrinkings rules from the classpath
+//  https://github.com/Kotlin/kotlinx.coroutines/tree/2ddcbe8/kotlinx-coroutines-core/jvm/resources/META-INF
+//  https://github.com/JetBrains/kotlin/tree/14b13a2/core/reflection.jvm/resources/META-INF/com.android.tools
+//  https://github.com/search?type=code&q=path%3AMETA-INF%2Fcom.android.tools%2Fr8**.pro
+//  https://github.com/search?type=code&q=path%3AMETA-INF%2F**.pro
+
+// FIXME: Support KMP JVM target minification with ProGuard
+
+// TODO: Support Android minification with ProGuard?
+
+// TODO: Allow to call shrinker by task name even if it's disabled
+//  or, at least, show an informative warning when it's disabled
+
 // region Notes and references:
 // https://r8.googlesource.com/r8/
 // https://r8-docs.preemptive.com/
@@ -18,6 +38,10 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 // https://android.googlesource.com/platform/tools/base/+/0d60339/build-system/gradle-core/src/main/java/com/android/build/gradle/internal/tasks/R8Task.kt
 // https://github.com/avito-tech/avito-android/blob/a1949b4/subprojects/assemble/proguard-guard/src/main/kotlin/com/avito/android/proguard_guard/shadowr8/ShadowR8TaskCreator.kt
 // https://github.com/lowasser/kotlinx.coroutines/blob/fcaa6df/buildSrc/src/main/kotlin/RunR8.kt
+//
+// https://slackhq.github.io/keeper/
+// https://github.com/slackhq/Keeper
+// https://github.com/open-obfuscator/dProtect
 //
 // ProGuard/R8 configuration improvements
 // https://github.com/Guardsquare/proguard/tree/8afa59e/gradle-plugin/src/main
@@ -31,6 +55,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 /**
  *
+ * @see fluxo.shrink.ShrinkerRulesTest
+ *
  * @see com.android.tools.r8.R8
  * @see com.android.tools.r8.Version
  * @see proguard.ProGuard
@@ -39,7 +65,6 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 internal fun setupArtifactsShrinking(
     conf: FluxoConfigurationExtensionImpl,
 ) {
-    // TODO: Allow to call any shrinker by task name
     val isCalled = conf.ctx.startTaskNames.any {
         it.startsWith(SHRINKER_TASK_PREFIX) || it == SHRINKER_KEEP_GEN_TASK_NAME
     }
@@ -99,16 +124,11 @@ internal fun setupArtifactsShrinking(
             }
         }
     }
-
-    // FIXME: Run tests with minified artifacts
-    //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
 }
 
 private fun modeIsNotSupported(conf: FluxoConfigurationExtensionImpl) = when (conf.mode) {
-    // TODO: Support KMP JVM target minification with ProGuard
     ConfigurationType.KOTLIN_MULTIPLATFORM -> true
 
-    // TODO: Support Android minification with ProGuard
     ConfigurationType.ANDROID_LIB,
     ConfigurationType.ANDROID_APP,
     -> true

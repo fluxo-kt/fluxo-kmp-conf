@@ -36,7 +36,7 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
      *   when used with other symbols in a pattern.
      *   Matches any reference type when used alone (does not match primitive types or void).
      *
-     * `***` a sequence of zero or more characters, including package separators (.),
+     * `***` a sequence of zero or more characters, INCLUDING package separators (.),
      *   when used with other symbols in a pattern.
      *   Matches any type (primitive or non-primitive, or void, array or non-array) when used alone.
      *   Only the `***` matches array types of any dimension.
@@ -77,7 +77,6 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         assertTrue(files.all { it.isFile && it.exists() })
     }
 
-
     // NOTE: R8 saves the non-argument constructor for kept class with no keep rule body
     //  even in full-mode, ProGuard doesn't.
     @Test
@@ -89,6 +88,8 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         expectedR8 = "KClass\nKClass: KClass()",
     )
 
+    // NOTE: R8 saves the non-argument constructor for kept class with no keep rule body
+    //  even in full-mode, ProGuard doesn't.
     @Test
     @DisplayName("USE WITH CAUTION! -keep class *")
     fun keepAny_noBody() = assertSeeds(
@@ -360,6 +361,17 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
     )
 
     @Test
+    @DisplayName("-keep class * { <init>(%); }")
+    fun keepAnyWithConstructor_argTypePrimitive() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keep class KClass { <init>(%); }",
+        expected = """
+            KClass
+            KClass: KClass(int)
+        """,
+    )
+
+    @Test
     @DisplayName("-keep class KClass { <init>(int); }")
     fun keepWithConstructor_argTypeInt() = assertSeeds(
         code = KCLASS_CODE,
@@ -529,7 +541,7 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
     }
 
     @Test
-    @DisplayName("USE WITH CAUTION! -keep class * { *(%); }")
+    @DisplayName("-keep class * { *(%); }")
     fun keepApproxAny_nameStarPrimitiveArg() = assertSeeds(
         code = KCLASS_CODE,
         rules = "-keep class * { *(%); }",
@@ -1272,7 +1284,7 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
     // R8 seems to not support `varargs` flag.
     @Test
     @Language("txt") // Uninject because of syntax error
-    @DisplayName("DO NOT USE WITH R8! -keepclasseswithmembers class * { varargs <methods>; }")
+    @DisplayName("DO NOT USE FOR R8! -keepclasseswithmembers class * { varargs <methods>; }")
     fun keepclasseswithmembersApprox_varargsMethods() = assertSeeds(
         code = KCLASS_CODE,
         rules = "-keepclasseswithmembers class * { varargs <methods>; }",
@@ -1285,5 +1297,285 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
 
     // endregion
 
-    // TODO: tests for own complex keep rules and for the common ones from libs
+
+    // region annotations
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { @** <fields>; }")
+    fun keepAnnotatedFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { @** <fields>; }",
+        expected = """
+            KClass
+            KClass: KClass${D}Companion Companion
+            KClass: int i
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String s
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { @kotlin.** <fields>; }")
+    fun keepKotlinAnnotatedFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { @kotlin.** <fields>; }",
+        expected = """
+            KClass
+            KClass: int i
+            KClass: java.lang.String JVM_FIELD
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { @**jetbrains** <fields>; }")
+    fun keepJetbrainsAnnotatedFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { @**jetbrains** <fields>; }",
+        expected = """
+            KClass
+            KClass: KClass${D}Companion Companion
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String s
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { @** <init>(...); }")
+    fun keepAnnotatedConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { @** <init>(...); }",
+        expected = """
+            KClass
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(java.lang.String[])
+        """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers @** class * { <init>(%); }")
+    fun keepclasseswithmembersAnnotatedClasses() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers @** class * { <init>(%); }",
+        expected = """
+            KClass
+            KClass: KClass(int)
+        """.trimIndent(),
+    )
+
+    @Test
+    @DisplayName("-keep @** class * { <init>(%); }")
+    fun keepAnnotatedClasses() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keep @** class * { <init>(%); }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass: KClass(int)
+        """.trimIndent(),
+    )
+
+    // endregion
+
+
+    // region ifs
+
+    // WARN: R8 matches nothing!
+    @Test
+    @DisplayName(
+        "DO NOT USE FOR R8! -if class * -keepclasseswithmembers class <1> { @** <fields>; }",
+    )
+    fun keepIfAnyAnnotatedFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-if class *\n-keepclasseswithmembers class <1> { @** <fields>; }",
+        expected = """
+            KClass
+            KClass: KClass${D}Companion Companion
+            KClass: int i
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String s
+        """,
+        expectedR8 = "",
+    )
+
+    // WARN: R8 matches nothing!
+    @Test
+    @DisplayName(
+        "DO NOT USE FOR R8! -if class ** -keepclasseswithmembers class <1> { @** <fields>; }",
+    )
+    fun keepIfAny2StarsAnnotatedFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-if class **\n-keepclasseswithmembers class <1> { @** <fields>; }",
+        expected = """
+            KClass
+            KClass: KClass${D}Companion Companion
+            KClass: int i
+            KClass: java.lang.String FIELD
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String STATIC_FIELD
+            KClass: java.lang.String s
+        """,
+        expectedR8 = "",
+    )
+
+    // WARN: R8 matches nothing!
+    @Test
+    @DisplayName(
+        "DO NOT USE FOR R8! -if class * -keepclasseswithmembers class <1> { @** <init>(...); }",
+    )
+    fun keepIfAnyAnnotatedConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-if class *\n-keepclasseswithmembers class <1> { @** <init>(...); }",
+        expected = """
+            KClass
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(java.lang.String[])
+        """,
+        expectedR8 = "",
+    )
+
+    // WARN: R8 matches nothing!
+    @Test
+    @DisplayName(
+        "DO NOT USE FOR R8! -if class ** -keepclasseswithmembers class <1> { @** <init>(...); }",
+    )
+    fun keepIfAny2StarsAnnotatedConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-if class **\n-keepclasseswithmembers class <1> { @** <init>(...); }",
+        expected = """
+            KClass
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(java.lang.String[])
+        """,
+        expectedR8 = "",
+    )
+
+    // WARN: R8 matches nothing!
+    @Test
+    @DisplayName(
+        "DO NOT USE FOR R8! -if class * { @kotlin.** <fields>; } -keep class <1> { <init>(%); }",
+    )
+    fun keepPrimitiveInitIfKotlinAnnotatedFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-if class * { @kotlin.** <fields>; }\n-keep class <1> { <init>(%); }",
+        expected = """
+            KClass
+            KClass: KClass(int)
+        """,
+        expectedR8 = "",
+    )
+
+    // WARN: R8 matches nothing!
+    @Test
+    @DisplayName(
+        "DO NOT USE FOR R8! -if class ** { @kotlin.** <fields>; } -keep class <1> { <init>(%); }",
+    )
+    fun keepPrimitiveInitIfKotlinAnnotatedFields2Stars() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-if class ** { @kotlin.** <fields>; }\n-keep class <1> { <init>(%); }",
+        expected = """
+            KClass
+            KClass: KClass(int)
+        """,
+        expectedR8 = "",
+    )
+
+    // WARN: R8 matches nothing!
+    @Test
+    @DisplayName("DO NOT USE FOR R8! -if class **$* -keep class <1> { <init>(%); }")
+    fun keepParentClassIfHasChildClass() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = """
+            -if class **$*
+            -keep class <1> {
+                <init>(%);
+            }
+        """.trimIndent(),
+        expected = """
+            KClass
+            KClass: KClass(int)
+        """.trimIndent(),
+        expectedR8 = "",
+    )
+
+    // WARN: R8 matches nothing!
+    @Test
+    @DisplayName("DO NOT USE FOR R8! -if @** class * -keep class <2> { <init>(%); }")
+    fun keepClassIfAnnotated() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-if @** class * -keep class <2> { <init>(%); }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass: KClass(int)
+        """,
+        expectedR8 = "",
+    )
+
+    // endregion
+
+
+    // region snippets
+
+    // https://github.com/search?type=code&q=-keep+path%3Ar8.pro
+    // https://github.com/search?type=code&q=-keep+path%3Aproguard.pro
+    // https://github.com/search?type=code&q=path%3AMETA-INF%2F**.pro
+
+    // Keep everything public.
+    // Simpliest rule for libraries.
+    // https://www.guardsquare.com/manual/configuration/examples#library
+    @Test
+    @DisplayName("-keep public class * { public protected *; }")
+    fun keepAnyPublicAndProtected() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keep public class * { public protected *; }",
+        expected = """
+            KClass
+            KClass${D}Companion
+            KClass${D}Companion: KClass${D}Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass${D}Companion: java.lang.String getFIELD()
+            KClass${D}Companion: java.lang.String getSTATIC_FIELD()
+            KClass${D}Companion: void getFIELD${D}annotations()
+            KClass${D}Companion: void getSTATIC_FIELD${D}annotations()
+            KClass${D}Companion: void staticCoMethod()
+            KClass: KClass${D}Companion Companion
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: KClass(java.lang.String[])
+            KClass: double bar(byte,float)
+            KClass: int CONST
+            KClass: int bar(java.lang.String,byte,int[])
+            KClass: int i
+            KClass: java.lang.Integer invoke()
+            KClass: java.lang.Object invoke()
+            KClass: java.lang.String JVM_FIELD
+            KClass: java.lang.String access${D}getFIELD${D}cp()
+            KClass: java.lang.String access${D}getSTATIC_FIELD${D}cp()
+            KClass: java.lang.String fooString(java.lang.String)
+            KClass: java.lang.String getS()
+            KClass: java.lang.String getSTATIC_FIELD()
+            KClass: long[] baz(int[])
+            KClass: void foo()
+            KClass: void setS(java.lang.String)
+            KClass: void staticCoMethod()
+        """,
+    )
+
+    // endregion
 }

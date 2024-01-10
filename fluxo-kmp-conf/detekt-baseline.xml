@@ -13,6 +13,7 @@
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Debugging</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Process output and print only main information if not verbose</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Shared obfuscation dictionaries</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget.Configure$// TODO: Detect applied plugin (lib/app) and use appropriate container?</ID>
     <ID>ForbiddenComment:AppleIosTarget.kt$// FIXME: Public hierarchy of targets for easier configuration</ID>
@@ -39,16 +40,17 @@
     <ID>ForbiddenComment:MultiplatformSourceSetUtils.kt$// TODO: Create bundles once and reuse or at least make them lazy evaluatable.</ID>
     <ID>ForbiddenComment:NodeGraphsRenderer.kt$NodeGraphsRenderer.LegendRenderer$// FIXME: This is not implemented yet.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// TODO: Optimize, make lazy accessible via root project</ID>
-    <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: Support R8 or ProgGuard available in the classpath (bundled)</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Run tests with minified artifacts</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Allow to call any shrinker by task name</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support Android minification with ProGuard</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support KMP JVM target minification with ProGuard</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support KMP JVM target minification with ProGuard</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support R8 or ProgGuard available in the classpath (bundled)</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support auto-loading of the shrinkings rules from the classpath</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Allow to call shrinker by task name even if it's disabled</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support Android minification with ProGuard?</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
