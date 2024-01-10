@@ -217,6 +217,18 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         """,
     )
 
+    // Keep a static constructor in class.
+    @Test
+    @DisplayName("-keep class KClass { <clinit>; }")
+    fun keepWithClinit() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keep class KClass { <clinit>(); }",
+        expected = """
+            KClass
+            KClass: void <clinit>()
+        """,
+    )
+
     // Keep every field in class.
     @Test
     @DisplayName("-keep class KClass { <fields>; }")
