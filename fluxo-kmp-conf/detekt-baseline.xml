@@ -45,12 +45,13 @@
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Run tests with minified artifacts</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support KMP JVM target minification with ProGuard</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Run tests with minified artifacts.</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support KMP JVM target minification with ProGuard.</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support R8 or ProgGuard available in the classpath (bundled)</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support auto-loading of the shrinkings rules from the classpath</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Allow to call shrinker by task name even if it's disabled</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Allow to call shrinker by task name even if it's disabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support Android minification with ProGuard?</ID>
+    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support disabling kotlin nullability checks generation for the shrinked release builds.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
@@ -108,6 +109,7 @@
     <ID>LongMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>LongMethod:SetupTestsReport.kt$internal fun FluxoKmpConfContext.setupTestsReport()</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
+    <ID>MagicNumber:ExternalToolRunner.kt$ExternalToolRunner$4096</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$"You may want to add it to the classpath in the root build.gradle.kts instead! $example"</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$logger.v("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")</ID>

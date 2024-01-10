@@ -19,22 +19,43 @@
 #   https://github.com/sarikayamehmet/AndroidSecureBlog/tree/f5c0898/DexguardTest/antlibs/DexGuard6.0.24/lib
 
 # Rules for Gradle plugins
+-dontnote com.android.tools.r8.**
+-dontnote java.lang.AbstractStringBuilder
 -dontnote javax.annotation.**
 -dontnote javax.inject.**
 -dontnote javax.xml.**
--dontnote org.jetbrains.annotations.**
--dontnote org.jetbrains.kotlin.**
--dontnote org.jetbrains.org.objectweb.asm.**
+-dontnote kotlin.**
+-dontnote org.jetbrains.**
 -dontnote org.w3c.dom.**
 -dontnote org.xml.sax.**
+-dontnote proguard.**
 
--dontnote kotlin.**
--dontwarn kotlin.**
--dontnote java.lang.AbstractStringBuilder
--dontwarn java.lang.AbstractStringBuilder
+-dontwarn com.android.**
+-dontwarn com.autonomousapps.**
 -dontwarn com.diffplug.gradle.spotless.JvmLang
+-dontwarn com.mikepenz.aboutlibraries.**
+-dontwarn com.pinterest.ktlint.**
+-dontwarn java.lang.AbstractStringBuilder
+-dontwarn kotlin.**
+-dontwarn org.conscrypt.**
+-dontwarn org.jetbrains.**
+
+# Kotlin metadata warnings
+-dontwarn com.github.gmazzo.buildconfig.**
+-dontwarn com.google.**
+-dontwarn com.gradle.**
+-dontwarn io.gitlab.arturbosch.detekt.**
+-dontwarn kotlinx.**
+-dontwarn okhttp3.internal.**
+-dontwarn okio.internal.**
+-dontwarn org.gradle.**
+-dontwarn proguard.**
+-dontwarn retrofit2.**
 
 #-ignorewarnings
+#-forceprocessing
+-addconfigurationdebugging
+#-whyareyoukeeping class **
 
 -verbose
 
@@ -49,10 +70,15 @@
 -mergeinterfacesaggressively
 
 # Horizontal class merging increases size of the artifact.
+# https://www.guardsquare.com/manual/configuration/optimizations
+#-optimizations !library/*,!class/*,!field/*,!method/*,!code/*
 -optimizations !class/merging/horizontal
 
-#-whyareyoukeeping class **
+#-dontoptimize
+#-dontshrink
+#-dontobfuscate
 
+#-adaptclassstrings
 -adaptresourcefilenames    **.properties,**.gif,**.jpg,**.png,**.webp,**.svg,**.ttf,**.otf,**.txt,**.xml
 -adaptresourcefilecontents **.properties,**.MF
 
@@ -60,10 +86,18 @@
 # See https://www.guardsquare.com/manual/configuration/examples#library
 -keepparameternames
 -renamesourcefileattribute SourceFile
--keepattributes Signature,Exceptions,*Annotation*,
+
+# https://stackoverflow.com/a/69523469/1816338
+-keepattributes Signature,Exceptions,
+                RuntimeVisibleAnnotations,AnnotationDefault,
                 InnerClasses,PermittedSubclasses,EnclosingMethod,
-                Deprecated,SourceFile,LineNumberTable
+                Deprecated,SourceFile,LineNumberTable,
+                Synthetic,MethodParameters
 
 -include keep.pro
-#-include assumptions.pro
-#-include nosideeffects.pro
+
+# Note: -assumenosideeffects should not be used with constructors!
+# It leads to bugs like https://sourceforge.net/p/proguard/bugs/702/
+# Using -assumenoexternalsideeffects is fine though and should be used for that purpose.
+-include assumptions.pro
+-include nosideeffects.pro

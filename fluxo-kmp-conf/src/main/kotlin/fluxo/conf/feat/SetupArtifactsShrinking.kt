@@ -10,7 +10,7 @@ import fluxo.shrink.registerShrinkerKeepRulesGenTask
 import fluxo.shrink.registerShrinkerTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
-// FIXME: Run tests with minified artifacts
+// FIXME: Run tests with minified artifacts.
 //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
 
 // FIXME: Support R8 or ProgGuard available in the classpath (bundled)
@@ -23,12 +23,15 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 //  https://github.com/search?type=code&q=path%3AMETA-INF%2Fcom.android.tools%2Fr8**.pro
 //  https://github.com/search?type=code&q=path%3AMETA-INF%2F**.pro
 
-// FIXME: Support KMP JVM target minification with ProGuard
+// FIXME: Support KMP JVM target minification with ProGuard.
+
+// TODO: Support disabling kotlin nullability checks generation for the shrinked release builds.
+//  Auto-add assumenosideeffects to remove left intrinsics in that case.
 
 // TODO: Support Android minification with ProGuard?
 
-// TODO: Allow to call shrinker by task name even if it's disabled
-//  or, at least, show an informative warning when it's disabled
+// TODO: Allow to call shrinker by task name even if it's disabled.
+//  Or, at least, show an informative warning when it's disabled
 
 // region Notes and references:
 // https://r8.googlesource.com/r8/

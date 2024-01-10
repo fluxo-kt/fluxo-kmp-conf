@@ -1595,6 +1595,8 @@ internal class ShrinkerKeepRulesBySeedsTest : ShrinkerTestBase() {
     // https://github.com/search?type=code&q=-keep+path%3Ar8.pro
     // https://github.com/search?type=code&q=-keep+path%3Aproguard.pro
     // https://github.com/search?type=code&q=path%3AMETA-INF%2F**.pro
+    // https://github.com/search?type=code&q=checkNotNullParameter+path%3A.pro
+    // https://github.com/search?type=code&q=assumevalues+path%3A.pro
 
     // Keep everything public.
     // Simpliest rule for libraries.
