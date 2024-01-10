@@ -1,4 +1,6 @@
 
+# See `fluxo.shrink.ShrinkerKeepRulesBySeedsTest` for tests on what's supported by R8 and ProGuard.
+
 # Keep and adapt Kotlin metadata, allow reflection to work.
 #-keep,allowoptimization class kotlin.Metadata
 

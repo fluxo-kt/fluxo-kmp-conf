@@ -45,7 +45,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 /**
  *
- * @see fluxo.shrink.ShrinkerRulesTest
+ * @see fluxo.shrink.ShrinkerKeepRulesBySeedsTest
  *
  * @see org.jetbrains.compose.desktop.application.tasks.AbstractProguardTask
  * @see com.android.build.gradle.internal.tasks.ProguardConfigurableTask

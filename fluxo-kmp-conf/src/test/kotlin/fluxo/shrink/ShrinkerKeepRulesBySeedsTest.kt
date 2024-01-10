@@ -15,7 +15,7 @@ import org.junit.jupiter.api.DisplayName
  * but they can ensure correctness of the keep rules.
  */
 @Suppress("ShrinkerUnresolvedReference", "LargeClass")
-internal class ShrinkerRulesTest : ShrinkerTestBase() {
+internal class ShrinkerKeepRulesBySeedsTest : ShrinkerTestBase() {
     // NOTE: R8 compat always keeps no-argument constructor for kept classes!
     // NOTE: R8 doesn't save static class constructor `<clinit>` or doesn't show it in seeds!
 
@@ -1085,6 +1085,16 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         """,
     )
 
+    // WARN: Both ProGuard and R8 don't support 'internal' modifier from Kotlin!
+    @Test
+    @Language("txt") // Uninject because of syntax error
+    @DisplayName("DO NOT USE! -keepclasseswithmembers class * { internal <methods>; }")
+    fun keepclasseswithmembersApprox_internalMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { internal <methods>; }",
+        expected = "",
+    )
+
     @Test
     @DisplayName("-keepclasseswithmembers class * { public <methods>; }")
     fun keepclasseswithmembersApprox_publicMethods() = assertSeeds(
@@ -1269,6 +1279,16 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         """,
     )
 
+    // WARN: Both ProGuard and R8 don't support `override` flag.
+    @Test
+    @Language("txt") // Uninject because of syntax error
+    @DisplayName("DO NOT USE! -keepclasseswithmembers class * { override <methods>; }")
+    fun keepclasseswithmembersApprox_overrideMethods() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { override <methods>; }",
+        expected = "",
+    )
+
     @Test
     @Language("txt") // Uninject because of syntax error
     @DisplayName("-keepclasseswithmembers class * { bridge <methods>; }")
@@ -1316,6 +1336,15 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
         """,
     )
 
+    // WARN: Both ProGuard and R8 don't support overrides matching with `@Override` annotation!
+    @Test
+    @DisplayName("DO NOT USE! -keepclasseswithmembers class * { @**Override** <methods>; }")
+    fun keepOverrideAnnotatedFields() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { @Override <fields>; }",
+        expected = "",
+    )
+
     @Test
     @DisplayName("-keepclasseswithmembers class * { @kotlin.** <fields>; }")
     fun keepKotlinAnnotatedFields() = assertSeeds(
@@ -1355,6 +1384,39 @@ internal class ShrinkerRulesTest : ShrinkerTestBase() {
             KClass: KClass(int,long)
             KClass: KClass(java.lang.String[])
         """,
+    )
+
+    @Test
+    @DisplayName("-keepclasseswithmembers class * { @** <init>(...); <init>(...); }")
+    fun keepAnnotatedConstructorsAndOtherConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclasseswithmembers class * { @** <init>(...); <init>(...); }",
+        expected = """
+            KClass
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(int,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+            KClass: KClass(java.lang.String)
+            KClass: KClass(java.lang.String[])
+        """,
+    )
+
+    // R8 does not show anythig in seeds here, ProGuard doesn't save the class (and that's correct)!
+    @Test
+    @DisplayName("USE WITH CAUTION! -keepclassmembers class * { @** <init>(...); }")
+    fun keepclassmembersAnnotatedConstructors() = assertSeeds(
+        code = KCLASS_CODE,
+        rules = "-keepclassmembers class * { @** <init>(...); }",
+        expected = """
+            KClass: KClass()
+            KClass: KClass(boolean[])
+            KClass: KClass(int)
+            KClass: KClass(int,long)
+            KClass: KClass(java.lang.String[])
+        """,
+        expectedR8 = "",
     )
 
     @Test

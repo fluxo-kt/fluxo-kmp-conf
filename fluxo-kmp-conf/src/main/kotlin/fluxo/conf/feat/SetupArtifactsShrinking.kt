@@ -55,7 +55,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 /**
  *
- * @see fluxo.shrink.ShrinkerRulesTest
+ * @see fluxo.shrink.ShrinkerKeepRulesBySeedsTest
  *
  * @see com.android.tools.r8.R8
  * @see com.android.tools.r8.Version
