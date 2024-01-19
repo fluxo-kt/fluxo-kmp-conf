@@ -9,9 +9,8 @@
 # Keep and adapt Kotlin metadata, allow reflection to work.
 # Required for ProGuard to keep the Kotlin metadata.
 # https://www.guardsquare.com/manual/languages/kotlin
-# broken with https://github.com/Guardsquare/proguard/issues/309
-# TODO: uncomment when fixed
-#-keep class kotlin.Metadata
+# broken in ProGuard >= 7.3.0 with https://github.com/Guardsquare/proguard/issues/309
+-keep class kotlin.Metadata
 
 # Kotlin suspend functions
 -keep class kotlin.coroutines.Continuation
@@ -37,6 +36,25 @@
     public synthetic bridge void apply(java.lang.Object);
 }
 
+# Keep tasks functioning.
+-keep @interface org.gradle.api.tasks.**
+-keepclassmembers,allowoptimization,allowobfuscation,includedescriptorclasses class * implements org.gradle.api.Task {
+    <init>();
+    @org.gradle.api.tasks.** <methods>;
+}
+
+# Keep unused InputFiles for cacheable Gradle tasks.
+# Needed for cache invalidation and proper work.
+-keepclassmembers,allowoptimization,allowobfuscation,includedescriptorclasses @org.gradle.api.tasks.CacheableTask class * {
+    @org.gradle.api.tasks.InputFiles <methods>;
+}
+
+# Keep services functioning.
+-keep,allowobfuscation,includedescriptorclasses class * implements org.gradle.api.services.BuildService {
+    <init>(...);
+}
+-keep,allowobfuscation,includedescriptorclasses class * implements org.gradle.api.services.BuildServiceParameters
+
 # Keep injecting constructors and injected getters, they are called at runtime.
 # 'allowoptimization' breaks injection here, so don't use it.
 # 'includedescriptorclasses' is to avoid notes "the configuration keeps the entry point A, but not the descriptor class B".
@@ -47,15 +65,9 @@
     abstract org.gradle.api.** *(...);
 }
 
-# Keep unused InputFiles for cacheable Gradle tasks.
-# Needed for cache invalidation and proper work.
--keepclassmembers,allowoptimization,allowobfuscation,includedescriptorclasses @org.gradle.api.tasks.CacheableTask class * {
-    @org.gradle.api.tasks.InputFiles <methods>;
-}
-
-# Keep due to complicated interface hierarchy.
--keepclassmembers,allowoptimization,allowobfuscation,includedescriptorclasses class fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl {
-    public *** *(...);
+# Keep due to complicated interface hierarchy instantiated dynamically.
+-keep,allowoptimization,allowobfuscation,includedescriptorclasses class fluxo.conf.dsl.impl.FluxoConfigurationExtension*Impl {
+    public *;
 }
 
 
@@ -69,5 +81,5 @@
 # see fluxo.conf.feat.SetupAndroidLintKt.reportLintVersion
 -dontnote com.android.build.gradle.internal.lint.LintTool
 -keep class com.android.build.gradle.internal.lint.LintTool {
-    * getVersion();
+    *** getVersion();
 }

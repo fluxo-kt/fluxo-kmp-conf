@@ -18,6 +18,8 @@
 # It leads to bugs like https://sourceforge.net/p/proguard/bugs/702/
 # Using -assumenoexternalsideeffects is fine though and should be used for that purpose.
 
+# Note: -assumenoexternalsideeffects and -assumenoexternalreturnvalues are not supported by R8 and ignored!
+
 
 # Remove Kotlin intrinsic assertions.
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {

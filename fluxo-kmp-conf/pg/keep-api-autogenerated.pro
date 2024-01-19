@@ -4,17 +4,17 @@
 # - api\plugin.api
 # DO NOT EDIT MANUALLY!
 
--keep,includedescriptorclasses public final class DependencyUtilsKt {
+-keep,allowoptimization public final class DependencyUtilsKt {
     public static final org.gradle.api.artifacts.Dependency ksp(org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler, java.lang.Object);
     public static final org.gradle.api.provider.Provider toModuleDependency(org.gradle.api.provider.Provider);
     public static final java.lang.String toModuleDependency(org.gradle.plugin.use.PluginDependency);
 }
 
--keep,includedescriptorclasses public final class KmpHierarchyTemplateKt {
+-keep,allowoptimization public final class KmpHierarchyTemplateKt {
     public static final kotlin.jvm.functions.Function1 getFluxoKmpConf(org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate$Templates);
 }
 
--keep,includedescriptorclasses public final class MultiplatformSourceSetUtilsKt {
+-keep,allowoptimization public final class MultiplatformSourceSetUtilsKt {
     public static final kotlin.properties.PropertyDelegateProvider bundle(org.gradle.api.NamedDomainObjectContainer, java.lang.String);
     public static final fluxo.conf.kmp.SourceSetBundle bundle(org.gradle.api.NamedDomainObjectContainer, java.lang.String, java.lang.Boolean);
     public static final kotlin.properties.PropertyDelegateProvider bundle(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer, java.lang.String);
@@ -71,7 +71,7 @@
     public static final java.util.Set plus(fluxo.conf.kmp.SourceSetBundle, java.util.Set);
 }
 
--keep,includedescriptorclasses public final class PropsAndEnvKt {
+-keep,allowoptimization public final class PropsAndEnvKt {
     public static final org.gradle.api.provider.Provider areComposeMetricsEnabled(org.gradle.api.Project);
     public static final java.lang.String buildNumber(org.gradle.api.Project);
     public static final java.lang.String buildNumberSuffix(org.gradle.api.Project, java.lang.String, java.lang.String);
@@ -94,35 +94,35 @@
     public static final org.gradle.api.provider.Provider useKotlinDebug(org.gradle.api.Project);
 }
 
--keep,includedescriptorclasses public final class SetupAndroidKt {
+-keep,allowoptimization public final class SetupAndroidKt {
     public static final void setupAndroidApp(org.gradle.api.Project, java.lang.String, int, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1);
     public static synthetic void setupAndroidApp$default(org.gradle.api.Project, java.lang.String, int, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public static final void setupAndroidLibrary(org.gradle.api.Project, kotlin.jvm.functions.Function1, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, kotlin.jvm.functions.Function1);
     public static synthetic void setupAndroidLibrary$default(org.gradle.api.Project, kotlin.jvm.functions.Function1, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public final class SetupGradlePluginKt {
+-keep,allowoptimization public final class SetupGradlePluginKt {
     public static final void setupGradlePlugin(org.gradle.api.Project, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List, java.lang.String, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1);
     public static synthetic void setupGradlePlugin$default(org.gradle.api.Project, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List, java.lang.String, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public final class SetupIdeaPluginKt {
+-keep,allowoptimization public final class SetupIdeaPluginKt {
     public static final void setupIdeaPlugin(org.gradle.api.Project, kotlin.jvm.functions.Function1, java.lang.String, java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function1);
     public static synthetic void setupIdeaPlugin$default(org.gradle.api.Project, kotlin.jvm.functions.Function1, java.lang.String, java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public final class SetupKotlinJsKt {
+-keep,allowoptimization public final class SetupKotlinJsKt {
     public static final kotlin.jvm.functions.Function1 getDEFAULT_COMMON_JS_CONF();
     public static final void testTimeout(org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl, int);
     public static synthetic void testTimeout$default(org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl, int, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public final class SetupKotlinKt {
+-keep,allowoptimization public final class SetupKotlinKt {
     public static final void setupKotlin(org.gradle.api.Project, kotlin.jvm.functions.Function1, java.lang.Boolean, java.util.List, kotlin.jvm.functions.Function1);
     public static synthetic void setupKotlin$default(org.gradle.api.Project, kotlin.jvm.functions.Function1, java.lang.Boolean, java.util.List, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public final class SetupMultiplatformKt {
+-keep,allowoptimization public final class SetupMultiplatformKt {
     public static final void iosCompat(org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension, java.lang.String, java.lang.String, java.lang.String);
     public static synthetic void iosCompat$default(org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension, java.lang.String, java.lang.String, java.lang.String, int, java.lang.Object);
     public static final void macosCompat(org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension, java.lang.String, java.lang.String);
@@ -136,13 +136,13 @@
     public static synthetic void watchosCompat$default(org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public final class fluxo.conf.FluxoKmpConfPlugin {
+-keep,allowoptimization public final class fluxo.conf.FluxoKmpConfPlugin {
     public <init>();
     public synthetic void apply(java.lang.Object);
     public void apply(org.gradle.api.Project);
 }
 
--keep,includedescriptorclasses public final class fluxo.conf.dsl.BinaryCompatibilityValidatorConfig {
+-keep,allowoptimization public final class fluxo.conf.dsl.BinaryCompatibilityValidatorConfig {
     public <init>();
     public <init>(java.util.Set, java.util.Set, java.util.Set, boolean, boolean, boolean, java.lang.Integer);
     public synthetic <init>(java.util.Set, java.util.Set, java.util.Set, boolean, boolean, boolean, java.lang.Integer, int, kotlin.jvm.internal.DefaultConstructorMarker);
@@ -162,7 +162,7 @@
     public final void setNonPublicMarkers(java.util.Set);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.FluxoConfigurationExtension {
+-keep,allowoptimization public interface fluxo.conf.dsl.FluxoConfigurationExtension {
     public static final fluxo.conf.dsl.FluxoConfigurationExtension$Companion Companion;
     public static final java.lang.String NAME;
     public abstract void asAndroid(boolean, kotlin.jvm.functions.Function1);
@@ -185,11 +185,11 @@
     public abstract void setSkipDefaultConfigurations(boolean);
 }
 
--keep,includedescriptorclasses public final class fluxo.conf.dsl.FluxoConfigurationExtension$Companion {
+-keep,allowoptimization public final class fluxo.conf.dsl.FluxoConfigurationExtension$Companion {
     public static final java.lang.String NAME;
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.FluxoConfigurationExtensionAndroid {
+-keep,allowoptimization public interface fluxo.conf.dsl.FluxoConfigurationExtensionAndroid {
     public abstract void filterVariants(kotlin.jvm.functions.Function1);
     public abstract java.lang.String getAndroidApplicationId();
     public abstract java.lang.String getAndroidBuildToolsVersion();
@@ -219,7 +219,7 @@
     public abstract void setSetupRoom(java.lang.Boolean);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.FluxoConfigurationExtensionCommon {
+-keep,allowoptimization public interface fluxo.conf.dsl.FluxoConfigurationExtensionCommon {
     public abstract boolean getEnableBuildConfig();
     public abstract java.lang.Boolean getEnableDetektAutoCorrect();
     public abstract java.lang.Boolean getEnableDetektCompilerPlugin();
@@ -238,7 +238,7 @@
     public abstract void setSetupVerification(java.lang.Boolean);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.FluxoConfigurationExtensionKotlin {
+-keep,allowoptimization public interface fluxo.conf.dsl.FluxoConfigurationExtensionKotlin {
     public void apiValidation(kotlin.jvm.functions.Function1);
     public static synthetic void apiValidation$default(fluxo.conf.dsl.FluxoConfigurationExtensionKotlin, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public abstract boolean getAddStdlibDependency();
@@ -266,7 +266,7 @@
     public abstract void setUseDokka(java.lang.Boolean);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.FluxoConfigurationExtensionKotlinOptions {
+-keep,allowoptimization public interface fluxo.conf.dsl.FluxoConfigurationExtensionKotlinOptions {
     public void explicitApi();
     public void explicitApiWarning();
     public abstract java.lang.Boolean getAllWarningsAsErrors();
@@ -311,7 +311,7 @@
     public abstract void setUseIndyLambdas(java.lang.Boolean);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.FluxoConfigurationExtensionPublication {
+-keep,allowoptimization public interface fluxo.conf.dsl.FluxoConfigurationExtensionPublication {
     public static final fluxo.conf.dsl.FluxoConfigurationExtensionPublication$Companion Companion;
     public static final java.lang.String DEFAULT_BRANCH_NAME;
     public abstract java.lang.String getDefaultGitBranchName();
@@ -344,11 +344,11 @@
     public abstract void shrinkingConfig(kotlin.jvm.functions.Function1);
 }
 
--keep,includedescriptorclasses public final class fluxo.conf.dsl.FluxoConfigurationExtensionPublication$Companion {
+-keep,allowoptimization public final class fluxo.conf.dsl.FluxoConfigurationExtensionPublication$Companion {
     public static final java.lang.String DEFAULT_BRANCH_NAME;
 }
 
--keep,includedescriptorclasses public final class fluxo.conf.dsl.FluxoPublicationConfig {
+-keep,allowoptimization public final class fluxo.conf.dsl.FluxoPublicationConfig {
     public <init>(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String);
     public synthetic <init>(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);
     public final java.lang.String component1();
@@ -416,30 +416,30 @@
     public java.lang.String toString();
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.Container {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.Container {
     public abstract void applyPlugins(java.lang.String[]);
     public abstract void applyPlugins(org.gradle.api.provider.Provider[]);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.KmpConfigurationContainerDsl {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.KmpConfigurationContainerDsl {
     public abstract void allDefaultTargets();
     public abstract void kotlinMultiplatform(kotlin.jvm.functions.Function1);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.KotlinConfigurationContainerDsl {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.KotlinConfigurationContainerDsl {
     public abstract void common(kotlin.jvm.functions.Function1);
     public abstract void kotlin(kotlin.jvm.functions.Function1);
     public void onAndroidTarget(org.gradle.api.Action);
     public abstract void onTarget(java.lang.Class, org.gradle.api.Action);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.KotlinTargetContainer {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.KotlinTargetContainer {
     public abstract void target(kotlin.jvm.functions.Function1);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AndroidNativeTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AndroidNativeTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AndroidNativeTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AndroidNativeTarget$Configure {
     public void androidNative(kotlin.jvm.functions.Function1);
     public static synthetic void androidNative$default(fluxo.conf.dsl.container.target.AndroidNativeTarget$Configure, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public void androidNative64(kotlin.jvm.functions.Function1);
@@ -454,13 +454,13 @@
     public static synthetic void androidNativeX86$default(fluxo.conf.dsl.container.target.AndroidNativeTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AndroidTarget {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AndroidTarget {
     public void android(kotlin.jvm.functions.Function1);
     public abstract void onAndroidExtension(kotlin.jvm.functions.Function1);
     public abstract void sourceSetTestInstrumented(kotlin.jvm.functions.Function1);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AndroidTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AndroidTarget$Configure {
     public void android(kotlin.jvm.functions.Function1);
     public abstract void androidApp(java.lang.String, kotlin.jvm.functions.Function1);
     public static synthetic void androidApp$default(fluxo.conf.dsl.container.target.AndroidTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
@@ -468,9 +468,9 @@
     public static synthetic void androidLibrary$default(fluxo.conf.dsl.container.target.AndroidTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AppleIosTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AppleIosTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AppleIosTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AppleIosTarget$Configure {
     public void ios(kotlin.jvm.functions.Function1);
     public static synthetic void ios$default(fluxo.conf.dsl.container.target.AppleIosTarget$Configure, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public abstract void iosArm32(java.lang.String, kotlin.jvm.functions.Function1);
@@ -483,9 +483,9 @@
     public static synthetic void iosX64$default(fluxo.conf.dsl.container.target.AppleIosTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AppleMacosTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AppleMacosTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AppleMacosTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AppleMacosTarget$Configure {
     public void macos(kotlin.jvm.functions.Function1);
     public static synthetic void macos$default(fluxo.conf.dsl.container.target.AppleMacosTarget$Configure, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public abstract void macosArm64(java.lang.String, kotlin.jvm.functions.Function1);
@@ -494,9 +494,9 @@
     public static synthetic void macosX64$default(fluxo.conf.dsl.container.target.AppleMacosTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AppleTvosTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AppleTvosTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AppleTvosTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AppleTvosTarget$Configure {
     public void tvos(kotlin.jvm.functions.Function1);
     public static synthetic void tvos$default(fluxo.conf.dsl.container.target.AppleTvosTarget$Configure, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public abstract void tvosArm64(java.lang.String, kotlin.jvm.functions.Function1);
@@ -507,9 +507,9 @@
     public static synthetic void tvosX64$default(fluxo.conf.dsl.container.target.AppleTvosTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AppleWatchosTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AppleWatchosTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.AppleWatchosTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.AppleWatchosTarget$Configure {
     public abstract void watchos(kotlin.jvm.functions.Function1);
     public static synthetic void watchos$default(fluxo.conf.dsl.container.target.AppleWatchosTarget$Configure, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public abstract void watchosArm32(java.lang.String, kotlin.jvm.functions.Function1);
@@ -526,26 +526,26 @@
     public static synthetic void watchosX86$default(fluxo.conf.dsl.container.target.AppleWatchosTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.JsTarget {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.JsTarget {
     public abstract org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType getCompilerType();
     public abstract void setCompilerType(org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.JsTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.JsTarget$Configure {
     public abstract void js(org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType, java.lang.String, kotlin.jvm.functions.Function1);
     public static synthetic void js$default(fluxo.conf.dsl.container.target.JsTarget$Configure, org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.JvmTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.JvmTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.JvmTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.JvmTarget$Configure {
     public abstract void jvm(java.lang.String, kotlin.jvm.functions.Function1);
     public static synthetic void jvm$default(fluxo.conf.dsl.container.target.JvmTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.LinuxTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.LinuxTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.LinuxTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.LinuxTarget$Configure {
     public void linux(kotlin.jvm.functions.Function1);
     public static synthetic void linux$default(fluxo.conf.dsl.container.target.LinuxTarget$Configure, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public abstract void linuxArm32Hfp(java.lang.String, kotlin.jvm.functions.Function1);
@@ -560,9 +560,9 @@
     public static synthetic void linuxX64$default(fluxo.conf.dsl.container.target.LinuxTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.MingwTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.MingwTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.MingwTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.MingwTarget$Configure {
     public void mingw(kotlin.jvm.functions.Function1);
     public static synthetic void mingw$default(fluxo.conf.dsl.container.target.MingwTarget$Configure, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public abstract void mingwX64(java.lang.String, kotlin.jvm.functions.Function1);
@@ -571,32 +571,32 @@
     public static synthetic void mingwX86$default(fluxo.conf.dsl.container.target.MingwTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.WasmNativeTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.WasmNativeTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.WasmNativeTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.WasmNativeTarget$Configure {
     public abstract void wasm32(java.lang.String, kotlin.jvm.functions.Function1);
     public static synthetic void wasm32$default(fluxo.conf.dsl.container.target.WasmNativeTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public void wasmNative(kotlin.jvm.functions.Function1);
     public static synthetic void wasmNative$default(fluxo.conf.dsl.container.target.WasmNativeTarget$Configure, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.WasmTarget
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.WasmTarget
 
--keep,includedescriptorclasses public interface fluxo.conf.dsl.container.target.WasmTarget$Configure {
+-keep,allowoptimization public interface fluxo.conf.dsl.container.target.WasmTarget$Configure {
     public abstract void wasmJs(java.lang.String, kotlin.jvm.functions.Function1);
     public static synthetic void wasmJs$default(fluxo.conf.dsl.container.target.WasmTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
     public abstract void wasmWasi(java.lang.String, kotlin.jvm.functions.Function1);
     public static synthetic void wasmWasi$default(fluxo.conf.dsl.container.target.WasmTarget$Configure, java.lang.String, kotlin.jvm.functions.Function1, int, java.lang.Object);
 }
 
--keep,includedescriptorclasses public interface fluxo.conf.kmp.SourceSetBundle {
+-keep,allowoptimization public interface fluxo.conf.kmp.SourceSetBundle {
     public synthetic boolean contains(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet);
     public abstract org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet getMain();
     public org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet[] getMoreTests();
     public abstract org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet getTest();
 }
 
--keep,includedescriptorclasses public interface fluxo.shrink.FluxoShrinkerConfig {
+-keep,allowoptimization public interface fluxo.shrink.FluxoShrinkerConfig {
     public abstract org.gradle.api.provider.Property getAutoGenerateKeepRulesFromApis();
     public abstract org.gradle.api.file.ConfigurableFileCollection getConfigurationFiles();
     public abstract org.gradle.api.provider.Property getForceUnbundledShrinker();

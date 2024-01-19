@@ -182,6 +182,8 @@ pluginManagement {
     * Testing Gradle Builds
       * Gradle TestKit: https://docs.gradle.org/current/userguide/test_kit.html
         * TODO: `testSourceSets(sourceSets.functionalTest)`
+    * TWiStErRob's Quality plugin for Gradle that supports Android flavors
+      * https://github.com/TWiStErRob/net.twisterrob.gradle
     * Nebula-plugins
       * Healthy defaults for a standard Gradle project.
         * https://github.com/nebula-plugins/nebula-project-plugin

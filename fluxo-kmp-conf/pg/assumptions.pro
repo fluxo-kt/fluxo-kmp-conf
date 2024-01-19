@@ -3,6 +3,8 @@
 # ProGuard/R8 common assumptions rules
 ###
 
+# Note: -assumenoexternalsideeffects and -assumenoexternalreturnvalues are not supported by R8 and ignored!
+
 -assumenoexternalsideeffects public class java.lang.Object {
     public java.lang.Object();
 }

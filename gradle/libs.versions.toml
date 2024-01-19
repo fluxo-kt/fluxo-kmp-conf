@@ -30,7 +30,7 @@ kotlin = "1.9.22"
 jetbrains-compose = "1.5.11"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.22-1.0.16"
+ksp = "1.9.22-1.0.17"
 
 # region Android specific
 
@@ -90,7 +90,7 @@ androidBuildTools = "34.0.0"
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # WARNING: Do not forget to update the version badge in `README.md`!
-android-gradle-plugin = "8.4.0-alpha02"
+android-gradle-plugin = "8.4.0-alpha04"
 
 # endregion
 
@@ -112,15 +112,15 @@ dokka = "1.9.10"
 detekt = "1.23.4"
 
 # https://github.com/pinterest/ktlint/releases
-ktlint = "1.1.0"
+ktlint = "1.1.1"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "6.23.3"
+spotless = "6.24.0"
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-gradle-intellij-plugin = "1.16.1"
+gradle-intellij-plugin = "1.17.0"
 
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
@@ -135,7 +135,7 @@ proguard-core = "9.1.1"
 # R8 is a Google's code shrinker, obfuscator, and optimizer. Targeted for Android.
 # https://mvnrepository.com/artifact/com.android.tools/r8?repo=google
 # https://maven.google.com/web/index.html#com.android.tools:r8
-r8 = "8.2.33"
+r8 = "8.2.42"
 
 
 # region Pinned dependencies
@@ -246,7 +246,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.50.0" }
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 # https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.28.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.29.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
@@ -271,7 +271,7 @@ module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", 
 # Generating BuildConstants for any kind of project
 # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
-build-config = { id = "com.github.gmazzo.buildconfig", version = "5.3.2" }
+build-config = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
 
 # Resolve all dependencies used in a Gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases

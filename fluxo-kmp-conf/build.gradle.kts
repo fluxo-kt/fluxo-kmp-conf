@@ -26,6 +26,8 @@ setupGradlePlugin(
     enableSpotless = true
     setupCoroutines = false
     shrinkArtifacts = true
+    shrinkingConfig.useR8.set(true)
+    //shrinkingConfig.r8FullMode.set(true)
     experimentalLatestCompilation = true
 
     publicationConfig {

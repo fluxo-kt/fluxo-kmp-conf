@@ -41,7 +41,8 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
             project.logger.l("setupTestsReport, register :$TEST_REPORTS_TASK_NAME task")
             project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
                 group = JavaBasePlugin.VERIFICATION_GROUP
-                description = "Combines all tests reports from all modules to the published root one"
+                description =
+                    "Combines all tests reports from all modules to the published root one"
                 output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME))
             }
         }
@@ -49,12 +50,15 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
 
     val mergedReportService = when {
         testsDisabled -> null
-        else -> {
+        else -> try {
             project.gradle.sharedServices.registerIfAbsent(
                 TestReportService.NAME, TestReportService::class.java,
             ) {
                 // TODO: Support Gradle before 8.0 (set service parameter and usesService) ?
             }
+        } catch (e: Throwable) {
+            project.logger.e("Failed to register TestReportService: $e", e)
+            null
         }
     }
 

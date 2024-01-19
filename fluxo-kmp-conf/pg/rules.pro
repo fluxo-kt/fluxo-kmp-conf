@@ -54,7 +54,7 @@
 
 #-ignorewarnings
 #-forceprocessing
--addconfigurationdebugging
+#-addconfigurationdebugging # Can cause malformed classes with R8!
 #-whyareyoukeeping class **
 
 -verbose
@@ -85,13 +85,13 @@
 # For library projects.
 # See https://www.guardsquare.com/manual/configuration/examples#library
 -keepparameternames
--renamesourcefileattribute SourceFile
+#-renamesourcefileattribute SourceFile
 
 # https://stackoverflow.com/a/69523469/1816338
 -keepattributes Signature,Exceptions,
-                RuntimeVisibleAnnotations,AnnotationDefault,
+                RuntimeVisible*Annotations,AnnotationDefault,
                 InnerClasses,PermittedSubclasses,EnclosingMethod,
-                Deprecated,SourceFile,LineNumberTable,
+                Deprecated,SourceFile,SourceDir,LineNumberTable,
                 Synthetic,MethodParameters
 
 -include keep.pro
@@ -100,4 +100,4 @@
 # It leads to bugs like https://sourceforge.net/p/proguard/bugs/702/
 # Using -assumenoexternalsideeffects is fine though and should be used for that purpose.
 -include assumptions.pro
--include nosideeffects.pro
+-include assumenosideeffects.pro

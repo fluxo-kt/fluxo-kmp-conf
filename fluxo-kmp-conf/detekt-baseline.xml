@@ -115,7 +115,6 @@
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$logger.v("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")</ID>
     <ID>MaxLineLength:PropsAndEnv.kt$if</ID>
     <ID>MaxLineLength:SetupMultiplatform.kt$*</ID>
-    <ID>MaxLineLength:SetupTestsReport.kt$description = "Combines all tests reports from all modules to the published root one"</ID>
     <ID>MaxLineLength:SetupTestsReport.kt$if</ID>
     <ID>MaximumLineLength:LoadAndApplyPluginIfNotApplied.kt$ </ID>
     <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
