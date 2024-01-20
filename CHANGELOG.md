@@ -11,9 +11,15 @@
 - report a version of the bundled/classpath ProGuard version.
 - report `includedBuilds` number during the composite build.
 - add some documentation and to-do notes.
+- create infrastructure for automated R8 and ProGuard shrinkers testing in [0ee74ca](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/0ee74cad8bb6d84a610cefdbd40dbb6213f9ad68).
+- add tests for R8 and ProGuard in [7181a82...226a05b](https://github.com/fluxo-kt/fluxo-kmp-conf/compare/7181a82...226a05b).
+- shrink plugin artifact with R8 (saved 35.227%, 293.3 KB).
+- control keep rule modifiers for all auto-kept classes (in auto-generated keep rules) in [8c21f23a](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/8c21f23a).
 
 ### Changed
 - `DISABLE_R8` now disables all shrinking altogether.
+- improve logging output in [4357abd7](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/4357abd7ebb5192b2252758aeb9d52181904a500).
+- improve error reporting for `ExternalToolRunner` in [34ffc208](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/34ffc208).
 
 
 ## [0.6.0] - 2024-01-05

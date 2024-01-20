@@ -102,6 +102,17 @@ jobs:
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
+      -  name: Upload the build report
+         if: success() || failure()
+         uses: actions/upload-artifact@v4
+         with:
+           name: build-report
+           path: |
+             **/build/logs/
+             **/build/reports/
+             build/*-merged.*
+           compression-level: 9
+
       - name: "Add build scan URL as PR comment"
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && failure()
