@@ -74,8 +74,13 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
             }
         }
 
+        val projectName = name
         tasks.withType<AbstractTestTask> configuration@{
-            if (!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()) {
+            if (!enabled ||
+                mergedReportTask == null ||
+                mergedReportService == null ||
+                !isTestTaskAllowed()
+            ) {
                 disableTask()
                 return@configuration
             }
@@ -103,7 +108,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
             afterTest(
                 closureOf { desc: TestDescriptor, result: TestResult ->
                     mergedReportService.get().registerTestResult(
-                        TestReportResult.from(testTask, desc, result),
+                        TestReportResult.from(testTask, desc, result, projectName),
                         rootLogger,
                     )
                 },

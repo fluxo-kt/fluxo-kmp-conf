@@ -18,9 +18,15 @@ private constructor(
             task: AbstractTestTask,
             desc: TestDescriptor,
             result: TestResult,
+            projectName: String,
         ): TestReportResult {
-            val className = desc.className.orEmpty()
-            val testSuite = ":${task.project.name} $className"
+            val className = desc.className.let {
+                if (it.isNullOrBlank()) desc.name else it
+            }
+
+            // Do not use project name from the task!
+            // Invocation of 'Task.project' by a task at execution time is unsupported!
+            val testSuite = ":$projectName $className"
             val testTaskName = task.name.substringBeforeLast("Test")
             val kmpTarget: String?
 
