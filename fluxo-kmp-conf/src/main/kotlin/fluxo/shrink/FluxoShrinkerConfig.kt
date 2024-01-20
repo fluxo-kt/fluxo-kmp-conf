@@ -95,6 +95,16 @@ public interface FluxoShrinkerConfig {
      * @see fluxo.conf.dsl.FluxoConfigurationExtensionKotlin.enableApiValidation
      */
     public val autoGenerateKeepRulesFromApis: Property<Boolean>
+
+    /**
+     * Keep rule modifiers for all auto-kept classes.
+     *
+     * `,includedescriptorclasses` by default.
+     *
+     * @see fluxo.shrink.AUTOGEN_KEEP_MODIFIERS
+     * @see autoGenerateKeepRulesFromApis
+     */
+    public val autoGenerateKeepModifiers: Property<String>
 }
 
 /**
@@ -115,4 +125,6 @@ internal abstract class FluxoShrinkerConfigImpl @Inject constructor(
     override val forceUnbundledShrinker: Property<Boolean> = objects.notNullProperty(false)
     override val autoGenerateKeepRulesFromApis: Property<Boolean> = objects.notNullProperty(true)
     override val maxHeapSize: Property<String?> = objects.nullableProperty()
+    override val autoGenerateKeepModifiers: Property<String> =
+        objects.notNullProperty(AUTOGEN_KEEP_MODIFIERS)
 }

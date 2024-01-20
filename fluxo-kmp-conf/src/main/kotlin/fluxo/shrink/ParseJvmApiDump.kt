@@ -198,8 +198,8 @@ internal class ClassSignature(
     val modifiers: List<String>,
     val memberSignatures: MutableMap<ClassMemberSignature, ClassMemberSignature> = LinkedHashMap(),
 ) {
-    fun writeTo(writer: Appendable) {
-        writer.append("-keep$KEEP_MODIFICATORS ")
+    fun writeTo(writer: Appendable, keepModifiers: String = AUTOGEN_KEEP_MODIFIERS) {
+        writer.append("-keep$keepModifiers ")
         modifiers.joinTo(buffer = writer, separator = SPACE, postfix = SPACE)
         writer.append(name)
 
@@ -482,8 +482,8 @@ private enum class MemberType {
 
 // https://r8-docs.preemptive.com/#keep-rules
 // https://www.guardsquare.com/manual/configuration/usage#keepoptionmodifiers
-// 'allowoptimization' can break API sometimes, so don't use it here.
-private const val KEEP_MODIFICATORS = ",includedescriptorclasses"
+// 'allowoptimization' can break API sometimes, so don't use it here by default.
+internal const val AUTOGEN_KEEP_MODIFIERS = ",includedescriptorclasses"
 
 private const val EXTENDS_DELIMITER = " : "
 

@@ -87,7 +87,7 @@ internal fun setupArtifactsShrinking(
     // Auto-generate keep rules from API reports
     val settings = conf.shrinkingConfig
     if (settings.autoGenerateKeepRulesFromApis.get()) {
-        val rulesGenRask = p.registerShrinkerKeepRulesGenTask()
+        val rulesGenRask = p.registerShrinkerKeepRulesGenTask(settings)
         if (!shrinkArtifacts) {
             parents += rulesGenRask
         } else {
