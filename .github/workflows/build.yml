@@ -29,9 +29,15 @@ env:
 
 jobs:
   buildAndCheck:
-    name: 'Build and check'
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '21' ]
+        os: [ 'macos', 'windows', 'ubuntu' ]
+
+    name: 'Build and check on ${{ matrix.os }}'
     timeout-minutes: 25
-    runs-on: 'macos-latest'
+    runs-on: '${{ matrix.os }}-latest'
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     permissions:
       contents: write
@@ -51,11 +57,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 'Set up JDK 21'
+      - name: 'Set up JDK ${{ matrix.java }}'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '${{ matrix.java }}'
 
       - name: 'Cached KMP things (Konan, Node, Yarn, Binaryen)'
         uses: actions/cache@v3
@@ -106,7 +112,7 @@ jobs:
          if: success() || failure()
          uses: actions/upload-artifact@v4
          with:
-           name: build-report
+           name: '${{ matrix.os }}-build-report'
            path: |
              **/build/logs/
              **/build/reports/
