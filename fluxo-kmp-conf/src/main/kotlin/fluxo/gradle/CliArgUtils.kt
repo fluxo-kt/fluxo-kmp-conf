@@ -7,7 +7,8 @@ import org.gradle.api.provider.Provider
 internal fun <T : Any?> MutableCollection<String>.cliArg(
     name: String,
     value: T?,
-    fn: (T) -> String = defaultToString(),
+    base: File? = null,
+    fn: (T) -> String = defaultToString(base = base),
 ) {
     if (value is Boolean) {
         if (value) add(name)
@@ -20,20 +21,21 @@ internal fun <T : Any?> MutableCollection<String>.cliArg(
 internal fun <T : Any?> MutableCollection<String>.cliArg(
     name: String,
     value: Provider<T>,
-    fn: (T) -> String = defaultToString(),
+    base: File? = null,
+    fn: (T) -> String = defaultToString(base = base),
 ) {
-    cliArg(name, value.orNull, fn)
+    cliArg(name = name, value = value.orNull, base = base, fn = fn)
 }
 
 internal fun MutableCollection<String>.javaOption(value: String) {
-    cliArg("--java-options", "'$value'")
+    cliArg(name = "--java-options", value = "'$value'")
 }
 
-private fun <T : Any?> defaultToString(): (T) -> String =
+private fun <T : Any?> defaultToString(base: File? = null): (T) -> String =
     {
         val asString = when (it) {
-            is FileSystemLocation -> it.asFile.normalizedPath()
-            is File -> it.normalizedPath()
+            is FileSystemLocation -> it.asFile.normalizedPath(base)
+            is File -> it.normalizedPath(base)
             else -> it.toString()
         }
         "\"$asString\""

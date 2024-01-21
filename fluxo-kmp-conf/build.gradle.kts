@@ -25,7 +25,7 @@ setupGradlePlugin(
     githubProject = "fluxo-kt/fluxo-kmp-conf"
     enableSpotless = true
     setupCoroutines = false
-    shrinkArtifacts = true
+    shrinkArtifacts = !isCI().get()
     shrinkingConfig.useR8 = true
     //shrinkingConfig.r8FullMode.set(true)
     experimentalLatestCompilation = true

@@ -8,3 +8,5 @@
 
 # ProGuard-only configuration.
 -skipnonpubliclibraryclasses
+
+-keepkotlinmetadata

@@ -62,7 +62,7 @@ internal class ExternalToolRunner(
 
         val exitCodeIsNormal = result.exitValue == 0
         if (checkExitCodeIsNormal && !exitCodeIsNormal) {
-            throwError(tool, args, workingDir, result, outFile, errFile, doLogToConsole)
+            throwError(tool, args, workingDir, result, outFile, errFile)
         }
 
         if (processStdout != null) {
@@ -121,7 +121,6 @@ internal class ExternalToolRunner(
         result: ExecResult,
         outFile: File,
         errFile: File,
-        doLogToConsole: Boolean,
     ) {
         val errMsg = buildString {
             appendLine("External tool execution failed:")
@@ -134,32 +133,32 @@ internal class ExternalToolRunner(
             val errSize = readableByteSize(errFile)
             appendLine("* Error log ($errSize): ${errFile.absolutePath}")
 
-            // Print output in the error message if it was not printed before.
-            if (!doLogToConsole) {
-                if (!alwaysPrintErrorOutput) {
-                    val error = errFile.readText().trim()
-                    if (error.isNotEmpty()) {
-                        appendLine("\nStandard error output:")
-                        appendLine(error)
-                    }
-                }
-
-                var out = outFile.readText().trim()
-                if (out.isNotEmpty()) {
-                    if (out.length > 4096) {
-                        out = "(truncated)\n ..." + out.takeLast(4096).trimStart()
-                    }
-                    appendLine("\nTool output:")
-                    appendLine(out)
-                }
-            }
+            // Always pint stderr and stdout if the tool failed.
+            // Stderr can be duplicated with 'alwaysPrintErrorOutput',
+            // but it's better to output it twice than not to output it at all.
+            appendLogFile(errFile, "Standard error output")
+            appendLogFile(outFile, "Tool output")
         }
         throw GradleException(errMsg)
+    }
+
+    private fun StringBuilder.appendLogFile(file: File, title: String) {
+        val out = file.readText().trim()
+        if (out.isEmpty()) {
+            return
+        }
+        appendLine("\n* ").append(title).append(':')
+        if (out.length > LOG_LIMIT) {
+            append("(truncated)\n ...").appendLine(out.takeLast(LOG_LIMIT).trimStart())
+        } else {
+            appendLine(out)
+        }
     }
 
     private fun currentTimeStamp() = LocalDateTime.now().format(TIME_STAMP_PATTERN)
 
     private companion object {
         private val TIME_STAMP_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
+        private const val LOG_LIMIT = 4096
     }
 }

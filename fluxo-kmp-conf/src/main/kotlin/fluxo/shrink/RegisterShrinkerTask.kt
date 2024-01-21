@@ -50,7 +50,7 @@ internal fun Project.registerShrinkerTask(
     val shrinker = shrinker(forceShrinker, settings)
     this.shrinker.set(shrinker)
 
-    r8FulMode.set(settings.r8FullMode.orNull == true)
+    r8FulMode.set(settings.r8FullMode)
 
     configureShrinkerMavenCoordinates(conf, isVerbose = isVerbose, shrinker)
 

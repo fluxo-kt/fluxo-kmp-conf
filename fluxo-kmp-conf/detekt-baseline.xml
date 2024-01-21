@@ -109,23 +109,19 @@
     <ID>LongMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>LongMethod:SetupTestsReport.kt$internal fun FluxoKmpConfContext.setupTestsReport()</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>MagicNumber:ExternalToolRunner.kt$ExternalToolRunner$4096</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$"You may want to add it to the classpath in the root build.gradle.kts instead! $example"</ID>
     <ID>MaxLineLength:LoadAndApplyPluginIfNotApplied.kt$logger.v("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")</ID>
     <ID>MaxLineLength:PropsAndEnv.kt$if</ID>
     <ID>MaxLineLength:SetupMultiplatform.kt$*</ID>
-    <ID>MaxLineLength:SetupTestsReport.kt$if</ID>
     <ID>MaximumLineLength:LoadAndApplyPluginIfNotApplied.kt$ </ID>
     <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
-    <ID>MaximumLineLength:SetupTestsReport.kt$ </ID>
     <ID>NestedBlockDepth:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$fun buildTrees(): List&lt;GraphNode></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.getPluginIdAndVersion( id: String, version: String?, catalogPluginIds: Array&lt;out String>? = null, catalogPluginId: String?, logger: Logger, catalogVersionIds: Array&lt;out String>?, catalogVersionId: String?, ): Triple&lt;String, String?, String?></ID>
     <ID>NestedBlockDepth:LoadAndApplyPluginIfNotApplied.kt$private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass( pluginId: String, pluginVersion: String?, className: String?, catalogPluginAlias: String?, lookupClassName: Boolean, canLoadDynamically: Boolean, project: Project, ): Class&lt;*>?</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>
-    <ID>SpacingAroundParens:ShrinkerKeepRulesFromApiTask.kt$(</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>SwallowedException:DependencyHandlerUtils.kt$e: Throwable</ID>
     <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>

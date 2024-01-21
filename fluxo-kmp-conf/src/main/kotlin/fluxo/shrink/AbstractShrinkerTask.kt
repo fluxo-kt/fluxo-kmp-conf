@@ -10,6 +10,7 @@ import fluxo.external.AbstractExternalFluxoTask
 import fluxo.external.ExternalToolRunner
 import fluxo.gradle.cliArg
 import fluxo.gradle.ioFile
+import fluxo.gradle.ioFileOrNull
 import fluxo.gradle.mkdirs
 import fluxo.gradle.normalizedPath
 import fluxo.gradle.notNullProperty
@@ -146,6 +147,8 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         dir.file(jar.asFile.name)
     }
 
+    private val workDir: DirectoryProperty
+
     @get:LocalState
     protected val workingTmpDir: Provider<Directory>
 
@@ -159,6 +162,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val layout = project.layout
         val buildDir = layout.buildDirectory
         val toolLc = shrinker.map { it.name.lc() }
+        workDir = buildDir
         workingTmpDir = buildDir.zip(toolLc) { d, tool ->
             d.dir("tmp/shrink/$tool")
         }
@@ -245,17 +249,19 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
             shrinker = shrinker,
         )
 
-        val rootConfigurationFile = workingDir.file("root-config.pro").asFile
-        writeRootConfiguration(rootConfigurationFile, reportsDir, jarsConfFile)
+        val rootConfigFile = workingDir.file("root-config.pro").asFile
+        writeRootConfiguration(rootConfigFile, reportsDir, jarsConfFile, shrinker)
 
+        val workDir = workDir.ioFileOrNull
         val javaBinary = jvmToolFile(toolName = "java", javaHome = javaHome)
-        val args = getShrinkerArgs(rootConfigurationFile, outJars, reportsDir, javaHome)
+        val args = getShrinkerArgs(rootConfigFile, outJars, reportsDir, javaHome, workDir)
 
         // TODO: Process output and print only main information if not verbose
         val start = currentTimeMillis()
         runExternalTool(
             tool = javaBinary,
             args = args,
+            workingDir = workDir,
             logToConsole = ExternalToolRunner.LogToConsole.OnlyWhenVerbose,
         ).assertNormalExitValue()
 
@@ -301,9 +307,10 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     private fun getShrinkerArgs(
         rootConfigurationFile: File?,
-        outJars: List<String>,
+        outJars: List<File>,
         reportsDir: Directory,
         javaHome: File,
+        workDir: File?,
     ): List<String> {
         return arrayListOf<String>().apply {
             maxHeapSize.orNull?.let {
@@ -327,7 +334,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
                     // todo: consider separate flag
                     cliArg("-verbose", verbose)
-                    cliArg("-include", rootConfigurationFile)
+                    cliArg("-include", rootConfigurationFile, base = workDir)
                 }
 
                 R8 -> {
@@ -342,34 +349,28 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                     add("--release") // (default) vs --debug
                     add("--classfile") // vs --dex (default)
                     cliArg("--lib", javaHome)
-                    cliArg("--output", outJars.single())
+                    cliArg("--output", outJars.single(), base = workDir)
 
                     // Only for DEX output
                     // androidMinSdk.orNull?.let { cliArg("--min-api", it) }
 
-                    cliArg("--pg-conf", rootConfigurationFile)
+                    cliArg("--pg-conf", rootConfigurationFile, base = workDir)
 
                     // Output the collective configuration to <file>.
-                    cliArg("--pg-conf-output", getFinalConfigFile(reportsDir))
-                    cliArg("--pg-map-output", getMappingFile(reportsDir))
+                    cliArg("--pg-conf-output", getFinalConfigFile(reportsDir, base = workDir))
+                    cliArg("--pg-map-output", getMappingFile(reportsDir, base = workDir))
 
                     // Force disable minification of names.
-                    if (dontobfuscate.orNull == true) {
-                        add("--no-minification")
-                    }
+                    cliArg("--no-minification", dontobfuscate.orNull == true)
 
                     // Force disable tree shaking of unreachable classes.
-                    if (dontoptimize.orNull == true) {
-                        add("--no-tree-shaking")
-                    }
+                    cliArg("--no-tree-shaking", dontoptimize.orNull == true)
 
                     // Compile with R8 in Proguard compatibility mode.
                     // Opposite of non-compat mode, also called "full mode".
                     // 'android.enableR8.fullMode' controls it for android builds.
                     // https://r8.googlesource.com/r8/+/refs/heads/main/compatibility-faq.md#r8-full-mode
-                    if (r8FulMode.orNull != true) {
-                        add("--pg-compat")
-                    }
+                    cliArg("--pg-compat", r8FulMode.orNull != true)
                 }
             }
         }
@@ -383,6 +384,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         file: File,
         reportsDir: Directory,
         jarsConfigurationFile: File,
+        shrinker: Shrinker,
     ) = file.bufferedWriter().use { writer ->
         jvmTarget.orNull?.let { jvmTarget ->
             writer.ln("-target $jvmTarget")
@@ -396,10 +398,17 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
             writer.ln("-dontoptimize")
         }
 
-        writer.ln("-printmapping '${getMappingFile(reportsDir)}'")
         writer.ln("-printseeds '${getSeedFile(reportsDir)}'")
         writer.ln("-printusage '${getUsageFile(reportsDir)}'")
-        writer.ln("-printconfiguration '${getFinalConfigFile(reportsDir)}'")
+        when (shrinker) {
+            ProGuard -> {
+                // Passed via arguments for R8
+                writer.ln("-printmapping '${getMappingFile(reportsDir)}'")
+                writer.ln("-printconfiguration '${getFinalConfigFile(reportsDir)}'")
+            }
+
+            R8 -> {}
+        }
 
         // TODO: Shared obfuscation dictionaries
         //  https://github.com/Guardsquare/proguard/tree/master/examples/dictionaries
@@ -433,8 +442,8 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     }
 
     // FIXME: Move mapping to the output dir?
-    private fun getMappingFile(reportsDir: Directory): String =
-        reportsDir.file("mapping.txt").asFile.normalizedPath()
+    private fun getMappingFile(reportsDir: Directory, base: File? = null): String =
+        reportsDir.file("mapping.txt").asFile.normalizedPath(base)
 
     private fun getSeedFile(reportsDir: Directory): String =
         reportsDir.file("seeds.txt").asFile.normalizedPath()
@@ -442,8 +451,8 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     private fun getUsageFile(reportsDir: Directory): String =
         reportsDir.file("usage.txt").asFile.normalizedPath()
 
-    private fun getFinalConfigFile(reportsDir: Directory): String =
-        reportsDir.file("final-config.pro").asFile.normalizedPath()
+    private fun getFinalConfigFile(reportsDir: Directory, base: File? = null): String =
+        reportsDir.file("final-config.pro").asFile.normalizedPath(base)
 
     @Suppress("LongParameterList", "NestedBlockDepth")
     private fun writeJarsConfigurationFile(
@@ -454,7 +463,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         javaHome: String?,
         shrinker: Shrinker,
     ) = file.bufferedWriter().use { writer ->
-        val outJars = mutableListOf<String>()
+        val outJars = mutableListOf<File>()
 
         for ((input, output) in inputToOutputJars.entries) {
             val inputPath = input.normalizedPath()
@@ -462,13 +471,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                 writer.ln("-libraryjars '$inputPath'$libraryJarsFilter")
             } else {
                 writer.ln("-injars '$inputPath'")
+                outJars += output
 
-                val outJar = output.normalizedPath()
-                outJars += outJar
-
-                // R8 does not support -outjars
+                // R8 does not support -outjars here, passed via argument later.
                 if (shrinker == ProGuard) {
-                    writer.ln("-outjar '$outJar'")
+                    writer.ln("-outjar '${output.normalizedPath()}'")
                 }
             }
         }
