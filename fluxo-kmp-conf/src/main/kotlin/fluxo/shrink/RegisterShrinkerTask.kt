@@ -2,6 +2,7 @@ package fluxo.shrink
 
 import MAIN_SOURCE_SET_NAME
 import fluxo.conf.data.BuildConstants
+import fluxo.conf.data.BuildConstants.KOTLINX_METADATA_JVM
 import fluxo.conf.data.BuildConstants.PROGUARD_CORE
 import fluxo.conf.data.BuildConstants.PROGUARD_PLUGIN
 import fluxo.conf.deps.detachedDependency
@@ -121,7 +122,7 @@ private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
 
     // For ProGuard, we want to upgrade to the latest version of the core library.
     when (shrinker) {
-        ProGuard -> arrayOf(coords, PROGUARD_CORE)
+        ProGuard -> arrayOf(coords, PROGUARD_CORE, KOTLINX_METADATA_JVM)
         else -> arrayOf(coords)
     }.onEach { notation ->
         project.logDependency(toolLc, notation)
