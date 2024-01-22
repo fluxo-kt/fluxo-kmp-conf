@@ -604,6 +604,7 @@ public abstract interface class fluxo/shrink/FluxoShrinkerConfig {
 	public abstract fun getAutoGenerateKeepModifiers ()Lorg/gradle/api/provider/Property;
 	public abstract fun getAutoGenerateKeepRulesFromApis ()Lorg/gradle/api/provider/Property;
 	public abstract fun getConfigurationFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getForceExternalShrinkerRun ()Lorg/gradle/api/provider/Property;
 	public abstract fun getForceUnbundledShrinker ()Lorg/gradle/api/provider/Property;
 	public abstract fun getMaxHeapSize ()Lorg/gradle/api/provider/Property;
 	public abstract fun getObfuscate ()Lorg/gradle/api/provider/Property;

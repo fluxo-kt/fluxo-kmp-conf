@@ -600,6 +600,7 @@
     public abstract org.gradle.api.provider.Property getAutoGenerateKeepModifiers();
     public abstract org.gradle.api.provider.Property getAutoGenerateKeepRulesFromApis();
     public abstract org.gradle.api.file.ConfigurableFileCollection getConfigurationFiles();
+    public abstract org.gradle.api.provider.Property getForceExternalShrinkerRun();
     public abstract org.gradle.api.provider.Property getForceUnbundledShrinker();
     public abstract org.gradle.api.provider.Property getMaxHeapSize();
     public abstract org.gradle.api.provider.Property getObfuscate();

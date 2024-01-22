@@ -77,6 +77,7 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     return ApplyPluginResult(applied = true, pluginClass = pluginClass, id = id)
 }
 
+@Suppress("CyclomaticComplexMethod", "LongMethod", "NestedBlockDepth")
 private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
     pluginId: String,
     pluginVersion: String?,
@@ -104,7 +105,9 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
     // Try the classpath first.
     var pluginClass: Class<*>? = tryGetClassForName(className)
     if (pluginClass != null) {
-        logger.v("Found plugin '$pluginId' class on the classpath for '${project.path}': $className")
+        logger.v(
+            "Found plugin '$pluginId' class on the classpath for '${project.path}': $className",
+        )
         return pluginClass
     }
     if (lookupClassName && classNames.isEmpty()) {
@@ -144,9 +147,11 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
         for (name in classNames) {
             pluginClass = Class.forName(className, true, classLoader)
             if (pluginClass != null) {
+                val confFile = "build.gradle.kts"
                 val warn = "Dynamically loaded plugin '$pluginId'" +
                     " in '${project.path}' from [$coords]$detected.\n " +
-                    "You may want to add it to the classpath in the root build.gradle.kts instead! $example"
+                    "You may want to add it to the classpath in the root $confFile instead! " +
+                    example
                 logger.w(warn)
                 return pluginClass
             }
@@ -190,17 +195,21 @@ private fun ClassLoader.findPluginClassNames(
 
 private const val IMPLEMENTATION_CLASS = "implementation-class="
 
-private fun tryGetClassForName(className: String?): Class<*>? {
+internal fun tryGetClassForName(className: String?, classLoader: ClassLoader? = null): Class<*>? {
     if (className.isNullOrEmpty()) {
         return null
     }
     return try {
-        Class.forName(className)
+        when (classLoader) {
+            null -> Class.forName(className)
+            else -> Class.forName(className, true, classLoader)
+        }
     } catch (_: ClassNotFoundException) {
         null
     }
 }
 
+@Suppress("NestedBlockDepth")
 private fun FluxoKmpConfContext.getPluginIdAndVersion(
     id: String,
     version: String?,

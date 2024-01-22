@@ -120,6 +120,8 @@ internal abstract class FluxoKmpConfContext
                 // https://r8.googlesource.com/r8/+refs
                 // https://issuetracker.google.com/issues/193543616#comment4
                 // https://mvnrepository.com/artifact/com.android.tools/r8
+                /** Cannot use [com.android.tools.r8.Version.LABEL] directly here
+                 *  as it will be inlined during compilation. */
                 val r8 = com.android.tools.r8.Version.getVersionString().substringBefore(" (")
                 m += ", Bundled R8 $r8"
             } catch (_: Throwable) {
@@ -160,10 +162,13 @@ internal abstract class FluxoKmpConfContext
             taskGraphBasedProjectSyncDetection()
         }
 
+        val includedBuilds = gradle.includedBuilds.size
         if (isInCompositeBuild) {
-            val includedBuilds = gradle.includedBuilds.size
-            logger.l("COMPOSITE build is enabled! ($includedBuilds includedBuilds)")
+            logger.l("COMPOSITE build is ENABLED! ($includedBuilds includedBuilds)")
+        } else if (isVerbose) {
+            logger.l("COMPOSITE build is disabled! ($includedBuilds includedBuilds)")
         }
+
         if (isCI) logger.l("CI mode is enabled!")
         if (isRelease) logger.l("RELEASE mode is enabled!")
         if (composeMetricsEnabled) logger.l("COMPOSE_METRICS are enabled!")

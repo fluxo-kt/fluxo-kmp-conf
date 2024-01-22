@@ -1,4 +1,11 @@
-@file:Suppress("KDocUnresolvedReference")
+@file:Suppress(
+    "KDocUnresolvedReference",
+    "LeakingThis",
+    "LongParameterList",
+    "LongParameterList",
+    "NestedBlockDepth",
+    "TooManyFunctions",
+)
 
 package fluxo.shrink
 
@@ -54,7 +61,6 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
  * @see proguard.gradle.ProGuardTask
  */
 @CacheableTask
-@Suppress("LeakingThis", "TooManyFunctions")
 internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Input
@@ -131,6 +137,14 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:Input
     @get:Optional
     val androidMinSdk: Property<Int?> = objects.nullableProperty()
+
+    @get:Input
+    @get:Optional
+    val forceUnbundledShrinker: Property<Boolean> = objects.notNullProperty(false)
+
+    @get:Input
+    @get:Optional
+    val forceExternalShrinkerRun: Property<Boolean> = objects.notNullProperty(false)
 
     @get:Internal
     val maxHeapSize: Property<String?> = objects.nullableProperty()
@@ -252,22 +266,49 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val rootConfigFile = workingDir.file("root-config.pro").asFile
         writeRootConfiguration(rootConfigFile, reportsDir, jarsConfFile, shrinker)
 
+        // 1. Try to use the bundled ProGuard/R8 first.
+        // 2. Fallback to custom classloader.
+        // 3. Call as a separate process.
+        val forceExternalShrinkerRun = forceExternalShrinkerRun.get()
+        val start = currentTimeMillis()
+        val called = when (forceExternalShrinkerRun) {
+            true -> false
+            else -> ShrinkerReflectiveCaller(
+                shrinker = shrinker,
+                logger = logger,
+                toolJars = toolJars,
+                forceUnbundledShrinker = forceUnbundledShrinker.get(),
+            ) { getShrinkerArgs(rootConfigFile, outJars, reportsDir, javaHome, external = false) }
+                .execute()
+        }
+        if (!called) {
+            val l = if (forceExternalShrinkerRun) " (forceExternal)" else ""
+            logger.w("Calling $shrinker externally! $l")
+            callShrikerExternally(javaHome, rootConfigFile, outJars, reportsDir)
+        }
+
+        @Suppress("MagicNumber")
+        val elapsedSec = (currentTimeMillis() - start) / 1_000f
+        reportSavings(destinationDir, initialSize, elapsedSec)
+    }
+
+    private fun callShrikerExternally(
+        javaHome: File,
+        rootConfigFile: File?,
+        outJars: MutableList<File>,
+        reportsDir: Directory,
+    ) {
         val workDir = workDir.ioFileOrNull
-        val javaBinary = jvmToolFile(toolName = "java", javaHome = javaHome)
         val args = getShrinkerArgs(rootConfigFile, outJars, reportsDir, javaHome, workDir)
 
         // TODO: Process output and print only main information if not verbose
-        val start = currentTimeMillis()
+        val javaBinary = jvmToolFile(toolName = "java", javaHome = javaHome)
         runExternalTool(
             tool = javaBinary,
             args = args,
             workingDir = workDir,
             logToConsole = ExternalToolRunner.LogToConsole.OnlyWhenVerbose,
         ).assertNormalExitValue()
-
-        @Suppress("MagicNumber")
-        val elapsedSec = (currentTimeMillis() - start) / 1_000f
-        reportSavings(destinationDir, initialSize, elapsedSec)
     }
 
     private fun reportSavings(destinationDir: File, initialSize: Long, elapsedSec: Float) {
@@ -310,19 +351,22 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         outJars: List<File>,
         reportsDir: Directory,
         javaHome: File,
-        workDir: File?,
+        workDir: File? = null,
+        external: Boolean = true,
     ): List<String> {
         return arrayListOf<String>().apply {
-            maxHeapSize.orNull?.let {
-                add("-Xmx:$it")
+            if (external) {
+                maxHeapSize.orNull?.let {
+                    add("-Xmx:$it")
+                }
+                if (vmOptions.get()) {
+                    add("-XX:+TieredCompilation")
+                }
+                cliArg(
+                    "-cp",
+                    toolJars.joinToString(File.pathSeparator) { it.normalizedPath() },
+                )
             }
-            if (vmOptions.get()) {
-                add("-XX:+TieredCompilation")
-            }
-            cliArg(
-                "-cp",
-                toolJars.joinToString(File.pathSeparator) { it.normalizedPath() },
-            )
 
             when (checkNotNull(shrinker.get())) {
                 ProGuard -> {
@@ -421,6 +465,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         //  -dump
         //  -verbose
 
+        // TODO: Automatic main class detection from jar manifest and/or project configuration
         mainClass.orNull?.let { mainClass ->
             writer.ln(
                 """
@@ -454,7 +499,6 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     private fun getFinalConfigFile(reportsDir: Directory, base: File? = null): String =
         reportsDir.file("final-config.pro").asFile.normalizedPath(base)
 
-    @Suppress("LongParameterList", "NestedBlockDepth")
     private fun writeJarsConfigurationFile(
         file: File,
         inputToOutputJars: LinkedHashMap<File, File?>,

@@ -81,13 +81,18 @@ public interface FluxoShrinkerConfig {
     public val useBothShrinkers: Property<Boolean>
 
     /**
-     * Whether to use extrenal R8 jar instead of the one bundled/avaliable in the classpath.
+     * Whether to always use external R8 jar instead of the one bundled/avaliable in the classpath.
      *
      * `false` by default.
-     *
-     * @TODO: Support R8 or ProgGuard available in the classpath (bundled).
      */
     public val forceUnbundledShrinker: Property<Boolean>
+
+    /**
+     * Whether to always use external CLI run of R8 or ProGuard.
+     *
+     * `false` by default.
+     */
+    public val forceExternalShrinkerRun: Property<Boolean>
 
     /**
      * `true` by default.
@@ -123,6 +128,7 @@ internal abstract class FluxoShrinkerConfigImpl @Inject constructor(
     override val r8FullMode: Property<Boolean> = objects.notNullProperty(false)
     override val useBothShrinkers: Property<Boolean> = objects.notNullProperty(false)
     override val forceUnbundledShrinker: Property<Boolean> = objects.notNullProperty(false)
+    override val forceExternalShrinkerRun: Property<Boolean> = objects.notNullProperty(false)
     override val autoGenerateKeepRulesFromApis: Property<Boolean> = objects.notNullProperty(true)
     override val maxHeapSize: Property<String?> = objects.nullableProperty()
     override val autoGenerateKeepModifiers: Property<String> =

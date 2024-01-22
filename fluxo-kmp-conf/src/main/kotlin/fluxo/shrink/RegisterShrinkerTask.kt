@@ -65,6 +65,8 @@ internal fun Project.registerShrinkerTask(
     dontoptimize.set(settings.optimize.map { !it })
 
     maxHeapSize.set(settings.maxHeapSize)
+    forceUnbundledShrinker.set(settings.forceUnbundledShrinker)
+    forceExternalShrinkerRun.set(settings.forceExternalShrinkerRun)
 
     (conf.androidMinSdk as? Int)?.let { androidMinSdk.set(it) }
     conf.kotlinConfig.jvmTarget?.let { jvmTarget.set(it) }
