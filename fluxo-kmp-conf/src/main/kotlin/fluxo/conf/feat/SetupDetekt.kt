@@ -61,6 +61,10 @@ internal fun FluxoKmpConfContext.registerReportMergeTask(
 // TODO: Add option to ignore baselines completely and fail on anything,
 //  to help working on reducing baselines.
 
+// FIXME: Setup the "InvalidPackageDeclaration" rule for each module,
+//  set the 'rootPackage' automatically from module group/package.
+//  https://github.com/detekt/detekt/issues/4936#issue-1265233509
+
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun Project.setupDetekt(
     conf: FluxoConfigurationExtensionImpl,

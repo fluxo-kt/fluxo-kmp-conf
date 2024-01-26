@@ -53,6 +53,7 @@
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support Android minification with ProGuard?</ID>
     <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support disabling kotlin nullability checks generation for the shrinked release builds.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup the "InvalidPackageDeclaration" rule for each module,</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Improve detekt task platform detection.</ID>
