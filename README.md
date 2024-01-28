@@ -147,6 +147,7 @@ pluginManagement {
 * https://github.com/mikepenz/AboutLibraries
 * https://github.com/gradle/gradle/issues/26091#issuecomment-1798137734
 * https://github.com/BenWoodworth/Parameterize
+* Set JDK release for kotlin compilation safety (`-Xjdk-release=`)
 * Detekt rules
   * Enable more rules aside from baseline
   * https://github.com/hbmartin/hbmartin-detekt-rules
@@ -163,6 +164,14 @@ pluginManagement {
     * e.g., a task must not use any Project objects at execution time.
     * Also, warn on any `org.gradle.internal` usage because its is internal API.
     * https://docs.gradle.org/8.5/userguide/configuration_cache.html#config_cache:requirements
+* Linting
+  * https://github.com/jeremymailen/kotlinter-gradle
+  * https://dev.to/aseemwangoo/supercharge-your-kotlin-project-2mcb
+  * Konsist
+    * https://github.com/LemonAppDev/konsist
+    * https://proandroiddev.com/protect-kotlin-project-architecture-using-konsist-3bfbe1ad0eea
+  * KDoc formatting
+    * https://github.com/tnorbye/kdoc-formatter
 * https://github.com/ashtanko/kotlin-app-template/tree/main
   * Github Action + git-hook + Issues Template
 * __Infrastructure plugins__
