@@ -73,6 +73,13 @@ internal abstract class ShrinkerKeepRulesFromApiTask : DefaultTask() {
 
         // 2. write as ProGuard keep rules.
         //  https://www.guardsquare.com/manual/configuration/usage#classspecification
+        // FIXME: Warn on data classes in public API!
+        // TODO: auto-detect synthetic methods that can be removed from the rules.
+        //  `*$default` methods should be kept.
+        //  constructors with `kotlin.jvm.internal.DefaultConstructorMarker` should be kept.
+
+        // TODO: Optionally keep $EntriesMappings and $DefaultImpls classes
+        //  https://github.com/Kotlin/binary-compatibility-validator/pull/144
         val outputFile = outputFile.ioFile
         outputFile.parentFile.mkdirs()
         outputFile.bufferedWriter().use { writer ->
@@ -98,7 +105,7 @@ internal abstract class ShrinkerKeepRulesFromApiTask : DefaultTask() {
 }
 
 internal fun Project.registerShrinkerKeepRulesGenTask(
-    settings: FluxoShrinkerConfig
+    settings: FluxoShrinkerConfig,
 ): TaskProvider<ShrinkerKeepRulesFromApiTask> {
     val autoGenerateKeepModifiers = settings.autoGenerateKeepModifiers
     return tasks.register<ShrinkerKeepRulesFromApiTask>(SHRINKER_KEEP_GEN_TASK_NAME) {

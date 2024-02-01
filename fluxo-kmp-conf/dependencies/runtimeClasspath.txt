@@ -2,13 +2,13 @@ com.diffplug.durian:durian-collect:1.2.0
 com.diffplug.durian:durian-core:1.2.0
 com.diffplug.durian:durian-io:1.2.0
 com.diffplug.durian:durian-swt.os:4.2.2
-com.diffplug.spotless:spotless-lib-extra:2.44.0
-com.diffplug.spotless:spotless-lib:2.44.0
-com.diffplug.spotless:spotless-plugin-gradle:6.24.0
+com.diffplug.spotless:spotless-lib-extra:2.45.0
+com.diffplug.spotless:spotless-lib:2.45.0
+com.diffplug.spotless:spotless-plugin-gradle:6.25.0
 com.dropbox.dependency-guard:com.dropbox.dependency-guard.gradle.plugin:0.4.3
 com.dropbox.dependency-guard:dependency-guard:0.4.3
-com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.50.0
-com.github.ben-manes:gradle-versions-plugin:0.50.0
+com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.51.0
+com.github.ben-manes:gradle-versions-plugin:0.51.0
 com.googlecode.concurrent-trees:concurrent-trees:2.6.1
 com.googlecode.javaewah:JavaEWAH:1.2.3
 com.squareup.moshi:moshi-kotlin:1.12.0
@@ -19,7 +19,7 @@ com.squareup.okio:okio-jvm:3.7.0
 com.squareup.okio:okio:3.7.0
 commons-codec:commons-codec:1.16.0
 dev.equo.ide:solstice:1.7.5
-io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.4
+io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.5
 org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r
 org.eclipse.platform:org.eclipse.osgi:3.18.300
 org.jetbrains.kotlin:kotlin-reflect:1.8.20

@@ -27,7 +27,7 @@ kotlin = "1.9.22"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.5.11"
+jetbrains-compose = "1.5.12"
 
 # https://github.com/google/ksp/releases
 ksp = "1.9.22-1.0.17"
@@ -90,14 +90,13 @@ androidBuildTools = "34.0.0"
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # WARNING: Do not forget to update the version badge in `README.md`!
-android-gradle-plugin = "8.4.0-alpha04"
+android-gradle-plugin = "8.2.2"
 
 # endregion
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
-# WARNING: 0.13+ uses Kotlin metadata 0.6.0!
-bcv = "0.13.2"
+bcv = "0.14.0"
 
 # Kotlin/JS API support for the KotlinX Binary Compatibility Validator based on the generated TS definitions.
 # https://github.com/fluxo-kt/fluxo-bcv-js/releases.
@@ -109,13 +108,13 @@ fluxo-bcv-js = "0.2.0"
 dokka = "1.9.10"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.23.4"
+detekt = "1.23.5"
 
 # https://github.com/pinterest/ktlint/releases
 ktlint = "1.1.1"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "6.24.0"
+spotless = "6.25.0"
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij
@@ -125,7 +124,7 @@ gradle-intellij-plugin = "1.17.0"
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-gradle.
-proguard = "7.4.1"
+proguard = "7.4.2"
 
 # ProGuardCORE, library to read, analyze, modify, and write JVM class files.
 # https://github.com/Guardsquare/proguard-core/releases
@@ -134,6 +133,7 @@ proguard-core = "9.1.1"
 
 # Kotlin JVM metadata manipulation library.
 # Used by ProGuardCORE.
+# https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-metadata-jvm
 kotlinx-metadata-jvm = "0.6.2"
 
 # R8 is a Google's code shrinker, obfuscator, and optimizer. Targeted for Android.
@@ -240,12 +240,12 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.enterprise
 # NOTE: Don't forget to edit version in all `settings.gradle.kts` files as well!
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.16.1" }
+gradle-enterprise = { id = "com.gradle.enterprise", version = "3.16.2" }
 
 # Gradle Versions Plugin: provides a task to determine which dependencies have updates
 # https://github.com/ben-manes/gradle-versions-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.50.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 # Detect unused and misused dependencies. Provides advice for managing dependencies and other applied plugins.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
@@ -264,9 +264,9 @@ deps-guard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
 task-tree = { id = "com.dorongold.task-tree", version = "2.1.1" }
 
 # Provides task metadata and dependency information, execution queue, and more
-# https://gitlab.com/barfuin/gradle-taskinfo/-/tags
+# https://gitlab.com/barfuin/gradle-taskinfo/-/releases
 # https://plugins.gradle.org/plugin/org.barfuin.gradle.taskinfo
-task-info = { id = "org.barfuin.gradle.taskinfo", version = "2.1.0" }
+task-info = { id = "org.barfuin.gradle.taskinfo", version = "2.2.0" }
 
 # `graphModules` task to create an image with the graph of how Gradle modules depend on each other
 # https://github.com/savvasdalkitsis/module-dependency-graph/tags

@@ -189,4 +189,12 @@ private val API_CHECK_SPEC = Spec<String> {
 }
 
 
-internal const val API_DIR = kotlinx.validation.API_DIR // "api"
+/**
+ *
+ * @fixme This is a copy of [kotlinx.validation.API_DIR] before 0.14.0
+ *   After 0.14.0 it can be customized and requires special support.
+ *
+ * @see kotlinx.validation.API_DIR
+ */
+@Deprecated("Should be replaced with dynamic value from kotlinx.validation")
+internal const val API_DIR = "api"

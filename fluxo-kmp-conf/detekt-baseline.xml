@@ -98,6 +98,9 @@
     <ID>ForbiddenComment:SetupSpotless.kt$// TODO: read base settings from .editorconfig ?</ID>
     <ID>ForbiddenComment:SetupTestsReport.kt$// TODO: Support Gradle before 8.0 (set service parameter and usesService) ?</ID>
     <ID>ForbiddenComment:SetupVerification.kt$// TODO: Test separate ktlint setup with gradle plugin</ID>
+    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// FIXME: Warn on data classes in public API!</ID>
+    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: Optionally keep $EntriesMappings and $DefaultImpls classes</ID>
+    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: auto-detect synthetic methods that can be removed from the rules.</ID>
     <ID>ForbiddenComment:ShrinkerTestBase.kt$// TODO: Optimized bytcode tests.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>

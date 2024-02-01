@@ -9,6 +9,8 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests
 
+public typealias AndroidCommonExtension = CommonExtension<*, *, *, *, *>
+
 public typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 
 @Suppress("LongParameterList")
@@ -18,7 +20,7 @@ public fun Project.setupMultiplatform(
     setupCompose: Boolean? = null,
     enableBuildConfig: Boolean? = null,
     optIns: List<String>? = null,
-    configureAndroid: (CommonExtension<*, *, *, *, *, *>.() -> Unit)? = null,
+    configureAndroid: (AndroidCommonExtension.() -> Unit)? = null,
     kmp: (KmpConfigurationContainerDsl.() -> Unit)? = null,
     body: MultiplatformConfigurator? = null,
 ): Unit = fluxoConfiguration c@{

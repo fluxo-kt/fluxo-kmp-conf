@@ -1,7 +1,7 @@
 package fluxo.conf.dsl.container.impl.target
 
+import AndroidCommonExtension
 import bundleFor
-import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestedExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
@@ -31,7 +31,7 @@ internal abstract class TargetAndroidContainer<T>(
 ) : KmpTargetContainerImpl<KotlinAndroidTarget>(context, name, ANDROID_SORT_ORDER),
     KmpTargetContainerImpl.CommonJvm<KotlinAndroidTarget>,
     AndroidTarget<T>
-    where T : CommonExtension<*, *, *, *, *, *>, T : TestedExtension {
+    where T : AndroidCommonExtension, T : TestedExtension {
 
     internal val lazyAndroid = context.objects.set<T.() -> Unit>()
 

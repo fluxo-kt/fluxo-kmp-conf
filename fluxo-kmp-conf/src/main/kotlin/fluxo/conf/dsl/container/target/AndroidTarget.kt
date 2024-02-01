@@ -1,6 +1,6 @@
 package fluxo.conf.dsl.container.target
 
-import com.android.build.api.dsl.CommonExtension
+import AndroidCommonExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestedExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
 public interface AndroidTarget<out T> :
     KotlinTargetContainer<KotlinAndroidTarget>
-    where T : CommonExtension<*, *, *, *, *, *>, T : TestedExtension {
+    where T : AndroidCommonExtension, T : TestedExtension {
 
     @Deprecated(
         message = "Use `onAndroidExtension` instead.",
