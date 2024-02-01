@@ -125,7 +125,7 @@ gradle-intellij-plugin = "1.16.1"
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-gradle.
-proguard = "7.4.1"
+proguard = "7.4.2"
 
 # ProGuardCORE, library to read, analyze, modify, and write JVM class files.
 # https://github.com/Guardsquare/proguard-core/releases
