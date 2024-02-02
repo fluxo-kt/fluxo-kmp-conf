@@ -64,7 +64,7 @@ jobs:
           java-version: '${{ matrix.java }}'
 
       - name: 'Cached KMP things (Konan, Node, Yarn, Binaryen)'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.konan
