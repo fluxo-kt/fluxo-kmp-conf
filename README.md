@@ -14,7 +14,8 @@ Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects
 - Allows configuring verification tasks (Detekt, Lint, BinaryCompatibilityValidator with JS support!).
   - Provides merged Sarif reports for the whole project.
   - Provides baseline configuration tasks.
-- Adds the convenience console tests report at the end of the build along with merged XML report for the whole project.
+- Convenience console tests report at the end of the build along with merged XML report for the whole project.
+- Allows using ProGuard and/or R8 as an optimizer for JVM targets.
 - Enables passing of build targets via command line to control what gets configured (great for CI).
 
 Initially made for the [Fluxo][fluxo] state management framework and other libraries, then published for general use.
@@ -206,6 +207,9 @@ pluginManagement {
       * Nebula Dependency Lock Plugin
         * https://github.com/nebula-plugins/gradle-dependency-lock-plugin
         * Allows people using dynamic dependency versions to lock them to specific versions.
+        * Support saving and checking hash or signature of dependency in a report.
+          * Also note for safety against supply chain attacks:
+            https://github.com/dropbox/dependency-guard/issues/103
       * Plugin to gather information about the environment
         * https://github.com/nebula-plugins/gradle-info-plugin
         * Noninvasively collect information about the environment, and make information available to other plugins in a statically typed way.
