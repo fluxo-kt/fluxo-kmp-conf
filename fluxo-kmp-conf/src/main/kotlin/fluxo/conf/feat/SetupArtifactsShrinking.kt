@@ -10,14 +10,14 @@ import fluxo.shrink.registerShrinkerKeepRulesGenTask
 import fluxo.shrink.registerShrinkerTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
+// FIXME: Support double-shrinking with both R8 and ProGuard.
+//  Ensure the mapping file incrementality and compatibility.
+
 // FIXME: Run tests with minified artifacts.
 //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
 
-// FIXME: Support R8 or ProgGuard available in the classpath (bundled)
-//  + notifyThatToolIsRunning
-//  https://github.com/tuuzed/LightTunnel/blob/680d3bc/buildSrc/src/main/kotlin/Compiler.kt
-
-// FIXME: Support auto-loading of the shrinkings rules from the classpath
+// FIXME: Support auto-loading of the shrinking rules from the classpath for the ProGuard.
+//  Should be reused from the Android ProGuard Gradle plugin.
 //  https://github.com/Kotlin/kotlinx.coroutines/tree/2ddcbe8/kotlinx-coroutines-core/jvm/resources/META-INF
 //  https://github.com/JetBrains/kotlin/tree/14b13a2/core/reflection.jvm/resources/META-INF/com.android.tools
 //  https://github.com/search?type=code&q=path%3AMETA-INF%2Fcom.android.tools%2Fr8**.pro
@@ -25,13 +25,21 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 // FIXME: Support KMP JVM target minification with ProGuard.
 
-// TODO: Support disabling kotlin nullability checks generation for the shrinked release builds.
+// TODO: Support auto-disabling kotlin null checks generation for the shrinked release builds.
 //  Auto-add assumenosideeffects to remove left intrinsics in that case.
 
-// TODO: Support Android minification with ProGuard?
+// FIXME: Publish the debug non-shrinked artifacts alongside the release shrinked ones.
+//  Should be easy to switch between them in the consuming projects.
+//  Use variant attributes?
 
-// TODO: Allow to call shrinker by task name even if it's disabled.
+// FIXME: Allow to call shrinker by task name even if it's disabled.
 //  Or, at least, show an informative warning when it's disabled
+
+// FIXME: Support shadow jar generation before shrinking artifacts.
+//  https://github.com/GradleUp/gr8
+//  https://github.com/johnrengelman/shadow
+
+// TODO: Support Android minification with ProGuard?
 
 // region Notes and references:
 // https://r8.googlesource.com/r8/
@@ -41,9 +49,10 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 // https://android.googlesource.com/platform/tools/base/+/0d60339/build-system/gradle-core/src/main/java/com/android/build/gradle/internal/tasks/R8Task.kt
 // https://github.com/avito-tech/avito-android/blob/a1949b4/subprojects/assemble/proguard-guard/src/main/kotlin/com/avito/android/proguard_guard/shadowr8/ShadowR8TaskCreator.kt
 // https://github.com/lowasser/kotlinx.coroutines/blob/fcaa6df/buildSrc/src/main/kotlin/RunR8.kt
+// https://github.com/tuuzed/LightTunnel/blob/680d3bc/buildSrc/src/main/kotlin/Compiler.kt
 //
 // https://slackhq.github.io/keeper/
-// https://github.com/slackhq/Keeper
+//  https://github.com/slackhq/Keeper
 // https://github.com/open-obfuscator/dProtect
 //
 // ProGuard/R8 configuration improvements
