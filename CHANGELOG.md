@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.7.0-alpha1] - 2024-02-02
+
 ### Added
 - allow switching on/off the R8 full mode, also called "non-compat mode." Disabled by default.
 - add `FLUXO_VERBOSE` flag to enable verbose output without enabling the `MAX_DEBUG` mode.
@@ -14,12 +17,27 @@
 - create infrastructure for automated R8 and ProGuard shrinkers testing in [0ee74ca](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/0ee74cad8bb6d84a610cefdbd40dbb6213f9ad68).
 - add tests for R8 and ProGuard in [7181a82...226a05b](https://github.com/fluxo-kt/fluxo-kmp-conf/compare/7181a82...226a05b).
 - shrink plugin artifact with R8 (saved 35.227%, 293.3 KB).
-- control keep rule modifiers for all auto-kept classes (in auto-generated keep rules) in [8c21f23a](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/8c21f23a).
+- control keep rule modifiers for all auto-kept classes (in auto-generated keep rules) in [8c8630c7](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/8c8630c7).
+- support R8 or ProgGuard available in the classpath (bundled) and support loading in the classpath as a more stable alternative to external run in [07af4372](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/07af4372).
+
+### Fixed
+- Fix `TestReportResult` Gradle compatibility in [1923b815](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/1923b815).
 
 ### Changed
 - `DISABLE_R8` now disables all shrinking altogether.
 - improve logging output in [4357abd7](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/4357abd7ebb5192b2252758aeb9d52181904a500).
 - improve error reporting for `ExternalToolRunner` in [34ffc208](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/34ffc208).
+- bump kotlinx-metadata-jvm to 0.6.2 for ProGuard (used only for ProGuard in a separate classloader or process).
+- bump gradle.enterprise to 3.16.2.
+- bump jetbrains-compose to 1.5.12.
+- bump android-gradle-plugin to 8.2.2.
+- bump binary-compatibility-validator to 0.14.0.
+- bump detekt to 1.23.5.
+- bump spotless to 6.25.0.
+- bump proguard to 7.4.2.
+- bump ben-manes.versions to 0.51.0.
+- bump gradle.taskinfo to 2.2.0.
+- bump compose detekt rules to 0.3.11.
 
 
 ## [0.6.0] - 2024-01-05
@@ -118,6 +136,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.7.0-alpha1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.7.0-alpha1
 [0.6.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.6.0
 [0.5.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.5.0
 [0.4.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.4.0
