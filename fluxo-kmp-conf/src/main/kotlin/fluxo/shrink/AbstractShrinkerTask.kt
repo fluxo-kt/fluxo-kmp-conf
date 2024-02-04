@@ -278,6 +278,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         // 1. Try to use the bundled ProGuard/R8 first.
         // 2. Fallback to custom classloader.
         // 3. Call as a separate process.
+        // TODO: Process output and print only main information if not verbose
         val forceExternalShrinkerRun = forceExternalShrinkerRun.get()
         val start = currentTimeMillis()
         val called = when (forceExternalShrinkerRun) {
@@ -307,10 +308,10 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         outJars: MutableList<File>,
         reportsDir: Directory,
     ) {
+        // FIXME: Fix R8 external run for Ubuntu and MacOS (Windows is OK)
+
         val workDir = workDir.ioFileOrNull
         val args = getShrinkerArgs(rootConfigFile, outJars, reportsDir, javaHome, workDir)
-
-        // TODO: Process output and print only main information if not verbose
         val javaBinary = jvmToolFile(toolName = "java", javaHome = javaHome)
         runExternalTool(
             tool = javaBinary,
