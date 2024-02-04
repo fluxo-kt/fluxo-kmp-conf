@@ -11,6 +11,8 @@ import fluxo.conf.feat.registerDetektMergeRootTask
 import fluxo.conf.feat.registerLintMergeRootTask
 import fluxo.conf.impl.CPUs
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
+import fluxo.conf.impl.TOTAL_OS_MEMORY
+import fluxo.conf.impl.XMX
 import fluxo.conf.impl.d
 import fluxo.conf.impl.e
 import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
@@ -21,6 +23,7 @@ import fluxo.conf.impl.libsCatalogOptional
 import fluxo.conf.impl.tryAsBoolean
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
+import fluxo.util.readableByteSize
 import getValue
 import isCI
 import isDesugaringEnabled
@@ -113,7 +116,13 @@ internal abstract class FluxoKmpConfContext
             var m = "Gradle ${gradle.gradleVersion}, " +
                 "JRE $JRE_VERSION_STRING, " +
                 "Kotlin $kotlinPluginVersion, " +
-                "$CPUs CPUs"
+                "$CPUs CPUs, " +
+                "${readableByteSize(XMX)} XMX"
+
+            val ram = TOTAL_OS_MEMORY
+            if (ram > 0) {
+                m += " with ${readableByteSize(ram)} RAM"
+            }
 
             // Bundled/Classpath R8 version
             try {

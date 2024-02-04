@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Added
+- log memory info on Fluxo context start.
+
 
 ## [0.7.0-alpha1] - 2024-02-02
 
