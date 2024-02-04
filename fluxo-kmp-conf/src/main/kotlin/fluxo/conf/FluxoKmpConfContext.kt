@@ -164,12 +164,7 @@ internal abstract class FluxoKmpConfContext
             }
         }
 
-        val isInIde = start.systemPropertiesArgs["idea.active"].tryAsBoolean()
-        if (isInIde && startTaskNames.isEmpty() && !isInCompositeBuild) {
-            markProjectInSync("IDE & no start tasks")
-        } else {
-            taskGraphBasedProjectSyncDetection()
-        }
+        taskGraphBasedProjectSyncDetection()
 
         val includedBuilds = gradle.includedBuilds.size
         if (isInCompositeBuild) {
@@ -214,6 +209,8 @@ internal abstract class FluxoKmpConfContext
 
         logger.v("Cleaned start task names: $startTaskNames")
         logger.v("Kotlin Plugin version: $kotlinPluginVersion")
+
+        val isInIde = start.systemPropertiesArgs["idea.active"].tryAsBoolean()
         logger.v("isInIde: $isInIde")
     }
 
