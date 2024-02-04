@@ -96,15 +96,15 @@ jobs:
           sarif_file: build/detekt-merged.sarif
           category: detekt
 
-      - name: 'Run check-main'
-        working-directory: checks/main
-        run: ./gradlew build assemble check printKotlinSourceSetsGraph --continue --stacktrace --scan
-        env:
-          GITHUB_DEPENDENCY_GRAPH_ENABLED: false
-
       - name: 'Run check-gradle-plugin'
         working-directory: checks/gradle-plugin
         run: ./gradlew build assemble check --continue --stacktrace --scan
+        env:
+          GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+
+      - name: 'Run check-main'
+        working-directory: checks/main
+        run: ./gradlew build assemble check printKotlinSourceSetsGraph --continue --stacktrace --scan
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
