@@ -11,6 +11,7 @@ package fluxo.shrink
 
 import fluxo.conf.impl.e
 import fluxo.conf.impl.jvmToolFile
+import fluxo.conf.impl.l
 import fluxo.conf.impl.lc
 import fluxo.conf.impl.w
 import fluxo.external.AbstractExternalFluxoTask
@@ -97,6 +98,9 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:Optional
     @get:Input
     val r8FulMode: Property<Boolean?> = objects.nullableProperty()
+
+    private val r8Compat
+        get() = r8FulMode.orNull != true
 
     @get:Optional
     @get:InputFile
@@ -213,7 +217,12 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val shrinker = shrinker.get()
         val jmods = when (shrinker) {
             ProGuard -> getJmods(javaHome)
-            else -> null
+            else -> {
+                // R8 don't need jmods
+                val r8Mode = if (r8Compat) "compat " else "full-"
+                logger.l("R8 in ${r8Mode}mode")
+                null
+            }
         }
 
         // For a final application, we need to process all jars,
@@ -414,7 +423,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                     // Opposite of non-compat mode, also called "full mode".
                     // 'android.enableR8.fullMode' controls it for android builds.
                     // https://r8.googlesource.com/r8/+/refs/heads/main/compatibility-faq.md#r8-full-mode
-                    cliArg("--pg-compat", r8FulMode.orNull != true)
+                    cliArg("--pg-compat", r8Compat)
                 }
             }
         }

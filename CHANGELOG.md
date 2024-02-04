@@ -7,6 +7,7 @@
 
 ### Added
 - log memory info on Fluxo context start.
+- log R8 compatibility mode (full vs. compat).
 
 ### Fixed
 - don't run in-memory shrinking if there is not enough memory available.
