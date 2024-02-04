@@ -8,6 +8,9 @@
 ### Added
 - log memory info on Fluxo context start.
 
+### Fixed
+- don't run in-memory shrinking if there is not enough memory available.
+
 
 ## [0.7.0-alpha1] - 2024-02-02
 

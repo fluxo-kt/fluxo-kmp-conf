@@ -1,15 +1,21 @@
 package fluxo.shrink
 
 import fluxo.conf.deps.tryGetClassForName
+import fluxo.conf.impl.TOTAL_OS_MEMORY
+import fluxo.conf.impl.XMX
 import fluxo.conf.impl.e
 import fluxo.conf.impl.l
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
+import fluxo.util.readableByteSize
 import java.net.URLClassLoader
 import java.util.Properties
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 
+/**
+ * Abstraction for the [shrinker] in-memory reflective caller.
+ */
 internal class ShrinkerReflectiveCaller(
     private val shrinker: Shrinker,
     private val logger: Logger,
@@ -17,11 +23,37 @@ internal class ShrinkerReflectiveCaller(
     private val forceUnbundledShrinker: Boolean,
     private val getShrinkerArgs: () -> List<String>,
 ) {
+    private companion object {
+        private const val MIN_XMX_GB = 2
+        private const val MIN_XMX_FOR_IN_MEMORY: Long = 1024L * 1024 * 1024 * MIN_XMX_GB
+    }
+
+
     private var v: String? = null
 
+    /**
+     * Tries to run the shrinker in-memory.
+     *
+     * @return `true` if the shrinker was run in-memory, `false` otherwise.
+     */
+    @Suppress("ReturnCount")
     fun execute(): Boolean {
         val forceUnbundled = forceUnbundledShrinker
         logger.v("Trying to run $shrinker in-memory (forceUnbundled=$forceUnbundled)...")
+
+        val xmx = XMX
+        if (xmx < MIN_XMX_FOR_IN_MEMORY) {
+            if (TOTAL_OS_MEMORY > MIN_XMX_GB * 2) {
+                logger.e(
+                    "Low memory (Xmx=${readableByteSize(xmx)})" +
+                        " will likely to cause $shrinker to fail!\n" +
+                        "Please set the max heap size to at least -Xmx${MIN_XMX_GB}G" +
+                        " to run $shrinker in-memory.",
+                )
+            }
+            return false
+        }
+
         try {
             val (className, args) = args()
             val clazz = when (forceUnbundled) {
