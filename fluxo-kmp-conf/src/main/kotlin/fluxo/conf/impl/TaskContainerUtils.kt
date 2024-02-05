@@ -37,11 +37,18 @@ internal inline fun <reified T : Task> TaskCollection<out Task>.named(
 internal fun <T : Task, R : T> TaskCollection<T>.namedCompat(
     nameFilter: Spec<String>,
 ): TaskCollection<R> {
-    // Since Gradle 8.6, there is a new method `named(Spec<String>)`.
-    // It provides lazy name-based filtering of tasks without triggering the creation of the tasks,
-    // even when the task was not part of the build execution.
-    // https://docs.gradle.org/8.6-rc-1/javadoc/org/gradle/api/NamedDomainObjectSet.html#named-org.gradle.api.specs.Spec-
-    // TODO: Add method usage when compile against Gradle 8.6+.
-
-    return uncheckedCast(matching { nameFilter.isSatisfiedBy(it.name) })
+    return uncheckedCast(
+        try {
+            // Since Gradle 8.6, a new method `named(Spec<String>)` is available.
+            // It provides lazy name-based filtering of tasks
+            // without triggering the creation of the tasks,
+            // even when the task was not part of the build execution.
+            // https://docs.gradle.org/8.6/release-notes.html#lazy-name-based-filtering-of-tasks
+            // https://docs.gradle.org/8.6/javadoc/org/gradle/api/NamedDomainObjectSet.html#named-org.gradle.api.specs.Spec-
+            named(nameFilter)
+        } catch (_: NoSuchMethodError) {
+            // Eager fallback for older Gradle versions
+            matching { nameFilter.isSatisfiedBy(it.name) }
+        },
+    )
 }

@@ -4,9 +4,11 @@ package fluxo.conf.impl
 
 import org.gradle.api.DomainObjectCollection
 import org.gradle.api.DomainObjectSet
+import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
+import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.PolymorphicDomainObjectContainer
 import org.gradle.api.model.ObjectFactory
 
@@ -44,6 +46,21 @@ internal fun <T : Any> NamedDomainObjectContainer<T>.maybeRegister(
     return entity
 }
 
+
+internal fun <T : Named> NamedDomainObjectSet<T>.namedLazy(name: String): NamedDomainObjectSet<T> {
+    return try {
+        // Since Gradle 8.6, a new method `named(Spec<String>)` is available.
+        // It provides lazy name-based filtering of tasks
+        // without triggering the creation of the tasks,
+        // even when the task was not part of the build execution.
+        // https://docs.gradle.org/8.6/release-notes.html#lazy-name-based-filtering-of-tasks
+        // https://docs.gradle.org/8.6/javadoc/org/gradle/api/NamedDomainObjectSet.html#named-org.gradle.api.specs.Spec-
+        named { it == name }
+    } catch (_: NoSuchMethodError) {
+        // Eager fallback for older Gradle versions
+        matching { it.name == name }
+    }
+}
 
 internal fun <T : Any> NamedDomainObjectCollection<T>.namedOrNull(
     name: String,
