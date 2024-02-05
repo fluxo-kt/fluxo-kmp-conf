@@ -79,7 +79,12 @@ internal abstract class FluxoKmpConfContext
     val testsDisabled: Boolean
 
 
-    val isInCompositeBuild get() = rootProject.gradle.includedBuilds.size > 1
+    /**
+     * Whether the project is part of a composite build.
+     *
+     * `true` when the project has "included" builds.
+     */
+    val isInCompositeBuild: Boolean
 
     val isCI: Boolean = rootProject.isCI().get()
     val isRelease: Boolean = rootProject.isRelease().get()
@@ -167,12 +172,17 @@ internal abstract class FluxoKmpConfContext
         taskGraphBasedProjectSyncDetection()
 
         val includedBuilds = gradle.includedBuilds.size
+        val includedBuilds2 = start.includedBuilds.size
+        isInCompositeBuild = includedBuilds > 0 || includedBuilds2 > 0
+        val compositeMsg =
+            "$includedBuilds gradle.includedBuilds, $includedBuilds2 start.includedBuilds"
         if (isInCompositeBuild) {
-            logger.l("COMPOSITE build is ENABLED! ($includedBuilds includedBuilds)")
+            logger.l("COMPOSITE build is ENABLED! ($compositeMsg)")
         } else if (isVerbose) {
-            logger.l("COMPOSITE build is disabled! ($includedBuilds includedBuilds)")
+            logger.l("COMPOSITE build is disabled! ($compositeMsg)")
         }
 
+        if (start.isDryRun) logger.l("DryRun mode is enabled!")
         if (isCI) logger.l("CI mode is enabled!")
         if (isRelease) logger.l("RELEASE mode is enabled!")
         if (composeMetricsEnabled) logger.l("COMPOSE_METRICS are enabled!")
