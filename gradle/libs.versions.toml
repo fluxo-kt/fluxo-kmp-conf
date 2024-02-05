@@ -119,7 +119,7 @@ spotless = "6.25.0"
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-gradle-intellij-plugin = "1.17.0"
+gradle-intellij-plugin = "1.17.1"
 
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
@@ -256,7 +256,7 @@ deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.29
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
 # https://mvnrepository.com/artifact/com.dropbox.dependency-guard/dependency-guard
-deps-guard = { id = "com.dropbox.dependency-guard", version = "0.4.3" }
+deps-guard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 
 # `taskTree` task that prints the current task graph
 # https://github.com/dorongold/gradle-task-tree/blob/master/CHANGELOG.md#changelog

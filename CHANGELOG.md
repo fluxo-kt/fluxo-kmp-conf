@@ -14,6 +14,10 @@
 - don't mark the project as in IDE sync mode when no tasks where called and no composite build detected.
 - improve and document composite builds detection.
 
+### Changed
+- bump gradle-intellij-plugin to 1.17.1.
+- bump dependency-guard to 0.5.0.
+
 
 ## [0.7.0-alpha1] - 2024-02-02
 
