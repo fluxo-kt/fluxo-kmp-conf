@@ -281,6 +281,7 @@ pluginManagement {
 * https://github.com/gmazzo/gradle-codeowners-plugin
 * https://github.com/gmazzo/gradle-docker-compose-plugin
 * https://github.com/gmazzo/gradle-report-publications-plugin
+* !! https://github.com/gmazzo/gradle-android-manifest-lock-plugin
 * Shadowing + minification
   * https://github.com/GradleUp/gr8 (Gr8 = Gradle + R8)
   * Task used by the UI and Android tests to check minification results and keep track of binary size.
@@ -303,6 +304,19 @@ pluginManagement {
   * Compare artifacts in the commit (with prev commit) or PR (with upstream)
     * https://github.com/JakeWharton/diffuse
   * https://github.com/square/leakcanary/tree/main/.github
+  * MythicDrops repo organization. MegaLinter.io checks. [kodiakhq](https://github.com/apps/kodiakhq) bot.
+    * https://github.com/MythicDrops/mythicdrops-gradle-plugin/pull/108
+    * https://github.com/MythicDrops/mythicdrops-gradle-plugin?tab=readme-ov-file#maven-publish-plugin
+      * Configures published Maven POMs to include `compileOnly` dependencies as `provided`.
+      * Configures the project to sign published artifacts with GPG if `PGP_KEY` and `PGP_PWD` environment variables are available.
+    * https://github.com/MythicDrops/mythicdrops-gradle-plugin?tab=readme-ov-file#base-project-plugin
+      * Applies the [nebula.project](https://github.com/nebula-plugins/nebula-project-plugin) Gradle plugin.
+      * Applies the [com.adarshr.test-logger](https://github.com/radarsh/gradle-test-logger-plugin) Gradle plugin (with Mocha theme).
+      * Configures all test tasks to use JUnit Jupiter.
+      * Applies the [org.shipkit.shipkit-auto-version](https://github.com/shipkit/shipkit-auto-version) Gradle plugin.
+  * Karol Wrótniak tools
+    * https://github.com/koral--/gradle-pitest-plugin
+    * https://github.com/koral-- (note profile readme)
 * Stores publishing
   * https://github.com/chippmann/androidpublisher/
     * https://github.com/chippmann/androidpublisher/releases/tag/0.3.3
@@ -316,6 +330,8 @@ pluginManagement {
   * https://github.com/aminography/CommonUtils/tree/1bfbe2d/library/src/main/java/com/aminography/commonutils
 * States and Events
   * Circuit: https://slackhq.github.io/circuit/states-and-events/
+* Builds organization (multiple flavors, build types, build targets)
+  * https://github.com/ankidroid/Anki-Android/releases/tag/v2.17beta2
 </details>
 
 
