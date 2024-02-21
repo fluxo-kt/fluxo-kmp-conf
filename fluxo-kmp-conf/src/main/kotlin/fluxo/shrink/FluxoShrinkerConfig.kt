@@ -128,7 +128,7 @@ internal abstract class FluxoShrinkerConfigImpl @Inject constructor(
     override val r8FullMode: Property<Boolean> = objects.notNullProperty(false)
     override val useBothShrinkers: Property<Boolean> = objects.notNullProperty(false)
     override val forceUnbundledShrinker: Property<Boolean> = objects.notNullProperty(false)
-    override val forceExternalShrinkerRun: Property<Boolean> = objects.notNullProperty(false)
+    override val forceExternalShrinkerRun: Property<Boolean> = objects.notNullProperty(true)
     override val autoGenerateKeepRulesFromApis: Property<Boolean> = objects.notNullProperty(true)
     override val maxHeapSize: Property<String?> = objects.nullableProperty()
     override val autoGenerateKeepModifiers: Property<String> =

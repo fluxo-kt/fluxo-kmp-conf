@@ -13,6 +13,8 @@
 - don't run in-memory shrinking if there is not enough memory available.
 - don't mark the project as in IDE sync mode when no tasks where called and no composite build detected.
 - improve and document composite builds detection.
+- properly quote and escape CLI arguments for external tool runner.
+- fix R8 external run for Ubuntu and MacOS (non-Windows systems).
 
 ### Changed
 - bump gradle-intellij-plugin to 1.17.1.

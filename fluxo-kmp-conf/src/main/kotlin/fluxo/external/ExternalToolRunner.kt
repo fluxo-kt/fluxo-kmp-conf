@@ -124,14 +124,16 @@ internal class ExternalToolRunner(
     ) {
         val errMsg = buildString {
             appendLine("External tool execution failed:")
-            val cmd = (listOf(tool.absolutePath) + args).joinToString(", ")
-            appendLine("* Command: [$cmd]")
             appendLine("* Working dir: [${workingDir?.absolutePath.orEmpty()}]")
+            val cmd = args.joinToString(" ", prefix = " ")
+            appendLine("* Command: ${tool.absolutePath}$cmd")
             appendLine("* Exit code: ${result.exitValue}")
-            val outSize = readableByteSize(outFile)
-            appendLine("* Standard output log ($outSize): ${outFile.absolutePath}")
-            val errSize = readableByteSize(errFile)
-            appendLine("* Error log ($errSize): ${errFile.absolutePath}")
+            readableByteSize(outFile).takeIf { it != "0 B" }?.let { outSize ->
+                appendLine("* Standard output log ($outSize): \"${outFile.absolutePath}\"")
+            }
+            readableByteSize(errFile).takeIf { it != "0 B" }?.let { errSize ->
+                appendLine("* Error log ($errSize): \"${errFile.absolutePath}\"")
+            }
 
             // Always pint stderr and stdout if the tool failed.
             // Stderr can be duplicated with 'alwaysPrintErrorOutput',
@@ -147,7 +149,7 @@ internal class ExternalToolRunner(
         if (out.isEmpty()) {
             return
         }
-        appendLine("\n* ").append(title).append(':')
+        appendLine("\n* ").append(title).append(": ")
         if (out.length > LOG_LIMIT) {
             append("(truncated)\n ...").appendLine(out.takeLast(LOG_LIMIT).trimStart())
         } else {

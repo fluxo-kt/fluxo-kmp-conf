@@ -148,7 +148,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Input
     @get:Optional
-    val forceExternalShrinkerRun: Property<Boolean> = objects.notNullProperty(false)
+    val forceExternalShrinkerRun: Property<Boolean> = objects.notNullProperty(true)
 
     @get:Internal
     val maxHeapSize: Property<String?> = objects.nullableProperty()
@@ -275,6 +275,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val rootConfigFile = workingDir.file("root-config.pro").asFile
         writeRootConfiguration(rootConfigFile, reportsDir, jarsConfFile, shrinker)
 
+        // FIXME: Use external runner first, then fallback to bundled and classloader.
         // 1. Try to use the bundled ProGuard/R8 first.
         // 2. Fallback to custom classloader.
         // 3. Call as a separate process.
@@ -308,8 +309,6 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         outJars: MutableList<File>,
         reportsDir: Directory,
     ) {
-        // FIXME: Fix R8 external run for Ubuntu and MacOS (Windows is OK)
-
         val workDir = workDir.ioFileOrNull
         val args = getShrinkerArgs(rootConfigFile, outJars, reportsDir, javaHome, workDir)
         val javaBinary = jvmToolFile(toolName = "java", javaHome = javaHome)

@@ -2,8 +2,7 @@
 
 package fluxo.gradle
 
-import fluxo.conf.impl.OS
-import fluxo.conf.impl.currentOS
+import fluxo.conf.impl.isWindowsOs
 import java.io.File
 import java.security.DigestInputStream
 import java.security.MessageDigest
@@ -99,8 +98,8 @@ private fun MessageDigest.digestContent(file: File) {
 
 internal fun File.normalizedPath(base: File? = null): String {
     val path = base?.let { relativeToOrNull(it)?.path } ?: absolutePath
-    return when (currentOS) {
-        OS.Windows -> path.replace("\\", "\\\\")
+    return when {
+        isWindowsOs -> path.replace("\\", "\\\\")
         else -> path
     }
 }

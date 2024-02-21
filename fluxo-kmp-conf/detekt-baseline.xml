@@ -6,8 +6,8 @@
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// FIXME: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Fix R8 external run for Ubuntu and MacOS (Windows is OK)</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Move mapping to the output dir?</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Use external runner first, then fallback to bundled and classloader.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Automatic main class detection from jar manifest and/or project configuration</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
@@ -60,13 +60,6 @@
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Improve detekt task platform detection.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$DetectedTaskPlatform$// TODO: Detect common/metadata tasks?</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Check BuildConfig tasks (not called on IDE sync!)</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Spotless stup</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: check all features</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: detekt plugins https://detekt.dev/marketplace/</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: git hooks</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: https://github.com/topjohnwu/libsu/blob/01570d643af91b0e271de018465a219eed8db322/service/build.gradle.kts#L21</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// TODO: Retry create pluginId from configuration if null?</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// TODO: Try avoid this cast?</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Check KSP setup for KMP modules</ID>
