@@ -18,8 +18,10 @@
 - fix R8 external run for Ubuntu and macOS (non-Windows systems).
 
 ### Changed
-- bump gradle-intellij-plugin to 1.17.1.
+- bump gradle-intellij-plugin to 1.17.2.
 - bump dependency-guard to 0.5.0.
+- bump dependency-analysis to 1.30.0.
+- bump R8 to 8.2.47.
 - use R8 as a default shrinker (safer and more stable).
 
 
