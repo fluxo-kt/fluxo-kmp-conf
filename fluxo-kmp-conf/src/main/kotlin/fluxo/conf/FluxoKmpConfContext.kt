@@ -200,9 +200,7 @@ internal abstract class FluxoKmpConfContext
         // Disable all tests if:
         //  - `DISABLE_TESTS` is enabled;
         //  - `check` or `test` tasks are excluded from the build;
-        //  - the project is in a composite build.
-        testsDisabled = isInCompositeBuild ||
-            project.disableTests().get() ||
+        testsDisabled = project.disableTests().get() ||
             start.excludedTaskNames.let { CHECK_TASK_NAME in it || TEST_TASK_NAME in it }
 
         if (testsDisabled) {

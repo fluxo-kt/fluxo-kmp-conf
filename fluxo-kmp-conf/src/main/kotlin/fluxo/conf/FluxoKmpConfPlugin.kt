@@ -78,7 +78,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         ctx.prepareBuildScanPlugin()
         ctx.ensureUnreachableTasksDisabled()
 
-        if (ctx.testsDisabled || ctx.isInCompositeBuild) {
+        if (ctx.testsDisabled) {
             return
         }
 

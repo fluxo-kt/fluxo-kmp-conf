@@ -146,7 +146,6 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     // TODO: Add env flag for dynamic switch-on when needed
     //  (and enable by a task name if called directly)
     val latestCompilation = canUseLatestSettings &&
-        !context.isInCompositeBuild &&
         !context.testsDisabled &&
         experimentalLatestCompilation == true
 
