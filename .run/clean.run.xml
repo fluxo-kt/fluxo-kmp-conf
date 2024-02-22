@@ -1,16 +1,21 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="dependencyUpdates" type="GradleRunConfiguration" factoryName="Gradle" folderName="deps">
+  <configuration default="false" name="clean" type="GradleRunConfiguration" factoryName="Gradle" folderName="build">
     <ExternalSystemSettings>
+      <option name="env">
+        <map>
+          <entry key="CI" value="true" />
+        </map>
+      </option>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="--refresh-dependencies --no-configuration-cache" />
+      <option name="scriptParameters" value="--stacktrace --continue --info" />
       <option name="taskDescriptions">
         <list />
       </option>
       <option name="taskNames">
         <list>
-          <option value="dependencyUpdates" />
+          <option value="clean" />
         </list>
       </option>
       <option name="vmOptions" />
