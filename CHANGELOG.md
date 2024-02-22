@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.7.0-alpha2] - 2024-02-22
+
 ### Added
 - log memory info on Fluxo context start.
 - log R8 compatibility mode (full vs. compat).
