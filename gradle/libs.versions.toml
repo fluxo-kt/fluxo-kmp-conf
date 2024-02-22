@@ -8,8 +8,8 @@
 
 [versions]
 
-version = "0.7.0-alpha2"
-fluxo-conf = "0.7.0-alpha1"
+version = "0.7.0-SNAPSHOT"
+fluxo-conf = "0.7.0-alpha2"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!

@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Changed
+- return the plugin artifact shrinking with R8 (saved 32.719%, 265.9 KB).
+
 
 ## [0.7.0-alpha2] - 2024-02-22
 

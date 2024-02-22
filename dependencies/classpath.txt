@@ -29,8 +29,8 @@ com.squareup.okio:okio-jvm:3.6.0
 com.squareup.okio:okio:3.6.0
 commons-codec:commons-codec:1.16.0
 dev.equo.ide:solstice:1.7.5
-io.github.fluxo-kt.fluxo-kmp-conf:io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin:0.7.0-alpha1
-io.github.fluxo-kt:fluxo-kmp-conf:0.7.0-alpha1
+io.github.fluxo-kt.fluxo-kmp-conf:io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin:0.7.0-alpha2
+io.github.fluxo-kt:fluxo-kmp-conf:0.7.0-alpha2
 io.github.java-diff-utils:java-diff-utils:4.12
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.5
 jakarta.activation:jakarta.activation-api:1.2.1
