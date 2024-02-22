@@ -14,11 +14,12 @@
 - don't mark the project as in IDE sync mode when no tasks where called and no composite build detected.
 - improve and document composite builds detection.
 - properly quote and escape CLI arguments for external tool runner.
-- fix R8 external run for Ubuntu and MacOS (non-Windows systems).
+- fix R8 external run for Ubuntu and macOS (non-Windows systems).
 
 ### Changed
 - bump gradle-intellij-plugin to 1.17.1.
 - bump dependency-guard to 0.5.0.
+- use R8 as a default shrinker (safer and more stable).
 
 
 ## [0.7.0-alpha1] - 2024-02-02

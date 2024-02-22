@@ -124,7 +124,7 @@ internal abstract class FluxoShrinkerConfigImpl @Inject constructor(
     override val configurationFiles: ConfigurableFileCollection = objects.fileCollection()
     override val obfuscate: Property<Boolean> = objects.notNullProperty(false)
     override val optimize: Property<Boolean> = objects.notNullProperty(true)
-    override val useR8: Property<Boolean> = objects.notNullProperty(false)
+    override val useR8: Property<Boolean> = objects.notNullProperty(true)
     override val r8FullMode: Property<Boolean> = objects.notNullProperty(false)
     override val useBothShrinkers: Property<Boolean> = objects.notNullProperty(false)
     override val forceUnbundledShrinker: Property<Boolean> = objects.notNullProperty(false)
