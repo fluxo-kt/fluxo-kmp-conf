@@ -4,10 +4,12 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.KMP_TARGETS_ALL_PRO
 import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.KMP_TARGETS_PROP
 import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.SPLIT_TARGETS_PROP
 import fluxo.conf.feat.LOAD_KMM_CODE_COMPLETION_FLAG
+import fluxo.conf.impl.e
 import fluxo.conf.impl.envOrPropFlag
 import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.conf.impl.envOrPropValue
 import fluxo.conf.impl.envOrPropValueLenient
+import fluxo.conf.impl.i
 import fluxo.conf.impl.memoizeSafe
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
@@ -74,10 +76,12 @@ public fun Project?.buildNumberSuffix(default: String = "", delimiter: String = 
 
 @Incubating
 @Suppress("ComplexCondition", "MagicNumber")
-public fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
+internal fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
     // TODO: Optimize, make lazy accessible via root project
     //  see com.diffplug.gradle.spotless.GitRatchetGradle
     //  com.diffplug.gradle.spotless.SpotlessTask.getRatchet
+
+    // FIXME: Called 3 times with same error when no git installed or global config error.
 
     return provider {
         var result = envOrPropValue("SCM_TAG")
@@ -103,21 +107,29 @@ public fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
 
 @Suppress("UnstableApiUsage")
 private fun Project.runCommand(command: String): String? {
-    // https://docs.gradle.org/7.5.1/userguide/configuration_cache.html#config_cache:requirements:external_processes
+    // https://docs.gradle.org/8.6/userguide/configuration_cache.html#config_cache:requirements:external_processes
     return try {
         val exec = providers.exec {
-            commandLine(command.split("\\s".toRegex()))
+            isIgnoreExitValue = true
+            commandLine(command.split(COMMAND_LINE_DELIMITER))
+            logger.i("Executing command: `{}`", command)
         }
+        val result = exec.result.get()
+        val exitCodeIsNormal = result.exitValue == 0
         val error = exec.standardError.asText.get()
         when {
-            error.isEmpty() -> exec.standardOutput.asText.get().trim().ifEmpty { null }
+            error.isEmpty() && exitCodeIsNormal -> exec.standardOutput.asText.get()
+                .trim().ifEmpty { null }
+
             else -> {
-                logger.error("Error running command `$command`: $error")
+                logger.e("Error running command `{}`: {}", command, error)
                 null
             }
         }
     } catch (e: Throwable) {
-        logger.error("Error running command `$command`: $e", e)
+        logger.e("Error running command `$command`: $e", e)
         null
     }
 }
+
+private val COMMAND_LINE_DELIMITER = "\\s".toRegex()

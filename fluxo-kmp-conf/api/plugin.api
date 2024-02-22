@@ -82,8 +82,6 @@ public final class PropsAndEnvKt {
 	public static final fun isMaxDebugEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isR8Disabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isRelease (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun scmTag (Lorg/gradle/api/Project;Z)Lorg/gradle/api/provider/Provider;
-	public static synthetic fun scmTag$default (Lorg/gradle/api/Project;ZILjava/lang/Object;)Lorg/gradle/api/provider/Provider;
 	public static final fun signingKey (Lorg/gradle/api/Project;)Ljava/lang/String;
 	public static final fun useKotlinDebug (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 }

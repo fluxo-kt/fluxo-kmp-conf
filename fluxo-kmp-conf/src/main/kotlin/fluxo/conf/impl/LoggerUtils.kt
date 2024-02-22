@@ -79,4 +79,6 @@ internal fun Logger.e(message: String, e: Throwable?) = error("$E$message", e)
 
 internal fun Logger.e(message: String, arg1: Any?) = error("$E$message", arg1)
 
+internal fun Logger.e(message: String, arg1: Any?, arg2: Any?) = error("$E$message", arg1, arg2)
+
 internal fun Logger.e(message: String, vararg args: Any?) = error("$E$message", *args)

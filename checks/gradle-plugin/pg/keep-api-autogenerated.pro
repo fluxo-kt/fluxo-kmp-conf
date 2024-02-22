@@ -4,7 +4,7 @@
 # - api\check-gradle-plugin.api
 # DO NOT EDIT MANUALLY!
 
--keep,allowoptimization public final class NewPlugin {
+-keep,includedescriptorclasses public final class NewPlugin {
     public <init>();
     public synthetic void apply(java.lang.Object);
     public void apply(org.gradle.api.Project);

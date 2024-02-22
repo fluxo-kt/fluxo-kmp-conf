@@ -150,6 +150,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         var scmUrl: String? = null
         var publicationUrl: String? = null
 
+        // FIXME: Should be converted to a lazy provider!
         val scmTag = when {
             !isSnapshot -> "v$version"
             else -> project.scmTag().orNull ?: defaultGitBranchName

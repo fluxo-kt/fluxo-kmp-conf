@@ -33,12 +33,11 @@ internal fun MutableCollection<String>.javaOption(value: String) =
 
 private fun <T : Any?> defaultToString(base: File? = null): (T) -> String =
     {
-        val asString = when (it) {
+        when (it) {
             is FileSystemLocation -> it.asFile.normalizedPath(base)
             is File -> it.normalizedPath(base)
             else -> it.toString()
         }
-        cliEscaped(asString)
     }
 
 /**
@@ -57,7 +56,7 @@ private fun cliEscaped(value: String): String {
 private fun String.requiresQuotes(): Boolean {
     return isEmpty() || any {
         it.isWhitespace() || when (it) {
-            '*', '?', '[', ']', '(', ')', '$', '|', ';', '&', '"', '\'' -> true
+            '*', '?', '[', ']', '(', ')', '$', '|', '\\', ';', '&', '"', '\'' -> true
             else -> false
         }
     }
