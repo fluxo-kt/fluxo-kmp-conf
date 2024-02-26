@@ -218,6 +218,7 @@ pluginManagement {
           * Structure to define the owners of a project, then contributing this back to other plugins.
       * Linter tool for identifying and reporting on patterns of misuse or deprecations in Gradle scripts.
         * https://github.com/nebula-plugins/gradle-lint-plugin
+        * https://docs.gradle.org/current/userguide/authoring_maintainable_build_scripts.html
       * Gradle plugin for providing reusable dependency resolution rules.
         * https://github.com/nebula-plugins/gradle-resolution-rules-plugin
       * Gradle capabilities and transforms to ease the migration from Java EE to Jakarta EE.

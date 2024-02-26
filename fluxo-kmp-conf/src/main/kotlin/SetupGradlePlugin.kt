@@ -66,3 +66,14 @@ public fun Project.setupGradlePlugin(
         }
     }
 }
+
+// FIXME: detekt plugins https://detekt.dev/marketplace/
+// FIXME: Disambiguate existing javadoc and sources tasks
+// FIXME: Check BuildConfig tasks (not called on IDE sync!)
+// FIXME: Spotless setup
+// FIXME: git hooks
+// FIXME: check all features
+// FIXME: https://github.com/topjohnwu/libsu/blob/01570d643af91b0e271de018465a219eed8db322/service/build.gradle.kts#L21
+//
+// val context = (this as FluxoConfigurationExtensionImpl).context
+// setupGradlePublishPlugin(context)
