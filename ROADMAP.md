@@ -125,6 +125,11 @@
         * UTF 8 for Java compilation and Javadoc
         * Reproducible artifacts
         * Granular test reports per test case (method instead of class)
+    * iurysza
+      * A Gradle Plugin for visualizing your project's structure, powered by mermaidjs.
+        * https://github.com/iurysza/module-graph
+      * A project setup to bootstrap kotlin library development.
+        * https://github.com/iurysza/kotlin-scaffold
 * https://github.com/BenWoodworth/Parameterize
 * https://github.com/kotlin-hands-on/kotlin-swift-interopedia
 * https://github.com/drewhamilton/poko/
@@ -209,5 +214,21 @@
 * Validate & diff resulting artifacts
   * https://github.com/JakeWharton/diffuse
 * Gradle task to report native libs from dependencies (dependency + names of the native binaries)
-
+* Gradle plugin for generating Android / KMP string resources from Google Spreadsheets.
+  * https://github.com/futuredapp/sheet-happens
+* 🐘 A template to let you started with custom Gradle Plugins + Kotlin in a few seconds
+  * https://github.com/cortinico/kotlin-gradle-plugin-template
+* Jsmints is a suite of libraries and gradle plugins for working with Kotlin JS, with a focus on testing and version updating.
+  * https://github.com/robertfmurdock/jsmints
+* A Palantir set of Gradle plugins that configure default code quality tools for developers.
+  * https://github.com/palantir/gradle-baseline
+* Gradle plugin for detecting use of legacy APIs which modern Java versions supersede.
+  * https://github.com/andygoossens/gradle-modernizer-plugin
+* Check ABI compatibility at build time
+  * https://github.com/open-toast/expediter
+* Kotlin/JS Fast Configuration
+  * https://github.com/turansky/kfc-plugins
+  * https://github.com/turansky/seskar (Kotlin/JS sugar)
+* KtLint-cli setup
+  * https://github.com/pinterest/ktlint/blob/cb17bbf/ktlint-cli/build.gradle.kts#L44
 </details>

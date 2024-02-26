@@ -9,7 +9,6 @@
 [versions]
 
 version = "0.7.0-SNAPSHOT"
-fluxo-conf = "0.7.0-alpha2"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
@@ -214,7 +213,7 @@ pinned = ["okhttp", "okio", "okio-jvm", "guava", "json"]
 
 [plugins]
 
-fluxo-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version.ref = "fluxo-conf" }
+fluxo-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version.ref = "version" }
 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

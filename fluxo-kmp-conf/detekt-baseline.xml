@@ -29,6 +29,7 @@
     <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$// FIXME: Should be converted to a lazy provider!</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$// TODO: Add validation for value. Shouldn't be url, but `namespace/name`</ID>
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.</ID>
+    <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: GC stats</ID>
     <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
     <ID>ForbiddenComment:FluxoPublicationConfig.kt$// TODO: Make an immutable resulting class</ID>
     <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt$// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
@@ -64,13 +65,14 @@
     <ID>ForbiddenComment:SetupDetekt.kt$DetectedTaskPlatform$// TODO: Detect common/metadata tasks?</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Check BuildConfig tasks (not called on IDE sync!)</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Spotless stup</ID>
+    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Spotless setup</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: check all features</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: detekt plugins https://detekt.dev/marketplace/</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: git hooks</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: https://github.com/topjohnwu/libsu/blob/01570d643af91b0e271de018465a219eed8db322/service/build.gradle.kts#L21</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// TODO: Retry create pluginId from configuration if null?</ID>
     <ID>ForbiddenComment:SetupGradlePlugin.kt$// TODO: Try avoid this cast?</ID>
+    <ID>ForbiddenComment:SetupKotlin.kt$// FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Check KSP setup for KMP modules</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Detect if KMP is already applied and what targets are already configured.</ID>
     <ID>ForbiddenComment:SetupKotlinCompatibility.kt$// TODO: Detekt doesn't support 21 yet, enable when it does</ID>

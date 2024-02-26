@@ -37,7 +37,7 @@ public fun Project.setupGradlePlugin(
 
     pluginName ?: return@configuration
 
-    // Configure Gradle plugin eagerly!
+    // `gradlePlugin`: Configure Gradle plugin eagerly!
     // Otherwise, it's not available for composite builds.
     gradlePluginExt.plugins.maybeCreate(pluginName).apply {
         // TODO: Retry create pluginId from configuration if null?

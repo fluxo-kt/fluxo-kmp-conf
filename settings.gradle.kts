@@ -1,7 +1,21 @@
+@file:Suppress("StructuralWrap")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
     }
+
+    // region Self-apply the plugin to itself immediately with included build.
+    // `buildSrc` is not used to avoid caching and configuration issues.
+    // References:
+    // - https://github.com/hakanai/self-applying-gradle-plugin
+    // - https://gist.github.com/johnrengelman/9a20697b2246a9bfaca2
+    // - https://discuss.gradle.org/t/in-a-gradle-plugin-project-how-can-i-apply-the-plugin-itself-in-the-build/5700
+    // - https://docs.gradle.org/8.6/userguide/sharing_build_logic_between_subprojects.html#sec:using_buildsrc
+    includeBuild("self")
+    // endregion
 }
 
 // TODO: Limit the repositories in packages (check all declarations in project!)

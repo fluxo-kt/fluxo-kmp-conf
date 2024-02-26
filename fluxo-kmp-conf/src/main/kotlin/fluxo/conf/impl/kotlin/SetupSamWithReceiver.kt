@@ -22,6 +22,8 @@ internal fun Project.setupSamWithReceiver(ctx: FluxoKmpConfContext) {
         return
     }
 
+    // Gradle kotlin-dsl like setup. See:
+    // https://github.com/gradle/gradle/blob/4817230/build-logic/kotlin-dsl/src/main/kotlin/gradlebuild.kotlin-dsl-sam-with-receiver.gradle.kts#L22
     try {
         val swre = extensions.getByName(KT_SAM_RECEIVER_EXTENSION)
         val hasImplicitReceiver = requireNotNull(HasImplicitReceiver::class.qualifiedName)

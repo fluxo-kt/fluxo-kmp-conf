@@ -176,7 +176,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         } catch (e: Throwable) {
             // TODO: Support version catalog declarations if available
             val msg = """
-                Kotlin plugin not found in classpath.
+                Kotlin plugin not found in classpath (${e.javaClass.simpleName}).
                 Please apply any Kotlin plugin before applying the "$PLUGIN_ID" plugin.
                 Example:
                 ```

@@ -124,6 +124,8 @@ internal abstract class FluxoKmpConfContext
                 "$CPUs CPUs, " +
                 "${readableByteSize(XMX)} XMX"
 
+            // TODO: GC stats
+            //  https://github.com/gradle/gradle/blob/3eda2dd/platforms/core-runtime/launcher/src/main/java/org/gradle/launcher/daemon/server/health/DaemonHealthStats.java#L87
             val ram = TOTAL_OS_MEMORY
             if (ram > 0) {
                 m += " with ${readableByteSize(ram)} RAM"

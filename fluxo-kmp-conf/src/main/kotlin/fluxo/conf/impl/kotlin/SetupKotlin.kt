@@ -299,6 +299,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     }
 }
 
+// FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions
 @Suppress("CyclomaticComplexMethod")
 private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,
