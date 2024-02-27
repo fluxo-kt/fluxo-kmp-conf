@@ -38,6 +38,7 @@
 - bump dependency-analysis to 1.30.0.
 - bump R8 to 8.2.47.
 - use R8 as a default shrinker (safer and more stable).
+- make default publication configuration lazy (use Gradle Provider in `setupGradleProjectPublication`).
 
 
 ## [0.7.0-alpha1] - 2024-02-02

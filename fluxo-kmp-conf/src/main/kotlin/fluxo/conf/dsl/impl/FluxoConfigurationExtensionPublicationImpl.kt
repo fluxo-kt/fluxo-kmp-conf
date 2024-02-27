@@ -142,59 +142,64 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
 
     override fun publicationConfig(configure: FluxoPublicationConfig.() -> Unit) {
         val project = project
-        var version = version
-        val group = group
-        val description = description
-        val isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
-        var url: String? = null
-        var scmUrl: String? = null
-        var publicationUrl: String? = null
+        publicationConfigProp.set(
+            project.provider {
+                var version = version
+                val group = group
+                val description = description
+                val isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
+                var url: String? = null
+                var scmUrl: String? = null
+                var publicationUrl: String? = null
 
-        val scmTag = when {
-            !isSnapshot -> "v$version"
-            else -> ctx.scmTag ?: defaultGitBranchName
-        }
+                val scmTag = when {
+                    !isSnapshot -> "v$version"
+                    else -> ctx.scmTag ?: defaultGitBranchName
+                }
 
-        // TODO: Add validation for githubProject value. Shouldn't be url, but `namespace/name`
-        githubProject?.let { githubProject ->
-            url = "https://github.com/$githubProject"
-            publicationUrl = "$url/tree/$scmTag"
-            scmUrl = "scm:git:git://github.com/$githubProject.git"
-        }
+                // TODO: Add validation for githubProject value.
+                //  Shouldn't be url, but `namespace/name`
+                githubProject?.let { githubProject ->
+                    url = "https://github.com/$githubProject"
+                    publicationUrl = "$url/tree/$scmTag"
+                    scmUrl = "scm:git:git://github.com/$githubProject.git"
+                }
 
-        // Make snapshot builds safe and reproducible for usage
-        if (reproducibleArtifacts != false && isSnapshot) {
-            version = version.substringBeforeLast("SNAPSHOT")
+                // Make snapshot builds safe and reproducible for usage
+                if (reproducibleArtifacts != false && isSnapshot) {
+                    version = version.substringBeforeLast("SNAPSHOT")
 
-            // commit short hash is more convenient for usage as date-n-build
-            val commitSha = ctx.scmTag
-            if (!commitSha.isNullOrEmpty()) {
-                // Version structure: `major.minor-COMMIT_SHA-SNAPSHOT`.
-                version = version.trimEnd { !it.isDigit() }
-                val idx = version.lastIndexOf('.')
-                if (idx > 0) version = version.substring(0, idx)
-                version += "-$commitSha"
-            } else {
-                // Version structure: `major.minor.patch-yyMMddHHmmss-buildNumber-SNAPSHOT`.
-                version += SimpleDateFormat("yyMMddHHmmss", Locale.US).format(Date())
-                version += project.buildNumberSuffix("-local", "-")
-            }
-            version += "-SNAPSHOT"
-        }
+                    // commit short hash is more convenient for usage as date-n-build
+                    val commitSha = ctx.scmTag
+                    if (!commitSha.isNullOrEmpty()) {
+                        // Version structure: `major.minor-COMMIT_SHA-SNAPSHOT`.
+                        version = version.trimEnd { !it.isDigit() }
+                        val idx = version.lastIndexOf('.')
+                        if (idx > 0) version = version.substring(0, idx)
+                        version += "-$commitSha"
+                    } else {
+                        // Version structure: `major.minor.patch-yyMMddHHmmss-buildNumber-SNAPSHOT`.
+                        version += SimpleDateFormat("yyMMddHHmmss", Locale.US).format(Date())
+                        version += project.buildNumberSuffix("-local", "-")
+                    }
+                    version += "-SNAPSHOT"
+                }
 
-        publicationConfig = FluxoPublicationConfig(
-            group = group,
-            version = version,
-            projectName = projectNamePrep(),
-            projectDescription = description.orEmpty(),
-            projectUrl = url,
-            publicationUrl = publicationUrl,
-            scmUrl = scmUrl,
-            scmTag = scmTag,
-            signingKey = project.signingKey(),
-            signingPassword = project.envOrPropValue("SIGNING_PASSWORD"),
-            repositoryUserName = project.envOrPropValue("OSSRH_USER"),
-            repositoryPassword = project.envOrPropValue("OSSRH_PASSWORD"),
-        ).apply(configure)
+                FluxoPublicationConfig(
+                    group = group,
+                    version = version,
+                    projectName = projectNamePrep(),
+                    projectDescription = description.orEmpty(),
+                    projectUrl = url,
+                    publicationUrl = publicationUrl,
+                    scmUrl = scmUrl,
+                    scmTag = scmTag,
+                    signingKey = project.signingKey(),
+                    signingPassword = project.envOrPropValue("SIGNING_PASSWORD"),
+                    repositoryUserName = project.envOrPropValue("OSSRH_USER"),
+                    repositoryPassword = project.envOrPropValue("OSSRH_PASSWORD"),
+                ).apply(configure)
+            },
+        )
     }
 }

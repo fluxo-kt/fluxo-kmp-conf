@@ -89,6 +89,7 @@ private val CALL_TASK_PREFIXES = arrayOf(
 internal fun setupGradleProjectPublication(
     conf: FluxoConfigurationExtensionImpl,
 ) {
+    // TODO: Avoid publication setup when possible
     val config = conf.publicationConfig
     if (conf.enablePublication == false || config == null) {
         return

@@ -26,7 +26,7 @@
     <ID>ForbiddenComment:DependencyUtils.kt$// TODO: Support rich VersionConstraint</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$// TODO: Avoid casting</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionKotlin.kt$FluxoConfigurationExtensionKotlin$// FIXME: koverReport settings</ID>
-    <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$// TODO: Add validation for githubProject value. Shouldn't be url, but `namespace/name`</ID>
+    <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$// TODO: Add validation for githubProject value.</ID>
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.</ID>
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: GC stats</ID>
     <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
@@ -87,6 +87,7 @@
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: provide sources for KMP publications</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple developers</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple licenses</ID>
+    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Avoid publication setup when possible</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Decorate the build logs with maven coordinates of published artifacts</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Distinguish between common and platform-specific publications</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Make configurable</ID>
