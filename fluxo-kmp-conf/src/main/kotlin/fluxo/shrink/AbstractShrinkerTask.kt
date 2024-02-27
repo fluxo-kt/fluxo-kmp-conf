@@ -10,6 +10,7 @@
 package fluxo.shrink
 
 import fluxo.conf.impl.e
+import fluxo.conf.impl.i
 import fluxo.conf.impl.jvmToolFile
 import fluxo.conf.impl.l
 import fluxo.conf.impl.lc
@@ -26,9 +27,11 @@ import fluxo.gradle.nullableProperty
 import fluxo.shrink.Shrinker.ProGuard
 import fluxo.shrink.Shrinker.R8
 import fluxo.util.readableByteSize
+import isRelease
 import java.io.File
 import java.io.Writer
 import java.lang.System.currentTimeMillis
+import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
@@ -173,6 +176,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:LocalState
     protected val reportsDir: Provider<Directory>
 
+    @get:Input
+    @get:Optional
+    @get:JvmName("getIsRelease")
+    protected val isRelease: Property<Boolean?> = objects.nullableProperty()
+
     init {
         group = LifecycleBasePlugin.BUILD_GROUP
         description = "Shrink and optimize final JVM artifact"
@@ -200,6 +208,8 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
         val projectDirectory = layout.projectDirectory
         defaultRulesFile.set(projectDirectory.file("pg/rules.pro"))
+
+        isRelease.set(project.isRelease())
     }
 
     @TaskAction
@@ -330,14 +340,19 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
         if (initialSize < finalSize) {
             val addedBytes = readableByteSize(finalSize - initialSize)
-            logger.e(
-                "{} failed to save size: {} -> {} (INCREASED {}) in {} s",
+            val message = "%s failed to save size: %s -> %s (INCREASED %s) in %s s".format(
                 shrinker.get(),
                 initial,
                 final,
                 addedBytes,
                 elapsedSec,
             )
+            if (isRelease.orNull == true) {
+                throw GradleException(message)
+            }
+            // Info ("i: ") messages are highlighted in the IDEA console.
+            logger.i(message)
+            logger.e(message)
             return
         }
 

@@ -14,6 +14,7 @@
 
 ### Fixed
 - prevent double escaping of cli arguments.
+- fail build when shrinker fails to save size for release artifact.
 
 
 ## [0.7.0-alpha2] - 2024-02-22
