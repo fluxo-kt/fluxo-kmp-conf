@@ -1,5 +1,6 @@
 package fluxo.conf
 
+import fluxo.artifact.proc.setupArtifactsProcessing
 import fluxo.conf.data.BuildConstants.PLUGIN_ID
 import fluxo.conf.deps.FluxoCache
 import fluxo.conf.dsl.FluxoConfigurationExtension
@@ -20,7 +21,6 @@ import fluxo.conf.feat.prepareKotlinSetupDiagnosticTasks
 import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
 import fluxo.conf.feat.prepareTaskInfoPlugin
 import fluxo.conf.feat.prepareTaskTreePlugin
-import fluxo.conf.feat.setupArtifactsShrinking
 import fluxo.conf.feat.setupBinaryCompatibilityValidator
 import fluxo.conf.feat.setupGradleProjectPublication
 import fluxo.conf.feat.setupSpotless
@@ -121,10 +121,10 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             setupBinaryCompatibilityValidator(conf)
         }
 
-        // Artifacts minification
+        // Artifacts processing: minification/shrinking, shadowing, etc.
         val project = conf.project
         if (!project.isR8Disabled().get()) {
-            setupArtifactsShrinking(conf)
+            setupArtifactsProcessing(conf)
         }
 
         // Gradle project atifacts publication

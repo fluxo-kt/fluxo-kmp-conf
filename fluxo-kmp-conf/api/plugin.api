@@ -128,6 +128,42 @@ public final class SetupMultiplatformKt {
 	public static synthetic fun watchosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 }
 
+public abstract interface class fluxo/artifact/dsl/ArtifactProcessingChain {
+	public fun shadow ()V
+	public abstract fun shrinkWithProGuard (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun shrinkWithProGuard$default (Lfluxo/artifact/dsl/ArtifactProcessingChain;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun shrinkWithR8 (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun shrinkWithR8$default (Lfluxo/artifact/dsl/ArtifactProcessingChain;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class fluxo/artifact/dsl/ProcessorCallType : java/lang/Enum {
+	public static final field BUNDLED Lfluxo/artifact/dsl/ProcessorCallType;
+	public static final field EXTERNAL Lfluxo/artifact/dsl/ProcessorCallType;
+	public static final field IN_MEMORY Lfluxo/artifact/dsl/ProcessorCallType;
+	public static fun valueOf (Ljava/lang/String;)Lfluxo/artifact/dsl/ProcessorCallType;
+	public static fun values ()[Lfluxo/artifact/dsl/ProcessorCallType;
+}
+
+public abstract interface class fluxo/artifact/dsl/ProcessorConfig : fluxo/artifact/dsl/ArtifactProcessingChain {
+	public fun forceBundled ()V
+	public fun forceExternal ()V
+	public fun forceUnbundled ()V
+	public abstract fun getCallFallbackOrder ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getMaxHeapSize ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNext ()Lorg/gradle/api/provider/Provider;
+}
+
+public abstract interface class fluxo/artifact/dsl/ProcessorConfigR8 : fluxo/artifact/dsl/ProcessorConfigShrinker {
+	public abstract fun getFullMode ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract interface class fluxo/artifact/dsl/ProcessorConfigShrinker : fluxo/artifact/dsl/ProcessorConfig {
+	public abstract fun getConfigurationFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getObfuscate ()Lorg/gradle/api/provider/Property;
+	public abstract fun getObfuscateIncrementally ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOptimize ()Lorg/gradle/api/provider/Property;
+}
+
 public final class fluxo/conf/FluxoKmpConfPlugin : org/gradle/api/Plugin {
 	public fun <init> ()V
 	public synthetic fun apply (Ljava/lang/Object;)V
@@ -303,41 +339,46 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun setUseIndyLambdas (Ljava/lang/Boolean;)V
 }
 
-public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionPublication {
+public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionPublication : fluxo/artifact/dsl/ArtifactProcessingChain {
 	public static final field Companion Lfluxo/conf/dsl/FluxoConfigurationExtensionPublication$Companion;
 	public static final field DEFAULT_BRANCH_NAME Ljava/lang/String;
+	public abstract fun getAutoGenerateKeepModifier ()Ljava/lang/String;
+	public abstract fun getAutoGenerateKeepRulesFromApis ()Z
 	public abstract fun getDefaultGitBranchName ()Ljava/lang/String;
 	public abstract fun getDescription ()Ljava/lang/String;
 	public abstract fun getEnablePublication ()Ljava/lang/Boolean;
 	public abstract fun getGithubProject ()Ljava/lang/String;
 	public abstract fun getGroup ()Ljava/lang/String;
-	public fun getMinificationConfig ()Lfluxo/shrink/FluxoShrinkerConfig;
-	public fun getMinifyArtifacts ()Z
+	public abstract fun getProcessArtifacts ()Z
 	public abstract fun getProjectName ()Ljava/lang/String;
 	public abstract fun getPublicationConfig ()Lfluxo/conf/dsl/FluxoPublicationConfig;
+	public abstract fun getReplaceOutgoingJar ()Z
 	public abstract fun getReproducibleArtifacts ()Ljava/lang/Boolean;
-	public abstract fun getShrinkArtifacts ()Z
-	public abstract fun getShrinkingConfig ()Lfluxo/shrink/FluxoShrinkerConfig;
 	public abstract fun getVersion ()Ljava/lang/String;
-	public fun minificationConfig (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun publicationConfig (Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun publicationConfig$default (Lfluxo/conf/dsl/FluxoConfigurationExtensionPublication;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public abstract fun setAutoGenerateKeepModifier (Ljava/lang/String;)V
+	public abstract fun setAutoGenerateKeepRulesFromApis (Z)V
 	public abstract fun setDefaultGitBranchName (Ljava/lang/String;)V
 	public abstract fun setDescription (Ljava/lang/String;)V
 	public abstract fun setEnablePublication (Ljava/lang/Boolean;)V
 	public abstract fun setGithubProject (Ljava/lang/String;)V
 	public abstract fun setGroup (Ljava/lang/String;)V
-	public fun setMinifyArtifacts (Z)V
+	public abstract fun setProcessArtifacts (Z)V
 	public abstract fun setProjectName (Ljava/lang/String;)V
 	public abstract fun setPublicationConfig (Lfluxo/conf/dsl/FluxoPublicationConfig;)V
+	public abstract fun setReplaceOutgoingJar (Z)V
 	public abstract fun setReproducibleArtifacts (Ljava/lang/Boolean;)V
-	public abstract fun setShrinkArtifacts (Z)V
 	public abstract fun setVersion (Ljava/lang/String;)V
-	public abstract fun shrinkingConfig (Lkotlin/jvm/functions/Function1;)V
+	public fun shrink (Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun shrink$default (Lfluxo/conf/dsl/FluxoConfigurationExtensionPublication;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
 public final class fluxo/conf/dsl/FluxoConfigurationExtensionPublication$Companion {
 	public static final field DEFAULT_BRANCH_NAME Ljava/lang/String;
+}
+
+public abstract interface annotation class fluxo/conf/dsl/FluxoKmpConfDsl : java/lang/annotation/Annotation {
 }
 
 public final class fluxo/conf/dsl/FluxoPublicationConfig {
@@ -596,20 +637,5 @@ public abstract interface class fluxo/conf/kmp/SourceSetBundle {
 	public abstract fun getMain ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 	public fun getMoreTests ()[Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 	public abstract fun getTest ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-}
-
-public abstract interface class fluxo/shrink/FluxoShrinkerConfig {
-	public abstract fun getAutoGenerateKeepModifiers ()Lorg/gradle/api/provider/Property;
-	public abstract fun getAutoGenerateKeepRulesFromApis ()Lorg/gradle/api/provider/Property;
-	public abstract fun getConfigurationFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
-	public abstract fun getForceExternalShrinkerRun ()Lorg/gradle/api/provider/Property;
-	public abstract fun getForceUnbundledShrinker ()Lorg/gradle/api/provider/Property;
-	public abstract fun getMaxHeapSize ()Lorg/gradle/api/provider/Property;
-	public abstract fun getObfuscate ()Lorg/gradle/api/provider/Property;
-	public abstract fun getOptimize ()Lorg/gradle/api/provider/Property;
-	public abstract fun getR8FullMode ()Lorg/gradle/api/provider/Property;
-	public abstract fun getReplaceOutgoingJar ()Lorg/gradle/api/provider/Property;
-	public abstract fun getUseBothShrinkers ()Lorg/gradle/api/provider/Property;
-	public abstract fun getUseR8 ()Lorg/gradle/api/provider/Property;
 }
 

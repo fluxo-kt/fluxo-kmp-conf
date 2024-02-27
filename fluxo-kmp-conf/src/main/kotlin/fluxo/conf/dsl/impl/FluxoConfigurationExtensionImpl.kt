@@ -23,6 +23,7 @@ import java.lang.System.currentTimeMillis
 import javax.inject.Inject
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -51,6 +52,9 @@ internal abstract class FluxoConfigurationExtensionImpl
 
     @get:Inject
     abstract override val project: Project
+
+    @get:Inject
+    abstract override val objects: ObjectFactory
 
     override val parent: FluxoConfigurationExtensionImpl?
         get() {

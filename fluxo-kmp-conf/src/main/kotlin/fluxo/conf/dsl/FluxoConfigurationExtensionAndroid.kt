@@ -2,6 +2,7 @@ package fluxo.conf.dsl
 
 import com.android.build.api.variant.VariantBuilder
 
+@FluxoKmpConfDsl
 public interface FluxoConfigurationExtensionAndroid {
 
     /**

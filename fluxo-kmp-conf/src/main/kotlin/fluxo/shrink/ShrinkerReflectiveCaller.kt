@@ -1,5 +1,9 @@
 package fluxo.shrink
 
+import fluxo.artifact.dsl.ProcessorCallType
+import fluxo.artifact.proc.JvmShrinker
+import fluxo.artifact.proc.JvmShrinker.ProGuard
+import fluxo.artifact.proc.JvmShrinker.R8
 import fluxo.conf.deps.tryGetClassForName
 import fluxo.conf.impl.TOTAL_OS_MEMORY
 import fluxo.conf.impl.XMX
@@ -10,6 +14,7 @@ import fluxo.conf.impl.w
 import fluxo.util.readableByteSize
 import java.net.URLClassLoader
 import java.util.Properties
+import org.gradle.api.GradleException
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 
@@ -17,10 +22,9 @@ import org.gradle.api.logging.Logger
  * Abstraction for the [shrinker] in-memory reflective caller.
  */
 internal class ShrinkerReflectiveCaller(
-    private val shrinker: Shrinker,
+    private val shrinker: JvmShrinker,
     private val logger: Logger,
     private val toolJars: FileCollection,
-    private val forceUnbundledShrinker: Boolean,
     private val getShrinkerArgs: () -> List<String>,
 ) {
     private companion object {
@@ -37,12 +41,14 @@ internal class ShrinkerReflectiveCaller(
      * @return `true` if the shrinker was run in-memory, `false` otherwise.
      */
     @Suppress("ReturnCount")
-    fun execute(): Boolean {
-        val forceUnbundled = forceUnbundledShrinker
-        logger.v("Trying to run $shrinker in-memory (forceUnbundled=$forceUnbundled)...")
+    fun execute(
+        callType: ProcessorCallType,
+        ignoreMemoryLimit: Boolean = false,
+    ): Boolean {
+        logger.v("Trying to run $shrinker in-memory ($callType)...")
 
         val xmx = XMX
-        if (xmx < MIN_XMX_FOR_IN_MEMORY) {
+        if (!ignoreMemoryLimit && xmx < MIN_XMX_FOR_IN_MEMORY) {
             if (TOTAL_OS_MEMORY > MIN_XMX_GB * 2) {
                 logger.e(
                     "Low memory (Xmx=${readableByteSize(xmx)})" +
@@ -56,22 +62,22 @@ internal class ShrinkerReflectiveCaller(
 
         try {
             val (className, args) = args()
-            val clazz = when (forceUnbundled) {
-                true -> tryLoadUnbundled(className) ?: tryLoadBundled(className)
-                else -> tryLoadBundled(className) ?: tryLoadUnbundled(className)
+            val clazz = when (callType) {
+                ProcessorCallType.BUNDLED -> tryLoadBundled(className)
+                else -> tryLoadUnbundled(className)
             }
             if (clazz != null) {
                 /** @see fluxo.shrink.ShrinkerTestBase.shrink */
                 when (shrinker) {
-                    Shrinker.R8 -> callR8(clazz, args)
-                    Shrinker.ProGuard -> callProGuard(clazz, args)
+                    R8 -> callR8(clazz, args)
+                    ProGuard -> callProGuard(clazz, args)
                 }
                 return true
             } else {
-                logger.w("$shrinker could not be loaded in-memory (class=$className)!")
+                logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")
             }
         } catch (e: Throwable) {
-            logger.e("Failed to run $shrinker $v in-memory! $e", e)
+            throw GradleException("Failed to run $callType $shrinker in-memory! $e", e)
         }
         return false
     }
@@ -151,12 +157,12 @@ internal class ShrinkerReflectiveCaller(
         var ex: Throwable? = null
         return try {
             'v' + when (shrinker) {
-                Shrinker.ProGuard -> {
+                ProGuard -> {
                     /** @see proguard.ProGuard.getVersion */
                     clazz.getDeclaredMethod("getVersion").invoke(null)
                 }
 
-                Shrinker.R8 -> {
+                R8 -> {
                     /** @see com.android.tools.r8.R8 */
                     /** @see com.android.tools.r8.Version.LABEL */
                     /** @see com.android.tools.r8.Version.getVersionString */

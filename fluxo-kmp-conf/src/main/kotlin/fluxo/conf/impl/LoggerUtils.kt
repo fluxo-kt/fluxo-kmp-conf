@@ -33,9 +33,25 @@ internal fun Logger.t(message: String, e: Throwable?) {
     }
 }
 
+internal inline fun Logger.t(message: () -> String) {
+    if (SHOW_DEBUG_LOGS || isTraceEnabled) {
+        t(message())
+    }
+}
+
+internal inline fun Logger.tb(message: StringBuilder.() -> Unit) {
+    if (SHOW_DEBUG_LOGS || isTraceEnabled) {
+        t(buildString(message))
+    }
+}
+
 internal fun Logger.v(message: String) = t(message)
 
 internal fun Logger.v(message: String, e: Throwable?) = t(message, e)
+
+internal inline fun Logger.v(message: () -> String) = t(message)
+
+internal inline fun Logger.vb(message: StringBuilder.() -> Unit) = tb(message)
 
 
 internal fun Logger.d(message: String, e: Throwable? = null) = when {

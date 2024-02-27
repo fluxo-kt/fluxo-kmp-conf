@@ -48,6 +48,7 @@ public fun Project.isMaxDebugEnabled(): Provider<Boolean> = envOrPropFlag("MAX_D
 
 internal fun Project.isFluxoVerbose(): Provider<Boolean> = envOrPropFlag("FLUXO_VERBOSE")
 
+/** @TODO: Disables whole artifact processing, not just shrinking; should be renamed. */
 public fun Project.isR8Disabled(): Provider<Boolean> = envOrPropFlag("DISABLE_R8")
 
 public fun Project?.buildNumber(): String? = envOrPropValueLenient("BUILD_NUMBER")

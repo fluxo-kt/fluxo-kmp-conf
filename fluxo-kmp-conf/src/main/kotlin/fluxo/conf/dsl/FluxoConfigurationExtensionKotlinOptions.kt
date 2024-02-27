@@ -3,6 +3,7 @@ package fluxo.conf.dsl
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import setupGradlePlugin
 
+@FluxoKmpConfDsl
 public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationExtensionCommon {
 
     /**

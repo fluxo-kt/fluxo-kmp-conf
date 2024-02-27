@@ -1,6 +1,12 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="check-main" type="GradleRunConfiguration" factoryName="Gradle" folderName="check">
     <ExternalSystemSettings>
+      <option name="env">
+        <map>
+          <entry key="CI" value="true" />
+          <entry key="RELEASE" value="true" />
+        </map>
+      </option>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/checks/main" />
       <option name="externalSystemIdString" value="GRADLE" />

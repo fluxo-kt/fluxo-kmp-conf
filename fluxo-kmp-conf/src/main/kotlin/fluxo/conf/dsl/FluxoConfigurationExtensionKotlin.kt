@@ -3,6 +3,7 @@ package fluxo.conf.dsl
 import fluxo.conf.impl.EMPTY_FUN
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
+@FluxoKmpConfDsl
 public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtensionKotlinOptions {
 
     public var onConfiguration: (KotlinProjectExtension.() -> Unit)?

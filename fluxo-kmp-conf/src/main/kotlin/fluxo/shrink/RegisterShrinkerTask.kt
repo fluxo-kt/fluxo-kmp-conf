@@ -1,10 +1,11 @@
 package fluxo.shrink
 
 import MAIN_SOURCE_SET_NAME
+import fluxo.artifact.dsl.ProcessorConfigR8
+import fluxo.artifact.proc.JvmShrinker
+import fluxo.artifact.proc.PROCESS_TASK_PREFIX
+import fluxo.artifact.proc.ProcessorSetup
 import fluxo.conf.data.BuildConstants
-import fluxo.conf.data.BuildConstants.KOTLINX_METADATA_JVM
-import fluxo.conf.data.BuildConstants.PROGUARD_CORE
-import fluxo.conf.data.BuildConstants.PROGUARD_PLUGIN
 import fluxo.conf.deps.detachedDependency
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
@@ -22,37 +23,37 @@ import fluxo.conf.impl.v
 import fluxo.conf.jvm.JvmFiles
 import fluxo.conf.jvm.JvmFilesProvider
 import fluxo.gradle.ioFile
-import fluxo.shrink.Shrinker.ProGuard
-import fluxo.shrink.Shrinker.R8
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal fun Project.registerShrinkerTask(
-    conf: FluxoConfigurationExtensionImpl,
-    parents: List<Any>? = null,
-    runAfter: List<Any>? = null,
-    forceShrinker: Shrinker? = null,
-) = tasks.register<AbstractShrinkerTask>(
-    name = getShrinkerTaskName(conf, forceShrinker),
+    setup: ProcessorSetup<JvmShrinker, ProcessorConfigR8>,
+): TaskProvider<AbstractShrinkerTask> = tasks.register<AbstractShrinkerTask>(
+    name = setup.getShrinkerTaskName(),
 ) {
     val isVerbose = SHOW_DEBUG_LOGS || logger.isInfoEnabled
     if (isVerbose) {
         verbose.set(true)
     }
 
-    parents?.let { dependsOn(it) }
-    runAfter?.let { mustRunAfter(it) }
+    setup.dependencies?.let { dependsOn(it) }
+    setup.runAfter?.let { mustRunAfter(it) }
 
-    val settings = conf.shrinkingConfig
-
-    val shrinker = shrinker(forceShrinker, settings)
+    val shrinker = setup.processor
+    val settings = setup.config
     this.shrinker.set(shrinker)
+    toolName.set(setup.getShrinkerToolName())
+    setup.chainForLog?.let { chainForLog.set(it) }
+    if (shrinker === JvmShrinker.R8) {
+        r8FulMode.set(settings.fullMode)
+    }
 
-    r8FulMode.set(settings.r8FullMode)
-
+    val conf = setup.conf
     configureShrinkerMavenCoordinates(conf, isVerbose = isVerbose, shrinker)
 
     configurationFiles.from(settings.configurationFiles)
@@ -61,19 +62,29 @@ internal fun Project.registerShrinkerTask(
     // Disable obfuscation by default as often suboptimal with much harder troubleshooting.
     // If disabled by default, cleaner API uses flag name without a negation.
     // That's why a task property follows ProGuard design, when DSL does the opposite.
-    dontobfuscate.set(settings.obfuscate.map { !it })
     dontoptimize.set(settings.optimize.map { !it })
+    dontobfuscate.set(settings.obfuscate.map { !it })
+    val incrementObfuscation = settings.obfuscateIncrementally.get()
+    obfuscateIncrementally.set(incrementObfuscation)
 
     maxHeapSize.set(settings.maxHeapSize)
-    forceUnbundledShrinker.set(settings.forceUnbundledShrinker)
-    forceExternalShrinkerRun.set(settings.forceExternalShrinkerRun)
+    callFallbackOrder.set(settings.callFallbackOrder)
 
     (conf.androidMinSdk as? Int)?.let { androidMinSdk.set(it) }
     conf.kotlinConfig.jvmTarget?.let { jvmTarget.set(it) }
 
-    useClasspathFiles { files ->
-        inputFiles.from(files.allJars)
-        mainJar.set(files.mainJar)
+    val state = setup.chainState
+    if (state != null) {
+        inputFiles.from(state.inputFiles)
+        mainJar.set(state.mainJar)
+        if (incrementObfuscation) {
+            state.mappingFile?.let { applyMapping.set(it) }
+        }
+    } else {
+        useClasspathFiles { files ->
+            inputFiles.from(files.allJars)
+            mainJar.set(files.mainJar)
+        }
     }
 
     val defaultRulesFile = defaultRulesFile.ioFile
@@ -85,17 +96,18 @@ internal fun Project.registerShrinkerTask(
     }
 }
 
+
 private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
     conf: FluxoConfigurationExtensionImpl,
     isVerbose: Boolean,
-    shrinker: Shrinker,
+    shrinker: JvmShrinker,
 ) {
     val toolLc = shrinker.name.lc()
     val project = project
 
     var coords = when (shrinker) {
-        ProGuard -> PROGUARD_PLUGIN
-        R8 -> BuildConstants.R8
+        JvmShrinker.ProGuard -> BuildConstants.PROGUARD_PLUGIN
+        JvmShrinker.R8 -> BuildConstants.R8
     }
     val libs = conf.ctx.libs
     var version = libs.v(toolLc) ?: libs.l(toolLc)?.version
@@ -119,14 +131,21 @@ private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
         coords += ":$version"
     }
     if (!isVerbose) {
-        notifyThatToolIsRunning(shrinker.name, version)
+        notifyThatToolIsStarting(shrinker.name, version)
     }
 
     // For ProGuard, we want to upgrade to the latest version of the core library.
     when (shrinker) {
-        ProGuard -> arrayOf(coords, PROGUARD_CORE, KOTLINX_METADATA_JVM)
+        JvmShrinker.ProGuard -> arrayOf(
+            coords,
+            BuildConstants.PROGUARD_CORE,
+            BuildConstants.KOTLINX_METADATA_JVM,
+        )
+
         else -> arrayOf(coords)
     }.onEach { notation ->
+        // FIXME: Avoid duplicate logging between similar tasks
+        // TODO: note dependency in the (root?) project classpath
         project.logDependency(toolLc, notation)
     }.let {
         toolCoordinates.set(it.joinToString())
@@ -134,16 +153,14 @@ private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
     }
 }
 
-private fun DefaultTask.notifyThatToolIsRunning(tool: String, version: String? = null) {
+private fun DefaultTask.notifyThatToolIsStarting(tool: String, version: String? = null) {
     doFirst {
         val v = if (version != null) " v$version" else ""
-        logger.lifecycle("$tool$v running ...")
+        logger.lifecycle("$tool$v starting ...")
     }
 }
 
-private fun AbstractShrinkerTask.useClasspathFiles(
-    fn: AbstractShrinkerTask.(JvmFiles) -> Unit,
-) {
+private fun <T : Task> T.useClasspathFiles(fn: T.(JvmFiles) -> Unit) {
     val project = project
     if (project.pluginManager.hasPlugin(KOTLIN_MPP_PLUGIN_ID)) {
         var isJvmTargetConfigured = false
@@ -176,31 +193,49 @@ private fun AbstractShrinkerTask.useClasspathFiles(
     }
 }
 
-private fun AbstractShrinkerTask.useClasspathFiles(
+private fun <T : Task> T.useClasspathFiles(
     provider: JvmFilesProvider,
-    fn: AbstractShrinkerTask.(JvmFiles) -> Unit,
+    fn: T.(JvmFiles) -> Unit,
 ) {
+    logger.v("Using classpath files ${provider.javaClass.simpleName} for task $name...")
     provider.jvmCompileFiles(project)
         .configureUsageBy(this, fn)
 }
 
 
-internal enum class Shrinker {
-    ProGuard,
-    R8,
-}
+private fun ProcessorSetup<JvmShrinker, *>.getShrinkerTaskName(): String =
+    buildString(capacity = 32) {
+        // processChainProguardJar
+        // processChainR8Jar
+        // processChainStep2R8Jar
+        // processChain2Step3ProguardJar
 
-private fun shrinker(
-    forceShrinker: Shrinker?,
-    settings: FluxoShrinkerConfig,
-) = forceShrinker ?: if (settings.useR8.get()) R8 else ProGuard
+        append(PROCESS_TASK_PREFIX)
+        if (chainId != 0) {
+            append(chainId + 1)
+        }
+        if (stepId != 0 || chainId != 0) {
+            append("Step")
+            append(stepId + 1)
+        }
+        append(processor.name.lc().capitalizeAsciiOnly())
+        append("Jar")
+    }
 
-// shrinkWithProguardJar
-// shrinkWithR8Jar
-private fun getShrinkerTaskName(
-    conf: FluxoConfigurationExtensionImpl,
-    forceShrinker: Shrinker? = null,
-): String {
-    val shrinker = shrinker(forceShrinker, conf.shrinkingConfig)
-    return SHRINKER_TASK_PREFIX + shrinker.name.lc().capitalizeAsciiOnly() + "Jar"
-}
+private fun ProcessorSetup<JvmShrinker, *>.getShrinkerToolName(): String =
+    buildString(capacity = 16) {
+        // proguard
+        // r8
+        // r8-2
+        // proguard_2-3
+
+        append(processor.name.lc())
+        if (chainId != 0) {
+            append('_')
+            append(chainId + 1)
+        }
+        if (stepId != 0 || chainId != 0) {
+            append('-')
+            append(stepId + 1)
+        }
+    }

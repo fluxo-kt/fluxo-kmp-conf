@@ -2,6 +2,7 @@ package fluxo.conf.dsl
 
 import org.gradle.api.Incubating
 
+@FluxoKmpConfDsl
 public interface FluxoConfigurationExtensionCommon {
 
     /**

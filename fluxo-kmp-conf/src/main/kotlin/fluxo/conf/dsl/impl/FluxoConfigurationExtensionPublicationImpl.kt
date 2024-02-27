@@ -2,29 +2,27 @@ package fluxo.conf.dsl.impl
 
 import buildNumberSuffix
 import envOrPropValue
-import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.dsl.FluxoConfigurationExtension
+import fluxo.artifact.dsl.ArtifactProcessorConfigImpl
+import fluxo.artifact.dsl.ProcessorConfig
+import fluxo.artifact.dsl.ProcessorConfigR8
+import fluxo.artifact.dsl.ProcessorConfigShrinker
+import fluxo.artifact.proc.JvmShrinker
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.impl.v
-import fluxo.shrink.FluxoShrinkerConfig
-import fluxo.shrink.FluxoShrinkerConfigImpl
+import fluxo.shrink.AUTOGEN_KEEP_MODIFIERS
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import signingKey
 
 internal interface FluxoConfigurationExtensionPublicationImpl :
-    FluxoConfigurationExtensionPublication {
-
-    val project: Project
-    val ctx: FluxoKmpConfContext
-    val parent: FluxoConfigurationExtension?
-
+    FluxoConfigurationExtensionPublication,
+    FluxoConfigurationExtensionImplBase {
 
     @get:Input
     val enablePublicationProp: Property<Boolean?>
@@ -91,30 +89,49 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
 
 
     @get:Input
-    val shrinkArtifactProp: Property<Boolean?>
-    override var shrinkArtifacts: Boolean
-        get() = shrinkArtifactProp.orNull ?: parent?.shrinkArtifacts ?: false
-        set(value) = shrinkArtifactProp.set(value)
+    val processArtifactProp: Property<Boolean?>
+    override var processArtifacts: Boolean
+        get() = processArtifactProp.orNull ?: parent?.processArtifacts ?: true
+        set(value) = processArtifactProp.set(value)
+
+    @get:Input
+    val replaceOutgoingJarProp: Property<Boolean?>
+    override var replaceOutgoingJar: Boolean
+        get() = replaceOutgoingJarProp.orNull ?: parent?.replaceOutgoingJar ?: true
+        set(value) = replaceOutgoingJarProp.set(value)
+
+    @get:Input
+    val autoGenerateKeepRulesFromApisProp: Property<Boolean?>
+    override var autoGenerateKeepRulesFromApis: Boolean
+        get() = autoGenerateKeepRulesFromApisProp.orNull
+            ?: parent?.autoGenerateKeepRulesFromApis
+            ?: true
+        set(value) = autoGenerateKeepRulesFromApisProp.set(value)
+
+    @get:Input
+    val autoGenerateKeepModifierProp: Property<String?>
+    override var autoGenerateKeepModifier: String
+        get() = autoGenerateKeepModifierProp.orNull
+            ?: parent?.autoGenerateKeepModifier
+            ?: AUTOGEN_KEEP_MODIFIERS
+        set(value) = autoGenerateKeepModifierProp.set(value)
 
 
     @get:Input
-    val shrinkingConfigProp: Property<FluxoShrinkerConfig?>
-    override var shrinkingConfig: FluxoShrinkerConfig
-        get() {
-            var mc = shrinkingConfigProp.orNull ?: parent?.shrinkingConfig
-            if (mc != null) {
-                return mc
-            }
-            val objects = project.objects
-            mc = objects.newInstance(FluxoShrinkerConfigImpl::class.java, objects)
-            shrinkingConfigProp.set(mc)
-            return mc
-        }
-        set(value) = shrinkingConfigProp.set(value)
+    val artifactProcessors: ListProperty<ProcessorConfig>
 
-    override fun shrinkingConfig(configure: FluxoShrinkerConfig.() -> Unit) {
-        shrinkingConfig.apply(configure)
+    override fun shrinkWithR8(configure: ProcessorConfigR8.() -> Unit) =
+        addProcessor(JvmShrinker.R8, configure)
+
+    override fun shrinkWithProGuard(configure: ProcessorConfigShrinker.() -> Unit) =
+        addProcessor(JvmShrinker.ProGuard, configure)
+
+    fun addProcessor(processor: JvmShrinker, configure: ArtifactProcessorConfigImpl.() -> Unit) {
+        val value = ArtifactProcessorConfigImpl(objects, processor)
+        value.configure()
+        artifactProcessors.add(value)
     }
+
 
     @get:Input
     val publicationConfigProp: Property<FluxoPublicationConfig?>

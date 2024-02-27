@@ -1,18 +1,15 @@
 package fluxo.conf.dsl.impl
 
 import com.android.build.api.variant.VariantBuilder
-import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_COMPILE_SDK
 import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_MIN_SDK
 import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_TARGET_SDK
-import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoConfigurationExtensionAndroid
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.impl.uncheckedCast
 import fluxo.conf.impl.v
 import fluxo.conf.impl.vInt
 import java.util.Locale
-import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
@@ -20,12 +17,8 @@ import org.gradle.api.tasks.Input
 
 internal interface FluxoConfigurationExtensionAndroidImpl :
     FluxoConfigurationExtensionAndroid,
-    FluxoConfigurationExtensionPublication {
-
-    val project: Project
-    val ctx: FluxoKmpConfContext
-    val parent: FluxoConfigurationExtension?
-
+    FluxoConfigurationExtensionPublication,
+    FluxoConfigurationExtensionImplBase {
 
     @get:Input
     val androidNamespacePrefixProp: Property<String?>

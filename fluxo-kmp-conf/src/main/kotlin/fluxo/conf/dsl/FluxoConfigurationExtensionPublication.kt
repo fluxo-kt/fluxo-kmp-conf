@@ -1,9 +1,11 @@
 package fluxo.conf.dsl
 
+import fluxo.artifact.dsl.ArtifactProcessingChain
+import fluxo.artifact.dsl.ProcessorConfigR8
 import fluxo.conf.impl.EMPTY_FUN
-import fluxo.shrink.FluxoShrinkerConfig
 
-public interface FluxoConfigurationExtensionPublication {
+@FluxoKmpConfDsl
+public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChain {
 
     // Helpful links:
     // https://proandroiddev.com/publishing-android-libraries-to-mavencentral-in-2021-8ac9975c3e52
@@ -74,55 +76,55 @@ public interface FluxoConfigurationExtensionPublication {
      * Flag to control reproducible artifact generation.
      *
      * Defaults to `true`.
+     *
+     * @FIXME: Check with shrinker enabled.
      */
     public var reproducibleArtifacts: Boolean?
 
 
     /**
-     * Flag to enable shrinking (minification & optimization) of the artifacts.
+     * Flag to enable processing (shrinking/minification, optimization, shadowing) of the artifacts.
      *
-     * Defaults to `false`.
+     * Defaults to `true`.
      */
-    public var shrinkArtifacts: Boolean
+    public var processArtifacts: Boolean
+
+    public fun shrink(configure: ProcessorConfigR8.() -> Unit = EMPTY_FUN): Unit =
+        shrinkWithR8(configure)
 
     /**
-     * Alias for [shrinkArtifacts].
-     */
-    public var minifyArtifacts: Boolean
-        get() = shrinkArtifacts
-        set(value) {
-            shrinkArtifacts = value
-        }
-
-    /**
-     * Config for the project artifacts shrinking.
-     * Inherited from the parent project if not set.
-     * Enables shrinking once called!
+     * Replaces the default jar in outgoingVariants with the processed one.
      *
-     * @see shrinkArtifacts
-     */
-    public val shrinkingConfig: FluxoShrinkerConfig
-
-    /**
-     * Alias for [shrinkingConfig].
-     */
-    public val minificationConfig: FluxoShrinkerConfig
-        get() = shrinkingConfig
-
-    /**
-     * Allows customizing the [FluxoShrinkerConfig].
-     * Enables shrinking once called!
+     * `true` by default.
      *
-     * @see shrinkArtifacts
+     * Note: Because it replaces the existing jar, the variant will keep
+     * the dependencies and attributes of the java component.
+     * In particular, "org.gradle.dependency.bundling" will be "external" despite
+     * the shrinked version can shade some dependencies.
+     *
+     * @see org.gradle.api.artifacts.dsl.ArtifactHandler for more details.
+     * @see ArtifactProcessingChain for processors configuration.
      */
-    public fun shrinkingConfig(configure: FluxoShrinkerConfig.() -> Unit)
+    public var replaceOutgoingJar: Boolean
 
     /**
-     * Alias for [shrinkingConfig].
+     * Auto-generate ProGuard keep rules from API reports.
+     *
+     * `true` by default.
+     *
+     * @see fluxo.conf.dsl.FluxoConfigurationExtensionKotlin.enableApiValidation
      */
-    public fun minificationConfig(configure: FluxoShrinkerConfig.() -> Unit) {
-        shrinkingConfig(configure)
-    }
+    public var autoGenerateKeepRulesFromApis: Boolean
+
+    /**
+     * Keep rule modifiers for all auto-kept classes.
+     *
+     * `,includedescriptorclasses` by default.
+     *
+     * @see fluxo.shrink.AUTOGEN_KEEP_MODIFIERS
+     * @see autoGenerateKeepRulesFromApis
+     */
+    public var autoGenerateKeepModifier: String
 
 
     /**

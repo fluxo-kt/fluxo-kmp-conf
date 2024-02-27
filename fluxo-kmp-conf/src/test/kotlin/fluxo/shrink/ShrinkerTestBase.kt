@@ -7,6 +7,7 @@ import com.android.tools.r8.R8Command
 import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import fluxo.artifact.proc.JvmShrinker
 import fluxo.gradle.normalizedPath as np
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -85,7 +86,7 @@ internal abstract class ShrinkerTestBase {
                     code = code,
                     rules = rules,
                     tempDir = tempDir,
-                    shrinker = Shrinker.ProGuard,
+                    shrinker = JvmShrinker.ProGuard,
                 )
                 assertEquals(
                     expected = it.seeds(sort = sort),
@@ -101,7 +102,7 @@ internal abstract class ShrinkerTestBase {
                     code = code,
                     rules = rules,
                     tempDir = tempDir,
-                    shrinker = Shrinker.R8,
+                    shrinker = JvmShrinker.R8,
                     r8FullMode = true,
                 )
                 assertEquals(
@@ -118,7 +119,7 @@ internal abstract class ShrinkerTestBase {
                     code = code,
                     rules = rules,
                     tempDir = tempDir,
-                    shrinker = Shrinker.R8,
+                    shrinker = JvmShrinker.R8,
                     r8FullMode = false,
                 )
                 var expect = it.trimIndent().trim()
@@ -190,7 +191,7 @@ internal abstract class ShrinkerTestBase {
     private fun shrink(
         @Language("kotlin") code: String,
         @Language("pro") rules: String,
-        shrinker: Shrinker = Shrinker.ProGuard,
+        shrinker: JvmShrinker = JvmShrinker.ProGuard,
         fileName: String = DEFAULT_FILE_NAME,
         shrink: Boolean = true,
         optimize: Boolean = false,
@@ -238,7 +239,7 @@ internal abstract class ShrinkerTestBase {
             }
 
             when (shrinker) {
-                Shrinker.ProGuard -> {
+                JvmShrinker.ProGuard -> {
                     writer.ln("-optimizationpasses 1")
                     writer.ln("-optimizations !class/merging/horizontal")
                     writer.ln("-optimizeaggressively")
@@ -246,7 +247,7 @@ internal abstract class ShrinkerTestBase {
                     writer.ln("-injars '${filesDir.np()}'")
                 }
 
-                Shrinker.R8 -> {
+                JvmShrinker.R8 -> {
                     // Only archive types are supported by R8, e.g., .jar, .zip.
                     // Pack filesDir into a zip archive.
                     writer.ln("-injars '${getZippedDir(filesDir).np()}'")
@@ -261,7 +262,7 @@ internal abstract class ShrinkerTestBase {
 
         runShrinker(shrinker) {
             when (shrinker) {
-                Shrinker.ProGuard -> {
+                JvmShrinker.ProGuard -> {
                     val configuration = Configuration()
                     ConfigurationParser(rootConf, System.getProperties()).use {
                         it.parse(configuration)
@@ -270,7 +271,7 @@ internal abstract class ShrinkerTestBase {
                         .execute()
                 }
 
-                Shrinker.R8 -> {
+                JvmShrinker.R8 -> {
                     val r = R8Command.builder()
                     r.mode = CompilationMode.RELEASE
                     r.proguardCompatibility = !r8FullMode // full-mode
@@ -313,7 +314,7 @@ internal abstract class ShrinkerTestBase {
     }
 
     private fun runShrinker(
-        shrinker: Shrinker,
+        shrinker: JvmShrinker,
         out: ByteArrayOutputStream = ByteArrayOutputStream(),
         replaceStdout: Boolean = true,
         cb: () -> Unit,
@@ -332,7 +333,7 @@ internal abstract class ShrinkerTestBase {
             }
         } catch (e: Throwable) {
             // The output jar is empty. Did you specify the proper '-keep' options?
-            if (shrinker == Shrinker.ProGuard &&
+            if (shrinker == JvmShrinker.ProGuard &&
                 "The output jar is empty." in e.message.orEmpty()
             ) {
                 // Allow empty output for ProGuard.

@@ -120,17 +120,17 @@ internal abstract class FluxoKmpConfContext
 
         // Log environment
         run {
-            var m = "Gradle ${gradle.gradleVersion}, " +
-                "JRE $JRE_VERSION_STRING, " +
-                "Kotlin $kotlinPluginVersion, " +
-                "$CPUs CPUs, " +
+            var m = "Gradle ${gradle.gradleVersion},  " +
+                "JRE $JRE_VERSION_STRING,  " +
+                "Kotlin $kotlinPluginVersion,  " +
+                "$CPUs CPUs,  " +
                 "${readableByteSize(XMX)} XMX"
 
             // TODO: GC stats
             //  https://github.com/gradle/gradle/blob/3eda2dd/platforms/core-runtime/launcher/src/main/java/org/gradle/launcher/daemon/server/health/DaemonHealthStats.java#L87
             val ram = TOTAL_OS_MEMORY
             if (ram > 0) {
-                m += " with ${readableByteSize(ram)} RAM"
+                m += " from ${readableByteSize(ram)} RAM"
             }
 
             // Bundled/Classpath R8 version
@@ -158,7 +158,7 @@ internal abstract class FluxoKmpConfContext
         if (SHOW_DEBUG_LOGS) {
             onProjectInSyncRun {
                 val reason = projectInSyncFlag.firstOrNull()
-                logger.v("onProjectInSyncRun, because of $reason")
+                logger.d("onProjectInSyncRun, because $reason")
             }
         }
 
@@ -181,9 +181,9 @@ internal abstract class FluxoKmpConfContext
         val compositeMsg =
             "$includedBuilds gradle.includedBuilds, $includedBuilds2 start.includedBuilds"
         if (isInCompositeBuild) {
-            logger.l("COMPOSITE build is ENABLED! ($compositeMsg)")
+            logger.l("COMPOSITE BUILD! ($compositeMsg)")
         } else if (isVerbose) {
-            logger.l("COMPOSITE build is disabled! ($compositeMsg)")
+            logger.l("NOT in COMPOSITE build! ($compositeMsg)")
         }
 
         if (start.isDryRun) logger.l("DryRun mode is enabled!")
@@ -220,7 +220,6 @@ internal abstract class FluxoKmpConfContext
         }
 
         logger.v("Cleaned start task names: $startTaskNames")
-        logger.v("Kotlin Plugin version: $kotlinPluginVersion")
 
         val isInIde = start.systemPropertiesArgs["idea.active"].tryAsBoolean()
         logger.v("isInIde: $isInIde")
@@ -277,18 +276,15 @@ internal abstract class FluxoKmpConfContext
     private fun taskGraphBasedProjectSyncDetection() {
         // TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.
         //  https://github.com/JetBrains/gradle-idea-ext-plugin
-        val logger = rootProject.logger
         rootProject.gradle.taskGraph.whenReady {
             if (!isProjectInSyncRun) {
-                val hasImportTasksInGraph = allTasks.any {
+                val hasImportTaskInGraph = allTasks.any {
                     it.path.let { p ->
                         p.endsWith(KOTLIN_IDEA_IMPORT_TASK) || p.endsWith(KOTLIN_IDEA_BSM_TASK)
                     }
                 }
-                if (hasImportTasksInGraph && !isProjectInSyncRun) {
-                    val message = "IDE project sync"
-                    logger.d(message)
-                    markProjectInSync(message)
+                if (hasImportTaskInGraph && !isProjectInSyncRun) {
+                    markProjectInSync(reason = "project has import task in graph")
                 }
             }
         }

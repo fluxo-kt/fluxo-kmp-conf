@@ -33,6 +33,7 @@
     * e.g., a task must not use any Project objects at execution time.
     * Also, warn on any `org.gradle.internal` usage because its is internal API.
     * https://docs.gradle.org/8.5/userguide/configuration_cache.html#config_cache:requirements
+    * https://marcelkliemannel.com/articles/2022/common-gradle-plugin-mistakes-and-good-practices/
 * Linting
   * https://github.com/jeremymailen/kotlinter-gradle
   * https://dev.to/aseemwangoo/supercharge-your-kotlin-project-2mcb

@@ -4,12 +4,10 @@
   <CurrentIssues>
     <ID>ComplexCondition:SetupTestsReport.kt$!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$// FIXME: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Move mapping to the output dir?</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Use external runner first, then fallback to bundled and classloader.</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Automatic main class detection from jar manifest,</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Automatic main class detection from jar manifest and/or project configuration</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Debugging</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Process output and print only main information if not verbose</ID>
@@ -42,20 +40,25 @@
     <ID>ForbiddenComment:NodeGraphsRenderer.kt$NodeGraphsRenderer.LegendRenderer$// FIXME: This is not implemented yet.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Called 3 times with same error when no git installed or global config error.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// TODO: Optimize, make lazy accessible via root project including current branch name</ID>
+    <ID>ForbiddenComment:RegisterShrinkerTask.kt$// FIXME: Avoid duplicate logging between similar tasks</ID>
+    <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: note dependency in the (root?) project classpath</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Allow to call shrinker by task name even if it's disabled.</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Publish the debug non-shrinked artifacts alongside the release shrinked ones.</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Run tests with minified artifacts.</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support KMP JVM target minification with ProGuard.</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support auto-loading of the shrinking rules from the classpath for the ProGuard.</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support double-shrinking with both R8 and ProGuard.</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// FIXME: Support shadow jar generation before shrinking artifacts.</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support Android minification with ProGuard?</ID>
-    <ID>ForbiddenComment:SetupArtifactsShrinking.kt$// TODO: Support auto-disabling kotlin null checks generation for the shrinked release builds.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Allow to call shrinker by task name even if it's disabled.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Ensure the obfuscation mapping incrementality and compatibility when double-shrinking.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Publish the debug non-shrinked artifacts alongside the release shrinked ones.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Run tests with minified artifacts.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support KMP JVM target minification with ProGuard.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support auto-loading of the shrinking rules from the classpath for the ProGuard.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support shadow jar generation before shrinking artifacts.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Verify proper replacement of the original artifact with processed one (map by file?).</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Verify shrinked artifact for all public declarations.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support Android minification with ProGuard?</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support auto-disabling kotlin null checks generation for the shrinked release builds.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup the "InvalidPackageDeclaration" rule for each module,</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>

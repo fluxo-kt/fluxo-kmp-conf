@@ -1,8 +1,6 @@
 package fluxo.conf.dsl.impl
 
-import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
-import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.FluxoConfigurationExtensionKotlin
 import fluxo.conf.impl.v
 import org.gradle.api.GradleException
@@ -12,11 +10,9 @@ import org.gradle.api.tasks.Input
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
-internal interface FluxoConfigurationExtensionKotlinImpl : FluxoConfigurationExtensionKotlin {
-
-    val ctx: FluxoKmpConfContext
-    val parent: FluxoConfigurationExtension?
-
+internal interface FluxoConfigurationExtensionKotlinImpl :
+    FluxoConfigurationExtensionKotlin,
+    FluxoConfigurationExtensionImplBase {
 
     @get:Input
     val onConfigurationProp: Property<(KotlinProjectExtension.() -> Unit)?>

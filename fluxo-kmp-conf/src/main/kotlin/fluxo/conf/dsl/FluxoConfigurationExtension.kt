@@ -10,6 +10,7 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
+@FluxoKmpConfDsl
 public interface FluxoConfigurationExtension :
     FluxoConfigurationExtensionKotlin,
     FluxoConfigurationExtensionAndroid,

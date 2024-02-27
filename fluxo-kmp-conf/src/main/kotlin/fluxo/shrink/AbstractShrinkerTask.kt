@@ -9,8 +9,15 @@
 
 package fluxo.shrink
 
+import fluxo.artifact.dsl.ProcessorCallType
+import fluxo.artifact.proc.JvmShrinker
+import fluxo.artifact.proc.JvmShrinker.ProGuard
+import fluxo.artifact.proc.JvmShrinker.R8
+import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.e
 import fluxo.conf.impl.i
+import fluxo.conf.impl.ifNotEmpty
+import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.jvmToolFile
 import fluxo.conf.impl.l
 import fluxo.conf.impl.lc
@@ -20,12 +27,11 @@ import fluxo.external.ExternalToolRunner
 import fluxo.gradle.cliArg
 import fluxo.gradle.ioFile
 import fluxo.gradle.ioFileOrNull
+import fluxo.gradle.listProperty
 import fluxo.gradle.mkdirs
 import fluxo.gradle.normalizedPath
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty
-import fluxo.shrink.Shrinker.ProGuard
-import fluxo.shrink.Shrinker.R8
 import fluxo.util.readableByteSize
 import isRelease
 import java.io.File
@@ -38,6 +44,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
@@ -68,7 +75,15 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Input
-    val shrinker: Property<Shrinker> = objects.notNullProperty()
+    val shrinker: Property<JvmShrinker> = objects.notNullProperty()
+
+    @get:Optional
+    @get:Input
+    val toolName: Property<String> = objects.notNullProperty(shrinker.map { it.name.lc() })
+
+    @get:Optional
+    @get:Input
+    val chainForLog: Property<String?> = objects.nullableProperty()
 
     @get:InputFiles
     @get:CompileClasspath
@@ -92,11 +107,15 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Optional
     @get:Input
+    val dontoptimize: Property<Boolean?> = objects.nullableProperty()
+
+    @get:Optional
+    @get:Input
     val dontobfuscate: Property<Boolean?> = objects.nullableProperty()
 
     @get:Optional
     @get:Input
-    val dontoptimize: Property<Boolean?> = objects.nullableProperty()
+    val obfuscateIncrementally: Property<Boolean?> = objects.nullableProperty()
 
     @get:Optional
     @get:Input
@@ -109,6 +128,17 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val defaultRulesFile: RegularFileProperty = objects.fileProperty()
+
+    /**
+     * ProGuard/R8 mapping file from the previous obfuscation step.
+     * Required for [incremental obfuscation][obfuscateIncrementally].
+     *
+     * @see obfuscateIncrementally
+     */
+    @get:Optional
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val applyMapping: RegularFileProperty = objects.fileProperty()
 
     /**
      * Internal dependency on all R8/ProGuard rules files.
@@ -135,7 +165,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Input
     @get:Optional
-    val mainClass: Property<String?> = objects.nullableProperty()
+    val mainClasses: ListProperty<String> = objects.listProperty()
+
+    @get:Input
+    @get:Optional
+    val gradlePluginClasses: ListProperty<String> = objects.listProperty()
 
     @get:Input
     @get:Optional
@@ -147,11 +181,9 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Input
     @get:Optional
-    val forceUnbundledShrinker: Property<Boolean> = objects.notNullProperty(false)
-
-    @get:Input
-    @get:Optional
-    val forceExternalShrinkerRun: Property<Boolean> = objects.notNullProperty(true)
+    val callFallbackOrder: ListProperty<ProcessorCallType> =
+        objects.listProperty<ProcessorCallType>()
+            .convention(ProcessorCallType.DEFAULT_FALLBACK_ORDER)
 
     @get:Internal
     val maxHeapSize: Property<String?> = objects.nullableProperty()
@@ -164,7 +196,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     /** Primary destination file */
     @get:LocalState
-    internal val destinationFile: Provider<RegularFile> = destinationDir.zip(mainJar) { dir, jar ->
+    val destinationFile: Provider<RegularFile> = destinationDir.zip(mainJar) { dir, jar ->
         dir.file(jar.asFile.name)
     }
 
@@ -176,40 +208,47 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:LocalState
     protected val reportsDir: Provider<Directory>
 
-    @get:Input
-    @get:Optional
-    @get:JvmName("getIsRelease")
-    protected val isRelease: Property<Boolean?> = objects.nullableProperty()
+    @get:LocalState
+    val mappingFile: Provider<RegularFile>
+
+    private val isRelease: Provider<Boolean>
+
+    private val projectLogPath: String
+
 
     init {
         group = LifecycleBasePlugin.BUILD_GROUP
         description = "Shrink and optimize final JVM artifact"
 
-        val layout = project.layout
+        val p = project
+        val layout = p.layout
         val buildDir = layout.buildDirectory
-        val toolLc = shrinker.map { it.name.lc() }
+        val toolName = toolName
         workDir = buildDir
-        workingTmpDir = buildDir.zip(toolLc) { d, tool ->
+        workingTmpDir = buildDir.zip(toolName) { d, tool ->
             d.dir("tmp/shrink/$tool")
         }
-        reportsDir = buildDir.zip(toolLc) { d, tool ->
+        reportsDir = buildDir.zip(toolName) { d, tool ->
             d.dir("reports/shrink/$tool")
         }
         logsDir.set(
-            buildDir.zip(toolLc) { d, tool ->
+            buildDir.zip(toolName) { d, tool ->
                 d.dir("logs/shrink/$tool")
             },
         )
         destinationDir.set(
-            buildDir.zip(toolLc) { d, tool ->
+            buildDir.zip(toolName) { d, tool ->
                 d.dir("output/shrink/$tool")
             },
         )
 
+        mappingFile = destinationDir.file("mapping.txt")
+
         val projectDirectory = layout.projectDirectory
         defaultRulesFile.set(projectDirectory.file("pg/rules.pro"))
 
-        isRelease.set(project.isRelease())
+        isRelease = p.isRelease()
+        projectLogPath = if (p.isRootProject) p.name else p.path
     }
 
     @TaskAction
@@ -243,7 +282,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
         // Avoid mangling mainJar
         mainJar.ioFile.let { mainJar ->
-            inputToOutputJars[mainJar] = destinationFile.get().asFile
+            inputToOutputJars[mainJar] = destinationFile.ioFile
             initialSize += mainJar.length()
         }
 
@@ -285,32 +324,60 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val rootConfigFile = workingDir.file("root-config.pro").asFile
         writeRootConfiguration(rootConfigFile, reportsDir, jarsConfFile, shrinker)
 
-        // FIXME: Use external runner first, then fallback to bundled and classloader.
-        // 1. Try to use the bundled ProGuard/R8 first.
-        // 2. Fallback to custom classloader.
-        // 3. Call as a separate process.
+        // By default,
+        // 1. Try to call as a separate process first.
+        // 2. Try to use the bundled ProGuard/R8.
+        // 3. Fallback to custom classloader.
+        val callFallbackOrder = callFallbackOrder.get()
+            .ifEmpty { ProcessorCallType.DEFAULT_FALLBACK_ORDER }
+            .toCollection(LinkedHashSet())
+
         // TODO: Process output and print only main information if not verbose
-        val forceExternalShrinkerRun = forceExternalShrinkerRun.get()
+        var called = false
+        var ex: Throwable? = null
+        var caller: ShrinkerReflectiveCaller? = null
+        val last = callFallbackOrder.last()!!
         val start = currentTimeMillis()
-        val called = when (forceExternalShrinkerRun) {
-            true -> false
-            else -> ShrinkerReflectiveCaller(
-                shrinker = shrinker,
-                logger = logger,
-                toolJars = toolJars,
-                forceUnbundledShrinker = forceUnbundledShrinker.get(),
-            ) { getShrinkerArgs(rootConfigFile, outJars, reportsDir, javaHome, external = false) }
-                .execute()
+        callType@ for (callType in callFallbackOrder) {
+            try {
+                when (callType) {
+                    ProcessorCallType.EXTERNAL -> {
+                        logger.l("Calling $shrinker externally!")
+                        callShrikerExternally(javaHome, rootConfigFile, outJars, reportsDir)
+                    }
+
+                    else -> {
+                        if (caller == null) {
+                            caller = ShrinkerReflectiveCaller(
+                                shrinker = shrinker,
+                                logger = logger,
+                                toolJars = toolJars,
+                            ) { getShrinkerArgs(rootConfigFile, outJars, reportsDir, javaHome) }
+                        }
+                        val isLastFallback = last == callType
+                        if (!caller.execute(callType, ignoreMemoryLimit = isLastFallback)) {
+                            continue@callType
+                        }
+                    }
+                }
+                called = true
+                break@callType
+            } catch (e: Throwable) {
+                logger.e("$callType $shrinker shrinker call failed: $e")
+                when (ex) {
+                    null -> ex = e
+                    else -> e.addSuppressed(ex)
+                }
+            }
         }
         if (!called) {
-            val l = if (forceExternalShrinkerRun) " (forceExternal)" else ""
-            logger.w("Calling $shrinker externally! $l")
-            callShrikerExternally(javaHome, rootConfigFile, outJars, reportsDir)
+            val message = "All $shrinker call types failed ($callFallbackOrder) for $path!"
+            throw GradleException(message, ex)
         }
 
         @Suppress("MagicNumber")
         val elapsedSec = (currentTimeMillis() - start) / 1_000f
-        reportSavings(destinationDir, initialSize, elapsedSec)
+        reportSavings(initialSize, elapsedSec)
     }
 
     private fun callShrikerExternally(
@@ -330,44 +397,54 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         ).assertNormalExitValue()
     }
 
-    private fun reportSavings(destinationDir: File, initialSize: Long, elapsedSec: Float) {
-        val files = destinationDir.listFiles()
-            ?: return
-
+    private fun reportSavings(initialSize: Long, elapsedSec: Float) {
+        val files = arrayOf(destinationFile.ioFile)
         val finalSize = files.sumOf { it.length() }
-        val initial = readableByteSize(initialSize)
-        val final = readableByteSize(finalSize)
+        val isFailed = initialSize < finalSize
+        val message = buildString(capacity = 128) {
+            append(shrinker.get()).append(" (")
 
-        if (initialSize < finalSize) {
-            val addedBytes = readableByteSize(finalSize - initialSize)
-            val message = "%s failed to save size: %s -> %s (INCREASED %s) in %s s".format(
-                shrinker.get(),
-                initial,
-                final,
-                addedBytes,
-                elapsedSec,
-            )
+            val chainForLog = chainForLog.get()
+            when {
+                chainForLog.isNullOrBlank() -> append(path)
+                else -> append(projectLogPath).append(" ").append(chainForLog)
+            }.append(") ")
+
+            when {
+                !isFailed -> append("shrinker results: ")
+                else -> append("shrinker failed to save size: ")
+            }
+
+            val initial = readableByteSize(initialSize)
+            val final = readableByteSize(finalSize)
+            append(initial).append(" -> ").append(final)
+
+            append(" (")
+            if (!isFailed) {
+                @Suppress("MagicNumber")
+                val savedPercent = (1f - (finalSize / initialSize.toFloat())) * 100f
+                val savedBytes = readableByteSize(initialSize - finalSize)
+                append("saved ").append("%.03f".format(savedPercent))
+                append("%, ").append(savedBytes)
+            } else {
+                val addedBytes = readableByteSize(finalSize - initialSize)
+                append("INCREASED ").append(addedBytes)
+            }
+
+            append(") in ").append(elapsedSec).append(" s")
+        }
+        if (isFailed) {
+            // Info ("i: ") messages are highlighted in the IDEA console.
+            if (SHOW_DEBUG_LOGS) {
+                logger.i(message)
+            }
             if (isRelease.orNull == true) {
                 throw GradleException(message)
             }
-            // Info ("i: ") messages are highlighted in the IDEA console.
-            logger.i(message)
             logger.e(message)
-            return
+        } else {
+            logger.l(message)
         }
-
-        @Suppress("MagicNumber")
-        val savedPercent = (1f - (finalSize / initialSize.toFloat())) * 100f
-        val savedBytes = readableByteSize(initialSize - finalSize)
-        logger.lifecycle(
-            "> {} results: {} -> {} (saved {}%, {}) in {} s",
-            shrinker.get(),
-            initial,
-            final,
-            "%.03f".format(savedPercent),
-            savedBytes,
-            elapsedSec,
-        )
     }
 
     private fun getShrinkerArgs(
@@ -399,9 +476,6 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                      * @see proguard.ProGuard.main
                      */
                     add("proguard.ProGuard")
-
-                    // todo: consider separate flag
-                    cliArg("-verbose", verbose)
                     cliArg("-include", rootConfigurationFile, base = workDir)
                 }
 
@@ -426,7 +500,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
                     // Output the collective configuration to <file>.
                     cliArg("--pg-conf-output", getFinalConfigFile(reportsDir, base = workDir))
-                    cliArg("--pg-map-output", getMappingFile(reportsDir, base = workDir))
+                    cliArg("--pg-map-output", getMappingFile(base = workDir))
 
                     // Force disable minification of names.
                     cliArg("--no-minification", dontobfuscate.orNull == true)
@@ -448,18 +522,33 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
      * @see com.android.build.gradle.internal.tasks.ProguardConfigurableTask
      * @see com.android.build.gradle.internal.tasks.R8Task
      */
+    @Suppress("LongMethod")
     private fun writeRootConfiguration(
         file: File,
         reportsDir: Directory,
         jarsConfigurationFile: File,
-        shrinker: Shrinker,
+        shrinker: JvmShrinker,
     ) = file.bufferedWriter().use { writer ->
+        if (verbose.get()) {
+            writer.ln("-verbose")
+        }
+
         jvmTarget.orNull?.let { jvmTarget ->
             writer.ln("-target $jvmTarget")
         }
 
         if (dontobfuscate.orNull == true) {
             writer.ln("-dontobfuscate")
+        } else if (obfuscateIncrementally.orNull != false) {
+            // Incremental obfuscation
+            // https://www.guardsquare.com/manual/configuration/usage#applymapping
+            // https://r8-docs.preemptive.com/#mapping-files
+            val applyMapping = applyMapping.orNull?.asFile
+            if (applyMapping != null && applyMapping.exists()) {
+                writer.ln("-applymapping '${applyMapping.normalizedPath()}'")
+            }
+            // Reduce mapping conflicts chances
+            writer.ln("-useuniqueclassmembernames")
         }
 
         if (dontoptimize.orNull == true) {
@@ -470,12 +559,13 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         writer.ln("-printusage '${getUsageFile(reportsDir)}'")
         when (shrinker) {
             ProGuard -> {
-                // Passed via arguments for R8
-                writer.ln("-printmapping '${getMappingFile(reportsDir)}'")
+                writer.ln("-printmapping '${getMappingFile()}'")
                 writer.ln("-printconfiguration '${getFinalConfigFile(reportsDir)}'")
             }
 
-            R8 -> {}
+            R8 -> {
+                // Passed via arguments for R8
+            }
         }
 
         // TODO: Shared obfuscation dictionaries
@@ -487,17 +577,36 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         // TODO: Debugging
         //  -addconfigurationdebugging
         //  -dump
-        //  -verbose
 
-        // TODO: Automatic main class detection from jar manifest and/or project configuration
-        mainClass.orNull?.let { mainClass ->
-            writer.ln(
-                """
-                -keep public class $mainClass {
-                    public static void main(java.lang.String[]);
-                }
-                """.trimIndent(),
-            )
+        // FIXME: Automatic main class detection from jar manifest,
+        //  processor configuration,
+        //  plugin configuration
+        mainClasses.get().ifNotEmpty {
+            writer.ln()
+            forEach { mainClass ->
+                writer.ln(
+                    """
+                    -keep public class $mainClass {
+                        public static void main(java.lang.String[]);
+                    }
+                    """.trimIndent(),
+                )
+            }
+            writer.ln()
+        }
+        gradlePluginClasses.get().ifNotEmpty {
+            writer.ln()
+            forEach { pluginClass ->
+                writer.ln(
+                    """
+                    -keep,includedescriptorclasses public class $pluginClass implements org.gradle.api.Plugin {
+                        public <init>();
+                        public void apply(java.lang.Object);
+                    }
+                    """.trimIndent(),
+                )
+            }
+            writer.ln()
         }
 
         val includeFiles = sequenceOf(
@@ -510,18 +619,20 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         }
     }
 
-    // FIXME: Move mapping to the output dir?
-    private fun getMappingFile(reportsDir: Directory, base: File? = null): String =
-        reportsDir.file("mapping.txt").asFile.normalizedPath(base)
+    private fun getMappingFile(base: File? = null): String =
+        mappingFile.ioFile.normalizedPath(base)
 
-    private fun getSeedFile(reportsDir: Directory): String =
-        reportsDir.file("seeds.txt").asFile.normalizedPath()
+    private fun getSeedFile(dir: Directory): String =
+        dir.file("seeds.txt").asFile.normalizedPath()
 
-    private fun getUsageFile(reportsDir: Directory): String =
-        reportsDir.file("usage.txt").asFile.normalizedPath()
+    private fun getUsageFile(dir: Directory): String =
+        dir.file("usage.txt").asFile.normalizedPath()
 
-    private fun getFinalConfigFile(reportsDir: Directory, base: File? = null): String =
-        reportsDir.file("final-config.pro").asFile.normalizedPath(base)
+    private fun getFinalConfigFile(
+        dir: Directory = this.reportsDir.get(),
+        base: File? = null,
+    ): String =
+        dir.file("final-config.pro").asFile.normalizedPath(base)
 
     private fun writeJarsConfigurationFile(
         file: File,
@@ -529,7 +640,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         libraryJarsFilter: String,
         jmods: Sequence<File>,
         javaHome: String?,
-        shrinker: Shrinker,
+        shrinker: JvmShrinker,
     ) = file.bufferedWriter().use { writer ->
         val outJars = mutableListOf<File>()
 
@@ -570,11 +681,13 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         }
     }
 
+    private fun Writer.ln() = appendLine()
+
     private fun Writer.ln(s: String) = appendLine(s)
 }
 
 private fun getJmods(javaHome: File): Sequence<File> {
-    // FIXME: Before Java 9, the runtime classes were packaged in a single jar file.
+    // TODO: Before Java 9, the runtime classes were packaged in a single jar file.
     //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
     //  https://github.com/Guardsquare/proguard?tab=readme-ov-file#gradle-task
 
@@ -583,10 +696,8 @@ private fun getJmods(javaHome: File): Sequence<File> {
     }
 }
 
-internal const val SHRINKER_TASK_PREFIX = "shrinkWith"
-
 // TODO: Move into a separate file, loaded from resources
-// language=ShrinkerConfig
+// language=Shrinker Config
 private val DEFAULT_PROGUARD_RULES =
     """
     ###
