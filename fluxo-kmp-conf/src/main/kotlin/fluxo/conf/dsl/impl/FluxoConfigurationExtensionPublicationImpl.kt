@@ -12,10 +12,10 @@ import fluxo.shrink.FluxoShrinkerConfig
 import fluxo.shrink.FluxoShrinkerConfigImpl
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import scmTag
 import signingKey
 
 internal interface FluxoConfigurationExtensionPublicationImpl :
@@ -150,13 +150,12 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         var scmUrl: String? = null
         var publicationUrl: String? = null
 
-        // FIXME: Should be converted to a lazy provider!
         val scmTag = when {
             !isSnapshot -> "v$version"
-            else -> project.scmTag().orNull ?: defaultGitBranchName
+            else -> ctx.scmTag ?: defaultGitBranchName
         }
 
-        // TODO: Add validation for value. Shouldn't be url, but `namespace/name`
+        // TODO: Add validation for githubProject value. Shouldn't be url, but `namespace/name`
         githubProject?.let { githubProject ->
             url = "https://github.com/$githubProject"
             publicationUrl = "$url/tree/$scmTag"
@@ -168,7 +167,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
             version = version.substringBeforeLast("SNAPSHOT")
 
             // commit short hash is more convenient for usage as date-n-build
-            val commitSha = project.scmTag(allowBranch = false).orNull
+            val commitSha = ctx.scmTag
             if (!commitSha.isNullOrEmpty()) {
                 // Version structure: `major.minor-COMMIT_SHA-SNAPSHOT`.
                 version = version.trimEnd { !it.isDigit() }
@@ -177,7 +176,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
                 version += "-$commitSha"
             } else {
                 // Version structure: `major.minor.patch-yyMMddHHmmss-buildNumber-SNAPSHOT`.
-                version += SimpleDateFormat("yyMMddHHmmss").format(Date())
+                version += SimpleDateFormat("yyMMddHHmmss", Locale.US).format(Date())
                 version += project.buildNumberSuffix("-local", "-")
             }
             version += "-SNAPSHOT"

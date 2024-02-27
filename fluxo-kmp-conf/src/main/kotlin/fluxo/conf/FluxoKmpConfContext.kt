@@ -38,6 +38,7 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
+import scmTag
 import useKotlinDebug
 
 /**
@@ -92,6 +93,7 @@ internal abstract class FluxoKmpConfContext
     val isDesugaringEnabled by rootProject.isDesugaringEnabled()
     val useKotlinDebug by rootProject.useKotlinDebug()
     val composeMetricsEnabled by rootProject.areComposeMetricsEnabled()
+    val scmTag by rootProject.scmTag(allowBranch = false)
 
     private val kmpTargets: Set<KmpTargetCode> = getSetOfRequestedKmpTargets()
     val allTargetsEnabled: Boolean = rootProject.allKmpTargetsEnabled() || kmpTargets.isEmpty()

@@ -77,7 +77,7 @@ public fun Project?.buildNumberSuffix(default: String = "", delimiter: String = 
 @Incubating
 @Suppress("ComplexCondition", "MagicNumber")
 internal fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
-    // TODO: Optimize, make lazy accessible via root project
+    // TODO: Optimize, make lazy accessible via root project including current branch name
     //  see com.diffplug.gradle.spotless.GitRatchetGradle
     //  com.diffplug.gradle.spotless.SpotlessTask.getRatchet
 
