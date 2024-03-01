@@ -38,7 +38,7 @@ com.louiscad.complete-kotlin:com.louiscad.complete-kotlin.gradle.plugin:1.1.0
 com.louiscad.complete-kotlin:plugin:1.1.0
 com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:11.1.0
 com.mikepenz.aboutlibraries.plugin:com.mikepenz.aboutlibraries.plugin.gradle.plugin:11.1.0
-com.pinterest.ktlint:ktlint-cli:1.1.1
+com.pinterest.ktlint:ktlint-cli:1.2.1
 com.savvasdalkitsis.module-dependency-graph:com.savvasdalkitsis.module-dependency-graph.gradle.plugin:0.12
 com.savvasdalkitsis:module-dependency-graph:0.12
 com.squareup.moshi:moshi-adapters:1.14.0
