@@ -105,7 +105,7 @@ fluxo-bcv-js = "0.2.0"
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
 # https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin?repo=space-kotlin-dokka-dev
-dokka = "1.9.10"
+dokka = "1.9.20"
 
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.5"
