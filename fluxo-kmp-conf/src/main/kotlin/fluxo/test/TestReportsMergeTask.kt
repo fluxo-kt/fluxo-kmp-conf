@@ -175,16 +175,17 @@ internal abstract class TestReportsMergeTask : DefaultTask() {
         val now = System.currentTimeMillis()
         val totalSuccesses = totalTests - totalFailures - totalSkipped
         val status = getStatusFrom(totalFailures, totalSuccesses)
-        val summary = "Overall tests result: $status (" +
+        val fileRelative = outputFile.absoluteFile.relativeTo(project.projectDir)
+        val summary = "Overall tests result: $status" +
+            " in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
+            "\n(" +
             "$totalTests tests, " +
             "$totalSuccesses successes, " +
             "$totalFailures failures, " +
             "$totalSkipped skipped, " +
             "${kmpTargets.size} KMP targets" +
-            ") " +
-            "in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
-            "\n" +
-            "Merged XML tests report to $outputFile"
+            ")\n" +
+            "Merged XML tests report to $fileRelative"
 
         logger.lifecycle(formatSummary(summary, fails))
 

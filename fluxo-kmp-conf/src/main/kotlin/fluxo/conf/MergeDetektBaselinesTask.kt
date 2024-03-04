@@ -93,6 +93,7 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
 
         val outputFile = outputFile.ioFile
         bp.write(targetPath = outputFile.toPath(), baseline = sorted)
-        logger.l("Merged Detekt baseline files to ${outputFile.absolutePath}")
+        val fileRelative = outputFile.absoluteFile.relativeTo(project.projectDir)
+        logger.l("Merged Detekt baseline files to $fileRelative")
     }
 }

@@ -8,6 +8,7 @@
 ### Changed
 - return the plugin artifact shrinking with R8 (saved 32.719%, 265.9 KB).
 - update compatibility methods `NamedDomainObjectSet<T>.named*` for Gradle 8.6+ and older.
+- output relative paths for the merged report files in the log.
 
 ### Added
 - self-apply the plugin to itself immediately with included build.
