@@ -3,21 +3,26 @@ package fluxo.artifact.proc
 import fluxo.artifact.dsl.ArtifactProcessorConfigImpl
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.feat.API_DIR
+import fluxo.conf.feat.bindToApiDumpTasks
 import fluxo.conf.impl.l
+import fluxo.conf.impl.register
 import fluxo.conf.impl.vb
 import fluxo.conf.impl.w
 import fluxo.shrink.SHRINKER_KEEP_GEN_TASK_NAME
+import fluxo.shrink.ShrinkerVerificationTestTask
+import fluxo.shrink.getShrinkerVerifyTaskName
 import fluxo.shrink.registerShrinkerKeepRulesGenTask
 import fluxo.shrink.registerShrinkerTask
+import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFile
+import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
-
-// FIXME: Verify proper replacement of the original artifact with processed one (map by file?).
-
-// FIXME: Verify shrinked artifact for all public declarations.
 
 // FIXME: Run tests with minified artifacts.
 //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
@@ -32,13 +37,14 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 //  https://github.com/search?type=code&q=path%3AMETA-INF%2F**.pro
 
 // FIXME: Support KMP JVM target minification with ProGuard.
+// FIXME: Verify proper replacement of the original artifact with the processed one (map by file?).
 
 // FIXME: Check 'reproducibleArtifacts' with shrinker enabled.
 
-// TODO: Support auto-disabling kotlin null checks generation for the shrinked release builds.
+// TODO: Support auto-disabling kotlin null checks generation for the shrunken release builds.
 //  Auto-add assumenosideeffects to remove left intrinsics in that case.
 
-// FIXME: Publish the debug non-shrinked artifacts alongside the release shrinked ones.
+// FIXME: Publish the debug non-shrunken artifacts alongside the release shrunken ones.
 //  Should be easy to switch between them in the consuming projects.
 //  Use variant attributes?
 
@@ -88,8 +94,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 internal fun setupArtifactsProcessing(
     conf: FluxoConfigurationExtensionImpl,
 ) {
-    val processors = conf.artifactProcessors.get()
-    if (processors.isEmpty() || modeIsNotSupported(conf)) {
+    val processorChains = conf.artifactProcessors.get()
+    if (processorChains.isEmpty() || modeIsNotSupported(conf)) {
         return
     }
 
@@ -105,6 +111,7 @@ internal fun setupArtifactsProcessing(
     val dependencies = mutableListOf<Any>("jar")
     val runAfter = mutableListOf<Any>()
     val chainTailTasks = mutableListOf<TaskProvider<*>>()
+    val testTasks = mutableListOf<TaskProvider<*>>()
 
     // Auto-generate keep rules from API reports
     if (conf.autoGenerateKeepRulesFromApis) {
@@ -115,11 +122,13 @@ internal fun setupArtifactsProcessing(
         }
     }
 
+    val testChainArtifact = !conf.ctx.testsDisabled
     var replaceOutgoingJar = conf.replaceOutgoingJar
-    processors.forEachIndexed { chainId: Int, pc ->
+    processorChains.forEachIndexed { chainId: Int, pc ->
         var stepId = 0
         var chainTailTask: TaskProvider<*>? = null
         var mainJar: Provider<RegularFile>? = null
+        var inputFiles: FileCollection? = null
         var chainState: ProcessorChainState? = null
         val chainDependencies = dependencies.toMutableList()
         val chainForLog = mutableListOf<JvmShrinker>()
@@ -157,16 +166,17 @@ internal fun setupArtifactsProcessing(
 
                     val shrinkTask = p.registerShrinkerTask(setup)
 
-                    if (hasNext || replaceOutgoingJar) {
+                    if (hasNext || replaceOutgoingJar || testChainArtifact) {
                         mainJar = shrinkTask.flatMap { it.destinationFile }
-                    }
-                    if (hasNext) {
-                        chainDependencies += shrinkTask
 
-                        val inputFiles = chainState?.inputFiles
+                        // FIXME: Support shadowing and/or relocation processors in the chain.
+                        inputFiles = chainState?.inputFiles
                             ?: p.objects.fileCollection().apply {
                                 from(shrinkTask.map { it.inputFiles })
                             }
+                    }
+                    if (hasNext) {
+                        chainDependencies += shrinkTask
 
                         val mappingFile = when {
                             obfuscate -> shrinkTask.flatMap { it.mappingFile }
@@ -175,7 +185,7 @@ internal fun setupArtifactsProcessing(
 
                         chainState = ProcessorChainState(
                             mainJar = requireNotNull(mainJar),
-                            inputFiles = inputFiles,
+                            inputFiles = requireNotNull(inputFiles),
                             mappingFile = mappingFile,
                         )
                     } else {
@@ -200,12 +210,40 @@ internal fun setupArtifactsProcessing(
                 builtBy = chainTailTask,
             )
         }
+
+        if (testChainArtifact && chainTailTask != null && mainJar != null) {
+            val verifyTask = tasks.register<ShrinkerVerificationTestTask>(
+                name = getShrinkerVerifyTaskName(chainId = chainId),
+            ) {
+                dependsOn(chainTailTask)
+
+                jar.set(mainJar)
+                this.inputFiles.setFrom(inputFiles)
+
+                this.chainForLog.set(chainForLog.joinToString(separator = " => ") { it.name })
+
+                val project = project
+                val projectDir = project.layout.projectDirectory
+                val apiFiles = project.fileTree(projectDir.dir(API_DIR)).matching {
+                    include("**/*.api")
+                }
+                generatedDefinitions.setFrom(apiFiles)
+            }
+            p.run { verifyTask.bindToApiDumpTasks(optional = true) }
+            chainTailTasks += verifyTask
+            testTasks += verifyTask
+        }
     }
 
     if (processArtifacts && chainTailTasks.isNotEmpty()) {
         tasks.named(CHECK_TASK_NAME) {
             dependsOn(chainTailTasks)
         }
+    }
+    if (testChainArtifact) {
+        val bind = Action<Task> { dependsOn(testTasks) }
+        tasks.named(TEST_TASK_NAME, bind)
+        tasks.named(CHECK_TASK_NAME, bind)
     }
 }
 

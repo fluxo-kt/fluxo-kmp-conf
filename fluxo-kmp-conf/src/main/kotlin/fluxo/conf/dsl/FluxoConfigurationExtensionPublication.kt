@@ -100,7 +100,7 @@ public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChai
      * Note: Because it replaces the existing jar, the variant will keep
      * the dependencies and attributes of the java component.
      * In particular, "org.gradle.dependency.bundling" will be "external" despite
-     * the shrinked version can shade some dependencies.
+     * the shrunken version can shade some dependencies.
      *
      * @see org.gradle.api.artifacts.dsl.ArtifactHandler for more details.
      * @see ArtifactProcessingChain for processors configuration.

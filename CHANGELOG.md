@@ -16,6 +16,7 @@
 - support double-shrinking with both R8 and ProGuard.
 - invalidate jar task when the artifact version changes (e.g. for git HEAD-based snapshots).
 - use the local repository publication as one of the project checks.
+- verify shrunken artifacts for all public declarations.
 
 ### Fixed
 - prevent double escaping of cli arguments.

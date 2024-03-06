@@ -222,6 +222,18 @@ private fun ProcessorSetup<JvmShrinker, *>.getShrinkerTaskName(): String =
         append("Jar")
     }
 
+internal fun getShrinkerVerifyTaskName(chainId: Int): String =
+    buildString(capacity = 32) {
+        // processChainApiVerifyTest
+        // processChain2ApiVerifyTest
+
+        append(PROCESS_TASK_PREFIX)
+        if (chainId != 0) {
+            append(chainId + 1)
+        }
+        append("ApiVerifyTest")
+    }
+
 private fun ProcessorSetup<JvmShrinker, *>.getShrinkerToolName(): String =
     buildString(capacity = 16) {
         // proguard

@@ -2,11 +2,13 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
+    <ID>ArgumentListWrapping:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>ComplexCondition:SetupTestsReport.kt$!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Automatic main class detection from jar manifest,</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Make all dirs to use the chain and id in chain!</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Debugging</ID>
@@ -39,6 +41,8 @@
     <ID>ForbiddenComment:MultiplatformSourceSetUtils.kt$// TODO: Create bundles once and reuse or at least make them lazy evaluatable.</ID>
     <ID>ForbiddenComment:NodeGraphsRenderer.kt$NodeGraphsRenderer.LegendRenderer$// FIXME: This is not implemented yet.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Called 3 times with same error when no git installed or global config error.</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Consider using `GIT_BRANCH` (JitPack) or similar env var instead!</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Consider using `GIT_COMMIT` (JitPack) or similar env var instead!</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Don't allow commit/branch for the release.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Don't check tag for the snapshot publication.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// TODO: Optimize, make lazy accessible via root project including current branch name</ID>
@@ -52,15 +56,15 @@
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Allow to call shrinker by task name even if it's disabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Ensure the obfuscation mapping incrementality and compatibility when double-shrinking.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Publish the debug non-shrinked artifacts alongside the release shrinked ones.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Publish the debug non-shrunken artifacts alongside the release shrunken ones.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Run tests with minified artifacts.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support KMP JVM target minification with ProGuard.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support auto-loading of the shrinking rules from the classpath for the ProGuard.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support shadow jar generation before shrinking artifacts.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Verify proper replacement of the original artifact with processed one (map by file?).</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Verify shrinked artifact for all public declarations.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support shadowing and/or relocation processors in the chain.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Verify proper replacement of the original artifact with the processed one (map by file?).</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support Android minification with ProGuard?</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support auto-disabling kotlin null checks generation for the shrinked release builds.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support auto-disabling kotlin null checks generation for the shrunken release builds.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup checks for the non source set kotlin files (e.g., *.kts scripts).</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup the "InvalidPackageDeclaration" rule for each module,</ID>
@@ -116,9 +120,12 @@
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: Optionally keep $EntriesMappings and $DefaultImpls classes</ID>
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: auto-detect synthetic methods that can be removed from the rules.</ID>
     <ID>ForbiddenComment:ShrinkerTestBase.kt$// TODO: Optimized bytcode tests.</ID>
+    <ID>ForbiddenComment:ShrinkerVerificationTestTask.kt$ShrinkerVerificationTestTask$// TODO: 3. verify the jar itself (artifact signature, reproducibility, etc.)</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: should androidUnitTestDebug depend on androidUnitTest?</ID>
+    <ID>ForbiddenComment:VerifyApiWithReflection.kt$// FIXME: $default methods are not visible in declaredMethods.</ID>
+    <ID>ForbiddenComment:VerifyApiWithReflection.kt$// TODO: Check parent classes and interfaces.</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>Indentation:PropsAndEnv.kt$ </ID>
@@ -129,8 +136,11 @@
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
     <ID>MaxLineLength:PropsAndEnv.kt$if</ID>
     <ID>MaxLineLength:SetupMultiplatform.kt$*</ID>
+    <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
+    <ID>MaximumLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$ </ID>
     <ID>NestedBlockDepth:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$fun buildTrees(): List&lt;GraphNode></ID>
+    <ID>NestedBlockDepth:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$@Suppress("ReturnCount") fun execute( callType: ProcessorCallType, ignoreMemoryLimit: Boolean = false, ): Boolean</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>

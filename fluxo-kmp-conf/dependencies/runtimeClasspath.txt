@@ -23,5 +23,6 @@ io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6
 org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r
 org.eclipse.platform:org.eclipse.osgi:3.18.300
 org.jetbrains.kotlin:kotlin-reflect:1.8.20
+org.ow2.asm:asm:9.7
 org.slf4j:slf4j-api:1.7.36
 org.tukaani:xz:1.9

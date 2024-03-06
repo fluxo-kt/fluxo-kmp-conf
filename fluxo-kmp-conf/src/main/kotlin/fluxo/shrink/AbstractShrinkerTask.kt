@@ -57,6 +57,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.LocalState
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
@@ -90,7 +91,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     val inputFiles: ConfigurableFileCollection = objects.fileCollection()
 
     @get:InputFile
-    @get:CompileClasspath
+    @get:Classpath
     val mainJar: RegularFileProperty = objects.fileProperty()
 
     @get:Optional
@@ -195,10 +196,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     val destinationDir: DirectoryProperty = objects.directoryProperty()
 
     /** Primary destination file */
-    @get:LocalState
-    val destinationFile: Provider<RegularFile> = destinationDir.zip(mainJar) { dir, jar ->
-        dir.file(jar.asFile.name)
-    }
+    @get:OutputFile
+    val destinationFile: Provider<RegularFile>
+
+    @get:OutputFile
+    val mappingFile: Provider<RegularFile>
 
     private val workDir: DirectoryProperty
 
@@ -207,9 +209,6 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:LocalState
     protected val reportsDir: Provider<Directory>
-
-    @get:LocalState
-    val mappingFile: Provider<RegularFile>
 
     private val isRelease: Provider<Boolean>
 
@@ -225,6 +224,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val buildDir = layout.buildDirectory
         val toolName = toolName
         workDir = buildDir
+        // FIXME: Make all dirs to use the chain and id in chain!
         workingTmpDir = buildDir.zip(toolName) { d, tool ->
             d.dir("tmp/shrink/$tool")
         }
@@ -241,6 +241,10 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                 d.dir("output/shrink/$tool")
             },
         )
+
+        destinationFile = destinationDir.zip(mainJar) { dir, jar ->
+            dir.file(jar.asFile.name)
+        }
 
         mappingFile = destinationDir.file("mapping.txt")
 
@@ -333,6 +337,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
             .toCollection(LinkedHashSet())
 
         // TODO: Process output and print only main information if not verbose
+        //  https://chat.openai.com/c/5e10f702-3d53-481d-815e-d3dcd8ef4849
         var called = false
         var ex: Throwable? = null
         var caller: ShrinkerReflectiveCaller? = null
@@ -631,8 +636,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     private fun getFinalConfigFile(
         dir: Directory = this.reportsDir.get(),
         base: File? = null,
-    ): String =
-        dir.file("final-config.pro").asFile.normalizedPath(base)
+    ): String = dir.file("final-config.pro").asFile.normalizedPath(base)
 
     private fun writeJarsConfigurationFile(
         file: File,

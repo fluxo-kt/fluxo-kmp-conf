@@ -22,7 +22,6 @@ import fluxo.conf.impl.withType
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskProvider
 
@@ -149,12 +148,14 @@ private enum class ApiTarget {
  * @see kotlinx.validation.KotlinApiBuildTask
  */
 context(Project)
-internal fun TaskProvider<out Task>.bindToApiDumpTasks() {
+internal fun TaskProvider<*>.bindToApiDumpTasks(optional: Boolean = false) {
     val tasks = tasks
     val task = this
     plugins.withId(KOTLINX_BCV_PLUGIN_ID) {
         val apiDumpTasks = tasks.namedCompat(API_DUMP_SPEC)
-        apiDumpTasks.configureEach { finalizedBy(task) }
+        if (!optional) {
+            apiDumpTasks.configureEach { finalizedBy(task) }
+        }
         configure { dependsOn(apiDumpTasks) }
 
         // Fix the issue with Gradle:

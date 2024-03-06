@@ -142,6 +142,10 @@ kotlinx-metadata-jvm = "0.6.2"
 # https://maven.google.com/web/index.html#com.android.tools:r8
 r8 = "8.3.37"
 
+# ASM is a Java bytecode analysis and manipulation framework.
+# https://mvnrepository.com/artifact/org.ow2.asm/asm
+asm = "9.7"
+
 
 # region Pinned dependencies
 # WARN: the versions are pinned, so no rich syntax supported!
@@ -188,6 +192,7 @@ proguard-plugin = { module = "com.guardsquare:proguard-gradle", version.ref = "p
 proguard-core = { module = "com.guardsquare:proguard-core", version.ref = "proguard-core" }
 kotlinx-metadata-jvm = { module = "org.jetbrains.kotlinx:kotlinx-metadata-jvm", version.ref = "kotlinx-metadata-jvm" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 
 # Testing Kotlin and Java annotation processors, compiler plugins, and code generation.
 # https://github.com/ZacSweers/kotlin-compile-testing/releases

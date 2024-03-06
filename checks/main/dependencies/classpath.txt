@@ -167,7 +167,7 @@ org.ow2.asm:asm-analysis:9.6
 org.ow2.asm:asm-commons:9.6
 org.ow2.asm:asm-tree:9.6
 org.ow2.asm:asm-util:9.6
-org.ow2.asm:asm:9.6
+org.ow2.asm:asm:9.7
 org.slf4j:slf4j-api:1.7.36
 org.tensorflow:tensorflow-lite-metadata:0.1.0-rc2
 org.tukaani:xz:1.9

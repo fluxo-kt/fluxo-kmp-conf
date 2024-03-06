@@ -18,6 +18,7 @@ import fluxo.test.TestReportsMergeTask
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.testing.AbstractTestTask
+import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -102,7 +103,15 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
                 showStackTraces = true
             }
 
-            ignoreFailures = isCI // Always run all tests for all modules on CI
+            // For release builds, we want to fail on any test failure
+            if (isRelease) {
+                ignoreFailures = false
+            }
+
+            // Always run all available tests on CI
+            if (isCI && this is Test) {
+                failFast = false
+            }
 
             val rootLogger = rootProject.logger
             afterTest(

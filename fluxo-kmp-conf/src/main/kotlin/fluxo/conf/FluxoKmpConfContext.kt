@@ -85,7 +85,7 @@ internal abstract class FluxoKmpConfContext
      *
      * `true` when the project has "included" builds.
      */
-    val isInCompositeBuild: Boolean
+    private val isInCompositeBuild: Boolean
 
     val isCI: Boolean = rootProject.isCI().get()
     val isRelease: Boolean = rootProject.isRelease().get()
@@ -187,6 +187,7 @@ internal abstract class FluxoKmpConfContext
         }
 
         if (start.isDryRun) logger.l("DryRun mode is enabled!")
+        if (start.isContinueOnFailure) logger.l("ContinueOnFailure mode is enabled!")
         if (isCI) logger.l("CI mode is enabled!")
         if (isRelease) logger.l("RELEASE mode is enabled!")
         if (composeMetricsEnabled) logger.l("COMPOSE_METRICS are enabled!")

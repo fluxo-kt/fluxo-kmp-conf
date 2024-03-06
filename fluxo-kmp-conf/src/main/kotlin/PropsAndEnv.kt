@@ -99,8 +99,10 @@ internal fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
 
             result = tagName
                 // current commit short hash
+                // FIXME: Consider using `GIT_COMMIT` (JitPack) or similar env var instead!
                 ?: runCommand("git rev-parse --short=7 HEAD")
                     // current branch name
+                    // FIXME: Consider using `GIT_BRANCH` (JitPack) or similar env var instead!
                     ?: if (allowBranch) runCommand("git rev-parse --abbrev-ref HEAD") else null
         } else if (result.length == 40) {
             // full commit hash, sha1
