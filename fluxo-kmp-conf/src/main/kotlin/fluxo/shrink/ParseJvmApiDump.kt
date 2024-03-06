@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package fluxo.shrink
 
 import fluxo.conf.impl.e
@@ -31,9 +33,18 @@ internal fun BufferedReader.parseJvmApiDumpTo(signatures: LinkedHashMap<String, 
     f@ for (line in lines) {
         when (mode) {
             ParserMode.EXPECT_CLASS -> {
-                val parts = line.removeSuffix(" {")
-                    .substringBeforeLast(EXTENDS_DELIMITER)
-                    .split(SPACE)
+                val lineNoSuffix = line.removeSuffix(" {")
+                val extendsIdx = lineNoSuffix.lastIndexOf(EXTENDS_DELIMITER)
+                val parents: List<String>
+                val parts = if (extendsIdx == -1) {
+                    parents = emptyList()
+                    lineNoSuffix
+                } else {
+                    val startIndex = extendsIdx + EXTENDS_DELIMITER.length
+                    parents = lineNoSuffix.substring(startIndex, lineNoSuffix.length)
+                        .split(EXTENDS_DELIMITER2)
+                    lineNoSuffix.substring(0, extendsIdx)
+                }.split(SPACE)
 
                 check(
                     parts.size >= 2 &&
@@ -78,7 +89,7 @@ internal fun BufferedReader.parseJvmApiDumpTo(signatures: LinkedHashMap<String, 
                 }
 
                 mode = ParserMode.EXPECT_MEMBER
-                signature = signatures.getOrCreate(clazz, modifiers, line, type)
+                signature = signatures.getOrCreate(clazz, modifiers, line, type, parents)
                 className = clazz.substringAfterLast('.')
 
                 if (KEEP_RULES_GEN_DBG) {
@@ -196,6 +207,7 @@ internal class ClassSignature(
     val name: String,
     val type: ClassType,
     val modifiers: List<String>,
+    val parents: List<String>,
     val memberSignatures: MutableMap<ClassMemberSignature, ClassMemberSignature> = LinkedHashMap(),
 ) {
     fun writeTo(writer: Appendable, keepModifiers: String = AUTOGEN_KEEP_MODIFIERS) {
@@ -225,7 +237,7 @@ internal sealed interface ClassMemberSignature {
     fun writeTo(writer: Appendable)
 }
 
-private class FieldSignature(
+internal class FieldSignature(
     override val name: String,
     override val returnType: String,
     override val modifiers: List<String>,
@@ -254,7 +266,7 @@ private class FieldSignature(
     }
 }
 
-private class MethodSignature(
+internal class MethodSignature(
     override val name: String,
     override val returnType: String,
     val parameterTypes: List<String>,
@@ -308,6 +320,7 @@ private fun MutableMap<String, ClassSignature>.getOrCreate(
     modifiers: List<String>,
     line: String,
     type: ClassType,
+    parents: List<String>,
 ): ClassSignature {
     return this[clazz]?.also {
         check(it.modifiers == modifiers) {
@@ -320,7 +333,12 @@ private fun MutableMap<String, ClassSignature>.getOrCreate(
                 "\n\t$line" +
                 "\n\t$it"
         }
-    } ?: ClassSignature(clazz, type, modifiers).also {
+        check(it.parents == parents) {
+            "Unexpected parents for $clazz: ${it.parents} != $parents" +
+                "\n\t$line" +
+                "\n\t$it"
+        }
+    } ?: ClassSignature(clazz, type, modifiers, parents).also {
         this[clazz] = it
     }
 }
@@ -468,6 +486,48 @@ private fun String.parseTypes(): List<String> {
     return types
 }
 
+internal fun descriptorTypeFromName(name: String, javaName: Boolean = false): String {
+    var arrayLevels = 0
+    var i = name.length - 2
+    while (i >= 1 && name[i] == '[' && name[i + 1] == ']') {
+        arrayLevels++
+        i -= 2
+    }
+    return when (arrayLevels) {
+        0 -> descriptorTypeFromNameConvert(name, javaName, isArray = false)
+        else -> "[".repeat(arrayLevels) + descriptorTypeFromNameConvert(
+            name = name.substring(0, i + 2),
+            javaName = javaName,
+            isArray = true,
+        )
+    }
+}
+
+@Suppress("CyclomaticComplexMethod")
+private fun descriptorTypeFromNameConvert(
+    name: String,
+    javaName: Boolean = false,
+    isArray: Boolean = false,
+): String {
+    return when (name) {
+        "boolean" -> if (isArray || !javaName) "Z" else name
+        "byte" -> if (isArray || !javaName) "B" else name
+        "char" -> if (isArray || !javaName) "C" else name
+        "short" -> if (isArray || !javaName) "S" else name
+        "int" -> if (isArray || !javaName) "I" else name
+        "long" -> if (isArray || !javaName) "J" else name
+        "float" -> if (isArray || !javaName) "F" else name
+        "double" -> if (isArray || !javaName) "D" else name
+        "void", "" -> if (isArray || !javaName) "V" else name
+        else -> {
+            val prefix = if (isArray || !javaName) "L" else ""
+            val n = if (javaName) name else name.replace('.', '/')
+            val suffix = if (isArray || !javaName) ";" else ""
+            "$prefix$n$suffix"
+        }
+    }
+}
+
 
 private enum class ParserMode {
     EXPECT_CLASS,
@@ -486,6 +546,7 @@ private enum class MemberType {
 internal const val AUTOGEN_KEEP_MODIFIERS = ",includedescriptorclasses"
 
 private const val EXTENDS_DELIMITER = " : "
+private const val EXTENDS_DELIMITER2 = ", "
 
 private const val ENUM_MARKER = EXTENDS_DELIMITER + "java/lang/Enum"
 

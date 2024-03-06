@@ -1,8 +1,10 @@
 package fluxo.conf.jvm
 
 import MAIN_SOURCE_SET_NAME
+import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.SourceSet
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmCompilation
@@ -20,7 +22,8 @@ internal sealed class JvmFilesProvider {
             val jarTask = project.tasks.named(jarTaskName, Jar::class.java)
             val mainJar = jarTask.flatMap { it.archiveFile }
             val jarFiles = project.objects.fileCollection()
-            jarFiles.from(compileFiles.filter { it.path.endsWith(".jar") })
+            val filterSpec = Spec<File> { it.path.endsWith(".jar") }
+            jarFiles.from(compileFiles.filter(filterSpec))
             return JvmFiles(mainJar, jarFiles, arrayOf(jarTask))
         }
     }

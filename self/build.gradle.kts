@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.plugin.spotless)
     // Detekt ReportMergeTask is used internally
     implementation(libs.plugin.detekt)
+    // ASM for bytecode verification.
+    implementation(libs.asm)
 
     implementation(platform(libs.okhttp.bom))
 

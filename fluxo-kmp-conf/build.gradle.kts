@@ -47,10 +47,14 @@ configurations.implementation {
 }
 
 dependencies {
+    // ALWAYS ADD SAME DEPS TO THE 'self' MODULE!
+
     // Spotless util classes are used internally
     implementation(libs.plugin.spotless)
     // Detekt ReportMergeTask is used internally
     implementation(libs.plugin.detekt)
+    // ASM for bytecode verification.
+    implementation(libs.asm)
 
     implementation(platform(libs.okhttp.bom))
 

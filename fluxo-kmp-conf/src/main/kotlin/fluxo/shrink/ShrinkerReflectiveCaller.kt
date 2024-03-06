@@ -62,19 +62,21 @@ internal class ShrinkerReflectiveCaller(
 
         try {
             val (className, args) = args()
-            val clazz = when (callType) {
-                ProcessorCallType.BUNDLED -> tryLoadBundled(className)
+            val (clazz, closeable) = when (callType) {
+                ProcessorCallType.BUNDLED -> tryLoadBundled(className) to null
                 else -> tryLoadUnbundled(className)
             }
-            if (clazz != null) {
-                /** @see fluxo.shrink.ShrinkerTestBase.shrink */
-                when (shrinker) {
-                    R8 -> callR8(clazz, args)
-                    ProGuard -> callProGuard(clazz, args)
+            closeable.use {
+                if (clazz != null) {
+                    /** @see fluxo.shrink.ShrinkerTestBase.shrink */
+                    when (shrinker) {
+                        R8 -> callR8(clazz, args)
+                        ProGuard -> callProGuard(clazz, args)
+                    }
+                    return true
+                } else {
+                    logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")
                 }
-                return true
-            } else {
-                logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")
             }
         } catch (e: Throwable) {
             throw GradleException("Failed to run $callType $shrinker in-memory! $e", e)
@@ -89,13 +91,18 @@ internal class ShrinkerReflectiveCaller(
         }
     }
 
-    private fun tryLoadUnbundled(clazz: String): Class<*>? {
+    private fun tryLoadUnbundled(className: String): Pair<Class<*>?, AutoCloseable?> {
         val jarUrls = toolJars.map { it.toURI().toURL() }.toTypedArray()
         val classLoader = URLClassLoader(jarUrls, javaClass.classLoader)
-        return tryGetClassForName(clazz, classLoader)?.also {
+        val clazz = tryGetClassForName(className, classLoader)?.also {
             v = v(it)
             logger.l("Using $shrinker $v (loaded with URLClassLoader)")
         }
+        if (clazz == null) {
+            classLoader.close()
+            return null to null
+        }
+        return clazz to classLoader
     }
 
     private fun callProGuard(clazz: Class<*>, args: Array<String>) {

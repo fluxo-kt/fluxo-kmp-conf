@@ -19,6 +19,8 @@
   * https://github.com/slackhq/slack-gradle-plugin/pull/778/files
   * Only apply jdk-release in jvm builds?
     * https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda
+* Security setup
+  * Setup for securing API keys in `BuildConfigs` (generated code in general) and in the usual code.
 * CI improvements
   * https://github.com/adevinta/spark-android/tree/main/.github
 * Gradle Doctor plugin

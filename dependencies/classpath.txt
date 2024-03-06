@@ -81,6 +81,6 @@ org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3
 org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.2
 org.jetbrains:annotations:13.0
 org.ow2.asm:asm-tree:9.6
-org.ow2.asm:asm:9.6
+org.ow2.asm:asm:9.7
 org.slf4j:slf4j-api:1.7.36
 org.tukaani:xz:1.9

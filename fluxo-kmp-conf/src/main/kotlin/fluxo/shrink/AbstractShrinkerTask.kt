@@ -90,7 +90,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     val inputFiles: ConfigurableFileCollection = objects.fileCollection()
 
     @get:InputFile
-    @get:CompileClasspath
+    @get:Classpath
     val mainJar: RegularFileProperty = objects.fileProperty()
 
     @get:Optional
@@ -225,6 +225,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val buildDir = layout.buildDirectory
         val toolName = toolName
         workDir = buildDir
+        // FIXME: Make all dirs to use the chain and id in chain!
         workingTmpDir = buildDir.zip(toolName) { d, tool ->
             d.dir("tmp/shrink/$tool")
         }
@@ -333,6 +334,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
             .toCollection(LinkedHashSet())
 
         // TODO: Process output and print only main information if not verbose
+        //  https://chat.openai.com/c/5e10f702-3d53-481d-815e-d3dcd8ef4849
         var called = false
         var ex: Throwable? = null
         var caller: ShrinkerReflectiveCaller? = null
@@ -631,8 +633,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     private fun getFinalConfigFile(
         dir: Directory = this.reportsDir.get(),
         base: File? = null,
-    ): String =
-        dir.file("final-config.pro").asFile.normalizedPath(base)
+    ): String = dir.file("final-config.pro").asFile.normalizedPath(base)
 
     private fun writeJarsConfigurationFile(
         file: File,

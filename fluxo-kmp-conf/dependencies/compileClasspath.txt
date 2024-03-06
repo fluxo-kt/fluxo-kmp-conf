@@ -85,4 +85,4 @@ org.jetbrains.kotlin:kotlin-util-klib:1.9.23
 org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.14.0
 org.jetbrains.kotlinx:binary-compatibility-validator:0.14.0
 org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.2
-org.ow2.asm:asm:9.6
+org.ow2.asm:asm:9.7

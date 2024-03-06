@@ -149,7 +149,7 @@ private enum class ApiTarget {
  * @see kotlinx.validation.KotlinApiBuildTask
  */
 context(Project)
-internal fun TaskProvider<out Task>.bindToApiDumpTasks() {
+internal fun TaskProvider<*>.bindToApiDumpTasks() {
     val tasks = tasks
     val task = this
     plugins.withId(KOTLINX_BCV_PLUGIN_ID) {
