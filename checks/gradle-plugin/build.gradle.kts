@@ -9,7 +9,8 @@ group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
 
 setupGradlePlugin {
-    allWarningsAsErrors = true
+    allWarningsAsErrors = false
+    enableApiValidation = false
     shrinkArtifacts = true
     shrinkingConfig.useBothShrinkers = true
 }

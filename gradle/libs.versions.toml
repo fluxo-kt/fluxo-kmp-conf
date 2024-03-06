@@ -13,23 +13,23 @@ version = "0.7.0-SNAPSHOT"
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
 # javaLangTarget 11 required for Android Gradle Plugin and Android Lint.
-javaLangTarget = "11"
-kotlinLangVersion = "1.8"
-kotlinApiVersion = "1.8"
+javaLangTarget = "17"
+kotlinLangVersion = "2.1"
+kotlinApiVersion = "2.1"
 kotlinCoreLibraries = "1.8.22"
 
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
 # WARNING: Do not forget to update the version badge and examples in `README.md`!
-kotlin = "1.9.22"
+kotlin = "2.0.0-Beta4"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
 jetbrains-compose = "1.6.0"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.22-1.0.18"
+ksp = "2.0.0-Beta4-1.0.18"
 
 # region Android specific
 

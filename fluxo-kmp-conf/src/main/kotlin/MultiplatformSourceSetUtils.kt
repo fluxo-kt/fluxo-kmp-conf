@@ -378,14 +378,9 @@ public fun <E> E.commonCompileOnly(
     addConstraint: Boolean = true,
 ) where E : KotlinSourceSetContainer, E : KotlinTargetsContainer {
     val p = try {
-        project ?: targets.firstOrNull()?.project ?: when (this) {
-            is KotlinTopLevelExtension -> {
-                @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-                this.project
-            }
-
-            else -> throw NullPointerException("Please, provide project")
-        }
+        project
+            ?: targets.firstOrNull()?.project
+            ?: throw NullPointerException("Please, provide project")
     } catch (e: Throwable) {
         throw GradleException(
             "Unable to add common compileOnly dependency '$dependencyNotation': $e",
