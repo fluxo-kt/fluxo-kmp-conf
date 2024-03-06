@@ -36,6 +36,7 @@
 * Linting
   * https://github.com/jeremymailen/kotlinter-gradle
   * https://dev.to/aseemwangoo/supercharge-your-kotlin-project-2mcb
+  * https://habr.com/ru/companies/ru_mts/articles/797053/
   * Konsist
     * https://github.com/LemonAppDev/konsist
     * https://proandroiddev.com/protect-kotlin-project-architecture-using-konsist-3bfbe1ad0eea
@@ -231,4 +232,17 @@
   * https://github.com/turansky/seskar (Kotlin/JS sugar)
 * KtLint-cli setup
   * https://github.com/pinterest/ktlint/blob/cb17bbf/ktlint-cli/build.gradle.kts#L44
+* Trace the recomposition of a Composable with its cause without boilerplate code
+  * https://github.com/jisungbin/ComposeInvestigator
+* Gradle Plugin that allows you to decompile bytecode compiled with Jetpack Compose Compiler Plugin into Java and check it
+  * https://github.com/takahirom/decomposer/
+* `calf-file-picker` with JS and Wasm support. And other compat widgets.
+  * https://calf-library.netlify.app/
+  * https://github.com/MohamedRejeb/Calf/releases/tag/v0.4.0
+* multiplatform libs to work w/ maven without requiring users to explicitly depend on the -jvm artifact.
+  * https://kotlinlang.slack.com/archives/C8C4JTXR7/p1706909911878839
+  * Kotlinx Serialization achieves this by editing the POM for the unflavoured module
+    * https://github.com/Kotlin/kotlinx.serialization/blob/1116f5f/gradle/publish-mpp-root-module-in-platform.gradle#L6-L45
+  * Arrow does the same
+    * https://github.com/arrow-kt/arrow-gradle-config/blob/0.12.0-rc.20/arrow-gradle-config-publish/src/main/kotlin/internal/PublishMppRootModuleInPlatform.kt
 </details>
