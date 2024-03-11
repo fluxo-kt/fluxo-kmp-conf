@@ -137,7 +137,7 @@ private fun Project.setupGradleProjectPublication(
     // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
     // https://github.com/JetBrains/kotlin/commit/68fdeaf
     if (conf.reproducibleArtifacts != false) {
-        logger.l("setup reproducibleArtifacts")
+        logger.l("reproducible artifacts set up")
         tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
@@ -364,22 +364,24 @@ private fun Project.setupPublicationRepositoryAndSigning(
         }
     }
 
-    publishing.repositories {
-        logger.l("setup localDev maven repository")
-        maven {
-            name = "localDev"
-            url = uri(rootProject.file(LOCAL_REPO_PATH))
-        }
-
-        if (mavenRepo) {
+    if (!testsDisabled) {
+        publishing.repositories {
+            logger.l("'localDev' maven repository added for tests and local development")
             maven {
-                val url = config.repositoryUrl
-                setUrl(url)
-                logger.l("setup maven repository: $url")
+                name = "localDev"
+                url = uri(rootProject.file(LOCAL_REPO_PATH))
+            }
 
-                credentials {
-                    username = config.repositoryUserName
-                    password = config.repositoryPassword
+            if (mavenRepo) {
+                maven {
+                    val url = config.repositoryUrl
+                    setUrl(url)
+                    logger.l("setup maven repository: $url")
+
+                    credentials {
+                        username = config.repositoryUserName
+                        password = config.repositoryPassword
+                    }
                 }
             }
         }
@@ -391,6 +393,7 @@ private fun Project.setupPublicationRepositoryAndSigning(
     // - https://github.com/voize-gmbh/reakt-native-toolkit/commit/baf0392
     // - https://github.com/gradle-nexus/publish-plugin/issues/208
     val tasks = tasks
+    // TODO: Take jar tasks from project outputs instead of tasks?
     val jarTasks = arrayOf(
         tasks.withType<JarJvm>(),
         tasks.namedCompat { it.endsWith("Jar") },
@@ -407,6 +410,15 @@ private fun Project.setupPublicationRepositoryAndSigning(
         // logger.v("setup publication task '$name' ('$path')")
         signingTasks?.let { dependsOn(it) } // `shouldRunAfter` is not enough
         jarTasks.forEach { mustRunAfter(it) }
+    }
+
+    // Invalidate jar task when the artifact version changes
+    // (e.g. for git HEAD-based snapshots)
+    val version = config.version
+    jarTasks.forEach {
+        it.configureEach {
+            inputs.property("fluxoVersion", version)
+        }
     }
 }
 
@@ -507,7 +519,7 @@ private fun Project.setupJavadocTask(
             logger.w("Fallback to Javadoc due to Dokka setup error: $e", e)
         }
     }
-    logger.l("setup Javadoc publication fallback")
+    logger.l("regular Javadoc publication fallback set up instead of Dokka")
     return getOrCreateJavadocTask()
 }
 

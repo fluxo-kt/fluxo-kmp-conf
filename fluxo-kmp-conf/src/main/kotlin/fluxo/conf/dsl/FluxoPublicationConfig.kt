@@ -44,7 +44,7 @@ public data class FluxoPublicationConfig(
     },
 
     public var licenseName: String? = "The Apache License, Version 2.0",
-    public var licenseUrl: String? = "http://www.apache.org/licenses/LICENSE-2.0.txt",
+    public var licenseUrl: String? = "https://www.apache.org/licenses/LICENSE-2.0.txt",
 ) {
     public val isSigningEnabled: Boolean
         get() = !signingKey.isNullOrEmpty()

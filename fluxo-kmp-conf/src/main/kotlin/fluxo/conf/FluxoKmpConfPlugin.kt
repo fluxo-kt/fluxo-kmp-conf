@@ -121,14 +121,14 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             setupBinaryCompatibilityValidator(conf)
         }
 
+        // Gradle project atifacts publication
+        setupGradleProjectPublication(conf)
+
         // Artifacts processing: minification/shrinking, shadowing, etc.
         val project = conf.project
         if (!project.isR8Disabled().get()) {
             setupArtifactsProcessing(conf)
         }
-
-        // Gradle project atifacts publication
-        setupGradleProjectPublication(conf)
 
         // Generic custom lazy configuration
         conf.onConfiguration?.let { action ->

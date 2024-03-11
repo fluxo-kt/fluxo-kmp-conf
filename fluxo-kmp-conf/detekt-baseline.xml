@@ -39,6 +39,8 @@
     <ID>ForbiddenComment:MultiplatformSourceSetUtils.kt$// TODO: Create bundles once and reuse or at least make them lazy evaluatable.</ID>
     <ID>ForbiddenComment:NodeGraphsRenderer.kt$NodeGraphsRenderer.LegendRenderer$// FIXME: This is not implemented yet.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Called 3 times with same error when no git installed or global config error.</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Don't allow commit/branch for the release.</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Don't check tag for the snapshot publication.</ID>
     <ID>ForbiddenComment:PropsAndEnv.kt$// TODO: Optimize, make lazy accessible via root project including current branch name</ID>
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// FIXME: Avoid duplicate logging between similar tasks</ID>
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: note dependency in the (root?) project classpath</ID>
@@ -98,6 +100,7 @@
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Replace Gradle Plugin publishing with something less broken (official is just a mess)?</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Set RC/alpha/beta releases status to Ivy's: milestone/integration when it will be possible</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Should wrap `setupPublicationExtension` in afterEvaluate?</ID>
+    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Take jar tasks from project outputs instead of tasks?</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Warn only when assemble and/or publishing is really called.</ID>
     <ID>ForbiddenComment:SetupSpotless.kt$// TODO: Freshmark</ID>
     <ID>ForbiddenComment:SetupSpotless.kt$// TODO: Git pre-commit hook</ID>
@@ -118,6 +121,7 @@
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>Indentation:PropsAndEnv.kt$ </ID>
     <ID>LongMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
+    <ID>LongMethod:SetupPublication.kt$context(FluxoKmpConfContext) private fun Project.setupPublicationRepositoryAndSigning( config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
     <ID>LongMethod:SetupTestsReport.kt$internal fun FluxoKmpConfContext.setupTestsReport()</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>

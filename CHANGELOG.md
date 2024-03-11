@@ -14,6 +14,7 @@
 ### Added
 - self-apply the plugin to itself immediately with included build.
 - support double-shrinking with both R8 and ProGuard.
+- invalidate jar task when the artifact version changes (e.g. for git HEAD-based snapshots).
 
 ### Fixed
 - prevent double escaping of cli arguments.

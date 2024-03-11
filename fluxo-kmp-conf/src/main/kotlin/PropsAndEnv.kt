@@ -84,6 +84,10 @@ internal fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
 
     // FIXME: Called 3 times with same error when no git installed or global config error.
 
+    // FIXME: Don't check tag for the snapshot publication.
+    // FIXME: Don't allow commit/branch for the release.
+    //  If release version is specified, it should be in a tag.
+
     return provider {
         var result = envOrPropValue("SCM_TAG")
         if (result.isNullOrBlank()) {
