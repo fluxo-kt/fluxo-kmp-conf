@@ -10,6 +10,7 @@
 <details>
   <summary>Show</summary>
 
+* Save known versions of deps and tools to use by default (the whole toml file?)
 * [Gradle Plugin TestKit](https://github.com/autonomousapps/dependency-analysis-gradle-plugin/tree/main/testkit) ([Docs](https://docs.gradle.org/current/userguide/test_kit.html))
 * https://github.com/square/radiography
 * https://github.com/JetBrains-Research/reflekt
@@ -26,6 +27,11 @@
   * https://github.com/topics/detekt-rules
   * https://detekt.dev/marketplace
     * https://detekt.dev/marketplace/#unpublished
+  * Custom detekt/lint rules
+    * Warn on nutable (var) fields in data classes or beans.
+    * Warn on data classes overall (public api, android app, etc.)
+    * По гайдлайнам если есть хоть 1 именованный параметр нужно все именовать
+    * Бед практис передавать мьютбл (collection, etc.) в параметрах
   * Create detekt rules for Gradle plugins best practices
     * e.g., not to use `org.gradle.api.tasks.TaskCollection.matching`, `findByName`, etc. when `named` or `withType`
       is enough (don't early create tasks).
@@ -240,6 +246,8 @@
 * `calf-file-picker` with JS and Wasm support. And other compat widgets.
   * https://calf-library.netlify.app/
   * https://github.com/MohamedRejeb/Calf/releases/tag/v0.4.0
+* A Kotlin Symbol Processor to list sealed object instances safely in generated code.
+  * https://github.com/SimonMarquis/SealedObjectInstances
 * multiplatform libs to work w/ maven without requiring users to explicitly depend on the -jvm artifact.
   * https://kotlinlang.slack.com/archives/C8C4JTXR7/p1706909911878839
   * Kotlinx Serialization achieves this by editing the POM for the unflavoured module
