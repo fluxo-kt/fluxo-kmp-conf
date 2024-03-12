@@ -95,7 +95,7 @@
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Avoid publication setup when possible</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Decorate the build logs with maven coordinates of published artifacts</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Distinguish between common and platform-specific publications</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Make configurable</ID>
+    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Make configurable (sanitize/verify)</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Protect publication tasks from invalid GIT state (dirty, untracked files, etc.)</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Replace Gradle Plugin publishing with something less broken (official is just a mess)?</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Set RC/alpha/beta releases status to Ivy's: milestone/integration when it will be possible</ID>

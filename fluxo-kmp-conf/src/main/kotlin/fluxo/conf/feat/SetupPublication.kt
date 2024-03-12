@@ -27,6 +27,7 @@ import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.namedOrNull
 import fluxo.conf.impl.register
 import fluxo.conf.impl.the
+import fluxo.conf.impl.uppercaseFirstChar
 import fluxo.conf.impl.w
 import fluxo.conf.impl.withType
 import fluxo.test.formatSummary
@@ -45,6 +46,7 @@ import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.jvm.tasks.Jar as JarJvm
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
@@ -366,9 +368,9 @@ private fun Project.setupPublicationRepositoryAndSigning(
 
     if (!testsDisabled) {
         publishing.repositories {
-            logger.l("'localDev' maven repository added for tests and local development")
+            logger.l("'$LOCAL_REPO_NAME' maven repository added for tests and local development")
             maven {
-                name = "localDev"
+                name = LOCAL_REPO_NAME
                 url = uri(rootProject.file(LOCAL_REPO_PATH))
             }
 
@@ -384,6 +386,13 @@ private fun Project.setupPublicationRepositoryAndSigning(
                     }
                 }
             }
+        }
+
+        // Use the local repository publication as a check.
+        // `publishAllPublicationsToLocalDevRepository`.
+        tasks.named(CHECK_TASK_NAME) {
+            val repoName = LOCAL_REPO_NAME.uppercaseFirstChar()
+            dependsOn("publishAllPublicationsTo${repoName}Repository")
         }
     }
 
@@ -413,7 +422,7 @@ private fun Project.setupPublicationRepositoryAndSigning(
     }
 
     // Invalidate jar task when the artifact version changes
-    // (e.g. for git HEAD-based snapshots)
+    // (e.g., for the GIT HEAD-based snapshots)
     val version = config.version
     jarTasks.forEach {
         it.configureEach {
@@ -460,8 +469,9 @@ private fun Project.setupPublicationExtension(
 }
 
 
-// TODO: Make configurable
+// TODO: Make configurable (sanitize/verify)
 private const val LOCAL_REPO_PATH = "_/local-repo"
+private const val LOCAL_REPO_NAME = "localDev"
 
 /** Also a plugin name! */
 private const val SIGNING_EXT_NAME = "signing"
@@ -535,7 +545,7 @@ private fun Project.getOrCreateDokkaTask(
             // Collect Dokka output
             val dokkaTaskName = when (type) {
                 ConfigurationType.KOTLIN_MULTIPLATFORM -> "dokkaHtml"
-                // Use Javadoc-like format for all non-KMP projects
+                // Use a Javadoc-like format for all non-KMP projects.
                 else -> "dokkaJavadoc"
             }
             from(project.tasks.named(dokkaTaskName))

@@ -2,14 +2,14 @@ package fluxo.conf.impl
 
 internal fun String.uppercaseFirstChar(): String =
     transformFirstCharIfNeeded(
-        shouldTransform = { it.isLowerCase() },
-        transform = { it.uppercaseChar() },
+        shouldTransform = Char::isLowerCase,
+        transform = Char::uppercaseChar,
     )
 
 internal fun String.lowercaseFirstChar(): String =
     transformFirstCharIfNeeded(
-        shouldTransform = { it.isUpperCase() },
-        transform = { it.lowercaseChar() },
+        shouldTransform = Char::isUpperCase,
+        transform = Char::lowercaseChar,
     )
 
 private inline fun String.transformFirstCharIfNeeded(
