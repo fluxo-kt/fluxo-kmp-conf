@@ -10,7 +10,7 @@
 <details>
   <summary>Show</summary>
 
-* Save known versions of deps and tools to use by default (the whole toml file?)
+* Save known versions of deps and tools to use by default (the whole toml file with no comments?)
 * [Gradle Plugin TestKit](https://github.com/autonomousapps/dependency-analysis-gradle-plugin/tree/main/testkit) ([Docs](https://docs.gradle.org/current/userguide/test_kit.html))
 * https://github.com/square/radiography
 * https://github.com/JetBrains-Research/reflekt

@@ -22,14 +22,14 @@ kotlinCoreLibraries = "1.8.22"
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
 # WARNING: Do not forget to update the version badge and examples in `README.md`!
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
 jetbrains-compose = "1.6.0"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.22-1.0.18"
+ksp = "1.9.23-1.0.19"
 
 # region Android specific
 
@@ -243,7 +243,7 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 # NOTE: Don't forget to edit version in all `settings.gradle.kts` files as well!
 gradle-enterprise = { id = "com.gradle.enterprise", version = "3.16.2" }
 
-# Gradle Versions Plugin: provides a task to determine which dependencies have updates
+# Gradle Versions Plugin: provides a task to determine, which dependencies have updates.
 # https://github.com/ben-manes/gradle-versions-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.ben-manes.versions
 deps-versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }

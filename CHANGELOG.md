@@ -24,7 +24,8 @@
 
 ### Updated
 - bump Android Gradle Plugin from _8.2.2_ to _8.3.0_ (compile-only dependency).
-- bump [KSP](https://github.com/google/ksp) (for Kotlin _1.9.22_) from _1.0.17_ to _1.0.18_.
+- bump Kotlin from _1.9.22_ to _1.9.23_.
+- bump [KSP](https://github.com/google/ksp) from _1.0.17_ to _1.0.19_.
 - bump [KtLint](https://github.com/pinterest/ktlint) from _1.1.1_ to _1.2.1_.
 - bump `org.json:json` from _20231013_ to _20240205_ in https://github.com/fluxo-kt/fluxo-kmp-conf/pull/37
 - bump `com.mikepenz.aboutlibraries.plugin` from _10.10.0_ to _11.1.0_.
