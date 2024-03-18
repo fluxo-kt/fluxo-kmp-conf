@@ -11,6 +11,18 @@
   <summary>Show</summary>
 
 * Save known versions of deps and tools to use by default (the whole toml file with no comments?)
+* Support `-Xdont-warn-on-error-suppression` kotlin flag.
+  * https://youtrack.jetbrains.com/issue/KT-66513#focus=Comments-27-9461367.0-0
+* Support auto detection if `-Xjdk-release` can be used. Fail only for release builds. Warn otherwise.
+  * _If there's no `ct.sym` file in JDK but `-Xjdk-release` is used, the compiler will stop with an error. The only workaround in that case is to remove `-Xjdk-release`._
+  * https://youtrack.jetbrains.com/issue/KT-29974#focus=Comments-27-9458958.0-0
+  * https://github.com/slackhq/slack-gradle-plugin/pull/778/files
+  * Only apply jdk-release in jvm builds?
+    * https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda
+* CI improvements
+  * https://github.com/adevinta/spark-android/tree/main/.github
+* Gradle Doctor plugin
+  * https://github.com/runningcode/gradle-doctor
 * [Gradle Plugin TestKit](https://github.com/autonomousapps/dependency-analysis-gradle-plugin/tree/main/testkit) ([Docs](https://docs.gradle.org/current/userguide/test_kit.html))
 * https://github.com/square/radiography
 * https://github.com/JetBrains-Research/reflekt
@@ -32,6 +44,8 @@
     * Warn on data classes overall (public api, android app, etc.)
     * По гайдлайнам если есть хоть 1 именованный параметр нужно все именовать
     * Бед практис передавать мьютбл (collection, etc.) в параметрах
+    * Add lint check to warn about calls to mutableStateOf with a State object
+      * https://issuetracker.google.com/issues/169445918
   * Create detekt rules for Gradle plugins best practices
     * e.g., not to use `org.gradle.api.tasks.TaskCollection.matching`, `findByName`, etc. when `named` or `withType`
       is enough (don't early create tasks).
@@ -51,6 +65,8 @@
     * https://github.com/tnorbye/kdoc-formatter
 * https://github.com/ashtanko/kotlin-app-template/tree/main
   * Github Action + git-hook + Issues Template
+*
+  * https://github.com/danger/kotlin
 * __Infrastructure plugins__
   * https://github.com/slackhq/slack-gradle-plugin/
     * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.13.0
@@ -58,6 +74,8 @@
   * https://github.com/avito-tech/avito-android
     * https://github.com/avito-tech/avito-android/blob/a1949b4/subprojects/assemble/proguard-guard/src/main/kotlin/com/avito/android/proguard_guard/shadowr8/ShadowR8TaskCreator.kt
     * GIT hooks: https://github.com/avito-tech/avito-android/tree/develop/.git_hooks
+  * palantir gradle baseline
+    * https://github.com/palantir/gradle-baseline
   * Gradle Core plugins
     * https://github.com/gradle/gradle/tree/a300b86/platforms/documentation/docs/src/docs/userguide/core-plugins
   * Gradle configuration
@@ -211,8 +229,11 @@
   * https://github.com/guardsquare/appsweep-gradle
   * https://appsweep.guardsquare.com/
   * https://plugins.gradle.org/plugin/com.guardsquare.appsweep
-* Java 9 modularity support
+* Java 9 modularity support (JPMS)
   * https://github.com/Kotlin/kotlinx.coroutines/blob/d12eb45/buildSrc/src/main/kotlin/Java9Modularity.kt
+  * https://github.com/KotlinCrypto/secure-random/pull/13
+  * https://github.com/KotlinCrypto/core/pull/58
+  * https://github.com/KotlinCrypto/core/pull/56
 * Common utils
   * https://github.com/aminography/CommonUtils/tree/1bfbe2d/library/src/main/java/com/aminography/commonutils
 * States and Events
@@ -237,6 +258,7 @@
 * Kotlin/JS Fast Configuration
   * https://github.com/turansky/kfc-plugins
   * https://github.com/turansky/seskar (Kotlin/JS sugar)
+  * Publish Kotlin/JS to NPM and JSR (https://jsr.io/).
 * KtLint-cli setup
   * https://github.com/pinterest/ktlint/blob/cb17bbf/ktlint-cli/build.gradle.kts#L44
 * Trace the recomposition of a Composable with its cause without boilerplate code

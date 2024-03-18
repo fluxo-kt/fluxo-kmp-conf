@@ -65,6 +65,12 @@ internal fun FluxoKmpConfContext.registerReportMergeTask(
 //  set the 'rootPackage' automatically from module group/package.
 //  https://github.com/detekt/detekt/issues/4936#issue-1265233509
 
+// FIXME: Setup checks for the non source set kotlin files (e.g., *.kts scripts).
+//  See orbit-mvi setup for an example.
+
+// FIXME: Setup the light-weight mode for the git hooks, to run only on the changed files.
+//  And probably without types resolution.
+
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun Project.setupDetekt(
     conf: FluxoConfigurationExtensionImpl,
