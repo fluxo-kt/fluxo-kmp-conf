@@ -128,6 +128,12 @@ jobs:
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
+      - name: 'Run self check'
+        working-directory: self
+        run: ./gradlew build assemble check --continue --stacktrace --scan
+        env:
+          GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+
       -  name: Upload the build report
          if: success() || failure()
          uses: actions/upload-artifact@v4
