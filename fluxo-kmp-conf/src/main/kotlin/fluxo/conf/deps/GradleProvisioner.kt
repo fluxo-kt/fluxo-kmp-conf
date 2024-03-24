@@ -8,7 +8,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.attributes.Bundling
-import org.gradle.internal.component.AbstractVariantSelectionException
 
 internal object GradleProvisioner {
 
@@ -68,7 +67,8 @@ internal object GradleProvisioner {
             } catch (e: Throwable) {
                 var cause = e.cause
                 while (cause != null) {
-                    if (cause is AbstractVariantSelectionException) {
+                    /** @see org.gradle.internal.component.AbstractVariantSelectionException */
+                    if (cause.javaClass.simpleName == "AbstractVariantSelectionException") {
                         throw e
                     }
                     cause = cause.cause
@@ -156,11 +156,7 @@ internal object GradleProvisioner {
 
     /** Models a request to the provisioner.  */
     private class Request(val withTransitives: Boolean, mavenCoords: Collection<String>) {
-        val mavenCoords: List<String>
-
-        init {
-            this.mavenCoords = mavenCoords.toList()
-        }
+        val mavenCoords: List<String> = mavenCoords.toList()
 
         override fun hashCode(): Int {
             return if (withTransitives) mavenCoords.hashCode() else mavenCoords.hashCode().inv()
