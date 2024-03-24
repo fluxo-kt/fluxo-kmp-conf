@@ -24,6 +24,8 @@ kotlin {
             // https://stackoverflow.com/a/76022933/1816338
             "-P=plugin:org.jetbrains.kotlin.assignment:annotation=org.gradle.api.SupportsKotlinAssignmentOverloading",
         )
+        optIn.add("kotlin.contracts.ExperimentalContracts")
+        suppressWarnings = true
     }
 }
 
