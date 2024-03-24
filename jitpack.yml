@@ -3,7 +3,7 @@
 # Specify JDK version
 # https://jitpack.io/docs/BUILDING/#java-version
 jdk:
-  - openjdk11
+  - openjdk21
 
 install:
-  - ./gradlew :fluxo-kmp-conf:publishToMavenLocal
+  - ./gradlew :plugin:publishToMavenLocal
