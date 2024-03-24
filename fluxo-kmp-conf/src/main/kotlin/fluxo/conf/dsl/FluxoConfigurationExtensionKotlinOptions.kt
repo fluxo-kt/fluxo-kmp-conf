@@ -158,7 +158,9 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * Flag to configure [Java toolchain](https://docs.gradle.org/current/userguide/toolchains.html)
      * both for Kotlin JVM and Java tasks.
      *
-     * Turned off by default as it can slow down the build.
+     * Turned off by default as it can slow down the build and usually suboptimal.
+     * See [Gradle Toolchains are rarely a good idea](https://jakewharton.com/gradle-toolchains-are-rarely-a-good-idea/)
+     * for details.
      *
      * Inherited from the parent project if not set.
      *
