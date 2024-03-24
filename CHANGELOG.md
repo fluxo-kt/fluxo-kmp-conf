@@ -23,7 +23,7 @@
 - prevent double calculation of scmTag with GIT commands execution.
 
 ### Updated
-- bump Android Gradle Plugin from _8.2.2_ to _8.3.0_ (compile-only dependency).
+- bump Android Gradle Plugin from _8.2.2_ to _8.3.1_ (compile-only dependency).
 - bump Kotlin from _1.9.22_ to _1.9.23_.
 - bump [KSP](https://github.com/google/ksp) from _1.0.17_ to _1.0.19_.
 - bump [KtLint](https://github.com/pinterest/ktlint) from _1.1.1_ to _1.2.1_.
