@@ -191,7 +191,7 @@ r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 
 # Testing Kotlin and Java annotation processors, compiler plugins, and code generation.
 # https://github.com/ZacSweers/kotlin-compile-testing/releases
-# https://github.com/tschuchortdev/kotlin-compile-testing/releases
+# https://github.com/tschuchortdev/kotlin-compile-testing/releases.
 kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.4.0" }
 
 # Annotations for JVM-based languages
@@ -282,4 +282,4 @@ build-config = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
 # Resolve all dependencies used in a Gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases
 # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
-about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.1.0" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.1.1" }
