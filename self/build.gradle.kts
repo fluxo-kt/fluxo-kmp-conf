@@ -135,6 +135,13 @@ buildConfig {
     buildConfigField("R8", libs.r8)
 }
 
+if (project.hasProperty("buildScan")) {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+    }
+}
+
 fun Provider<PluginDependency>.toModuleDependency(): Provider<String> = map {
     it.toModuleDependency()
 }
