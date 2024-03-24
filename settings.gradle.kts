@@ -38,5 +38,6 @@ rootProject.name = "fluxo-kmp-conf"
 
 ":fluxo-kmp-conf".let {
     include(it)
+    // NOTE: Name is used in the `jitpack.yml`!
     project(it).name = "plugin"
 }
