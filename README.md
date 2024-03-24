@@ -21,8 +21,8 @@ Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects
 Initially made for the [Fluxo][fluxo] state management framework and other libraries, then published for general use.
 
 Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
-[![Kotlin](http://img.shields.io/badge/Kotlin-1.9.22-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
-[![Gradle](http://img.shields.io/badge/Gradle-8.6-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
+[![Kotlin](http://img.shields.io/badge/Kotlin-1.9.23-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
+[![Gradle](http://img.shields.io/badge/Gradle-8.7-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
 [![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.2-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
 
 ### How to use
