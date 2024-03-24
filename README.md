@@ -126,6 +126,13 @@ pluginManagement {
 ```
 
 
+### Build and development notes
+
+- **REQUIRES ENABLED GIT SYMLINKS** for the project to work correctly!
+  - On Windows, see [this doc](https://github.com/git-for-windows/git/wiki/Symbolic-Links) for more info.
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for more info on how to contribute.
+
+
 ### Heavily inspired by
 
 * [Gradle-Setup-Plugin](https://github.com/arkivanov/gradle-setup-plugin) by @arkivanov
