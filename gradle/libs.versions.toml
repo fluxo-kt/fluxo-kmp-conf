@@ -192,7 +192,7 @@ r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 # Testing Kotlin and Java annotation processors, compiler plugins, and code generation.
 # https://github.com/ZacSweers/kotlin-compile-testing/releases
 # https://github.com/tschuchortdev/kotlin-compile-testing/releases.
-kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.4.0" }
+kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.4.1" }
 
 # Annotations for JVM-based languages
 # https://repo1.maven.org/maven2/org/jetbrains/annotations/

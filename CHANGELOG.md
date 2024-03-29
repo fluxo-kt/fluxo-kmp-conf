@@ -33,7 +33,7 @@
 - bump R8 to _8.3.37_.
 - bump Detekt to _1.23.6_.
 - bump `gradle-intellij-plugin` to _1.17.3_.
-
+- bump kctfork to _0.4.1_ (test dependency).
 
 ## [0.7.0-alpha2] - 2024-02-22
 
