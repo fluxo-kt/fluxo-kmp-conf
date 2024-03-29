@@ -23,6 +23,13 @@
   * https://github.com/adevinta/spark-android/tree/main/.github
 * Gradle Doctor plugin
   * https://github.com/runningcode/gradle-doctor
+* Repo/build/CI examples.
+  * https://github.com/gciatto/kt-math
+* Build Variants setup
+  * https://docs.gradle.org/current/userguide/variant_attributes.html
+* Compose improvements
+  * compose-report-to-html
+    * https://github.com/PatilShreyas/compose-report-to-html/releases/tag/v1.3.0
 * [Gradle Plugin TestKit](https://github.com/autonomousapps/dependency-analysis-gradle-plugin/tree/main/testkit) ([Docs](https://docs.gradle.org/current/userguide/test_kit.html))
 * https://github.com/square/radiography
 * https://github.com/JetBrains-Research/reflekt
@@ -270,6 +277,8 @@
   * https://github.com/MohamedRejeb/Calf/releases/tag/v0.4.0
 * A Kotlin Symbol Processor to list sealed object instances safely in generated code.
   * https://github.com/SimonMarquis/SealedObjectInstances
+* Disable klib signature clash checks for JS compilations (Compose)
+  * https://github.com/cashapp/molecule/releases/tag/1.4.2
 * multiplatform libs to work w/ maven without requiring users to explicitly depend on the -jvm artifact.
   * https://kotlinlang.slack.com/archives/C8C4JTXR7/p1706909911878839
   * Kotlinx Serialization achieves this by editing the POM for the unflavoured module
