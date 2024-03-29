@@ -1,11 +1,11 @@
 package fluxo.shrink
 
-import java.util.Collections.emptyMap
+import java.lang.System.currentTimeMillis
 import java.util.jar.JarFile
+import org.gradle.api.internal.tasks.testing.TestCompleteEvent
+import org.gradle.api.tasks.testing.TestResult
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.FieldVisitor
-import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 
 internal fun ApiVerifier.verifyApiWithAsm(
@@ -15,40 +15,34 @@ internal fun ApiVerifier.verifyApiWithAsm(
     val className = signature.name
     val path = className.replace('.', '/') + CLASS_EXTENSION
     val entry = jar.getJarEntry(path)
-    require(entry != null) {
+    requireNotNull(entry) {
         "$A Class not found in the JAR: $className"
     }
-    entry ?: return
     val classReader = jar.getInputStream(entry).use { ClassReader(it) }
     val classVisitor = VerifierClassVisitor(signature, apiVerifier = this)
     classReader.accept(classVisitor, ASM_PARSING_OPTIONS)
 
-    for ((name, methods) in classVisitor.expectedMethods) {
-        require(methods.isEmpty()) {
-            val ms = methods.joinToString(", \n") { it.signature }
-            "$A Expected method was not found '$className#$name': $ms"
+    for ((name, expected) in classVisitor.expectedMembers) {
+        if (expected.list.isEmpty()) {
+            continue
         }
-    }
+        for (member in expected.list) {
+            val methodNameForTest = member.methodNameForTest(expected)
+            val testDescr = methodTestDescriptor(methodNameForTest)
 
-    for ((name, fields) in classVisitor.expectedFields) {
-        require(fields.isEmpty()) {
-            val fs = fields.joinToString(", \n") { it.signature }
-            "$A Expected field was not found '$className#$name': $fs"
+            require(false) {
+                val type = when (member) {
+                    is MethodSignature -> "method"
+                    is FieldSignature -> "field"
+                }
+                "$A Expected $type was not found '$className#$name': ${member.signature}"
+            }
+
+            val resultType = TestResult.ResultType.FAILURE
+            proc.completed(testDescr.id, TestCompleteEvent(currentTimeMillis(), resultType))
         }
     }
 }
-
-private val ClassMemberSignature.descriptor: String
-    get() = when (this) {
-        is MethodSignature -> parameterTypes.joinToString(
-            separator = "",
-            prefix = "(",
-            postfix = ")" + descriptorTypeFromName(returnType),
-            transform = ::descriptorTypeFromName,
-        )
-
-        is FieldSignature -> descriptorTypeFromName(returnType)
-    }
 
 private const val A = "ASM,"
 
@@ -65,25 +59,7 @@ private class VerifierClassVisitor(
     apiVerifier: ApiVerifier,
 ) : ClassVisitor(Opcodes.ASM9), ApiVerifier by apiVerifier {
 
-    val expectedMethods: Map<String, MutableList<MethodSignature>>
-    val expectedFields: Map<String, MutableList<FieldSignature>>
-
-    init {
-        val expectedMethods = hashMapOf<String, MutableList<MethodSignature>>()
-        val expectedFields = hashMapOf<String, MutableList<FieldSignature>>()
-
-        signature.memberSignatures.values.forEach {
-            when (it) {
-                is MethodSignature ->
-                    expectedMethods.getOrPut(it.name) { mutableListOf() }.add(it)
-
-                is FieldSignature ->
-                    expectedFields.getOrPut(it.name) { mutableListOf() }.add(it)
-            }
-        }
-        this.expectedMethods = expectedMethods.takeUnless { it.isEmpty() } ?: emptyMap()
-        this.expectedFields = expectedFields.takeUnless { it.isEmpty() } ?: emptyMap()
-    }
+    val expectedMembers = signature.expectedMembersMap()
 
     override fun visit(
         version: Int,
@@ -100,20 +76,34 @@ private class VerifierClassVisitor(
             "$A Unsupported bytecode version '$version': $name"
         }
 
-        when (this.signature.type) {
-            ClassType.Enum -> {
-                val enum = Enum::class.java.name.replace('.', '/')
-                require(superName == enum) {
-                    "$A Enum class must extend '$enum', was '$superName': $name"
-                }
+        val expectedType = this.signature.type
+        val expectedSuper = when (expectedType) {
+            ClassType.Enum -> Enum::class.java.name.replace('.', '/')
+            ClassType.Annotation, ClassType.Interface -> OBJECT_CLASS
+            else -> null
+        }
+        if (expectedSuper != null) {
+            requireEquals(expected = expectedSuper, actual = superName) {
+                "$A $expectedType expected to have super '$expectedSuper'" +
+                    ", but it has '$superName': $name"
             }
-            else -> {
-                if (superName == OBJECT_CLASS) {
-                    return
-                }
+        }
 
-                print("")
+        interfaces?.sort()
+        val parents = when (superName) {
+            null, OBJECT_CLASS -> interfaces?.asList()
+            else -> when {
+                interfaces.isNullOrEmpty() -> listOf(superName)
+                else -> MutableList(interfaces.size + 1) {
+                    if (it == 0) superName else interfaces[it - 1]
+                }
             }
+        }.orEmpty()
+
+        val expectedParents = this.signature.parents
+        requireEquals(expected = expectedParents, actual = parents) {
+            "$A $expectedType expected to have parents $expectedParents" +
+                ", but it has $parents: $name"
         }
     }
 
@@ -123,10 +113,7 @@ private class VerifierClassVisitor(
         descriptor: String,
         signature: String?,
         exceptions: Array<out String>?,
-    ): MethodVisitor? {
-        super.visitMethod(access, name, descriptor, signature, exceptions)
-        return verifyClassMember(expectedMethods, name, descriptor, access, "Method")
-    }
+    ) = verifyClassMember(name, descriptor, access, type = "Method")
 
     override fun visitField(
         access: Int,
@@ -134,32 +121,38 @@ private class VerifierClassVisitor(
         descriptor: String,
         signature: String?,
         value: Any?,
-    ): FieldVisitor? {
-        super.visitField(access, name, descriptor, signature, value)
-        return verifyClassMember(expectedFields, name, descriptor, access, "Field")
-    }
-
+    ) = verifyClassMember(name, descriptor, access, type = "Field")
 
     private fun verifyClassMember(
-        map: Map<String, MutableList<out ClassMemberSignature>>,
         name: String,
         descriptor: String,
         access: Int,
         type: String,
     ): Nothing? {
-        val members = map[name]
-        if (!members.isNullOrEmpty()) {
-            val iterator = members.iterator()
-            while (iterator.hasNext()) {
-                val member = iterator.next()
-                if (member.descriptor == descriptor) {
+        val expected = expectedMembers[name]
+        val members = expected?.list
+        if (members.isNullOrEmpty()) {
+            return null
+        }
+        val iterator = members.iterator()
+        while (iterator.hasNext()) {
+            val member = iterator.next()
+            if (member.descriptor == descriptor) {
+                val methodNameForTest = member.methodNameForTest(expected, name, descriptor)
+                val testDescr = methodTestDescriptor(methodNameForTest)
+                try {
+                    // Existance check passed.
                     iterator.remove()
+
+                    // Verify modifiers.
                     verifyModifiers(
                         modifiers = member.modifiers,
                         access = access,
                         description = name + descriptor,
                         type = type,
                     )
+                } finally {
+                    proc.completed(testDescr.id, TestCompleteEvent(currentTimeMillis()))
                 }
             }
         }

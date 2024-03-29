@@ -16,7 +16,6 @@ import fluxo.test.TestReportResult
 import fluxo.test.TestReportService
 import fluxo.test.TestReportsMergeTask
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
-import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestDescriptor
@@ -34,6 +33,7 @@ import org.jetbrains.kotlin.konan.target.Family
 private const val TEST_REPORTS_TASK_NAME = "mergedTestReport"
 private const val TEST_REPORTS_FILE_NAME = "tests-report-merged.xml"
 
+@Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun FluxoKmpConfContext.setupTestsReport() {
     val project = rootProject
     val mergedReportTask = when {
@@ -41,9 +41,6 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
         else -> {
             project.logger.l("setupTestsReport, register :$TEST_REPORTS_TASK_NAME task")
             project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
-                group = JavaBasePlugin.VERIFICATION_GROUP
-                description =
-                    "Combines all tests reports from all modules to the published root one"
                 output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME))
             }
         }
@@ -77,6 +74,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
 
         val projectName = name
         tasks.withType<AbstractTestTask> configuration@{
+            @Suppress("ComplexCondition")
             if (!enabled ||
                 mergedReportTask == null ||
                 mergedReportService == null ||
@@ -103,7 +101,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
                 showStackTraces = true
             }
 
-            // For release builds, we want to fail on any test failure
+            // For release builds, we want to fail on any test failure.
             if (isRelease) {
                 ignoreFailures = false
             }

@@ -1,36 +1,33 @@
 package fluxo.shrink
 
-import fluxo.conf.impl.d
 import fluxo.conf.impl.l
-import fluxo.conf.impl.v
-import fluxo.conf.impl.w
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty
 import fluxo.util.mapToArray
-import groovy.lang.Closure
 import java.io.File
+import java.lang.ref.WeakReference
 import java.net.URLClassLoader
-import org.gradle.api.Action
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.internal.ConventionTask
-import org.gradle.api.internal.tasks.testing.DefaultTestTaskReports
+import org.gradle.api.internal.tasks.testing.TestExecuter
+import org.gradle.api.internal.tasks.testing.TestExecutionSpec
+import org.gradle.api.internal.tasks.testing.TestResultProcessor
+import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Property
-import org.gradle.api.reporting.Reporting
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.CompileClasspath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
-import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.VerificationTask
-import org.gradle.api.tasks.testing.TestTaskReports
+import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
-import org.gradle.util.internal.ClosureBackedAction
 import org.gradle.work.NormalizeLineEndings
 
 /**
@@ -38,12 +35,12 @@ import org.gradle.work.NormalizeLineEndings
  * Checks every declaration from the public API for availability.
  *
  * @see org.gradle.api.tasks.testing.AbstractTestTask
+ * @see org.gradle.api.tasks.testing.Test
+ * @see org.jetbrains.kotlin.gradle.tasks.KotlinTest
  */
+@CacheableTask
 @Suppress("LeakingThis")
-internal abstract class ShrinkerVerificationTestTask :
-    ConventionTask(),
-    VerificationTask,
-    Reporting<TestTaskReports> {
+internal abstract class ShrinkerVerificationTestTask : AbstractTestTask() {
 
     @get:InputFiles
     @get:SkipWhenEmpty
@@ -70,76 +67,97 @@ internal abstract class ShrinkerVerificationTestTask :
 
     private val continueOnFailure: Boolean
 
-    private val reports: TestTaskReports
-
     private val projectDir: File
 
     init {
         group = VERIFICATION_GROUP
-        description = "Verifies the shrunken artifact."
+        description = "Verifies the processed (shrunken) artifact."
 
         val p = project
-        reports = p.objects.newInstance(DefaultTestTaskReports::class.java, this)
+        val layout = p.layout
+
         // Task name contains the processing chain ID, so it's unique.
-        val outputDir = p.layout.buildDirectory.dir("reports/$name")
+        val outputDir = layout.buildDirectory.dir("reports/$name")
+        binaryResultsDirectory.set(outputDir)
         for (report in arrayOf(reports.getJunitXml(), reports.getHtml())) {
             report.required.set(true)
             report.outputLocation.set(outputDir)
         }
 
-        projectDir = p.layout.projectDirectory.asFile
+        projectDir = layout.projectDirectory.asFile
         continueOnFailure = p.gradle.startParameter.isContinueOnFailure
     }
 
-    @TaskAction
-    operator fun invoke() {
-        val files = generatedDefinitions.files
-        if (files.isEmpty()) {
-            logger.w("No API reports found, skipping")
-            return
-        }
-
+    override fun createTestExecutionSpec(): TestExecutionSpec {
+        val chainId = chainId.get()
         val chainForLog = chainForLog.orNull?.takeIf { it.isNotBlank() } ?: path
-        logger.d("($chainForLog) Verifying the shrunken artifact (2 methods: ASM and Reflection)")
-        if (ignoreFailures) {
-            logger.v("Ignoring failures")
-        }
+        val note = "($chainForLog, chain #$chainId)"
+        logger.l("$note Verifying the processed artifact API with ASM and Reflection...")
 
-        // 1. read files and parse the Kotlin APIs format.
+        // Read generated definitions and parse the Kotlin APIs format.
         val signatures = LinkedHashMap<String, ClassSignature>(@Suppress("MagicNumber") 64)
-        files.forEach { file ->
+        generatedDefinitions.forEach { file ->
             file.bufferedReader().use { it.parseJvmApiDumpTo(signatures) }
         }
 
-        // 2. verify the shrinked artifact
-        val mainFile = jar.get().asFile
-        val jarUrls = inputFiles.mapTo(LinkedHashSet()) { it.toURI() }
-            .also { it += mainFile.toURI() }
-            .mapToArray { it.toURL() }
-        logger.l("- {}", mainFile.toRelativeString(projectDir))
-        logger.l("- {} JARs in the classpath for verification", jarUrls.size)
-        URLClassLoader(jarUrls).use { classLoader ->
+        return ShrinkerVerificationTestExecutionSpec(
+            continueOnFailure = ignoreFailures || continueOnFailure,
+            signatures = signatures,
+            inputFiles = inputFiles,
+            projectDir = projectDir,
+            mainJar = jar,
+            taskName = name,
+        )
+    }
+
+    override fun createTestExecuter(): TestExecuter<out TestExecutionSpec> =
+        ShrinkerVerificationTest(logger)
+
+    private class ShrinkerVerificationTest(
+        private val logger: Logger,
+    ) : TestExecuter<ShrinkerVerificationTestExecutionSpec> {
+
+        @Volatile
+        private var verifier: WeakReference<ShrinkerVerifier>? = null
+
+        override fun execute(
+            spec: ShrinkerVerificationTestExecutionSpec,
+            proc: TestResultProcessor,
+        ) {
+            // Verify the shrinked artifact
+            val mainFile = spec.mainJar.get().asFile
+            val jarUrls = spec.inputFiles.mapTo(LinkedHashSet()) { it.toURI() }
+                .also { it += mainFile.toURI() }
+                .mapToArray { it.toURL() }
+            logger.l("- {}", mainFile.toRelativeString(spec.projectDir))
+            logger.l("- {} JARs in the classpath for verification", jarUrls.size)
             ShrinkerVerifier(
+                taskName = spec.taskName,
                 mainJarFile = mainFile,
-                classLoader = classLoader,
-                signatures = signatures,
+                signatures = spec.signatures,
+                proc = proc,
                 logger = logger,
-                continueOnFailure = ignoreFailures || continueOnFailure,
-            ).verify()
+                continueOnFailure = spec.continueOnFailure,
+                classLoader = URLClassLoader(jarUrls),
+            ).use {
+                verifier = WeakReference(it)
+                it.verify()
+            }
+
+            // TODO: Verify the jar itself (artifact signature, reproducibility, etc.)
         }
 
-        // TODO: 3. verify the jar itself (artifact signature, reproducibility, etc.)
+        override fun stopNow() {
+            verifier?.get()?.stopNow()
+        }
     }
 
-
-    @Nested
-    override fun getReports(): TestTaskReports = reports
-
-    override fun reports(closure: Closure<*>): TestTaskReports =
-        reports(ClosureBackedAction(closure))
-
-    override fun reports(configureAction: Action<in TestTaskReports>): TestTaskReports {
-        configureAction.execute(reports)
-        return reports
-    }
+    private class ShrinkerVerificationTestExecutionSpec(
+        val continueOnFailure: Boolean,
+        val signatures: Map<String, ClassSignature>,
+        val mainJar: Provider<RegularFile>,
+        val inputFiles: FileCollection,
+        val projectDir: File,
+        val taskName: String,
+    ) : TestExecutionSpec
 }

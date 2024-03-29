@@ -1,18 +1,41 @@
+@file:Suppress("UnstableApiUsage")
+
 package fluxo.shrink
 
-import fluxo.conf.impl.e
 import java.lang.reflect.Member
 import java.lang.reflect.Modifier
+import java.util.Collections.emptyList
 import kotlin.contracts.contract
 import org.gradle.api.GradleException
+import org.gradle.api.internal.tasks.testing.DefaultTestFailure
+import org.gradle.api.internal.tasks.testing.DefaultTestFailureDetails
+import org.gradle.api.internal.tasks.testing.TestDescriptorInternal
+import org.gradle.api.internal.tasks.testing.TestResultProcessor
 import org.gradle.api.logging.Logger
+import org.gradle.api.tasks.testing.TestFailure
 
 internal interface ApiVerifier {
     val continueOnFailure: Boolean
 
+    @Deprecated("Use proc instead")
     val logger: Logger
 
+    val proc: TestResultProcessor
+
+    val currentTestClass: String
+
+    val currentTestMethod: String
+
+    val currentTestFile: String?
+
+    val currentClassTestDescriptor: TestDescriptorInternal
+
+    val currentTestDescriptor: TestDescriptorInternal
+
     var verified: Boolean
+
+
+    fun methodTestDescriptor(methodName: String): TestDescriptorInternal
 
 
     val ClassMemberSignature.signature: String
@@ -22,10 +45,10 @@ internal interface ApiVerifier {
         }
 }
 
-internal inline fun ApiVerifier.requirePublic(member: Member, lazyName: () -> String) {
+internal fun ApiVerifier.requirePublic(member: Member, lazyName: () -> String): Boolean {
     val modifiers = member.modifiers
     val isPublic = modifiers and Modifier.PUBLIC != 0
-    require(isPublic) {
+    return require(isPublic) {
         "Expected public, but it's not (modifiers=$modifiers): ${lazyName()}"
     }
 }
@@ -45,13 +68,78 @@ internal inline fun <T : Any> ApiVerifier.requireNotNull(
     }
 }
 
-internal inline fun ApiVerifier.require(value: Boolean, lazyMessage: () -> Any) {
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+internal fun <@kotlin.internal.OnlyInputTypes T> ApiVerifier.requireEquals(
+    expected: T,
+    actual: T,
+    lazyMessage: () -> Any,
+): Boolean {
+    return require(
+        value = expected == actual,
+        expected = expected,
+        actual = actual,
+        lazyMessage = lazyMessage,
+    )
+}
+
+internal fun ApiVerifier.require(
+    value: Boolean,
+    expected: Any? = null,
+    actual: Any? = null,
+    throwable: Throwable? = null,
+    lazyMessage: () -> Any,
+): Boolean {
     if (!value) {
         verified = false
         val message = lazyMessage().toString()
-        when {
-            continueOnFailure -> logger.e(message)
-            else -> throw GradleException(message)
+        val th = throwable ?: IllegalStateException(message)
+        val isAssertion = throwable == null || throwable is AssertionError || expected != null
+        proc.failure(
+            currentTestDescriptor.id,
+            testFailure(
+                message,
+                th,
+                isAssertionFailure = isAssertion,
+                expected = expected?.toString(),
+                actual = actual?.toString(),
+            ),
+        )
+        if (!continueOnFailure) {
+            throw GradleException(message)
         }
+        return false
     }
+    return true
+}
+
+private fun ApiVerifier.testFailure(
+    message: String,
+    th: Throwable,
+    isAssertionFailure: Boolean = false,
+    expected: String? = null,
+    actual: String? = null,
+): TestFailure {
+    val className = currentTestClass
+
+    th.stackTrace = th.stackTrace.toMutableList().also {
+        val file = currentTestFile?.substringAfterLast('/')
+        val newElement = StackTraceElement(className, currentTestMethod, file, -1)
+        it.add(0, newElement)
+    }.toTypedArray()
+
+    return DefaultTestFailure(
+        th,
+        DefaultTestFailureDetails(
+            message,
+            className,
+            th.stackTraceToString(),
+            isAssertionFailure,
+            false,
+            expected,
+            actual,
+            null,
+            null,
+        ),
+        emptyList(),
+    )
 }

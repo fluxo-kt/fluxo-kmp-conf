@@ -3,7 +3,6 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ArgumentListWrapping:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
-    <ID>ComplexCondition:SetupTestsReport.kt$!enabled || mergedReportTask == null || mergedReportService == null || !isTestTaskAllowed()</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
@@ -120,18 +119,16 @@
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: Optionally keep $EntriesMappings and $DefaultImpls classes</ID>
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: auto-detect synthetic methods that can be removed from the rules.</ID>
     <ID>ForbiddenComment:ShrinkerTestBase.kt$// TODO: Optimized bytcode tests.</ID>
-    <ID>ForbiddenComment:ShrinkerVerificationTestTask.kt$ShrinkerVerificationTestTask$// TODO: 3. verify the jar itself (artifact signature, reproducibility, etc.)</ID>
+    <ID>ForbiddenComment:ShrinkerVerificationTestTask.kt$ShrinkerVerificationTestTask.ShrinkerVerificationTest$// TODO: Verify the jar itself (artifact signature, reproducibility, etc.)</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: should androidUnitTestDebug depend on androidUnitTest?</ID>
-    <ID>ForbiddenComment:VerifyApiWithReflection.kt$// FIXME: $default methods are not visible in declaredMethods.</ID>
     <ID>ForbiddenComment:VerifyApiWithReflection.kt$// TODO: Check parent classes and interfaces.</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>Indentation:PropsAndEnv.kt$ </ID>
     <ID>LongMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>LongMethod:SetupPublication.kt$context(FluxoKmpConfContext) private fun Project.setupPublicationRepositoryAndSigning( config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
-    <ID>LongMethod:SetupTestsReport.kt$internal fun FluxoKmpConfContext.setupTestsReport()</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
     <ID>MaxLineLength:PropsAndEnv.kt$if</ID>

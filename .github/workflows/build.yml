@@ -25,7 +25,7 @@ env:
   #GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   DEPENDENCY_GRAPH_INCLUDE_CONFIGURATIONS: "^(?!(classpath)).*"
-  DEPENDENCY_GRAPH_INCLUDE_PROJECTS: "^:(?!(buildSrc|test-)).*"
+  DEPENDENCY_GRAPH_INCLUDE_PROJECTS: "^:(?!(buildSrc|test|check)).*"
 
 jobs:
   buildAndCheck:
@@ -134,17 +134,17 @@ jobs:
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
-      -  name: Upload the build report
-         if: success() || failure()
-         uses: actions/upload-artifact@v4
-         with:
-           name: '${{ matrix.os }}-build-report'
-           path: |
-             **/build/logs/
-             **/build/reports/
-             **/build/output/
-             build/*-merged.*
-           compression-level: 9
+      - name: Upload the build report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: '${{ matrix.os }}-build-report'
+          path: |
+            **/build/logs/
+            **/build/reports/
+            **/build/output/
+            build/*-merged.*
+          compression-level: 9
 
       - name: Perform CodeQL Analysis
         if: matrix.os == 'ubuntu'

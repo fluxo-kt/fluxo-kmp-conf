@@ -2,13 +2,17 @@ package fluxo.shrink
 
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.util.mapToArray
+import java.lang.System.currentTimeMillis
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.net.URLClassLoader
+import org.gradle.api.internal.tasks.testing.TestCompleteEvent
+import org.gradle.api.tasks.testing.TestResult
 
+@Suppress("NestedBlockDepth")
 internal fun ApiVerifier.verifyApiWithReflection(
     classLoader: URLClassLoader,
     signature: ClassSignature,
@@ -31,7 +35,7 @@ internal fun ApiVerifier.verifyApiWithReflection(
     // Check the class type.
     verifyClassType(signature.type, clazz, className)
 
-    // Check the modifiers.
+    // Check the class modifiers.
     val isClassPublic = clazz.modifiers and Modifier.PUBLIC != 0
     require(isClassPublic) {
         "Expected public class, but it's not (modifiers=${clazz.modifiers}): $className"
@@ -41,15 +45,27 @@ internal fun ApiVerifier.verifyApiWithReflection(
     val declaredMethods = clazz.declaredMethods
         .groupByTo(HashMap()) { it.name }
     val declaredConstructors = clazz.declaredConstructors.asList()
+    val expectedMembers = signature.expectedMembersMap()
+
     for (member in signature.memberSignatures.values) {
         val name = member.name
-        val returnType = descriptorTypeFromName(member.returnType, javaName = true)
-        when (member) {
-            is FieldSignature -> verifyField(clazz, name, returnType, className, member)
-            is MethodSignature -> when (name) {
-                "<init>" -> verifyConstructor(declaredConstructors, className, member)
-                else -> verifyMethod(declaredMethods, name, returnType, className, member)
+        var resultType: TestResult.ResultType? = null
+        val methodNameForTest = member.methodNameForTest(expectedMembers[name], name)
+        val testDescr = methodTestDescriptor(methodNameForTest)
+        try {
+            val returnType = descriptorTypeFromName(member.returnType, javaName = true)
+            resultType = when (member) {
+                is FieldSignature -> verifyField(clazz, name, returnType, className, member)
+                is MethodSignature -> when (name) {
+                    "<init>" -> verifyConstructor(declaredConstructors, className, member)
+                    else -> verifyMethod(declaredMethods, name, returnType, className, member)
+                }
             }
+        } catch (e: Throwable) {
+            resultType = TestResult.ResultType.FAILURE
+            throw e
+        } finally {
+            proc.completed(testDescr.id, TestCompleteEvent(currentTimeMillis(), resultType))
         }
     }
 }
@@ -58,15 +74,18 @@ private fun ApiVerifier.verifyConstructor(
     declared: List<Constructor<*>>,
     className: String,
     member: MethodSignature,
-) {
+): TestResult.ResultType? {
     val pTypes = member.descriptorParameterTypes
-    val constructors = member.filteredMethodsFrom(declared, pTypes)
-    require(constructors?.size == 1) {
+    val constructors = declared.filterMethodsByPTypes(pTypes)
+    var checked = requireEquals(expected = 1, actual = constructors?.size) {
         "Constructor was not found: $className#${member.signature}"
     }
     constructors?.let {
-        requireParamsAndPublic(it[0], pTypes, className, member)
+        if (!requireParamsAndPublic(it[0], pTypes, className, member)) {
+            checked = false
+        }
     }
+    return if (checked) null else TestResult.ResultType.FAILURE
 }
 
 private fun ApiVerifier.verifyMethod(
@@ -75,9 +94,9 @@ private fun ApiVerifier.verifyMethod(
     returnType: String,
     className: String,
     member: MethodSignature,
-) {
+): TestResult.ResultType? {
     val pTypes = member.descriptorParameterTypes
-    val methods = member.filteredMethodsFrom(declared[name], pTypes)
+    val methods = declared[name].filterMethodsByPTypes(pTypes)
     val method = when {
         methods.isNullOrEmpty() -> null
         else -> when (methods.size) {
@@ -88,18 +107,22 @@ private fun ApiVerifier.verifyMethod(
         }
     }
 
-    // FIXME: $default methods are not visible in declaredMethods.
+    // `$default` methods may be not visible in reflection `declaredMethods`.
     if (method == null && name.endsWith("\$default")) {
-        return
+        return TestResult.ResultType.SKIPPED
     }
-    require(method != null) {
+
+    requireNotNull(method) {
         "Method was not found: $className#${member.signature}"
     }
-    val actualReturnType = requireNotNull(method).returnType.name
-    require(actualReturnType == returnType) {
+    val actualReturnType = method.returnType.name
+    var checked = requireEquals(expected = returnType, actual = actualReturnType) {
         "Method return type mismatch (actual=$actualReturnType): $className#${member.signature}"
     }
-    requireParamsAndPublic(method, pTypes, className, member)
+    if (!requireParamsAndPublic(method, pTypes, className, member)) {
+        checked = false
+    }
+    return if (checked) null else TestResult.ResultType.FAILURE
 }
 
 private fun <M> ApiVerifier.requireParamsAndPublic(
@@ -107,12 +130,15 @@ private fun <M> ApiVerifier.requireParamsAndPublic(
     pTypes: Array<String>,
     className: String,
     member: MethodSignature,
-) where M : Executable, M : Member {
-    val actualParams = method.parameterTypes.mapToArray { it.name }
-    require(actualParams contentEquals pTypes) {
+): Boolean where M : Executable, M : Member {
+    val actualParams = method.parameterTypes.map { it.name }
+    var checked = requireEquals(pTypes.asList(), actualParams) {
         "Parameters mismatch (actual=$actualParams): $className#${member.signature}"
     }
-    requirePublic(method) { "$className#${member.signature}" }
+    if (!requirePublic(method) { "$className#${member.signature}" }) {
+        checked = false
+    }
+    return checked
 }
 
 private val MethodSignature.descriptorParameterTypes
@@ -120,14 +146,11 @@ private val MethodSignature.descriptorParameterTypes
         descriptorTypeFromName(it, javaName = true)
     }
 
-private fun <M : Executable> MethodSignature.filteredMethodsFrom(
-    declared: List<M>?,
-    pTypes: Array<String>,
-): List<M>? {
-    if (!SHOW_DEBUG_LOGS && (declared.isNullOrEmpty() || declared.size == 1)) {
-        return declared
+private fun <M : Executable> List<M>?.filterMethodsByPTypes(pTypes: Array<String>): List<M>? {
+    if (!SHOW_DEBUG_LOGS && (isNullOrEmpty() || size == 1)) {
+        return this
     }
-    return declared?.filter f@{ m ->
+    return this?.filter f@{ m ->
         if (m.parameterCount != pTypes.size) return@f false
         val t = m.parameterTypes
         for (element in t.indices) if (t[element].name != pTypes[element]) return@f false
@@ -141,13 +164,16 @@ private fun ApiVerifier.verifyField(
     returnType: String,
     className: String,
     member: ClassMemberSignature,
-) {
+): TestResult.ResultType? {
     val field = clazz.getDeclaredField(name)
     val actual = field.type.name
-    require(actual == returnType) {
+    var checked = requireEquals(expected = returnType, actual = actual) {
         "Field type mismatch (actual=$actual): $className#${member.signature}"
     }
-    requirePublic(field) { "$className#${member.signature}" }
+    if (!requirePublic(field) { "$className#${member.signature}" }) {
+        checked = false
+    }
+    return if (checked) null else TestResult.ResultType.FAILURE
 }
 
 private fun ApiVerifier.verifyClassType(

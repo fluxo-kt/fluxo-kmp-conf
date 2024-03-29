@@ -2,11 +2,13 @@ package fluxo.test
 
 import fluxo.gradle.ioFile
 import groovy.time.TimeCategory
+import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
 import javax.xml.stream.XMLOutputFactory
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.OutputFile
@@ -30,6 +32,17 @@ internal abstract class TestReportsMergeTask : DefaultTask() {
 
     @get:ServiceReference(TestReportService.NAME)
     abstract val reportService: Property<TestReportService>
+
+    private var projectDir: File
+
+    init {
+        group = JavaBasePlugin.VERIFICATION_GROUP
+        description =
+            "Combines all tests reports from all modules to the published root one"
+
+        projectDir = project.projectDir
+    }
+
 
     @TaskAction
     fun merge() {
@@ -175,7 +188,7 @@ internal abstract class TestReportsMergeTask : DefaultTask() {
         val now = System.currentTimeMillis()
         val totalSuccesses = totalTests - totalFailures - totalSkipped
         val status = getStatusFrom(totalFailures, totalSuccesses)
-        val fileRelative = outputFile.absoluteFile.relativeTo(project.projectDir)
+        val fileRelative = outputFile.absoluteFile.relativeTo(projectDir)
         val summary = "Overall tests result: $status" +
             " in ${TimeCategory.minus(Date(now), Date(now - totalTimeMillis))}" +
             "\n(" +
