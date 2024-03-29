@@ -31,6 +31,7 @@
 - bump `com.mikepenz.aboutlibraries.plugin` from _10.10.0_ to _11.1.0_.
 - bump Dokka from _1.9.10_ to _1.9.20_.
 - bump R8 to 8.3.37.
+- bump Detekt to 1.23.6.
 
 
 ## [0.7.0-alpha2] - 2024-02-22

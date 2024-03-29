@@ -23,7 +23,7 @@ com.squareup.okio:okio:3.6.0
 commons-codec:commons-codec:1.16.0
 dev.equo.ide:solstice:1.7.5
 io.github.java-diff-utils:java-diff-utils:4.12
-io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.5
+io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6
 org.apache.maven:maven-model:3.6.3
 org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r
 org.eclipse.platform:org.eclipse.osgi:3.18.300

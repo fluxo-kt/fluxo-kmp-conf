@@ -31,7 +31,7 @@ com.squareup.okio:okio:3.6.0
 commons-codec:commons-codec:1.16.0
 dev.equo.ide:solstice:1.7.5
 io.github.java-diff-utils:java-diff-utils:4.12
-io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.5
+io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6
 jakarta.activation:jakarta.activation-api:1.2.1
 jakarta.xml.bind:jakarta.xml.bind-api:2.3.2
 org.apache.maven:maven-model:3.6.3

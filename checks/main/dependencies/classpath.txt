@@ -89,7 +89,7 @@ commons-codec:commons-codec:1.16.0
 commons-io:commons-io:2.13.0
 commons-logging:commons-logging:1.2
 dev.equo.ide:solstice:1.7.5
-io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.5
+io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6
 io.grpc:grpc-api:1.57.0
 io.grpc:grpc-context:1.57.0
 io.grpc:grpc-core:1.57.0

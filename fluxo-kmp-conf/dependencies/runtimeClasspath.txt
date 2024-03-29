@@ -19,7 +19,7 @@ com.squareup.okio:okio-jvm:3.8.0
 com.squareup.okio:okio:3.8.0
 commons-codec:commons-codec:1.16.0
 dev.equo.ide:solstice:1.7.5
-io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.5
+io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6
 org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r
 org.eclipse.platform:org.eclipse.osgi:3.18.300
 org.jetbrains.kotlin:kotlin-reflect:1.8.20
