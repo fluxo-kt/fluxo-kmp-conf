@@ -157,10 +157,11 @@ internal fun Project.setupDetekt(
 
         if (mergeDetektBaselinesTask != null) {
             baseline.set(baselineIntermediateDir.map { it.file("$BASELINE-$name.$EXT") })
+            finalizedBy(mergeDetektBaselinesTask)
         }
     }
     mergeDetektBaselinesTask?.configure {
-        dependsOn(baselineTasks)
+        mustRunAfter(baselineTasks)
         baselineFiles.from(baselineTasks.map { it.baseline })
     }
 
