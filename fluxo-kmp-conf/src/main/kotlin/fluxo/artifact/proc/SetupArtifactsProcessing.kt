@@ -207,6 +207,7 @@ internal fun setupArtifactsProcessing(
 
         // Replace the original artifact with processed one, but only once.
         // Replaces the default jar in outgoingVariants.
+        // FIXME: Provide unporcessed artifacts alongside the processed ones as a variant.
         if (replaceOutgoingJar) {
             replaceOutgoingJar = false
             p.replaceOutgoingJar(

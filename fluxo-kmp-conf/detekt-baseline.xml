@@ -58,6 +58,7 @@
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Allow to call shrinker by task name even if it's disabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Ensure the obfuscation mapping incrementality and compatibility when double-shrinking.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Provide unporcessed artifacts alongside the processed ones as a variant.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Publish the debug non-shrunken artifacts alongside the release shrunken ones.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Run tests with minified artifacts.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Shrinkers loose JARs reproducibility,</ID>
