@@ -110,7 +110,7 @@ private fun Project.setupGradleProjectPublication(
     config: FluxoPublicationConfig,
     conf: FluxoConfigurationExtensionImpl,
 ) {
-    val useDokka = conf.useDokka != false
+    val useDokka = conf.useDokka == false
     when (val type = conf.mode) {
         ConfigurationType.KOTLIN_MULTIPLATFORM ->
             setupPublicationMultiplatform(config, useDokka)

@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Changed
+- disable Dokka by default.
+
 
 ## [0.7.0] - 2024-03-31
 

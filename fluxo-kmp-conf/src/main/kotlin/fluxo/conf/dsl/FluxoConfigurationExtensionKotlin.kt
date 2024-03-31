@@ -117,8 +117,10 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     /**
      * Flag to use the KotlinX Dokka plugin as a documentation artifact generator.
      *
+     * WARN: Doesn't work well when Gradle configuration caching is enabled!
+     *
      * Inherited from the parent project if not set.
-     * Default value: `true`.
+     * Default value: `false`.
      */
     public var useDokka: Boolean?
 
