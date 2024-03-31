@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.7.0] - 2024-03-31
+
 ### Changed
 - return the plugin artifact shrinking with R8 (saved 32.719%, 265.9 KB).
 - update compatibility methods `NamedDomainObjectSet<T>.named*` for Gradle 8.6+ and older.
@@ -36,6 +39,7 @@
 - bump Detekt to _1.23.6_.
 - bump `gradle-intellij-plugin` to _1.17.3_.
 - bump kctfork to _0.4.1_ (test dependency).
+
 
 ## [0.7.0-alpha2] - 2024-02-22
 
@@ -190,6 +194,8 @@ _Stabilization release._
 
 ## Notes
 
+[0.7.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.7.0
+[0.7.0-alpha2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.7.0-alpha2
 [0.7.0-alpha1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.7.0-alpha1
 [0.6.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.6.0
 [0.5.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.5.0

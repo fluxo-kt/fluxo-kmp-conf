@@ -32,8 +32,8 @@ Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
 ```kotlin
 // in the `build.gradle.kts` of the target module
 plugins {
-  kotlin("multiplatform") version "1.9.22"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.6.0" // <-- add here
+  kotlin("multiplatform") version "1.9.23"
+  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.7.0" // <-- add here
 }
 ```
 
@@ -45,7 +45,7 @@ plugins {
 ```kotlin
 // in the `build.gradle.kts` of the target module
 plugins {
-  kotlin("multiplatform") version "1.9.22"
+  kotlin("multiplatform") version "1.9.23"
   id("io.github.fluxo-kt.fluxo-kmp-conf") // <-- add here, no version needed for jitpack usage
 }
 ```
