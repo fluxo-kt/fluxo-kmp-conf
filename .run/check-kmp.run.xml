@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="check-main" type="GradleRunConfiguration" factoryName="Gradle" folderName="check">
+  <configuration default="false" name="check-kmp" type="GradleRunConfiguration" factoryName="Gradle" folderName="check">
     <ExternalSystemSettings>
       <option name="env">
         <map>
@@ -8,7 +8,7 @@
         </map>
       </option>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/checks/main" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/checks/kmp" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="--stacktrace --continue" />
       <option name="taskDescriptions">

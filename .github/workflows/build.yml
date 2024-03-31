@@ -123,8 +123,8 @@ jobs:
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
-      - name: 'Run check-main'
-        working-directory: checks/main
+      - name: 'Run check-kmp'
+        working-directory: checks/kmp
         run: ./gradlew build assemble check printKotlinSourceSetsGraph --continue --stacktrace --scan
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false

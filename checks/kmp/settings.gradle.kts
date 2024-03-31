@@ -37,4 +37,4 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "check-main"
+rootProject.name = "check-kmp"
