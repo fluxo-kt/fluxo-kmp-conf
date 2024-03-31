@@ -1,6 +1,8 @@
 package fluxo.conf.impl
 
 import com.sun.management.OperatingSystemMXBean
+import fluxo.conf.impl.kotlin.JRE_21
+import fluxo.conf.impl.kotlin.JRE_VERSION
 import java.lang.management.ManagementFactory
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -16,13 +18,37 @@ internal val XMX: Long = Runtime.getRuntime().maxMemory()
 
 internal val TOTAL_OS_MEMORY: Long = run {
     try {
-        ManagementFactory.getPlatformMXBean(OperatingSystemMXBean::class.java)?.apply {
+        val bean = ManagementFactory
+            .getPlatformMXBean(OperatingSystemMXBean::class.java)
+        bean?.apply {
+            var ex: Throwable? = null
+
+            // It's still available and works up to JRE 21,
+            // but deprecated since JRE 14.
+            if (JRE_VERSION <= JRE_21) {
+                try {
+                    @Suppress("DEPRECATION")
+                    return@run totalPhysicalMemorySize
+                } catch (e: Throwable) {
+                    ex = e
+                }
+            }
+
             return@run try {
-                @Suppress("DEPRECATION")
-                totalPhysicalMemorySize
-            } catch (_: Throwable) {
-                @Suppress("Since15")
-                totalMemorySize
+                // New method since JRE 14+
+                // Use reflection to avoid compilation errors on older JDKs.
+                /** @see OperatingSystemMXBean.getTotalMemorySize */
+                javaClass.getMethod("getTotalMemorySize").invoke(this) as Long
+            } catch (e: Throwable) {
+                try {
+                    // Fallback to deprecated method
+                    @Suppress("DEPRECATION")
+                    totalPhysicalMemorySize
+                } catch (th: Throwable) {
+                    ex?.let { th.addSuppressed(it) }
+                    ex?.let { th.addSuppressed(e) }
+                    throw th
+                }
             }
         }
     } catch (_: Throwable) {

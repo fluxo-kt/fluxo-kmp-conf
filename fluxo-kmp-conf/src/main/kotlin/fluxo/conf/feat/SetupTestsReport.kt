@@ -15,6 +15,8 @@ import fluxo.conf.impl.withType
 import fluxo.test.TestReportResult
 import fluxo.test.TestReportService
 import fluxo.test.TestReportsMergeTask
+import org.gradle.api.Action
+import org.gradle.api.Task
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
@@ -22,7 +24,6 @@ import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.language.base.plugins.LifecycleBasePlugin.ASSEMBLE_TASK_NAME
 import org.gradle.language.base.plugins.LifecycleBasePlugin.BUILD_TASK_NAME
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
@@ -36,15 +37,6 @@ private const val TEST_REPORTS_FILE_NAME = "tests-report-merged.xml"
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun FluxoKmpConfContext.setupTestsReport() {
     val project = rootProject
-    val mergedReportTask = when {
-        testsDisabled -> null
-        else -> {
-            project.logger.l("setupTestsReport, register :$TEST_REPORTS_TASK_NAME task")
-            project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
-                output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME))
-            }
-        }
-    }
 
     val mergedReportService = when {
         testsDisabled -> null
@@ -60,13 +52,24 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
         }
     }
 
+    val mergedReportTask = when {
+        testsDisabled || mergedReportService == null -> null
+        else -> {
+            project.logger.l("setupTestsReport, register :$TEST_REPORTS_TASK_NAME task")
+            project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
+                output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME))
+            }
+        }
+    }
+
     project.allprojects {
         if (mergedReportTask != null) {
+            val finalizedByReport = Action<Task> { finalizedBy(mergedReportTask) }
             tasks.namedCompat { it in COMMON_TEST_TASKS_NAMES }
-                .configureEach { finalizedBy(mergedReportTask) }
+                .configureEach(finalizedByReport)
 
             try {
-                tasks.withType<KotlinTestReport> { finalizedBy(mergedReportTask) }
+                tasks.withType(KotlinTestReport::class.java, finalizedByReport)
             } catch (e: Throwable) {
                 logger.e("Failed to configure KotlinTestReport tasks: $e", e)
             }
@@ -74,12 +77,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
 
         val projectName = name
         tasks.withType<AbstractTestTask> configuration@{
-            @Suppress("ComplexCondition")
-            if (!enabled ||
-                mergedReportTask == null ||
-                mergedReportService == null ||
-                !isTestTaskAllowed()
-            ) {
+            if (!enabled || mergedReportTask == null || !isTestTaskAllowed()) {
                 disableTask()
                 return@configuration
             }
@@ -114,7 +112,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
             val rootLogger = rootProject.logger
             afterTest(
                 closureOf { desc: TestDescriptor, result: TestResult ->
-                    mergedReportService.get().registerTestResult(
+                    mergedReportService?.orNull?.registerTestResult(
                         TestReportResult.from(testTask, desc, result, projectName),
                         rootLogger,
                     )
@@ -126,8 +124,9 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
 
 
 private val COMMON_TEST_TASKS_NAMES: Set<String> = hashSetOf(
-    CHECK_TASK_NAME, ASSEMBLE_TASK_NAME, BUILD_TASK_NAME, TEST_TASK_NAME,
-    "allTests", "jvmTest", "jsTest", "jsNodeTest", "jsBrowserTest", "mingwX64Test",
+    CHECK_TASK_NAME, BUILD_TASK_NAME, TEST_TASK_NAME,
+    "allTests", "jvmTest", "jsTest", "jsNodeTest", "jsBrowserTest",
+    "mingwX64Test",
 )
 
 

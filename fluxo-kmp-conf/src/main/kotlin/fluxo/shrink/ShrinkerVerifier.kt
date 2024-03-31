@@ -22,8 +22,8 @@ internal class ShrinkerVerifier(
     private val taskName: String,
     private val mainJarFile: File,
     private val signatures: Map<String, ClassSignature>,
+    private val logger: Logger,
     override val proc: TestResultProcessor,
-    override val logger: Logger,
     override val continueOnFailure: Boolean,
     private val classLoader: URLClassLoader,
 ) : ApiVerifier, AutoCloseable {

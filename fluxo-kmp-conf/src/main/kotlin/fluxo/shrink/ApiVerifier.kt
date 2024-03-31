@@ -11,14 +11,10 @@ import org.gradle.api.internal.tasks.testing.DefaultTestFailure
 import org.gradle.api.internal.tasks.testing.DefaultTestFailureDetails
 import org.gradle.api.internal.tasks.testing.TestDescriptorInternal
 import org.gradle.api.internal.tasks.testing.TestResultProcessor
-import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.testing.TestFailure
 
 internal interface ApiVerifier {
     val continueOnFailure: Boolean
-
-    @Deprecated("Use proc instead")
-    val logger: Logger
 
     val proc: TestResultProcessor
 
@@ -94,16 +90,19 @@ internal fun ApiVerifier.require(
         val message = lazyMessage().toString()
         val th = throwable ?: IllegalStateException(message)
         val isAssertion = throwable == null || throwable is AssertionError || expected != null
-        proc.failure(
-            currentTestDescriptor.id,
-            testFailure(
-                message,
-                th,
-                isAssertionFailure = isAssertion,
-                expected = expected?.toString(),
-                actual = actual?.toString(),
-            ),
+        val failure = testFailure(
+            message,
+            th,
+            isAssertionFailure = isAssertion,
+            expected = expected?.toString(),
+            actual = actual?.toString(),
         )
+        try {
+            proc.failure(currentTestDescriptor.id, failure)
+        } catch (e: Throwable) {
+            e.addSuppressed(th)
+            throw e
+        }
         if (!continueOnFailure) {
             throw GradleException(message)
         }

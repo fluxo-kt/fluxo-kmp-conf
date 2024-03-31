@@ -82,9 +82,15 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = javaTestsLangTargetProp.set(value)
 
     @get:Input
+    val useJdkReleaseProp: Property<Boolean?>
+    override var useJdkRelease: Boolean
+        get() = useJdkReleaseProp.orNull ?: parent?.useJdkRelease ?: true
+        set(value) = useJdkReleaseProp.set(value)
+
+    @get:Input
     val setupJvmToolchainProp: Property<Boolean?>
-    override var setupJvmToolchain: Boolean?
-        get() = setupJvmToolchainProp.orNull ?: parent?.setupJvmToolchain
+    override var setupJvmToolchain: Boolean
+        get() = setupJvmToolchainProp.orNull ?: parent?.setupJvmToolchain ?: false
         set(value) = setupJvmToolchainProp.set(value)
 
 

@@ -26,7 +26,7 @@ setupGradlePlugin(
     enableSpotless = true
     setupCoroutines = false
     experimentalLatestCompilation = true
-    shrink { fullMode = true }
+    // shrink { fullMode = true }
 
     publicationConfig {
         developerId = "amal"

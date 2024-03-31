@@ -138,6 +138,10 @@ internal fun setupArtifactsProcessing(
             val next = config.next.orNull as ArtifactProcessorConfigImpl?
             when (val shrinker = config.processor) {
                 is JvmShrinker -> {
+                    // FIXME: Shrinkers loose JARs reproducibility,
+                    //  repackage resulting JARs with proper settings
+                    //  if reproducibility is required.
+
                     val hasNext = next != null
                     chainForLog += shrinker
 

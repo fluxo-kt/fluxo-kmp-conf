@@ -7,6 +7,7 @@
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Automatic main class detection from jar manifest,</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Benchmark and adjust best options for R8/ProGuard.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Make all dirs to use the chain and id in chain!</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
@@ -33,7 +34,9 @@
     <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt$// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
     <ID>ForbiddenComment:KmpHierarchyTemplate.kt$// TODO: commonWasm group for wasmWasi and wasmJs</ID>
     <ID>ForbiddenComment:KmpTargetContainer.kt$KmpTargetContainer$// TODO: Create common bundle once and reuse?</ID>
-    <ID>ForbiddenComment:KotlinConfig.kt$// TODO: Add env flag for dynamic switch-on when needed</ID>
+    <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Add env flag for dynamic switch-on when needed</ID>
+    <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Auto detect if `-Xjdk-release` actually can be used.</ID>
+    <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Detect if JVM toolchains are already enabled in the project.</ID>
     <ID>ForbiddenComment:KotlinSetupDiagnosticTasks.kt$// TODO: @DisableCachingByDefault(because = "Not worth caching")</ID>
     <ID>ForbiddenComment:KotlinSourceSetsReportTask.kt$// TODO: Mark source sets with deprectaed or 3rd tier targets</ID>
     <ID>ForbiddenComment:LoadAndApplyPluginIfNotApplied.kt$// TODO: Check version for correctness</ID>
@@ -57,6 +60,7 @@
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Ensure the obfuscation mapping incrementality and compatibility when double-shrinking.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Publish the debug non-shrunken artifacts alongside the release shrunken ones.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Run tests with minified artifacts.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Shrinkers loose JARs reproducibility,</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support KMP JVM target minification with ProGuard.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support auto-loading of the shrinking rules from the classpath for the ProGuard.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support shadow jar generation before shrinking artifacts.</ID>
@@ -84,14 +88,14 @@
     <ID>ForbiddenComment:SetupKotlin.kt$// FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Check KSP setup for KMP modules</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Detect if KMP is already applied and what targets are already configured.</ID>
+    <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Support JVM application with `application` plugin</ID>
     <ID>ForbiddenComment:SetupKotlinCompatibility.kt$// TODO: Detekt doesn't support 21 yet, enable when it does</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: With coil-bom:2.2.2 doesn't work as enforcedPlatform for Android and/or KMP</ID>
     <ID>ForbiddenComment:SetupKotlinExperimentalTestCompilation.kt$// TODO: Find a solution for KMP 2.0</ID>
     <ID>ForbiddenComment:SetupKotlinJs.kt$// TODO: Uncomment once compiled for Kotlin 2.0</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Allow -Xjdk-release=1.6 with -jvm-target 1.8 once it is supported</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to JvmCompatibility?</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to KotlinConfig and configure in the context</ID>
+    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: provide sources for KMP publications</ID>

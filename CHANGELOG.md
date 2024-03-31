@@ -10,6 +10,7 @@
 - update compatibility methods `NamedDomainObjectSet<T>.named*` for Gradle 8.6+ and older.
 - output relative paths for the merged report files in the log.
 - replace shrinking setup with full-powered processing chains setup.
+- update Kotlin compiler settings for _Kotlin 2.0_ and `-Xjdk-release`.
 
 ### Added
 - self-apply the plugin to itself immediately with included build.

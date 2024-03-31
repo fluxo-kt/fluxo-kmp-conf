@@ -1,3 +1,5 @@
+@file:Suppress("KDocUnresolvedReference")
+
 package fluxo.conf.dsl
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
@@ -155,6 +157,30 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
         }
 
     /**
+     * Use `-Xjdk-release` option to compile against the specified JDK API version,
+     * similarly to javac's `-release`.
+     *
+     * Controls the target bytecode version and limits the API of the JDK in the
+     * classpath to the specified Java version.
+     *
+     * Default value: `true`.
+     * Inherited from the parent project if not set.
+     * Used only for Kotlin _1.7.0_ or newer and JDK _9_ or newer.
+     * And only for JVM non-Android builds.
+     *
+     * **WARN: This option isn't guaranteed to be effective for each JDK distribution!**
+     * If there's no `ct.sym` file in JDK but `-Xjdk-release` is used,
+     * the compiler will stop with an error.
+     *
+     * Links:
+     * * [Kotlin 1.7: JDK Release Compatibility](https://blog.jetbrains.com/kotlin/2022/02/kotlin-1-7-jdk-release-compatibility/)
+     * * [KT-29974](https://youtrack.jetbrains.com/issue/KT-29974)
+     * * [Kotlin's JDK Release Compatibility Flag](https://jakewharton.com/kotlins-jdk-release-compatibility-flag/)
+     * * [slack-gradle-plugin#778](https://github.com/slackhq/slack-gradle-plugin/pull/778/files)
+     */
+    public var useJdkRelease: Boolean
+
+    /**
      * Flag to configure [Java toolchain](https://docs.gradle.org/current/userguide/toolchains.html)
      * both for Kotlin JVM and Java tasks.
      *
@@ -167,7 +193,7 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension.jvmToolchain
      * @see org.gradle.jvm.toolchain.JavaToolchainSpec
      */
-    public var setupJvmToolchain: Boolean?
+    public var setupJvmToolchain: Boolean
 
 
     /**

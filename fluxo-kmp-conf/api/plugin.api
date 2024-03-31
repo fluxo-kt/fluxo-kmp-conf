@@ -313,10 +313,11 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun getOptIns ()Ljava/util/List;
 	public abstract fun getProgressiveMode ()Ljava/lang/Boolean;
 	public abstract fun getRemoveAssertionsInRelease ()Ljava/lang/Boolean;
-	public abstract fun getSetupJvmToolchain ()Ljava/lang/Boolean;
+	public abstract fun getSetupJvmToolchain ()Z
 	public abstract fun getSetupKotlin ()Z
 	public abstract fun getUseExperimentalFastJarFs ()Ljava/lang/Boolean;
 	public abstract fun getUseIndyLambdas ()Ljava/lang/Boolean;
+	public abstract fun getUseJdkRelease ()Z
 	public abstract fun setAllWarningsAsErrors (Ljava/lang/Boolean;)V
 	public abstract fun setExperimentalLatestCompilation (Ljava/lang/Boolean;)V
 	public abstract fun setExplicitApi (Lorg/jetbrains/kotlin/gradle/dsl/ExplicitApiMode;)V
@@ -333,10 +334,11 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun setOptIns (Ljava/util/List;)V
 	public abstract fun setProgressiveMode (Ljava/lang/Boolean;)V
 	public abstract fun setRemoveAssertionsInRelease (Ljava/lang/Boolean;)V
-	public abstract fun setSetupJvmToolchain (Ljava/lang/Boolean;)V
+	public abstract fun setSetupJvmToolchain (Z)V
 	public abstract fun setSetupKotlin (Z)V
 	public abstract fun setUseExperimentalFastJarFs (Ljava/lang/Boolean;)V
 	public abstract fun setUseIndyLambdas (Ljava/lang/Boolean;)V
+	public abstract fun setUseJdkRelease (Z)V
 }
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionPublication : fluxo/artifact/dsl/ArtifactProcessingChain {

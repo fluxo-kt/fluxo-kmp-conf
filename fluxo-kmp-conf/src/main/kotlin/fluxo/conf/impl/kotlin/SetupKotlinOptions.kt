@@ -32,11 +32,15 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
 
     val kotlinPluginVersion = context.kotlinPluginVersion
     val (lang) = kc.langAndApiVersions(isTest = isTest, latestSettings = useLatestSettings)
-    val kotlin19 = when {
+    val kotlin19orLower = when {
         lang != null -> lang <= KotlinLangVersion.KOTLIN_1_9
-        else -> kotlinPluginVersion <= KOTLIN_1_9
+        else -> kotlinPluginVersion < KOTLIN_2_0
     }
-    if (kotlin19) {
+    val kotlin20orUpper = when {
+        lang != null -> lang > KotlinLangVersion.KOTLIN_1_9
+        else -> kotlinPluginVersion >= KOTLIN_2_0
+    }
+    if (kotlin19orLower) {
         compilerArgs.addAll(KOTLIN_UP_TO_1_9_OPTS)
     }
 
@@ -60,39 +64,40 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             jvmTargetVersion?.let { jvmTarget ->
                 setupJvmCompatibility(jvmTarget)
 
+                // Somehow, jdk-release fails with kotlin lang 2.0 and Kotlin 1.9.
+                val useJdkRelease = kc.useJdkRelease &&
+                    (!kotlin20orUpper || kotlinPluginVersion >= KOTLIN_2_0)
+
                 // Compile against the specified JDK API version, similarly to javac's `-release`.
-                // Controls the target bytecode version and limits the API of the JDK in the
-                // classpath to the specified Java version.
-                // Requires Kotlin 1.7.0 or newer and JDK 9 or newer.
-                // This option isn't guaranteed to be effective for each JDK distribution.
-                // https://kotlinlang.org/docs/whatsnew17.html#new-compiler-option-xjdk-release
-                // https://youtrack.jetbrains.com/issue/KT-29974
-                // FIXME: Move to KotlinConfig and configure in the context
-                //  by default (null) only for useLatestSettings, true/false for broader control.
-                @Suppress("ComplexCondition")
-                if (useLatestSettings &&
-                    JRE_VERSION >= JRE_1_9 &&
-                    kotlinPluginVersion >= KOTLIN_1_7 &&
-                    kc.lang.let { it == null || it >= KotlinLangVersion.KOTLIN_1_7 }
-                ) {
+                // Only apply jdk-release in JVM builds
+                // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda.
+                if (useJdkRelease && !isAndroid) {
                     compilerArgs.add("-Xjdk-release=$jvmTarget")
 
-                    // FIXME: Allow -Xjdk-release=1.6 with -jvm-target 1.8 once it is supported
+                    // TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+
                     //  https://youtrack.jetbrains.com/issue/KT-59098/Support-Xjdk-release1.6-with-jvm-target-1.8
                 }
             }
 
-            if (kc.javaParameters) javaParameters = true
+            if (kc.javaParameters) {
+                javaParameters = true
+            }
 
             compilerArgs.addAll(JVM_OPTS)
-            if (useLatestSettings) compilerArgs.addAll(LATEST_JVM_OPTS)
+            if (useLatestSettings) {
+                compilerArgs.addAll(LATEST_JVM_OPTS)
+            }
 
             /** @see ANDROID_SAFE_JVM_TARGET */
-            if (isAndroid && kc.useSafeAndroidOptions) compilerArgs.add("-Xstring-concat=inline")
+            if (isAndroid && kc.useSafeAndroidOptions) {
+                compilerArgs.add("-Xstring-concat=inline")
+            }
 
             // Using the new faster version of JAR FS should make build faster,
             // but it is experimental and causes warning.
-            if (!warningsAsErrors && kc.fastJarFs) compilerArgs.add("-Xuse-fast-jar-file-system")
+            if (!warningsAsErrors && kc.fastJarFs) {
+                compilerArgs.add("-Xuse-fast-jar-file-system")
+            }
 
             // class mode provides lambdas arguments names
             // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
@@ -120,26 +125,43 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     }
 
     if (useLatestSettings) {
-        // Compile using experimental K2.
-        // K2 is a new compiler pipeline with no compatibility guarantees.
-        // K2 doesn't support all targets and all compiler features yet.
-        if (isJvm || isJs) compilerArgs.add("-Xuse-k2")
+        @Suppress("DEPRECATION")
+        val useK2 = when {
+            kotlin20orUpper -> true
+            else -> {
+                kotlinPluginVersion >= KOTLIN_1_9 &&
+                    kotlinPluginVersion < KOTLIN_2_0 &&
+                    (isJvm || isJs) && useK2
+            }
+        }
 
         // Lang features
         /** @see org.jetbrains.kotlin.config.LanguageFeature */
         // https://github.com/JetBrains/kotlin/blob/ca0b061/compiler/util/src/org/jetbrains/kotlin/config/LanguageVersionSettings.kt
 
-        // Non-local break and continue are in preview since 2.0
+        // Non-local break and continue are in preview since 2.0.
+        // Unfortunately, in K2, the feature works only in JVM.
         // https://youtrack.jetbrains.com/issue/KT-1436/Support-non-local-break-and-continue
-        if (languageVersion.let { it != null && it.startsWith("2.") }) {
+        if (if (useK2) isJvm else kotlin19orLower) {
             compilerArgs.add(langFeature("BreakContinueInInlineLambdas"))
         }
     }
 
-    // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
-    if (!releaseSettings && context.useKotlinDebug) compilerArgs.add("-Xdebug")
+    // OPT_IN_USAGE_ERROR is a warning in K2,
+    // preventing safe code gen compatible with `-Werror`.
+    // https://youtrack.jetbrains.com/issue/KT-66513#focus=Comments-27-9461367.0-0
+    if (warningsAsErrors && kotlinPluginVersion >= KOTLIN_2_0) {
+        compilerArgs.add("-Xdont-warn-on-error-suppression")
+    }
 
-    if (kc.setupCompose) conf.setupKotlinComposeOptions(compilerArgs)
+    // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
+    if (!releaseSettings && context.useKotlinDebug) {
+        compilerArgs.add("-Xdebug")
+    }
+
+    if (kc.setupCompose) {
+        conf.setupKotlinComposeOptions(compilerArgs)
+    }
 
     freeCompilerArgs = compilerArgs
 }
@@ -171,11 +193,12 @@ private fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
     // Note: convert the report to the human-readable HTML.
     // https://patilshreyas.github.io/compose-report-to-html/
     // TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.
-    // $ composeReport2Html -app LinenWallet -overallStatsReport app_primaryDebug-module.json -detailedStatsMetrics app_primaryDebug-composables.csv -composableMetrics app_primaryDebug-composables.txt -classMetrics app_primaryDebug-classes.txt -o htmlReportDebug
-    // $ composeReport2Html -app LinenWallet -overallStatsReport app_primaryRelease-module.json -detailedStatsMetrics app_primaryRelease-composables.csv -composableMetrics app_primaryRelease-composables.txt -classMetrics app_primaryRelease-classes.txt -o htmlReportRelease
+    // $ composeReport2Html -app LW -overallStatsReport app_primaryDebug-module.json -detailedStatsMetrics app_primaryDebug-composables.csv -composableMetrics app_primaryDebug-composables.txt -classMetrics app_primaryDebug-classes.txt -o htmlReportDebug
+    // $ composeReport2Html -app LW -overallStatsReport app_primaryRelease-module.json -detailedStatsMetrics app_primaryRelease-composables.csv -composableMetrics app_primaryRelease-composables.txt -classMetrics app_primaryRelease-classes.txt -o htmlReportRelease
     return
 }
 
+/** @see org.jetbrains.kotlin.config.LanguageFeature */
 @Suppress("SameParameterValue")
 private fun langFeature(name: String) = "-XXLanguage:+$name"
 

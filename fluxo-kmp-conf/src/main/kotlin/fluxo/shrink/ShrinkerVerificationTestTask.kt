@@ -135,8 +135,8 @@ internal abstract class ShrinkerVerificationTestTask : AbstractTestTask() {
                 taskName = spec.taskName,
                 mainJarFile = mainFile,
                 signatures = spec.signatures,
-                proc = proc,
                 logger = logger,
+                proc = proc,
                 continueOnFailure = spec.continueOnFailure,
                 classLoader = URLClassLoader(jarUrls),
             ).use {

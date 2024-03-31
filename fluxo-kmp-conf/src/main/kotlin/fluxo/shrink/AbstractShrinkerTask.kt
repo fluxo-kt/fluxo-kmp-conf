@@ -466,6 +466,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                     add("-Xmx:$it")
                 }
                 if (vmOptions.get()) {
+                    // FIXME: Benchmark and adjust best options for R8/ProGuard.
                     add("-XX:+TieredCompilation")
                 }
                 cliArg(

@@ -11,14 +11,9 @@
   <summary>Show</summary>
 
 * Save known versions of deps and tools to use by default (the whole toml file with no comments?)
-* Support `-Xdont-warn-on-error-suppression` kotlin flag.
-  * https://youtrack.jetbrains.com/issue/KT-66513#focus=Comments-27-9461367.0-0
 * Support auto detection if `-Xjdk-release` can be used. Fail only for release builds. Warn otherwise.
   * _If there's no `ct.sym` file in JDK but `-Xjdk-release` is used, the compiler will stop with an error. The only workaround in that case is to remove `-Xjdk-release`._
   * https://youtrack.jetbrains.com/issue/KT-29974#focus=Comments-27-9458958.0-0
-  * https://github.com/slackhq/slack-gradle-plugin/pull/778/files
-  * Only apply jdk-release in jvm builds?
-    * https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda
 * Security setup
   * Setup for securing API keys in `BuildConfigs` (generated code in general) and in the usual code.
 * CI improvements
