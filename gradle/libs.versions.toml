@@ -267,7 +267,7 @@ deps-guard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 # `taskTree` task that prints the current task graph
 # https://github.com/dorongold/gradle-task-tree/blob/master/CHANGELOG.md#changelog
 # https://plugins.gradle.org/plugin/com.dorongold.task-tree
-task-tree = { id = "com.dorongold.task-tree", version = "2.1.1" }
+task-tree = { id = "com.dorongold.task-tree", version = "3.0.0" }
 
 # Provides task metadata and dependency information, execution queue, and more
 # https://gitlab.com/barfuin/gradle-taskinfo/-/releases
