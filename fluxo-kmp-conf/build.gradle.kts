@@ -74,7 +74,7 @@ dependencies {
     testImplementation(libs.proguard.plugin)
     testImplementation(libs.proguard.core)
     testImplementation(libs.r8)
-    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test", libs.versions.kotlin.get()))
 }
 
 tasks.test {
