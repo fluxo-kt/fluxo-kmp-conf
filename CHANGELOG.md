@@ -14,7 +14,8 @@
 
 ### Updated
 - bump dependency-analysis to _1.31.0_.
-- bump task-tree to _3.0.0_.
+- bump task-tree to [_3.0.0_](https://github.com/dorongold/gradle-task-tree/releases/tag/3.0.0).
+- bump KSP [_1.0.20_](https://github.com/google/ksp/releases/tag/1.9.23-1.0.20).
 
 
 ## [0.7.0] - 2024-03-31
