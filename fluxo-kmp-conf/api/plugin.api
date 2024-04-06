@@ -110,8 +110,8 @@ public final class SetupKotlinJsKt {
 }
 
 public final class SetupKotlinKt {
-	public static final fun setupKotlin (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupKotlin$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupKotlin (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupKotlin$default (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
 public final class SetupMultiplatformKt {

@@ -7,10 +7,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 // TODO: Support JVM application with `application` plugin
 
 public fun Project.setupKotlin(
-    config: (FluxoConfigurationExtension.() -> Unit)? = null,
     setupKsp: Boolean? = if (hasKsp) true else null,
     optIns: List<String>? = null,
-    body: (KotlinJvmProjectExtension.() -> Unit)? = null,
+    kotlin: (KotlinJvmProjectExtension.() -> Unit)? = null,
+    config: (FluxoConfigurationExtension.() -> Unit)? = null,
 ): Unit = fluxoConfiguration {
     if (setupKsp != null) {
         this.setupKsp = setupKsp
@@ -21,6 +21,6 @@ public fun Project.setupKotlin(
     config?.invoke(this)
 
     asJvm {
-        body?.let { kotlin(action = it) }
+        kotlin?.let { kotlin(action = it) }
     }
 }

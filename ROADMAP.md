@@ -14,6 +14,9 @@
 * Support auto detection if `-Xjdk-release` can be used. Fail only for release builds. Warn otherwise.
   * _If there's no `ct.sym` file in JDK but `-Xjdk-release` is used, the compiler will stop with an error. The only workaround in that case is to remove `-Xjdk-release`._
   * https://youtrack.jetbrains.com/issue/KT-29974#focus=Comments-27-9458958.0-0
+* Kotlin MPP publication: add an option to support non-Gradle consumers
+  * https://youtrack.jetbrains.com/issue/KT-57573
+  * https://github.com/arrow-kt/arrow-gradle-config/blob/cba09cc/arrow-gradle-config-publish/src/main/kotlin/internal/PublishMppRootModuleInPlatform.kt#L13
 * Security setup
   * Setup for securing API keys in `BuildConfigs` (generated code in general) and in the usual code.
 * CI improvements
@@ -38,6 +41,7 @@
   * Enable more rules aside from baseline
   * https://github.com/hbmartin/hbmartin-detekt-rules
   * https://github.com/woltapp/arrow-detekt-rules
+  * https://github.com/yandexmobile/detekt-rules-ui-tests
   * https://detekt.dev/docs/rules/libraries/
   * https://detekt.dev/docs/rules/ruleauthors
   * https://github.com/topics/detekt-rules
