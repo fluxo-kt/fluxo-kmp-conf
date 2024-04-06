@@ -15,7 +15,8 @@
 ### Updated
 - bump dependency-analysis to _1.31.0_.
 - bump task-tree to [_3.0.0_](https://github.com/dorongold/gradle-task-tree/releases/tag/3.0.0).
-- bump KSP [_1.0.20_](https://github.com/google/ksp/releases/tag/1.9.23-1.0.20).
+- bump KSP to [_1.0.20_](https://github.com/google/ksp/releases/tag/1.9.23-1.0.20).
+- bump proguard-core to [_9.1.2_](https://github.com/Guardsquare/proguard-core/releases/tag/v9.1.2).
 
 
 ## [0.7.0] - 2024-03-31

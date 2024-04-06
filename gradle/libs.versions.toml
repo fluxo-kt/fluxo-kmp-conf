@@ -129,7 +129,7 @@ proguard = "7.4.2"
 # ProGuardCORE, library to read, analyze, modify, and write JVM class files.
 # https://github.com/Guardsquare/proguard-core/releases
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-core.
-proguard-core = "9.1.1"
+proguard-core = "9.1.2"
 
 # Kotlin JVM metadata manipulation library.
 # Used by ProGuardCORE.

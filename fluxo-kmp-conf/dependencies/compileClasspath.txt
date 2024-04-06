@@ -32,7 +32,7 @@ com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin:1.2.1
 com.gradle.publish:plugin-publish-plugin:1.2.1
 com.gradle:gradle-enterprise-gradle-plugin:3.16.2
 com.guardsquare:proguard-base:7.4.2
-com.guardsquare:proguard-core:9.1.1
+com.guardsquare:proguard-core:9.1.2
 com.guardsquare:proguard-gradle:7.4.2
 com.louiscad.complete-kotlin:com.louiscad.complete-kotlin.gradle.plugin:1.1.0
 com.louiscad.complete-kotlin:plugin:1.1.0
