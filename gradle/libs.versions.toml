@@ -244,9 +244,9 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 
 # Build scans, data to speed up build and improve build reliability.
 # https://scans.gradle.com/plugin/
-# https://plugins.gradle.org/plugin/com.gradle.enterprise
-# NOTE: Don't forget to edit version in all `settings.gradle.kts` files as well!
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.16.2" }
+# https://plugins.gradle.org/plugin/com.gradle.develocity
+# NOTE: Don't forget to edit the version in all `settings.gradle.kts` files as well!
+gradle-enterprise = { id = "com.gradle.develocity", version = "3.17" }
 
 # Gradle Versions Plugin: provides a task to determine, which dependencies have updates.
 # https://github.com/ben-manes/gradle-versions-plugin/releases

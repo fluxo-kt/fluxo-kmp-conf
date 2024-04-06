@@ -1,6 +1,5 @@
 package fluxo.conf.feat
 
-import com.gradle.scan.plugin.BuildScanExtension
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.configureExtension
@@ -9,15 +8,16 @@ import fluxo.conf.impl.l
 
 // Build scans, data to speed up build and improve build reliability.
 // https://scans.gradle.com/plugin/
-// https://plugins.gradle.org/plugin/com.gradle.enterprise
+// https://plugins.gradle.org/plugin/com.gradle.develocity
 internal fun FluxoKmpConfContext.prepareBuildScanPlugin() {
     val project = rootProject
     try {
         if (project.hasProperty("buildScan")) {
-            project.configureExtension<BuildScanExtension>("buildScan") {
+            @Suppress("DEPRECATION")
+            project.configureExtension<com.gradle.scan.plugin.BuildScanExtension>("develocity") {
                 termsOfServiceUrl = "https://gradle.com/terms-of-service"
                 termsOfServiceAgree = "yes"
-                project.logger.l("Configured the build scan plugin")
+                project.logger.l("Configured the build scan extension: ${javaClass.name}")
             }
         }
     } catch (e: Throwable) {

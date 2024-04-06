@@ -27,10 +27,10 @@ com.google.guava:failureaccess:1.0.2
 com.google.guava:guava:33.0.0-jre
 com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
 com.google.j2objc:j2objc-annotations:2.8
-com.gradle.enterprise:com.gradle.enterprise.gradle.plugin:3.16.2
+com.gradle.develocity:com.gradle.develocity.gradle.plugin:3.17
 com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin:1.2.1
 com.gradle.publish:plugin-publish-plugin:1.2.1
-com.gradle:gradle-enterprise-gradle-plugin:3.16.2
+com.gradle:develocity-gradle-plugin:3.17
 com.guardsquare:proguard-base:7.4.2
 com.guardsquare:proguard-core:9.1.2
 com.guardsquare:proguard-gradle:7.4.2
