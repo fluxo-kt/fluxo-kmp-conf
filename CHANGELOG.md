@@ -7,6 +7,10 @@
 
 ### Changed
 - disable Dokka by default.
+- unify `setupKotlin` API.
+
+### Fixed
+- connect Gmazzo's `BuildConfigTask` to `prepareKotlinBuildScriptModel`.
 
 
 ## [0.7.0] - 2024-03-31
