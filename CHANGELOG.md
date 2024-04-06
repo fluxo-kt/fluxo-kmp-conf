@@ -12,6 +12,9 @@
 ### Fixed
 - connect Gmazzo's `BuildConfigTask` to `prepareKotlinBuildScriptModel`.
 
+### Updated
+- bump dependency-analysis to _1.31.0_.
+
 
 ## [0.7.0] - 2024-03-31
 
