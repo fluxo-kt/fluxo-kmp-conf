@@ -26,7 +26,11 @@ setupGradlePlugin(
     enableSpotless = true
     setupCoroutines = false
     experimentalLatestCompilation = true
-    // shrink { fullMode = true }
+
+    // Check shrinking possibilities with `R8(full)` chain,
+    // but don't replace the outgoing jar.
+    replaceOutgoingJar = false
+    shrink { fullMode = true }
 
     publicationConfig {
         developerId = "amal"
