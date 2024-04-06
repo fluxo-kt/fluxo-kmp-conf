@@ -14,6 +14,7 @@
 
 ### Updated
 - bump dependency-analysis to _1.31.0_.
+- bump task-tree to _3.0.0_.
 
 
 ## [0.7.0] - 2024-03-31
