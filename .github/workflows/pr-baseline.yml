@@ -1,0 +1,136 @@
+name: PR Deps Baseline
+
+# Add the necessary changes to the dependency update PRs.
+
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+
+permissions:
+  contents: write
+  # We appear to need write permission for both pull-requests and
+  # issues to post a comment to a pull request.
+  pull-requests: write
+  issues: write
+
+jobs:
+  pr-deps:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    concurrency:
+      group: '${{ github.workflow }}-${{ github.ref }}'
+      cancel-in-progress: true
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      # steps.v.outputs.run_url
+      - id: v
+        run: |
+          echo "run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
+
+      # Verify that the PR is from Dependabot
+      - uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Confirm start in the comment
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🔄 Baseline update [started](${{ steps.v.outputs.run_url }})...'
+            })
+
+      - uses: actions/checkout@v4
+        with:
+          # Needed for correct git commit --amend.
+          fetch-depth: 3
+          # Checkout pull request HEAD commit instead of merge commit.
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: Baseline
+        run: |
+          ./gradlew dependencyGuardBaseline --stacktrace
+          cd checks/gradle-plugin
+          ./gradlew dependencyGuardBaseline --stacktrace
+          cd ../kmp
+          ./gradlew dependencyGuardBaseline kotlinUpgradeYarnLock --stacktrace
+          cd ../..
+
+      - name: Setup GIT
+        run: |
+          # Set GIT user email and name to match author of the last commit.
+          #git config --local user.name "$(git log --pretty=format:'%an' -1)"
+          #git config --local user.email "$(git log --pretty='%ae' -1)"
+          git config --local user.name "Baseline Action"
+          git config --local user.email "baseline.action@fluxo.local"
+
+          # Create SSH key
+          #mkdir -p ~/.ssh/
+          #echo "${{ secrets.BOT_GIT_SSH_KEY }}" > ~/.ssh/id_rsa_bot
+          #chmod 666 ~/.ssh/id_rsa_bot
+
+          # Configure GH commit signing key.
+          # TODO: Fix it, doesn't work atm. Fails for SSH key saved and used this way.
+          #git config --local commit.gpgsign true
+          #git config --local gpg.format ssh
+          #git config --local user.signingkey ~/.ssh/id_rsa
+
+      - name: GIT add
+        run: |
+          git add -v .
+
+      - name: Commit amend and push
+        run: |
+          if [ -n "$(git diff --name-only --cached)" ]; then
+            # Show what's available.
+            git log -n 3 --pretty=format:"%h - %an, %ar : %s"
+
+            # Amend the baseline changes to the last commit.
+            git commit --amend --no-edit -vv
+
+            # Show what we are about to push.
+            git log -n 3 --pretty=format:"%h - %an, %ar : %s"
+
+            # Push changes back to branch
+            git push --force -v origin HEAD:refs/heads/${{ github.head_ref }}
+          else
+            echo "No changes needed."
+          fi
+
+      # Track result in the comment
+      - uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo,
+              body: '✅ Baseline [updated](${{ steps.v.outputs.run_url }}).'
+            })
+      - uses: actions/github-script@v7
+        if: failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo,
+              body: '❌ Baseline update [failed](${{ steps.v.outputs.run_url }})!'
+            })
