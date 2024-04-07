@@ -1,4 +1,4 @@
-name: "Validate Gradle Wrapper"
+name: Validate Gradle Wrapper
 
 on:
   pull_request:
@@ -31,9 +31,10 @@ jobs:
           disable-sudo: true
           egress-policy: block
           allowed-endpoints: >
-            downloads.gradle-dn.com:443
             github.com:443
-            services.gradle.org:443
+            downloads.gradle-dn.com:443
             downloads.gradle.org:443
+            services.gradle.org:443
+
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v2
