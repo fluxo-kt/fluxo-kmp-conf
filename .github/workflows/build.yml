@@ -11,6 +11,13 @@ on:
       - '**/release.yml'
       - '**dependabot.yml'
   push:
+    # Avoid useless runs.
+    branches-ignore:
+      # Dependabot creates both branch and PR. Avoid running twice.
+      - 'dependabot/**'
+      - 'pr/**'
+      - 'pull/**'
+      - 'wip/**'
     paths-ignore:
       - '**-validation.yml'
       - '**.*ignore'
