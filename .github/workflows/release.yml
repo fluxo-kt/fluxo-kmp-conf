@@ -5,6 +5,10 @@ on:
     tags:
       - "v*"
 
+permissions:
+  # allows the action to create a release
+  contents: write
+
 env:
   CI: true
   BUILD_NUMBER: ${{ github.run_number }}
@@ -19,9 +23,9 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      # allows the action to create a release
-      contents: write
+    concurrency:
+      group: ${{ github.workflow }}
+      cancel-in-progress: false
 
     steps:
       - name: Harden Runner
