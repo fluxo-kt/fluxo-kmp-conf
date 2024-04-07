@@ -30,6 +30,8 @@
 * Compose improvements
   * compose-report-to-html
     * https://github.com/PatilShreyas/compose-report-to-html/releases/tag/v1.3.0
+  * Decomposer
+    * https://github.com/takahirom/decomposer/
 * [Gradle Plugin TestKit](https://github.com/autonomousapps/dependency-analysis-gradle-plugin/tree/main/testkit) ([Docs](https://docs.gradle.org/current/userguide/test_kit.html))
 * https://github.com/square/radiography
 * https://github.com/JetBrains-Research/reflekt
