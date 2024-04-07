@@ -1,13 +1,13 @@
-name: Cleanup caches for closed PR
+name: PR Cache Cleanup
 
 on:
   pull_request:
-    types:
-      - closed
+    types: [ closed ]
 
 jobs:
-  cleanup:
+  pr-clean-cache:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -15,9 +15,10 @@ jobs:
           disable-sudo: true
           egress-policy: block
           allowed-endpoints: >
-            github.com:443
+            api.github.com:443
+            objects.githubusercontent.com:443
 
-      - name: Cleanup
+      - name: Clean up
         run: |
           gh extension install actions/gh-actions-cache
 
@@ -30,6 +31,7 @@ jobs:
           for cacheKey in $cacheKeysForPR
           do
               gh actions-cache delete $cacheKey -R $REPO -B $BRANCH --confirm
+              echo " - Deleted cache key: $cacheKey"
           done
           echo "Done"
         env:

@@ -8,6 +8,7 @@ on:
       - '**.md'
       - '**.txt'
       - '**/pr-**.yml'
+      - '**/release.yml'
       - '**dependabot.yml'
   push:
     paths-ignore:
@@ -16,7 +17,19 @@ on:
       - '**.md'
       - '**.txt'
       - '**/pr-**.yml'
+      - '**/release.yml'
       - '**dependabot.yml'
+
+permissions:
+  contents: write
+  # required for all workflows (CodeQL)
+  security-events: write
+  # required for workflows in private repositories (CodeQL)
+  actions: read
+  # We appear to need write permission for both pull-requests and
+  # issues to post a comment to a pull request.
+  pull-requests: write
+  issues: write
 
 env:
   CI: true
@@ -34,9 +47,7 @@ jobs:
       matrix:
         java: [ '21' ]
         os: [ 'macos', 'windows', 'ubuntu' ]
-        # CodeQL supports [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
-        # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
-        # Use only 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
+        # CodeQL supports ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift']
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
         language: [ 'java-kotlin' ]
 
@@ -44,16 +55,6 @@ jobs:
     timeout-minutes: 25
     runs-on: '${{ matrix.os }}-latest'
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    permissions:
-      contents: write
-      # required for all workflows (CodeQL)
-      security-events: write
-      # We appear to need write permission for both pull-requests and
-      # issues in order to post a comment to a pull request.
-      pull-requests: write
-      issues: write
-      # required for workflows in private repositories (CodeQL)
-      actions: read
 
     steps:
       - name: Harden Runner
@@ -61,6 +62,11 @@ jobs:
         with:
           disable-sudo: true
           egress-policy: audit
+
+      # steps.v.outputs.run_url
+      - id: v
+        run: |
+          echo "run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -90,6 +96,7 @@ jobs:
           gradle-home-cache-cleanup: true
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
           dependency-graph: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'generate-and-submit' || 'disabled'}}
+          artifact-retention-days: 1
 
       # TODO: If it's a "build(deps): ..." commit, then run the dependency review actions,
       #  amend the `dependencyGuardBaseline` and `kotlinUpgradeYarnLock` task results
@@ -156,15 +163,19 @@ jobs:
       - name: "Add build scan URL as PR comment"
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && failure()
+        env:
+          GITHUB_ACTION_RUN_URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
+              issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo,
+              body: '❌ ${{ github.workflow }} [failed](${{ steps.v.outputs.run_url }}) on ${{ matrix.os }}.'
             })
+
+# TODO: Integrate commits linting
+#  https://github.com/lsc/serenity/blob/6ef8100/.github/workflows/lintcommits.yml
+#  https://github.com/p-gentili/ockam/blob/c3a4139/.github/workflows/commits.yml
 
 # TODO: Integrate the dependency-review-action
 #  https://github.com/marketplace/actions/gradle-build-action#integrating-the-dependency-review-action
