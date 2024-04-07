@@ -34,8 +34,9 @@ jobs:
             api.github.com:443
             github.com:443
 
-      - name: React to comment right away
+      - name: React to the comment right away
         uses: dkershner6/reaction-action@v2
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           reaction: "rocket"
