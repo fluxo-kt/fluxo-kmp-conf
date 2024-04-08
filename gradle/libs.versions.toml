@@ -152,7 +152,7 @@ asm = "9.7"
 
 # KMP I/O library.
 # https://square.github.io/okio/changelog/
-okio = "3.8.0"
+okio = "3.9.0"
 
 # KMP I/O library.
 # https://square.github.io/okhttp/changelogs/changelog_4x/
