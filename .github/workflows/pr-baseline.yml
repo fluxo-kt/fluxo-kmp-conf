@@ -67,7 +67,7 @@ jobs:
 
       - name: Baseline
         run: |
-          ./gradlew dependencyGuardBaseline --stacktrace
+          ./gradlew dependencyGuardBaseline detektBaseline --stacktrace
           cd checks/gradle-plugin
           ./gradlew dependencyGuardBaseline --stacktrace
           cd ../kmp
