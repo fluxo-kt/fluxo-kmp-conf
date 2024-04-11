@@ -72,6 +72,7 @@ jobs:
 
       # steps.v.outputs.run_url
       - id: v
+        if: github.event_name == 'pull_request'
         run: |
           echo "run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
 
