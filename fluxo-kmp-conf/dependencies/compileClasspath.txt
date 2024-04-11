@@ -64,7 +64,7 @@ org.apache.maven:maven-model:3.6.3
 org.barfuin.gradle.taskinfo:gradle-taskinfo:2.2.0
 org.barfuin.gradle.taskinfo:org.barfuin.gradle.taskinfo.gradle.plugin:2.2.0
 org.checkerframework:checker-qual:3.42.0
-org.jetbrains.compose:compose-gradle-plugin:1.6.1
+org.jetbrains.compose:compose-gradle-plugin:1.6.2
 org.jetbrains.dokka:dokka-core:1.9.20
 org.jetbrains.dokka:dokka-gradle-plugin:1.9.20
 org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:1.9.20

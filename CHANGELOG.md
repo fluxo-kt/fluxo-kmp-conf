@@ -22,6 +22,7 @@
 - bump Okio to [_3.9.0_](https://github.com/square/okio/blob/master/CHANGELOG.md#version-390) (build only dependency).
 - bump Android Gradle Plugin to _8.3.2_ (compile-only dependency).
 - bump com.mikepenz.aboutlibraries to _11.1.3_.
+- bump jetbrains-compose to _1.6.2_.
 
 
 ## [0.7.0] - 2024-03-31
