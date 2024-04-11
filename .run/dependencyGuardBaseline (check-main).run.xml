@@ -2,7 +2,7 @@
   <configuration default="false" name="dependencyGuardBaseline (check-main)" type="GradleRunConfiguration" factoryName="Gradle" folderName="preparations">
     <ExternalSystemSettings>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/checks/main" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/checks/kmp" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="--stacktrace" />
       <option name="taskDescriptions">
