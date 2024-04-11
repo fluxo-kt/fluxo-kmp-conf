@@ -21,6 +21,7 @@
 - bump Guava to [_33.1.0-jre_](https://github.com/google/guava/releases/tag/v33.1.0) (build only dependency).
 - bump Okio to [_3.9.0_](https://github.com/square/okio/blob/master/CHANGELOG.md#version-390) (build only dependency).
 - bump Android Gradle Plugin to _8.3.2_ (compile-only dependency).
+- bump com.mikepenz.aboutlibraries to _11.1.3_.
 
 
 ## [0.7.0] - 2024-03-31
