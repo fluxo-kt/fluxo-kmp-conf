@@ -9,7 +9,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.l
-import fluxo.conf.impl.v
+import fluxo.vc.v
 import org.gradle.api.Project
 
 // TODO: Git pre-commit hook

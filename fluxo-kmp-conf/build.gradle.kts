@@ -9,6 +9,22 @@ description =
     "Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects. Made by Fluxo."
 val pluginId = libs.plugins.fluxo.conf.get().pluginId
 
+val resDir: Provider<Directory> = layout.buildDirectory
+    .dir("generated/sources/fluxo/resources").map { dir ->
+        val dirFile = dir.asFile
+        dirFile.mkdirs()
+        val targetFile = File(dirFile, "fluxo.versions.toml")
+        project.file("../gradle/libs.versions.toml").useLines { lines ->
+            targetFile.bufferedWriter().use { writer ->
+                lines.map { it.substringBefore('#').trim() }
+                    .filter { it.isNotEmpty() }
+                    .joinTo(writer, separator = "\n")
+            }
+        }
+        logger.lifecycle("   Generated: ${targetFile.relativeTo(layout.projectDirectory.asFile)}")
+        dir
+    }
+
 setupGradlePlugin(
     pluginId = pluginId,
     pluginName = "fluxo-kmp-conf",
@@ -21,6 +37,11 @@ setupGradlePlugin(
         "gradle-configuration",
         "convenience",
     ),
+    kotlin = {
+        sourceSets.main {
+            resources.srcDir(resDir.get())
+        }
+    },
 ) {
     githubProject = "fluxo-kt/fluxo-kmp-conf"
     enableSpotless = true
@@ -53,6 +74,7 @@ configurations.implementation {
 dependencies {
     // ALWAYS ADD SAME DEPS TO THE 'self' MODULE!
 
+    implementation(libs.tomlj)
     // Spotless util classes are used internally
     implementation(libs.plugin.spotless)
     // Detekt ReportMergeTask is used internally

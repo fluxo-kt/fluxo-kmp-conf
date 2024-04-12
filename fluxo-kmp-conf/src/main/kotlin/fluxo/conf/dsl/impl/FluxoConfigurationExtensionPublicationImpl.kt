@@ -10,8 +10,8 @@ import fluxo.artifact.proc.JvmShrinker
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 import fluxo.conf.dsl.FluxoPublicationConfig
-import fluxo.conf.impl.v
 import fluxo.shrink.AUTOGEN_KEEP_MODIFIERS
+import fluxo.vc.v
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -36,7 +36,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     override var version: String
         get() = versionProp.orNull
             ?: parent?.version?.takeIf { it.isNotBlank() }
-            ?: ctx.libs.v("version", "versionName", "app", "appVersion", "v")
+            ?: ctx.libs.v("version", "versionName", "app", "appVersion", "v", allowFallback = false)
             ?: project.version.toString()
         set(value) = versionProp.set(value)
 
@@ -45,7 +45,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     override var group: String
         get() = groupProp.orNull
             ?: parent?.group?.takeIf { it.isNotBlank() }
-            ?: ctx.libs.v("group", "package")
+            ?: ctx.libs.v("group", "package", allowFallback = false)
             ?: project.group.toString()
         set(value) = groupProp.set(value)
 

@@ -203,6 +203,9 @@ kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.4
 # https://repo1.maven.org/maven2/org/jetbrains/annotations/
 jetbrains-annotations = { module = "org.jetbrains:annotations", version = "24.1.0" }
 
+# https://github.com/tomlj/tomlj/releases
+tomlj = { module = "org.tomlj:tomlj", version = "1.1.1" }
+
 
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }

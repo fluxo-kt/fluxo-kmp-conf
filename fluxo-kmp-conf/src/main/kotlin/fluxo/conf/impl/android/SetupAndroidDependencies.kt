@@ -9,24 +9,22 @@ import fluxo.conf.impl.implementation
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.kotlin.KotlinConfig
 import fluxo.conf.impl.ksp
-import fluxo.conf.impl.onBundle
-import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.runtimeOnly
 import fluxo.conf.impl.testImplementation
+import fluxo.vc.FluxoVersionCatalog
+import fluxo.vc.onBundle
+import fluxo.vc.onLibrary
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
 
 context(Project)
 @Suppress("LongMethod")
 internal fun DependencyHandler.setupAndroidDependencies(
-    libs: VersionCatalog?,
+    libs: FluxoVersionCatalog,
     isApplication: Boolean,
     kc: KotlinConfig,
 ) {
     androidTestImplementation(kotlin("test-junit", kc.coreLibs))
-
-    libs ?: return
 
     val impl: (Any) -> Unit = { implementation(it) }
     val compileConstraint: (Any) -> Unit = { compileOnlyWithConstraint(it) }

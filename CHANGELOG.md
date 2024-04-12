@@ -5,6 +5,10 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Added
+- bundle toml version catalog with the plugin as a resolving fallback.
+- add logging on auto changed yarn dependenciew for Kotlin/JS.
+
 ### Changed
 - disable Dokka by default.
 - unify `setupKotlin` API.

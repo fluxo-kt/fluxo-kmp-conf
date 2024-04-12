@@ -10,7 +10,6 @@
 <details>
   <summary>Show</summary>
 
-* Save known versions of deps and tools to use by default (the whole toml file with no comments?)
 * Support auto detection if `-Xjdk-release` can be used. Fail only for release builds. Warn otherwise.
   * _If there's no `ct.sym` file in JDK but `-Xjdk-release` is used, the compiler will stop with an error. The only workaround in that case is to remove `-Xjdk-release`._
   * https://youtrack.jetbrains.com/issue/KT-29974#focus=Comments-27-9458958.0-0

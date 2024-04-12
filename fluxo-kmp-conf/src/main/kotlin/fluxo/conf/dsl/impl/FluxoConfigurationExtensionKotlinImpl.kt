@@ -2,7 +2,7 @@ package fluxo.conf.dsl.impl
 
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
 import fluxo.conf.dsl.FluxoConfigurationExtensionKotlin
-import fluxo.conf.impl.v
+import fluxo.vc.v
 import org.gradle.api.GradleException
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property

@@ -117,6 +117,7 @@ net.java.dev.jna:jna-platform:5.6.0
 net.java.dev.jna:jna:5.6.0
 net.sf.jopt-simple:jopt-simple:4.9
 net.sf.kxml:kxml2:2.3.0
+org.antlr:antlr4-runtime:4.11.1
 org.apache.commons:commons-compress:1.21
 org.apache.httpcomponents:httpclient:4.5.14
 org.apache.httpcomponents:httpcore:4.4.16
@@ -170,4 +171,5 @@ org.ow2.asm:asm-util:9.6
 org.ow2.asm:asm:9.7
 org.slf4j:slf4j-api:1.7.36
 org.tensorflow:tensorflow-lite-metadata:0.1.0-rc2
+org.tomlj:tomlj:1.1.1
 org.tukaani:xz:1.9

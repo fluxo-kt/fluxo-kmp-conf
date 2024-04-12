@@ -11,16 +11,16 @@ import fluxo.conf.impl.android.JSR305_DEPENDENCY
 import fluxo.conf.impl.android.hasAndroidAppPlugin
 import fluxo.conf.impl.compileOnlyAndLog
 import fluxo.conf.impl.compileOnlyWithConstraint
-import fluxo.conf.impl.getOrNull
 import fluxo.conf.impl.implementation
 import fluxo.conf.impl.implementationAndLog
 import fluxo.conf.impl.kotlin
-import fluxo.conf.impl.onBundle
-import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.testImplementation
+import fluxo.vc.FluxoVersionCatalog
+import fluxo.vc.l
+import fluxo.vc.onBundle
+import fluxo.vc.onLibrary
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
-import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 context(Project)
 internal fun DependencyHandler.setupKotlinDependencies(
-    libs: VersionCatalog?,
+    libs: FluxoVersionCatalog?,
     kc: KotlinConfig,
     isApplication: Boolean = false,
 ) {
@@ -117,22 +117,22 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
                 implementationAndLog(platformNotation)
             }
             if (kc.setupCoroutines) {
-                libs?.onLibrary("kotlinx-coroutines-bom", bomImplementation)
+                libs.onLibrary("kotlinx-coroutines-bom", bomImplementation)
             }
-            libs?.onLibrary("square-okio-bom", bomImplementation)
-            libs?.onLibrary("square-okhttp-bom", bomImplementation)
-            libs?.onLibrary("ktor-bom", bomImplementation)
-            libs?.onLibrary("arrow-bom", bomImplementation)
+            libs.onLibrary("square-okio-bom", bomImplementation)
+            libs.onLibrary("square-okhttp-bom", bomImplementation)
+            libs.onLibrary("ktor-bom", bomImplementation)
+            libs.onLibrary("arrow-bom", bomImplementation)
 
             if (kc.setupSerialization) {
-                libs?.onLibrary("kotlinx-serialization-bom", bomImplementation)
+                libs.onLibrary("kotlinx-serialization-bom", bomImplementation)
             }
         }
         if (kc.addStdlibDependency) {
             implementationAndLog(kotlin("stdlib", kc.coreLibs), excludeJetbrainsAnnotations)
         }
         if (kc.setupCoroutines) {
-            libs?.onLibrary("kotlinx-coroutines-core") { implementationAndLog(it) }
+            libs.onLibrary("kotlinx-coroutines-core") { implementationAndLog(it) }
         }
     }
 
@@ -140,11 +140,11 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
         implementationAndLog(kotlin("test"))
         implementationAndLog(kotlin("reflect"))
 
-        libs?.onLibrary("kotlinx-datetime") { implementationAndLog(it) }
+        libs.onLibrary("kotlinx-datetime") { implementationAndLog(it) }
 
         if (kc.setupCoroutines) {
-            libs?.onLibrary("kotlinx-coroutines-test") { implementationAndLog(it) }
-            libs?.onLibrary("test-turbine") { implementationAndLog(it) }
+            libs.onLibrary("kotlinx-coroutines-test") { implementationAndLog(it) }
+            libs.onLibrary("test-turbine") { implementationAndLog(it) }
         }
     }
 
@@ -159,7 +159,7 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
 
         // AndroidX Compose
         else {
-            libs?.onLibrary("androidx-compose-runtime") { lib ->
+            libs.onLibrary("androidx-compose-runtime") { lib ->
                 sourceSets.register(CommonJvm.ANDROID + MAIN_SOURCE_SET_POSTFIX) {
                     dependencies { compileOnlyAndLog(lib) }
                     constraints.implementation(lib)
@@ -168,7 +168,6 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
         }
     }
 
-    libs ?: return
     sourceSets.register(CommonJvm.COMMON_JVM + MAIN_SOURCE_SET_POSTFIX) {
         dependencies {
             // TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.
@@ -191,10 +190,7 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
     sourceSets.register(CommonJvm.COMMON_JVM + TEST_SOURCE_SET_POSTFIX) {
         dependencies {
             // Help with https://youtrack.jetbrains.com/issue/KT-29341
-            val junit = libs
-                .findLibrary("test-junit")
-                .or { libs.findLibrary("junit") }
-                .getOrNull() ?: JUNIT_DEPENDENCY
+            val junit = libs.l("junit", "test-junit") ?: JUNIT_DEPENDENCY
             compileOnlyAndLog(junit)
         }
     }

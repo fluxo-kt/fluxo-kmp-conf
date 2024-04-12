@@ -23,6 +23,8 @@ import fluxo.conf.impl.v
 import fluxo.conf.jvm.JvmFiles
 import fluxo.conf.jvm.JvmFilesProvider
 import fluxo.gradle.ioFile
+import fluxo.vc.l
+import fluxo.vc.v
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project

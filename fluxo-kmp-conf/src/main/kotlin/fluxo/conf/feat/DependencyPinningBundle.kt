@@ -2,15 +2,15 @@ package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.VersionCatalogConstants.VC_PINNED_BUNDLE_ALIAS
-import fluxo.conf.impl.b
 import fluxo.conf.impl.d
 import fluxo.conf.impl.l
 import fluxo.conf.impl.logDependency
+import fluxo.vc.b
 import org.gradle.api.artifacts.ModuleIdentifier
 import org.gradle.api.logging.Logger
 
 internal fun FluxoKmpConfContext.prepareDependencyPinningBundle() {
-    val libs = libs ?: return
+    val libs = libs.gradle ?: return
     val logger = rootProject.logger
 
     val pinnedDeps = HashMap<ModuleIdentifier, Pair<String, String>>()

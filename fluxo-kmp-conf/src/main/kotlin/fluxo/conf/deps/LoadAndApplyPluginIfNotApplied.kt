@@ -6,9 +6,10 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.d
 import fluxo.conf.impl.e
-import fluxo.conf.impl.p
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
+import fluxo.vc.p
+import fluxo.vc.v
 import getGradlePluginMarkerArtifactMavenCoordinates
 import java.util.regex.Pattern
 import org.gradle.api.Project
@@ -223,38 +224,38 @@ private fun FluxoKmpConfContext.getPluginIdAndVersion(
     var pluginVersion = version
     var catalogPluginAlias: String? = null
     val libs = libs
-    if (libs != null) {
-        val (provider, alias) = libs.p(catalogPluginIds)
-            ?: (libs.p(catalogPluginId) to catalogPluginId)
-        val p = provider?.orNull
-        if (p != null) {
-            val pId = p.pluginId
-            if (pId != pluginId) {
-                logger.e("Plugin '$pluginId' has unexpected id in version catalog: '$pId'")
+
+    val (provider, alias) = libs.p(catalogPluginIds)
+        ?: (libs.p(catalogPluginId) to catalogPluginId)
+    val p = provider?.orNull
+    if (p != null) {
+        val pId = p.pluginId
+        if (pId != pluginId) {
+            logger.e("Plugin '$pluginId' has unexpected id in version catalog: '$pId'")
+        }
+        pluginId = pId
+        // TODO: Check version for correctness
+        pluginVersion = p.version.toString()
+        catalogPluginAlias = alias
+    } else {
+        libs.v(catalogVersionIds) ?: libs.v(catalogVersionId)?.let {
+            pluginVersion = it
+        }
+
+        // Find actual plugin alias in the version catalog.
+        for (pAlias in libs.gradle?.pluginAliases.orEmpty()) {
+            val pp = libs.p(pAlias)?.orNull
+            if (pp?.pluginId != id) {
+                continue
             }
-            pluginId = pId
+
             // TODO: Check version for correctness
-            pluginVersion = p.version.toString()
-            catalogPluginAlias = alias
-        } else {
-            libs.v(catalogVersionIds) ?: libs.v(catalogVersionId)?.let {
-                pluginVersion = it
-            }
-
-            // Find actual plugin alias in the version catalog.
-            for (pAlias in libs.pluginAliases) {
-                val pp = libs.p(pAlias)?.orNull
-                if (pp?.pluginId != id) {
-                    continue
-                }
-
-                // TODO: Check version for correctness
-                pluginVersion = pp.version.toString()
-                catalogPluginAlias = pAlias
-                break
-            }
+            pluginVersion = pp.version.toString()
+            catalogPluginAlias = pAlias
+            break
         }
     }
+
     return Triple(pluginId, pluginVersion, catalogPluginAlias)
 }
 

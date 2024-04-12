@@ -19,11 +19,11 @@ import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
 import fluxo.conf.impl.kotlin.mppAndroidSourceSetLayoutVersion
 import fluxo.conf.impl.l
-import fluxo.conf.impl.libsCatalogOptional
 import fluxo.conf.impl.tryAsBoolean
 import fluxo.conf.impl.v
 import fluxo.conf.impl.w
 import fluxo.util.readableByteSize
+import fluxo.vc.FluxoVersionCatalog
 import getValue
 import isCI
 import isDesugaringEnabled
@@ -34,7 +34,6 @@ import isRelease
 import javax.inject.Inject
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
@@ -65,7 +64,8 @@ internal abstract class FluxoKmpConfContext
     internal abstract val eventsListenerRegistry: BuildEventsListenerRegistry
 
 
-    val libs: VersionCatalog? = rootProject.libsCatalogOptional
+    @Suppress("LeakingThis")
+    val libs = FluxoVersionCatalog(rootProject, context = this)
 
     val kotlinPluginVersion: KotlinVersion = rootProject.logger.kotlinPluginVersion()
 
@@ -116,7 +116,9 @@ internal abstract class FluxoKmpConfContext
         val logger = project.logger
 
         val isVerbose = isMaxDebug || logger.isInfoEnabled || project.isFluxoVerbose().get()
-        if (isVerbose) SHOW_DEBUG_LOGS = true
+        if (isVerbose) {
+            SHOW_DEBUG_LOGS = true
+        }
 
         // Log environment
         run {

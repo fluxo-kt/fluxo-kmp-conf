@@ -7,8 +7,8 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.builder.model.BaseConfig
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.addAndLog
-import fluxo.conf.impl.onLibrary
 import fluxo.conf.impl.the
+import fluxo.vc.onLibrary
 import org.gradle.api.Project
 
 /**
@@ -43,7 +43,7 @@ internal fun Project.setupFinalizeAndroidDsl(ctx: FluxoKmpConfContext) {
                     // Don't rasterize vector drawables (androidMinSdk >= 21)
                     minSdk >= 21 -> vectorDrawables.generatedDensities()
 
-                    // Use runtime support for vector drawables, instead of build-time support.
+                    // Use runtime support for the vector drawables, instead of build-time support.
                     else -> vectorDrawables.useSupportLibrary = true
                 }
             }
@@ -58,7 +58,7 @@ internal fun Project.setupFinalizeAndroidDsl(ctx: FluxoKmpConfContext) {
 
             // Add leakcanary to all build types in the app
             if (isApplication && !isReleaseBuildType && bt.name != DEBUG) {
-                libs?.onLibrary(ALIAS_LEAK_CANARY) { d ->
+                libs.onLibrary(ALIAS_LEAK_CANARY) { d ->
                     dependencies.addAndLog("${bt.name}Implementation", d)
                 }
             }

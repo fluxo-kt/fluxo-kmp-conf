@@ -7,8 +7,8 @@ import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_TARGET_SDK
 import fluxo.conf.dsl.FluxoConfigurationExtensionAndroid
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.impl.uncheckedCast
-import fluxo.conf.impl.v
-import fluxo.conf.impl.vInt
+import fluxo.vc.v
+import fluxo.vc.vInt
 import java.util.Locale
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -132,8 +132,8 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     val filterVariantsProp: Property<((Any) -> Boolean)?>
     val filterVariants: ((Any) -> Boolean)?
         get() = filterVariantsProp.orNull
-        // TODO: Avoid casting
-            ?: (parent as? FluxoConfigurationExtensionAndroidImpl)?.filterVariants
+            // TODO: Avoid casting
+                ?: (parent as? FluxoConfigurationExtensionAndroidImpl)?.filterVariants
 
     override fun filterVariants(predicate: (VariantBuilder) -> Boolean) {
         filterVariantsProp.set(uncheckedCast<(Any) -> Boolean>(predicate))

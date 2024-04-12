@@ -12,7 +12,9 @@ version = libs.versions.version.get()
 // FIXME: Find a way to deduplicate configuration between `self` and `plugin` modules.
 
 kotlin {
-    sourceSets["main"].kotlin.srcDir("../$pluginDir/src/main/kotlin")
+    sourceSets.main {
+        kotlin.srcDir("../$pluginDir/src/main/kotlin")
+    }
 
     explicitApi()
     compilerOptions {
@@ -21,7 +23,7 @@ kotlin {
             "-Xcontext-receivers",
             // Kotlin's assignment overloading for Gradle plugins.
             // Lookup the Gradle repo for more details. Also:
-            // https://stackoverflow.com/a/76022933/1816338
+            // https://stackoverflow.com/a/76022933/1816338.
             "-P=plugin:org.jetbrains.kotlin.assignment:annotation=org.gradle.api.SupportsKotlinAssignmentOverloading",
         )
         optIn.add("kotlin.contracts.ExperimentalContracts")
@@ -44,7 +46,8 @@ gradlePlugin {
 }
 
 dependencies {
-    // Spotless util classes are used internally
+    implementation(libs.tomlj)
+    // Spotless util classes required, used internally
     implementation(libs.plugin.spotless)
     // Detekt ReportMergeTask is used internally
     implementation(libs.plugin.detekt)
@@ -152,6 +155,6 @@ fun Provider<PluginDependency>.toModuleDependency(): Provider<String> = map {
 
 fun PluginDependency.toModuleDependency(): String {
     val version = version.toString()
-    val v = if (!version.isNullOrBlank()) ":$version" else ""
+    val v = if (version.isNotBlank()) ":$version" else ""
     return pluginId.let { "$it:$it.gradle.plugin$v" }
 }

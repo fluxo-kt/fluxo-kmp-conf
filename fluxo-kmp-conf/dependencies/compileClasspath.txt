@@ -86,3 +86,4 @@ org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binar
 org.jetbrains.kotlinx:binary-compatibility-validator:0.14.0
 org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.2
 org.ow2.asm:asm:9.7
+org.tomlj:tomlj:1.1.1

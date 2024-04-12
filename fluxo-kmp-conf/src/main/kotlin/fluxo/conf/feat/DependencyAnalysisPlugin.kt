@@ -11,7 +11,7 @@ import fluxo.conf.data.VersionCatalogConstants.VC_SQUARE_PLUMBER_ALIAS
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.l
-import fluxo.conf.impl.onLibrary
+import fluxo.vc.onLibrary
 
 // Detect unused and misused dependencies.
 // Provides advice for managing dependencies and other applied plugins.
@@ -55,12 +55,12 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
                 onUnusedDependencies {
                     severity("fail")
                     // Needed for Compose '@Preview'
-                    libs?.onLibrary(VC_ANDROIDX_COMPOSE_TOOLING_ALIAS, ::exclude)
+                    libs.onLibrary(VC_ANDROIDX_COMPOSE_TOOLING_ALIAS, ::exclude)
                 }
                 onAny {
                     // Auto used, no code references
-                    libs?.onLibrary(VC_SQUARE_LEAK_CANARY_ALIAS, ::exclude)
-                    libs?.onLibrary(VC_SQUARE_PLUMBER_ALIAS, ::exclude)
+                    libs.onLibrary(VC_SQUARE_LEAK_CANARY_ALIAS, ::exclude)
+                    libs.onLibrary(VC_SQUARE_PLUMBER_ALIAS, ::exclude)
                 }
             }
 

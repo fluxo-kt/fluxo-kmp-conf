@@ -1,3 +1,5 @@
+@file:Suppress("UnusedPrivateMember")
+
 package fluxo.conf.impl.kotlin
 
 import fluxo.conf.FluxoKmpConfContext
@@ -5,9 +7,12 @@ import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.checkIsRootProject
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.l
-import fluxo.conf.impl.onVersion
+import fluxo.conf.impl.logDependency
 import fluxo.conf.impl.withType
+import fluxo.vc.FluxoVersionCatalog
+import fluxo.vc.onVersion
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.targets.js.NpmPackageVersion
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
@@ -38,9 +43,18 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
             // The Yarn 1.x line is frozen.
             // At least use the last known version.
             // https://github.com/yarnpkg/yarn/releases.
-            if (setupDependencies && libs?.onVersion("js-yarn") { version = it } != true) {
-                if (KotlinToolingVersion(version) < KotlinToolingVersion("1.22.19")) {
-                    version = "1.22.19"
+            if (setupDependencies) {
+                val alias = "js-yarn"
+                val wasSet = libs.onVersion(alias) {
+                    version = it
+                    logDependency(KJS, "$alias:$it")
+                }
+                if (!wasSet) {
+                    val min = MIN_YARN
+                    if (KotlinToolingVersion(version) < KotlinToolingVersion(min)) {
+                        version = min
+                        logDependency(KJS, "$alias:$min")
+                    }
                 }
             }
 
@@ -51,25 +65,54 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
                 reportNewYarnLock = false
             }
 
-            if (libs == null || !setupDependencies) {
+            if (!setupDependencies) {
                 return@configureExtension
             }
 
-            libs.onVersion("js-engineIo") { resolution("engine.io", it) }
-            libs.onVersion("js-socketIo") { resolution("socket.io", it) }
-            libs.onVersion("js-uaParserJs") { resolution("ua-parser-js", it) }
+            setFromCatalog(libs, "js-engineIo", "engine.io")
+            setFromCatalog(libs, "js-socketIo", "socket.io")
+            setFromCatalog(libs, "js-uaParserJs", "ua-parser-js")
         }
 
-        if (libs == null || !setupDependencies) {
+        if (!setupDependencies) {
             return@configuration
         }
         configureExtension<NodeJsRootExtension>(NodeJsRootExtension.EXTENSION_NAME) {
             val v = versions
-            libs.onVersion("js-karma") { v.karma.version = it }
-            libs.onVersion("js-mocha") { v.mocha.version = it }
-            libs.onVersion("js-webpack") { v.webpack.version = it }
-            libs.onVersion("js-webpackCli") { v.webpackCli.version = it }
-            libs.onVersion("js-webpackDevServer") { v.webpackDevServer.version = it }
+            setFromCatalog(libs, "js-karma", v.karma)
+            setFromCatalog(libs, "js-mocha", v.mocha)
+            setFromCatalog(libs, "js-webpack", v.webpack)
+            setFromCatalog(libs, "js-webpackCli", v.webpackCli)
+            setFromCatalog(libs, "js-webpackDevServer", v.webpackDevServer)
         }
     }
 }
+
+private fun Project.setFromCatalog(
+    libs: FluxoVersionCatalog,
+    alias: String,
+    npv: NpmPackageVersion,
+) {
+    libs.onVersion(alias) {
+        if (KotlinToolingVersion(npv.version) < KotlinToolingVersion(it)) {
+            npv.version = it
+            logDependency(KJS, "${npv.name}:$it")
+        }
+    }
+}
+
+private fun YarnRootExtension.setFromCatalog(
+    libs: FluxoVersionCatalog,
+    alias: String,
+    path: String,
+) {
+    libs.onVersion(alias) {
+        resolution(path, it)
+        project.logDependency(KJS, "$path:$it")
+    }
+}
+
+
+private const val MIN_YARN = "1.22.19"
+
+private const val KJS = "KotlinJS"

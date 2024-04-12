@@ -16,9 +16,9 @@ import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.kotlin.ksp
 import fluxo.conf.impl.l
-import fluxo.conf.impl.onLibrary
-import fluxo.conf.impl.onVersion
 import fluxo.conf.impl.the
+import fluxo.vc.onLibrary
+import fluxo.vc.onVersion
 import org.gradle.api.Project
 
 /**
@@ -163,7 +163,7 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         compileOptions.isCoreLibraryDesugaringEnabled = true
 
         // Custom desugaring dependency.
-        ctx.libs?.onLibrary(ALIAS_DESUGAR_LIBS) {
+        ctx.libs.onLibrary(ALIAS_DESUGAR_LIBS) {
             with(project) {
                 dependencies.addAndLog("coreLibraryDesugaring", it)
             }
@@ -184,7 +184,7 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
     }
 
     // Set compose compiler version
-    ctx.libs?.onVersion(ALIAS_ANDROIDX_COMPOSE_COMPILER) {
+    ctx.libs.onVersion(ALIAS_ANDROIDX_COMPOSE_COMPILER) {
         composeOptions.kotlinCompilerExtensionVersion = it
     }
 
