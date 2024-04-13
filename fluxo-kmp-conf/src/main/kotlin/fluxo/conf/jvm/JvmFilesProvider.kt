@@ -13,20 +13,33 @@ import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 internal sealed class JvmFilesProvider {
     abstract fun jvmCompileFiles(project: Project): JvmFiles
 
+    abstract fun jvmRuntimeFiles(project: Project): JvmFiles
+
     abstract class GradleJvmFilesProvider : JvmFilesProvider() {
         protected abstract val jarTaskName: String
         protected abstract val compileFiles: FileCollection
         protected abstract val runtimeFiles: FileCollection
 
-        override fun jvmCompileFiles(project: Project): JvmFiles {
+        override fun jvmCompileFiles(project: Project): JvmFiles =
+            jvmFiles(project, compileFiles)
+
+        override fun jvmRuntimeFiles(project: Project): JvmFiles =
+            jvmFiles(project, runtimeFiles)
+
+        private fun jvmFiles(project: Project, files: FileCollection): JvmFiles {
             val jarTask = project.tasks.named(jarTaskName, Jar::class.java)
             val mainJar = jarTask.flatMap { it.archiveFile }
             val jarFiles = project.objects.fileCollection()
-            val filterSpec = Spec<File> { it.path.endsWith(".jar") }
-            jarFiles.from(compileFiles.filter(filterSpec))
+            jarFiles.from(files.filter(JarFilterSpec))
             return JvmFiles(mainJar, jarFiles, arrayOf(jarTask))
         }
     }
+
+    private object JarFilterSpec : Spec<File> {
+        override fun isSatisfiedBy(file: File): Boolean =
+            file.path.endsWith(".jar")
+    }
+
 
     class FromGradleSourceSet(private val sourceSet: SourceSet) :
         GradleJvmFilesProvider() {

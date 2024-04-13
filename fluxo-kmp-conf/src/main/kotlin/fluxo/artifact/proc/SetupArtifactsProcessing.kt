@@ -7,7 +7,6 @@ import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks
 import fluxo.conf.impl.register
 import fluxo.log.l
-import fluxo.log.vb
 import fluxo.log.w
 import fluxo.shrink.SHRINKER_KEEP_GEN_TASK_NAME
 import fluxo.shrink.ShrinkerVerificationTestTask
@@ -15,8 +14,8 @@ import fluxo.shrink.getShrinkerVerifyTaskName
 import fluxo.shrink.registerShrinkerKeepRulesGenTask
 import fluxo.shrink.registerShrinkerTask
 import org.gradle.api.Action
-import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.Directory
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
@@ -48,14 +47,17 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 //  Should be easy to switch between them in the consuming projects.
 //  Use variant attributes?
 
-// FIXME: Allow to call shrinker by task name even if it's disabled.
+// TODO: Allow to call shrinker by task name even if it's disabled.
 //  Or, at least, show an informative warning when it's disabled
 
 // FIXME: Support shadow jar generation before shrinking artifacts.
 //  https://github.com/GradleUp/gr8
 //  https://github.com/johnrengelman/shadow
 
-// TODO: Support Android minification with ProGuard?
+// TODO: Support Android minification with Fluxo processing chain.
+
+// FIXME: Support final artifact filtration step similar to the Android packaging options.
+// e.g. android.packaging.resources.excludes
 
 // region Notes and references:
 // https://r8.googlesource.com/r8/
@@ -114,13 +116,19 @@ internal fun setupArtifactsProcessing(
     val testTasks = mutableListOf<TaskProvider<*>>()
 
     // Auto-generate keep rules from API reports
-    if (conf.autoGenerateKeepRulesFromApis) {
+    val isApplication = conf.isApplication
+    val autoGenerateKeepRules = !isApplication &&
+        conf.autoGenerateKeepRulesFromApis &&
+        conf.enableApiValidation
+    if (autoGenerateKeepRules) {
         val rulesGenRask = p.registerShrinkerKeepRulesGenTask(conf.autoGenerateKeepModifier)
         when {
             !processArtifacts -> dependencies += rulesGenRask
             else -> runAfter += rulesGenRask
         }
     }
+
+    val mainClassesProvider = p.getMainClassesProvider()
 
     val testChainArtifact = !conf.ctx.testsDisabled
     var replaceOutgoingJar = conf.replaceOutgoingJar
@@ -129,6 +137,7 @@ internal fun setupArtifactsProcessing(
         var chainTailTask: TaskProvider<*>? = null
         var mainJar: Provider<RegularFile>? = null
         var inputFiles: FileCollection? = null
+        var destinationDir: Provider<out Directory>? = null
         var chainState: ProcessorChainState? = null
         val chainDependencies = dependencies.toMutableList()
         val chainForLog = mutableListOf<JvmShrinker>()
@@ -166,18 +175,30 @@ internal fun setupArtifactsProcessing(
                         runAfter = runAfter,
                         chainState = chainState,
                         chainForLog = chainForLog.joinToString(separator = " => ") { it.name },
+                        processAsApp = isApplication,
                     )
 
-                    val shrinkTask = p.registerShrinkerTask(setup)
+                    val shrinkTask = p.registerShrinkerTask(setup, mainClassesProvider)
 
                     if (hasNext || replaceOutgoingJar || testChainArtifact) {
                         mainJar = shrinkTask.flatMap { it.destinationFile }
+                        destinationDir = shrinkTask.flatMap { it.destinationDir }
 
-                        // FIXME: Support shadowing and/or relocation processors in the chain.
-                        inputFiles = chainState?.inputFiles
-                            ?: p.objects.fileCollection().apply {
-                                from(shrinkTask.map { it.inputFiles })
+                        inputFiles = when {
+                            // R8 Always provides only one output file.
+                            // If more than one artifact is processed (e.g. app mode),
+                            // it works as a shadowing (uber-jar).
+                            shrinker === JvmShrinker.R8 && isApplication -> null
+
+                            // FIXME: Support other shadowing/relocation processors in the chain.
+                            else -> when (chainState) {
+                                null -> p.objects.fileCollection().apply {
+                                    from(shrinkTask.map { it.inputFiles })
+                                }
+
+                                else -> chainState.inputFiles
                             }
+                        }
                     }
                     if (hasNext) {
                         chainDependencies += shrinkTask
@@ -189,7 +210,7 @@ internal fun setupArtifactsProcessing(
 
                         chainState = ProcessorChainState(
                             mainJar = requireNotNull(mainJar),
-                            inputFiles = requireNotNull(inputFiles),
+                            inputFiles = inputFiles,
                             mappingFile = mappingFile,
                         )
                     } else {
@@ -208,21 +229,36 @@ internal fun setupArtifactsProcessing(
         // Replace the original artifact with processed one, but only once.
         // Replaces the default jar in outgoingVariants.
         // FIXME: Provide unporcessed artifacts alongside the processed ones as a variant.
+        val jarProvider = requireNotNull(mainJar)
+        val lastChainTask = chainTailTask
         if (replaceOutgoingJar) {
             replaceOutgoingJar = false
-            p.replaceOutgoingJar(
-                jarProvider = requireNotNull(mainJar),
-                builtBy = chainTailTask,
-            )
+            if (!isApplication) {
+                p.replaceOutgoingArtifactJarInConfigurations(
+                    jarProvider = jarProvider,
+                    builtBy = lastChainTask,
+                )
+            } else {
+                val finalDestinationDir = requireNotNull(destinationDir)
+                p.onComposeDesktopApplication { jvmApp ->
+                    p.processComposeDesktopArtifact(
+                        conf = conf,
+                        jvmApp = jvmApp,
+                        jarProvider = jarProvider,
+                        destinationDir = finalDestinationDir,
+                        builtBy = lastChainTask,
+                    )
+                }
+            }
         }
 
-        if (testChainArtifact && chainTailTask != null && mainJar != null) {
+        if (testChainArtifact && !isApplication && lastChainTask != null) {
             val verifyTask = tasks.register<ShrinkerVerificationTestTask>(
                 name = getShrinkerVerifyTaskName(chainId = chainId),
             ) {
-                dependsOn(chainTailTask)
+                dependsOn(lastChainTask)
 
-                jar.set(mainJar)
+                jar.set(jarProvider)
                 this.inputFiles.setFrom(inputFiles)
 
                 this.chainForLog.set(chainForLog.joinToString(separator = " => ") { it.name })
@@ -249,55 +285,6 @@ internal fun setupArtifactsProcessing(
         val bind = Action<Task> { dependsOn(testTasks) }
         tasks.named(TEST_TASK_NAME, bind)
         tasks.named(CHECK_TASK_NAME, bind)
-    }
-}
-
-private fun Project.replaceOutgoingJar(
-    jarProvider: Provider<RegularFile>,
-    builtBy: Any? = null,
-) {
-    val logger = logger
-    logger.l("Replace outgoing jar with processed one")
-    configurations.configureEach {
-        val confName = name
-        outgoing {
-            var removed = false
-            lateinit var artifactName: String
-            val iterator = artifacts.iterator()
-            for (artifact in iterator) {
-                if (!artifact.classifier.isNullOrBlank() ||
-                    artifact.extension != "jar" ||
-                    artifact.type != "jar"
-                ) {
-                    continue
-                }
-                iterator.remove()
-                artifactName = artifact.name
-                removed = true
-                logger.vb {
-                    append("Replaced non-classified artifact from configuration '")
-                    append(confName).append("':\n    ")
-                    append('{')
-                    append("name=").append(artifact.name).append(", ")
-                    append("ext=").append(artifact.extension).append(", ")
-                    append("type=").append(artifact.type).append(", ")
-                    append("file=").append(artifact.file.toRelativeString(projectDir)).append(", ")
-                    append("date=").append(artifact.date).append(", ")
-                    append('}')
-                }
-            }
-            if (removed) {
-                artifact(jarProvider) {
-                    // Pom and maven consumers do not like the
-                    // `-all` or `-shadowed` classifiers.
-                    classifier = ""
-                    type = "jar"
-                    extension = "jar"
-                    name = artifactName
-                    builtBy?.let { builtBy(it) }
-                }
-            }
-        }
     }
 }
 

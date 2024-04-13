@@ -110,6 +110,8 @@ public fun Project.fkcSetupAndroidApp(
     android: (BaseAppModuleExtension.() -> Unit)? = null,
 ) {
     project.fluxoConfiguration {
+        isApplication = true
+
         if (applicationId != null) {
             this.androidNamespace = applicationId
             this.androidApplicationId = applicationId

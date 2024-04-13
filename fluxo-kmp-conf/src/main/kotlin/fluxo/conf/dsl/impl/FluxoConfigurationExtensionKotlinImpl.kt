@@ -179,6 +179,13 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
+    val applicationFlagProp: Property<Boolean?>
+    override var isApplication: Boolean
+        get() = applicationFlagProp.orNull ?: false
+        set(value) = applicationFlagProp.set(value)
+
+
+    @get:Input
     val setupDependenciesProp: Property<Boolean>
     override var setupDependencies: Boolean
         get() = setupDependenciesProp.orNull ?: parent?.setupDependencies ?: false

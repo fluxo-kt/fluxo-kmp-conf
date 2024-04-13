@@ -10,6 +10,7 @@ _You need to replace `setup*` calls to `fkcSetup*` ones like this: <br>
 `setupMultiplatform` => `fkcSetupMultiplatform`._
 
 ### Added
+- add Compose Desktop setup support and a test project for it.
 - bundle toml version catalog with the plugin as a resolving fallback.
 - add logging on auto changed yarn dependenciew for Kotlin/JS.
 - enable `androidResources.generateLocaleConfig` in android apps by default.

@@ -3,10 +3,11 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ArgumentListWrapping:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
+    <ID>CyclomaticComplexMethod:AbstractShrinkerTask.kt$AbstractShrinkerTask$@Suppress("LongMethod") private fun writeRootConfiguration( file: File, reportsDir: Directory, jarsConfigurationFile: File, shrinker: JvmShrinker, )</ID>
     <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Automatic main class detection from jar manifest,</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Add automatic main class detection from the main jar manifest</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Benchmark and adjust best options for R8/ProGuard.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Make all dirs to use the chain and id in chain!</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
@@ -61,7 +62,6 @@
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Allow to call shrinker by task name even if it's disabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Ensure the obfuscation mapping incrementality and compatibility when double-shrinking.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Provide unporcessed artifacts alongside the processed ones as a variant.</ID>
@@ -70,10 +70,12 @@
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Shrinkers loose JARs reproducibility,</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support KMP JVM target minification with ProGuard.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support auto-loading of the shrinking rules from the classpath for the ProGuard.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support final artifact filtration step similar to the Android packaging options.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support other shadowing/relocation processors in the chain.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support shadow jar generation before shrinking artifacts.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support shadowing and/or relocation processors in the chain.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Verify proper replacement of the original artifact with the processed one (map by file?).</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support Android minification with ProGuard?</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Allow to call shrinker by task name even if it's disabled.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support Android minification with Fluxo processing chain.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support auto-disabling kotlin null checks generation for the shrunken release builds.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup checks for the non source set kotlin files (e.g., *.kts scripts).</ID>

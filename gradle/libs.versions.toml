@@ -234,6 +234,8 @@ fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", ve
 
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
+
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 # Auto-completion and symbol resolution for all Kotlin/Native platforms on any OS.

@@ -5,12 +5,21 @@
 
 # Note: -assumenoexternalsideeffects and -assumenoexternalreturnvalues are not supported by R8 and ignored!
 
+-assumenoexternalsideeffects public final class kotlin.Unit {
+    public kotlin.Unit();
+}
+-assumenosideeffects public final class kotlin.Unit {
+    public static final kotlin.Unit INSTANCE;
+    public static java.lang.String toString();
+}
+
 -assumenoexternalsideeffects public class java.lang.Object {
     public java.lang.Object();
 }
--assumenosideeffects public class java.lang.Object {
-    public final java.lang.Class getClass();
-}
+# Causes problems with ProGuard
+#-assumenosideeffects public class java.lang.Object {
+#    public final java.lang.Class getClass();
+#}
 
 -assumenoexternalsideeffects public final class java.lang.Boolean {
     public java.lang.Boolean(boolean);

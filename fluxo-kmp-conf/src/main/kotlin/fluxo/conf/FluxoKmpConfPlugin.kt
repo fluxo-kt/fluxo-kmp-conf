@@ -33,7 +33,7 @@ import fluxo.conf.impl.kotlin.KOTLIN_EXT
 import fluxo.conf.impl.kotlin.configureKotlinJvm
 import fluxo.conf.impl.kotlin.configureKotlinMultiplatform
 import fluxo.conf.impl.kotlin.setupKmpYarnPlugin
-import isR8Disabled
+import isShrinkerDisabled
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -117,7 +117,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         }
 
         // Public API validation
-        if (conf.enableApiValidation) {
+        if (conf.enableApiValidation && !conf.isApplication) {
             setupBinaryCompatibilityValidator(conf)
         }
 
@@ -126,7 +126,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
 
         // Artifacts processing: minification/shrinking, shadowing, etc.
         val project = conf.project
-        if (!project.isR8Disabled().get()) {
+        if (!project.isShrinkerDisabled().get()) {
             setupArtifactsProcessing(conf)
         }
 

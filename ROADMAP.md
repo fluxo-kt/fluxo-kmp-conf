@@ -18,7 +18,6 @@
   * https://github.com/arrow-kt/arrow-gradle-config/blob/cba09cc/arrow-gradle-config-publish/src/main/kotlin/internal/PublishMppRootModuleInPlatform.kt#L13
 * Security setup
   * Setup for securing API keys in `BuildConfigs` (generated code in general) and in the usual code.
-* Support JVM application with `application` plugin.
 * GIT hooks
   * Spotless
   * Detekt

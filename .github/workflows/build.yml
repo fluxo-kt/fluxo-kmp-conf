@@ -148,6 +148,12 @@ jobs:
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
+      - name: 'Run check-compose-desktop'
+        working-directory: checks/compose-desktop
+        run: ./gradlew build assemble check packageReleaseDistributionForCurrentOS --continue --stacktrace --scan
+        env:
+          GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+
       - name: 'Run self check'
         timeout-minutes: 4
         working-directory: self

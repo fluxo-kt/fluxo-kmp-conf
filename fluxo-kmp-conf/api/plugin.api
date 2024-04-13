@@ -87,6 +87,8 @@ public final class Fkc {
 	public static synthetic fun setupIdeaPlugin$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun setupKotlin (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun setupKotlin$default (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupKotlinApp (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupKotlinApp$default (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun setupMultiplatform (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun setupMultiplatform$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun setupRaw (Lorg/gradle/api/Project;Lorg/gradle/api/Action;)V
@@ -230,6 +232,8 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon
 	public abstract fun getSetupDependencies ()Z
 	public abstract fun getSetupKnownBoms ()Z
 	public abstract fun getSetupVerification ()Ljava/lang/Boolean;
+	public abstract fun isApplication ()Z
+	public abstract fun setApplication (Z)V
 	public abstract fun setEnableBuildConfig (Z)V
 	public abstract fun setEnableDetektAutoCorrect (Ljava/lang/Boolean;)V
 	public abstract fun setEnableDetektCompilerPlugin (Ljava/lang/Boolean;)V

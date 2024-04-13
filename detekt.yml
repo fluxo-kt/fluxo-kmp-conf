@@ -23,13 +23,25 @@ exceptions:
   TooGenericExceptionCaught:
     active: false
 
+complexity:
+  LongParameterList:
+    ignoreDefaultParameters: true
+  TooManyFunctions:
+    ignoreDeprecated: true
+    ignoreOverridden: true
+    ignoreAnnotatedFunctions: ['Preview']
+
 style:
   LoopWithTooManyJumpStatements:
     maxJumpCount: 2
   MaxLineLength:
     maxLineLength: 100
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview']
 
 naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
   NoNameShadowing:
     # False positives with SAM receiver usage
     active: false

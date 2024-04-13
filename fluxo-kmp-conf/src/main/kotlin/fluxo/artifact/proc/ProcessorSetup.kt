@@ -17,10 +17,11 @@ internal class ProcessorSetup<out P : ArtifactProcessor, out C : ProcessorConfig
     val runAfter: List<Any>? = null,
     val chainState: ProcessorChainState? = null,
     val chainForLog: String? = null,
+    val processAsApp: Boolean = false,
 )
 
 internal class ProcessorChainState(
     val mainJar: Provider<RegularFile>,
-    val inputFiles: FileCollection,
+    val inputFiles: FileCollection?,
     val mappingFile: Provider<RegularFile>? = null,
 )

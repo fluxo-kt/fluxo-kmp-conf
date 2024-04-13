@@ -143,6 +143,8 @@ private fun Project.setupGradleProjectPublication(
         tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
+            dirMode = "0755".toInt(radix = 8)
+            fileMode = "0644".toInt(radix = 8)
         }
     }
 }

@@ -6,6 +6,18 @@ import org.gradle.api.Incubating
 public interface FluxoConfigurationExtensionCommon {
 
     /**
+     * Flags project as an application.
+     *
+     * Enables some settings targeted for applications.
+     * E.g. disables the binary compatibility validator.
+     *
+     * NOT inherited from the parent project if not set.
+     * Default value: `false`.
+     */
+    public var isApplication: Boolean
+
+
+    /**
      * Flag that allows to disable dependency setup completely.
      *
      * Inherited from the parent project if not set.
@@ -39,6 +51,8 @@ public interface FluxoConfigurationExtensionCommon {
      */
     public var enableBuildConfig: Boolean
 
+
+    // region Verification, Linting, and Formatting
 
     /**
      * Flag to turn on ALL the set of verification features, like Detekt, Spotless, and so on.
@@ -100,4 +114,6 @@ public interface FluxoConfigurationExtensionCommon {
      * @see setupVerification
      */
     public var enableSpotless: Boolean?
+
+    // endregion
 }

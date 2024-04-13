@@ -1,7 +1,4 @@
 @file:Suppress(
-    "KDocUnresolvedReference",
-    "LeakingThis",
-    "LongParameterList",
     "LongParameterList",
     "NestedBlockDepth",
     "TooManyFunctions",
@@ -25,8 +22,10 @@ import fluxo.gradle.ioFileOrNull
 import fluxo.gradle.listProperty
 import fluxo.gradle.mkdirs
 import fluxo.gradle.normalizedPath
+import fluxo.gradle.not
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty
+import fluxo.gradle.setProperty
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.e
 import fluxo.log.i
@@ -47,6 +46,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.CompileClasspath
@@ -61,13 +61,14 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 /**
  *
  * @see fluxo.shrink.ShrinkerKeepRulesBySeedsTest
  *
  * @see org.jetbrains.compose.desktop.application.tasks.AbstractProguardTask
+ * @see org.jetbrains.compose.desktop.application.internal.configureProguardTask
+ * @see org.jetbrains.compose.desktop.application.internal.configurePackagingTasks
  * @see com.android.build.gradle.internal.tasks.ProguardConfigurableTask
  * @see com.android.build.gradle.internal.tasks.R8Task
  * @see proguard.gradle.ProGuardTask
@@ -96,11 +97,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Optional
     @get:Input
-    val processApplication: Property<Boolean> = objects.notNullProperty(false)
+    val processAsApp: Property<Boolean> = objects.notNullProperty(false)
 
     @get:Optional
     @get:Input
-    val filterMultireleaseJars: Property<Boolean> = objects.notNullProperty(true)
+    val filterMultireleaseJars: Property<Boolean> = objects.notNullProperty(!processAsApp)
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -151,7 +152,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val rulesFile: Provider<FileCollection> = defaultRulesFile.map { file ->
         objects.fileTree().from(file.asFile.parentFile)
-            .filter { it.path.endsWith(".pro") }
+            .filter { it.path.endsWith(PRO_EXT) }
     }
 
     @get:Input
@@ -166,7 +167,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Input
     @get:Optional
-    val mainClasses: ListProperty<String> = objects.listProperty()
+    val mainClasses: SetProperty<String> = objects.setProperty()
 
     @get:Input
     @get:Optional
@@ -216,7 +217,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
 
     init {
-        group = LifecycleBasePlugin.BUILD_GROUP
+        group = FLUXO_TASK_GROUP
         description = "Shrink and optimize final JVM artifact"
 
         val p = project
@@ -280,7 +281,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
         // For a final application, we need to process all jars,
         // but for a library, only the main jar.
-        val onlyMainJar = !processApplication.get()
+        val processOnlyMainJar = !processAsApp.get()
         val inputToOutputJars = LinkedHashMap<File, File?>()
         var initialSize: Long = 0
 
@@ -293,7 +294,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         for (inputFile in inputFiles) {
             val outputFile = destinationDir.resolve(inputFile.name)
             if (!inputFile.name.endsWith(".jar", ignoreCase = true)) {
-                if (!onlyMainJar) {
+                if (!processOnlyMainJar) {
                     inputFile.copyTo(outputFile)
                     initialSize += inputFile.length()
                 }
@@ -301,7 +302,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
             }
 
             val output = when {
-                onlyMainJar -> null
+                processOnlyMainJar -> null
                 else -> outputFile
             }
             if (inputToOutputJars.putIfAbsent(inputFile, output) != null) {
@@ -497,7 +498,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                     add("--release") // (default) vs --debug
                     add("--classfile") // vs --dex (default)
                     cliArg("--lib", javaHome)
-                    cliArg("--output", outJars.single(), base = workDir)
+                    cliArg("--output", outJars.first(), base = workDir)
 
                     // Only for DEX output
                     // androidMinSdk.orNull?.let { cliArg("--min-api", it) }
@@ -584,12 +585,14 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         //  -addconfigurationdebugging
         //  -dump
 
-        // FIXME: Automatic main class detection from jar manifest,
-        //  processor configuration,
-        //  plugin configuration
+        // FIXME: Add automatic main class detection from the main jar manifest
         mainClasses.get().ifNotEmpty {
             writer.ln()
-            forEach { mainClass ->
+            forEach mc@{ mainClass: String? ->
+                if (mainClass.isNullOrBlank()) {
+                    return@mc
+                }
+
                 writer.ln(
                     """
                     -keep public class $mainClass {

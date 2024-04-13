@@ -39,7 +39,9 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     } else {
         jvmTarget = jvmTargetInt.asJvmTargetVersion()
     }
-    val javaParameters = jvmTargetInt >= JRE_1_8 && javaParameters ?: false
+    val javaParameters = jvmTargetInt >= JRE_1_8 &&
+        javaParameters ?: false &&
+        !isApplication
 
     // `jdk-release` requires Kotlin 1.7.0 or newer and JDK 9 or newer.
     // Also, no sense to use it with the JVM toolchain.

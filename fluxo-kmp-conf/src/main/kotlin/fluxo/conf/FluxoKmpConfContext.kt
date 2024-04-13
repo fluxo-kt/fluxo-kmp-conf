@@ -29,8 +29,8 @@ import isCI
 import isDesugaringEnabled
 import isFluxoVerbose
 import isMaxDebugEnabled
-import isR8Disabled
 import isRelease
+import isShrinkerDisabled
 import javax.inject.Inject
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
@@ -200,7 +200,7 @@ internal abstract class FluxoKmpConfContext
             isVerbose -> logger.w("FLUXO_VERBOSE is enabled!")
         }
         if (isDesugaringEnabled) logger.w("DESUGARING is enabled!")
-        if (project.isR8Disabled().get()) {
+        if (project.isShrinkerDisabled().get()) {
             logger.w("SHRINKING (R8/ProGuard) is disabled! (DISABLE_R8)")
         }
 

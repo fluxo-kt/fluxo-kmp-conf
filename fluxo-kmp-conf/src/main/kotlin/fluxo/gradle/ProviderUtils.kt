@@ -36,5 +36,8 @@ internal inline fun <reified T : Any> ObjectFactory.setProperty(): SetProperty<T
 internal inline fun <reified T> Provider<T>.toProperty(objects: ObjectFactory): Property<T> =
     objects.property(T::class.java).value(this)
 
+
 internal fun Provider<String?>.toBooleanProvider(defaultValue: Boolean): Provider<Boolean> =
     orElse(defaultValue.toString()).map { "true" == it }
+
+internal operator fun Provider<Boolean>.not(): Provider<Boolean> = map { !it }

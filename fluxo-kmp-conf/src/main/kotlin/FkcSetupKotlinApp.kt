@@ -6,10 +6,9 @@ import fluxo.conf.dsl.fluxoConfiguration
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
-// TODO: Support JVM application with `application` plugin
-
 /**
- * Lazily configures a Kotlin JVM library module (Gradle [Project]).
+ * Lazily configures a Kotlin JVM app module (Gradle [Project]).
+ * Suitable for Compose, CLI, or any other JVM application.
  *
  * @receiver The [Project] to configure.
  *
@@ -23,35 +22,17 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
  * @see fluxo.conf.dsl.FluxoConfigurationExtension.setupKsp
  * @see fluxo.conf.dsl.FluxoConfigurationExtension.optIns
  *
- * @see fkcSetupKotlinApp for an app configuration defaults.
+ * @see fkcSetupKotlinApp for a library configuration defaults.
  */
-@JvmName("setupKotlin")
-public fun Project.fkcSetupKotlin(
+@JvmName("setupKotlinApp")
+public fun Project.fkcSetupKotlinApp(
     setupKsp: Boolean? = null,
     optIns: List<String>? = null,
     kotlin: (KotlinJvmProjectExtension.() -> Unit)? = null,
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
 ) {
     fluxoConfiguration {
+        isApplication = true
         setupKotlin(optIns, setupKsp, config, kotlin)
-    }
-}
-
-internal fun FluxoConfigurationExtension.setupKotlin(
-    optIns: List<String>?,
-    setupKsp: Boolean?,
-    config: (FluxoConfigurationExtension.() -> Unit)?,
-    kotlin: (KotlinJvmProjectExtension.() -> Unit)?,
-) {
-    if (!optIns.isNullOrEmpty()) {
-        this.optIns += optIns
-    }
-
-    setupKsp?.let { this.setupKsp = it }
-
-    config?.invoke(this)
-
-    asJvm {
-        kotlin?.let { this.kotlin(action = it) }
     }
 }

@@ -28,6 +28,7 @@ internal fun ApplicationExtension.setupPackagingOptions(
         "**/org/apache/commons/**",
         "**/version.properties",
         "*.txt",
+        "META-INF/**.pro",
         "META-INF/**.properties",
         "META-INF/CHANGES**",
         "META-INF/DEPENDENCIES**",

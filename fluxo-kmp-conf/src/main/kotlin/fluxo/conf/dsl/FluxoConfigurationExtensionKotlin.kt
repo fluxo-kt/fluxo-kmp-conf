@@ -60,6 +60,8 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     public var setupKapt: Boolean?
 
 
+    // region Compose
+
     /**
      * Flag to enable the Compose feature.
      * Uses native capability for Android modules, multiplatform JetBrains Compose otherwise.
@@ -83,6 +85,10 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      */
     public var suppressKotlinComposeCompatibilityCheck: Boolean?
 
+    // endregion
+
+
+    // region BinaryCompatibilityValidator
 
     /**
      * Flag to turn on the KotlinX BinaryCompatibilityValidator plugin.
@@ -112,6 +118,8 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     public fun apiValidation(configure: BinaryCompatibilityValidatorConfig.() -> Unit = EMPTY_FUN) {
         apiValidation.apply(configure)
     }
+
+    // endregion
 
 
     /**

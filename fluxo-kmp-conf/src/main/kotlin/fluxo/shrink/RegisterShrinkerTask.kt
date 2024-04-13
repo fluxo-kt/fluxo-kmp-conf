@@ -1,3 +1,5 @@
+@file:Suppress("CyclomaticComplexMethod")
+
 package fluxo.shrink
 
 import MAIN_SOURCE_SET_NAME
@@ -20,6 +22,7 @@ import fluxo.conf.impl.register
 import fluxo.conf.jvm.JvmFiles
 import fluxo.conf.jvm.JvmFilesProvider
 import fluxo.gradle.ioFile
+import fluxo.gradle.not
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.l
 import fluxo.log.v
@@ -29,12 +32,21 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
+internal const val PRO_EXT = ".pro"
+
+/**
+ *
+ * @see org.jetbrains.compose.desktop.application.internal.configureProguardTask
+ * @see org.jetbrains.compose.desktop.application.internal.configurePackagingTasks
+ */
 internal fun Project.registerShrinkerTask(
     setup: ProcessorSetup<JvmShrinker, ProcessorConfigR8>,
+    mainClassesProvider: Provider<out Iterable<String>>,
 ): TaskProvider<AbstractShrinkerTask> = tasks.register<AbstractShrinkerTask>(
     name = setup.getShrinkerTaskName(),
 ) {
@@ -64,10 +76,11 @@ internal fun Project.registerShrinkerTask(
     // Disable obfuscation by default as often suboptimal with much harder troubleshooting.
     // If disabled by default, cleaner API uses flag name without a negation.
     // That's why a task property follows ProGuard design, when DSL does the opposite.
-    dontoptimize.set(settings.optimize.map { !it })
-    dontobfuscate.set(settings.obfuscate.map { !it })
+    dontoptimize.set(!settings.optimize)
+    dontobfuscate.set(!settings.obfuscate)
     val incrementObfuscation = settings.obfuscateIncrementally.get()
     obfuscateIncrementally.set(incrementObfuscation)
+    processAsApp.set(setup.processAsApp)
 
     maxHeapSize.set(settings.maxHeapSize)
     callFallbackOrder.set(settings.callFallbackOrder)
@@ -75,22 +88,25 @@ internal fun Project.registerShrinkerTask(
     (conf.androidMinSdk as? Int)?.let { androidMinSdk.set(it) }
     conf.kotlinConfig.jvmTarget?.let { jvmTarget.set(it) }
 
+    mainClasses.set(mainClassesProvider)
+
     val state = setup.chainState
     if (state != null) {
-        inputFiles.from(state.inputFiles)
         mainJar.set(state.mainJar)
+        state.inputFiles?.let { inputFiles.from(it) }
         if (incrementObfuscation) {
             state.mappingFile?.let { applyMapping.set(it) }
         }
     } else {
-        useClasspathFiles { files ->
+        useClasspathFiles(useRuntimeClasspath = setup.processAsApp) { files ->
             inputFiles.from(files.allJars)
             mainJar.set(files.mainJar)
         }
     }
 
     val defaultRulesFile = defaultRulesFile.ioFile
-    val shrinkerSpecificConf = defaultRulesFile.parentFile.resolve(shrinker.name.lc())
+    val shrinkerSpecificConf = defaultRulesFile.parentFile
+        .resolve(shrinker.name.lc() + PRO_EXT)
     if (shrinkerSpecificConf.exists()) {
         configurationFiles.from(shrinkerSpecificConf)
     } else if (!defaultRulesFile.exists()) {
@@ -162,7 +178,10 @@ private fun DefaultTask.notifyThatToolIsStarting(tool: String, version: String? 
     }
 }
 
-private fun <T : Task> T.useClasspathFiles(fn: T.(JvmFiles) -> Unit) {
+private fun <T : Task> T.useClasspathFiles(
+    useRuntimeClasspath: Boolean = false,
+    fn: T.(JvmFiles) -> Unit,
+) {
     val project = project
     if (project.pluginManager.hasPlugin(KOTLIN_MPP_PLUGIN_ID)) {
         var isJvmTargetConfigured = false
@@ -184,24 +203,28 @@ private fun <T : Task> T.useClasspathFiles(fn: T.(JvmFiles) -> Unit) {
                 }
                 val filesProvider =
                     JvmFilesProvider.FromKotlinMppTarget(from)
-                useClasspathFiles(filesProvider, fn)
+                useClasspathFiles(filesProvider, fn, useRuntimeClasspath)
             }
         }
     } else if (project.pluginManager.hasPlugin(KOTLIN_JVM_PLUGIN_ID)) {
         val mainSourceSet = project.javaSourceSets[MAIN_SOURCE_SET_NAME]
         val filesProvider =
             JvmFilesProvider.FromGradleSourceSet(mainSourceSet)
-        useClasspathFiles(filesProvider, fn)
+        useClasspathFiles(filesProvider, fn, useRuntimeClasspath)
     }
 }
 
 private fun <T : Task> T.useClasspathFiles(
     provider: JvmFilesProvider,
     fn: T.(JvmFiles) -> Unit,
+    useRuntimeClasspath: Boolean,
 ) {
-    logger.v("Using classpath files ${provider.javaClass.simpleName} for task $name...")
-    provider.jvmCompileFiles(project)
-        .configureUsageBy(this, fn)
+    val type = if (useRuntimeClasspath) "runtime" else "compile"
+    logger.v("Using $type classpath files ${provider.javaClass.simpleName} for task $name...")
+    when {
+        useRuntimeClasspath -> provider.jvmRuntimeFiles(project)
+        else -> provider.jvmCompileFiles(project)
+    }.configureUsageBy(this, fn)
 }
 
 
