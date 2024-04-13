@@ -8,6 +8,7 @@
 ### Added
 - bundle toml version catalog with the plugin as a resolving fallback.
 - add logging on auto changed yarn dependenciew for Kotlin/JS.
+- enable `androidResources.generateLocaleConfig` in android apps by default.
 
 ### Changed
 - disable Dokka by default.

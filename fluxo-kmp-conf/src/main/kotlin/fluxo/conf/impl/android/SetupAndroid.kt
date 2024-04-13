@@ -99,12 +99,25 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
             }
         }
 
+        // FIXME: Automatic per-app language support
+        // https://developer.android.com/build/releases/past-releases/agp-8-1-0-release-notes#automatic-per-app-languages
+
+        androidResources {
+            generateLocaleConfig = true
+        }
+
         setupSigningIn(project = project)
 
         bundle {
             abi.enableSplit = true
             density.enableSplit = true
             language.enableSplit = false
+
+            // TODO: Support bundletool codeTransparency here.
+            //  Optional code signing and verification approach.
+            //  Uses a code transparency signing key, which is solely held by the app developer.
+            //  Independent of the signing scheme used for app bundles and APKs.
+            //  https://www.perplexity.ai/search/whats-the-code-JJHazzhaSHKTyX4J7EKOsg
         }
 
         dependenciesInfo {

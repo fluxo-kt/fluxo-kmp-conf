@@ -50,8 +50,10 @@
     <ID>ForbiddenComment:PropsAndEnv.kt$// TODO: Optimize, make lazy accessible via root project including current branch name</ID>
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// FIXME: Avoid duplicate logging between similar tasks</ID>
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: note dependency in the (root?) project classpath</ID>
+    <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Automatic per-app language support</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }</ID>
+    <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Support bundletool codeTransparency here.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
