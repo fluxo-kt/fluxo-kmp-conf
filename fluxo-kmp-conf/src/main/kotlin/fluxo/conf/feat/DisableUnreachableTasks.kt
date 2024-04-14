@@ -1,10 +1,10 @@
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
-import fluxo.conf.impl.d
-import fluxo.conf.impl.l
-import fluxo.conf.impl.v
+import fluxo.log.SHOW_DEBUG_LOGS
+import fluxo.log.d
+import fluxo.log.l
+import fluxo.log.v
 import java.lang.System.currentTimeMillis
 import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionGraph

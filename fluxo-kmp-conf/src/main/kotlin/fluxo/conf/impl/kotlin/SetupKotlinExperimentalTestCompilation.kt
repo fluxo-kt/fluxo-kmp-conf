@@ -3,8 +3,8 @@ package fluxo.conf.impl.kotlin
 import MAIN_SOURCE_SET_NAME
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.capitalizeAsciiOnly
-import fluxo.conf.impl.e
-import fluxo.conf.impl.l
+import fluxo.log.e
+import fluxo.log.l
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation

@@ -2,8 +2,8 @@ package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.hasRoomPlugin
-import fluxo.conf.impl.l
-import fluxo.conf.impl.w
+import fluxo.log.l
+import fluxo.log.w
 import noManualHierarchy
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger

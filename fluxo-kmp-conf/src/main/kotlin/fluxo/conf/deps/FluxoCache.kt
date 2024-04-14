@@ -1,9 +1,9 @@
 package fluxo.conf.deps
 
 import fluxo.conf.impl.checkIsRootProject
-import fluxo.conf.impl.d
-import fluxo.conf.impl.l
 import fluxo.conf.impl.withType
+import fluxo.log.d
+import fluxo.log.l
 import java.io.Serializable
 import java.net.URLClassLoader
 import org.gradle.api.Action

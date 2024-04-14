@@ -1,8 +1,8 @@
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.impl.l
 import fluxo.conf.impl.register
+import fluxo.log.l
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task

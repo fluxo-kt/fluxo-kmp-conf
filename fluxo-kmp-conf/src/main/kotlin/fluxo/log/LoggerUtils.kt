@@ -1,6 +1,6 @@
-@file:Suppress("TooManyFunctions")
+@file:Suppress("TooManyFunctions", "LoggingSimilarMessage")
 
-package fluxo.conf.impl
+package fluxo.log
 
 import org.gradle.api.logging.Logger
 
@@ -8,7 +8,7 @@ import org.gradle.api.logging.Logger
 private const val TAG = "FluxoKmpConf"
 
 @Volatile
-internal var SHOW_DEBUG_LOGS = false
+internal var SHOW_DEBUG_LOGS = true
 
 
 private const val V = "v: "

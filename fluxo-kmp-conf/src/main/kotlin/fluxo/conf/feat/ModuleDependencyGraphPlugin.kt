@@ -5,7 +5,7 @@ import fluxo.conf.data.BuildConstants.MODULE_DEPENDENCY_GRAPH_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.MODULE_DEPENDENCY_GRAPH_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.MODULE_DEPENDENCY_GRAPH_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.impl.l
+import fluxo.log.l
 
 // `graphModules` task to create an image with the graph of how gradle modules depend on each other
 // https://github.com/savvasdalkitsis/module-dependency-graph/releases

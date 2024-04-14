@@ -20,7 +20,6 @@ import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.builderMethod
 import fluxo.conf.feat.setupVerification
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
@@ -28,14 +27,15 @@ import fluxo.conf.impl.android.ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
 import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.configureExtensionIfAvailable
-import fluxo.conf.impl.e
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.isTestRelated
-import fluxo.conf.impl.l
 import fluxo.conf.impl.uncheckedCast
-import fluxo.conf.impl.v
-import fluxo.conf.impl.w
+import fluxo.log.SHOW_DEBUG_LOGS
+import fluxo.log.e
+import fluxo.log.l
+import fluxo.log.v
+import fluxo.log.w
 import org.gradle.api.Action
 import org.gradle.api.Named
 import org.gradle.api.Project

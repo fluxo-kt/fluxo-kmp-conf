@@ -6,9 +6,9 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.checkIsRootProject
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.l
 import fluxo.conf.impl.logDependency
 import fluxo.conf.impl.withType
+import fluxo.log.l
 import fluxo.vc.FluxoVersionCatalog
 import fluxo.vc.onVersion
 import org.gradle.api.Project

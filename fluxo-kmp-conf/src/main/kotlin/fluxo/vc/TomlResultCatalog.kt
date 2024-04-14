@@ -7,8 +7,8 @@
 
 package fluxo.vc
 
-import fluxo.conf.impl.d
-import fluxo.conf.impl.e
+import fluxo.log.d
+import fluxo.log.e
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.internal.artifacts.DefaultModuleIdentifier

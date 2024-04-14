@@ -16,9 +16,9 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.l
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.withType
+import fluxo.log.l
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Project

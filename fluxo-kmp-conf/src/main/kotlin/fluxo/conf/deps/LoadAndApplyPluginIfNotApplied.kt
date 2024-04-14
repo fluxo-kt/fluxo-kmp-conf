@@ -3,11 +3,11 @@
 package fluxo.conf.deps
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
-import fluxo.conf.impl.d
-import fluxo.conf.impl.e
-import fluxo.conf.impl.v
-import fluxo.conf.impl.w
+import fluxo.log.SHOW_DEBUG_LOGS
+import fluxo.log.d
+import fluxo.log.e
+import fluxo.log.v
+import fluxo.log.w
 import fluxo.vc.p
 import fluxo.vc.v
 import getGradlePluginMarkerArtifactMavenCoordinates

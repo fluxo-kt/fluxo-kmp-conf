@@ -2,11 +2,11 @@ package fluxo.shrink
 
 import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks
-import fluxo.conf.impl.e
-import fluxo.conf.impl.l
 import fluxo.conf.impl.register
-import fluxo.conf.impl.w
 import fluxo.gradle.ioFile
+import fluxo.log.e
+import fluxo.log.l
+import fluxo.log.w
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Locale

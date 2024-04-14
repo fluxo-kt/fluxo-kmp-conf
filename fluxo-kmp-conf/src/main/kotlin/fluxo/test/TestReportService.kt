@@ -1,7 +1,7 @@
 package fluxo.test
 
-import fluxo.conf.impl.l
-import fluxo.conf.impl.v
+import fluxo.log.d
+import fluxo.log.v
 import javax.annotation.concurrent.ThreadSafe
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.ListProperty
@@ -36,7 +36,7 @@ internal abstract class TestReportService :
     }
 
     override fun close() {
-        logger?.l("TestReportService close")
+        logger?.d("TestReportService close")
 
         clear()
 

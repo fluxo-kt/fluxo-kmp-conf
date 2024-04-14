@@ -1,9 +1,9 @@
 package fluxo.vc
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.impl.e
 import fluxo.conf.impl.getOrNull
-import fluxo.conf.impl.w
+import fluxo.log.e
+import fluxo.log.w
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension

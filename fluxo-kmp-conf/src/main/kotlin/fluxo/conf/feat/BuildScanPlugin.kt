@@ -2,10 +2,10 @@ package fluxo.conf.feat
 
 import com.gradle.scan.plugin.BuildScanExtension
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.e
-import fluxo.conf.impl.l
+import fluxo.log.SHOW_DEBUG_LOGS
+import fluxo.log.e
+import fluxo.log.l
 
 // Build scans, data to speed up build and improve build reliability.
 // https://scans.gradle.com/plugin/

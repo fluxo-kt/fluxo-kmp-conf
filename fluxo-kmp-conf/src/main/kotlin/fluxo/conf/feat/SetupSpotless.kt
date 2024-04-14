@@ -8,7 +8,7 @@ import com.diffplug.spotless.kotlin.KtLintStep
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.isRootProject
-import fluxo.conf.impl.l
+import fluxo.log.l
 import fluxo.vc.v
 import org.gradle.api.Project
 

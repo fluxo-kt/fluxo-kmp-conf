@@ -1,6 +1,6 @@
 package fluxo.shrink
 
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
+import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.util.mapToArray
 import java.lang.System.currentTimeMillis
 import java.lang.reflect.Constructor

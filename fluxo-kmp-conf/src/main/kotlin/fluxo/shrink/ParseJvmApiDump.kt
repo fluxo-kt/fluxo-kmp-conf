@@ -2,10 +2,10 @@
 
 package fluxo.shrink
 
-import fluxo.conf.impl.e
-import fluxo.conf.impl.i
 import fluxo.conf.impl.ifNotEmpty
-import fluxo.conf.impl.v
+import fluxo.log.e
+import fluxo.log.i
+import fluxo.log.v
 import java.io.BufferedReader
 import org.gradle.api.Task
 

@@ -2,8 +2,8 @@ package fluxo.conf.dsl.container.impl
 
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
-import fluxo.conf.impl.d
 import fluxo.conf.impl.uncheckedCast
+import fluxo.log.d
 import org.gradle.api.NamedDomainObjectSet
 
 internal class ContainerHolder(

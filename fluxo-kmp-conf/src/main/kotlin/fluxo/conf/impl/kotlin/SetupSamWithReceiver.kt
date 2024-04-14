@@ -4,7 +4,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.BuildConstants.KOTLIN_SAM_RECEIVER_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.KOTLIN_SAM_RECEIVER_PLUGIN_ID
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.impl.e
+import fluxo.log.e
 import org.gradle.api.HasImplicitReceiver
 import org.gradle.api.Project
 import org.jetbrains.kotlin.samWithReceiver.gradle.SamWithReceiverExtension

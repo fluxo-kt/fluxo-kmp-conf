@@ -5,10 +5,10 @@ import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks
-import fluxo.conf.impl.l
 import fluxo.conf.impl.register
-import fluxo.conf.impl.vb
-import fluxo.conf.impl.w
+import fluxo.log.l
+import fluxo.log.vb
+import fluxo.log.w
 import fluxo.shrink.SHRINKER_KEEP_GEN_TASK_NAME
 import fluxo.shrink.ShrinkerVerificationTestTask
 import fluxo.shrink.getShrinkerVerifyTaskName

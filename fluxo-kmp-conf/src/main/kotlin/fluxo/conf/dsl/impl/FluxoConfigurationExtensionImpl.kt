@@ -16,9 +16,9 @@ import fluxo.conf.dsl.impl.ConfigurationType.GRADLE_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_JVM
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
-import fluxo.conf.impl.i
 import fluxo.conf.impl.kotlin.KotlinConfig
 import fluxo.conf.impl.uncheckedCast
+import fluxo.log.i
 import java.lang.System.currentTimeMillis
 import javax.inject.Inject
 import org.gradle.api.GradleException

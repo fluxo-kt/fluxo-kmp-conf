@@ -1,6 +1,6 @@
 package fluxo.conf.deps
 
-import fluxo.conf.impl.w
+import fluxo.log.w
 import java.io.File
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException

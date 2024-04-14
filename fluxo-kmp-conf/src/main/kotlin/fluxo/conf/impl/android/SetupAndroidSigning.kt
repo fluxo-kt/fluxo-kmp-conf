@@ -3,7 +3,7 @@ package fluxo.conf.impl.android
 import com.android.build.api.dsl.ApkSigningConfig
 import com.android.build.api.dsl.ApplicationExtension
 import fluxo.conf.impl.get
-import fluxo.conf.impl.l
+import fluxo.log.l
 import java.io.File
 import java.util.Properties
 import org.gradle.api.Project

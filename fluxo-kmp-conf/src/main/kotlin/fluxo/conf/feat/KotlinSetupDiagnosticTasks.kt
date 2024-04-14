@@ -5,10 +5,10 @@ package fluxo.conf.feat
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.KotlinSourceSetsReportTask
 import fluxo.conf.impl.ifNotEmpty
-import fluxo.conf.impl.l
 import fluxo.conf.impl.namedOrNull
 import fluxo.conf.impl.register
 import fluxo.conf.impl.withType
+import fluxo.log.l
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension

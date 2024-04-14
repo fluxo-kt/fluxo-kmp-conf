@@ -1,8 +1,8 @@
 package fluxo.shrink
 
-import fluxo.conf.impl.l
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty
+import fluxo.log.l
 import fluxo.util.mapToArray
 import java.io.File
 import java.lang.ref.WeakReference

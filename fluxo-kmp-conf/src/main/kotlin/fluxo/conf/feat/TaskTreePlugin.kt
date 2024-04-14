@@ -6,7 +6,7 @@ import fluxo.conf.data.BuildConstants.TASK_TREE_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.TASK_TREE_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.TASK_TREE_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.impl.l
+import fluxo.log.l
 
 // Plugin that provides 'taskTree' task that prints the current task graph
 // https://github.com/dorongold/gradle-task-tree

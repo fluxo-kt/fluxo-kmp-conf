@@ -2,9 +2,9 @@ package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.VersionCatalogConstants.VC_PINNED_BUNDLE_ALIAS
-import fluxo.conf.impl.d
-import fluxo.conf.impl.l
 import fluxo.conf.impl.logDependency
+import fluxo.log.d
+import fluxo.log.l
 import fluxo.vc.b
 import org.gradle.api.artifacts.ModuleIdentifier
 import org.gradle.api.logging.Logger

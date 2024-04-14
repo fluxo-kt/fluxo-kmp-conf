@@ -1,9 +1,9 @@
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.feat.gradlePluginExt
-import fluxo.conf.impl.e
-import fluxo.conf.impl.l
-import fluxo.conf.impl.w
+import fluxo.log.e
+import fluxo.log.l
+import fluxo.log.w
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 

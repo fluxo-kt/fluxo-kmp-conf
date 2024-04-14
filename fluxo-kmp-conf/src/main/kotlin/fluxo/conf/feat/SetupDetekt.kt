@@ -11,12 +11,12 @@ import fluxo.conf.impl.android.RELEASE
 import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.dependencies
 import fluxo.conf.impl.disableTask
-import fluxo.conf.impl.e
-import fluxo.conf.impl.l
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.register
 import fluxo.conf.impl.splitCamelCase
 import fluxo.conf.impl.withType
+import fluxo.log.e
+import fluxo.log.l
 import fluxo.vc.onLibrary
 import io.github.detekt.gradle.DetektKotlinCompilerPlugin
 import io.gitlab.arturbosch.detekt.Detekt

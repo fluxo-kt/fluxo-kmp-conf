@@ -5,8 +5,8 @@ import fluxo.conf.data.BuildConstants.TASK_INFO_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.TASK_INFO_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.TASK_INFO_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
-import fluxo.conf.impl.l
+import fluxo.log.SHOW_DEBUG_LOGS
+import fluxo.log.l
 import org.barfuin.gradle.taskinfo.GradleTaskInfoPlugin
 
 // Provides task metadata and dependency information, execution queue, and more

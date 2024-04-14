@@ -4,10 +4,10 @@ import com.github.gmazzo.buildconfig.BuildConfigTask
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.FluxoKmpConfContext.Companion.KOTLIN_IDEA_BSM_TASK
 import fluxo.conf.data.BuildConstants.BUILD_CONFIG_PLUGIN_ID
-import fluxo.conf.impl.l
 import fluxo.conf.impl.maybeRegister
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.withType
+import fluxo.log.l
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task

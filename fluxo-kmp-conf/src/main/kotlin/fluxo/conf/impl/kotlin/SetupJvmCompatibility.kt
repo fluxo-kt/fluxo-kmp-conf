@@ -3,7 +3,7 @@ package fluxo.conf.impl.kotlin
 import com.android.build.gradle.TestedExtension
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.configureExtensionIfAvailable
-import fluxo.conf.impl.l
+import fluxo.log.l
 import kotlin.math.max
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project

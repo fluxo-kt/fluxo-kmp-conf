@@ -2,10 +2,10 @@ package fluxo.artifact.dsl
 
 import fluxo.artifact.proc.ArtifactProcessor
 import fluxo.artifact.proc.JvmShrinker
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
 import fluxo.gradle.listProperty
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty
+import fluxo.log.SHOW_DEBUG_LOGS
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty

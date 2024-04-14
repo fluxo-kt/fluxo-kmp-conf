@@ -10,7 +10,7 @@ import fluxo.conf.data.VersionCatalogConstants.VC_SQUARE_LEAK_CANARY_ALIAS
 import fluxo.conf.data.VersionCatalogConstants.VC_SQUARE_PLUMBER_ALIAS
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.l
+import fluxo.log.l
 import fluxo.vc.onLibrary
 
 // Detect unused and misused dependencies.

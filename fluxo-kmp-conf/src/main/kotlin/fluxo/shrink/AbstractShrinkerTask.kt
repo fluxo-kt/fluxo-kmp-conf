@@ -13,15 +13,10 @@ import fluxo.artifact.dsl.ProcessorCallType
 import fluxo.artifact.proc.JvmShrinker
 import fluxo.artifact.proc.JvmShrinker.ProGuard
 import fluxo.artifact.proc.JvmShrinker.R8
-import fluxo.conf.impl.SHOW_DEBUG_LOGS
-import fluxo.conf.impl.e
-import fluxo.conf.impl.i
 import fluxo.conf.impl.ifNotEmpty
 import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.jvmToolFile
-import fluxo.conf.impl.l
 import fluxo.conf.impl.lc
-import fluxo.conf.impl.w
 import fluxo.external.AbstractExternalFluxoTask
 import fluxo.external.ExternalToolRunner
 import fluxo.gradle.cliArg
@@ -32,6 +27,11 @@ import fluxo.gradle.mkdirs
 import fluxo.gradle.normalizedPath
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty
+import fluxo.log.SHOW_DEBUG_LOGS
+import fluxo.log.e
+import fluxo.log.i
+import fluxo.log.l
+import fluxo.log.w
 import fluxo.util.readableByteSize
 import isRelease
 import java.io.File

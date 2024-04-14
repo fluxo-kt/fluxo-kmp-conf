@@ -7,10 +7,10 @@ import fluxo.artifact.proc.JvmShrinker.R8
 import fluxo.conf.deps.tryGetClassForName
 import fluxo.conf.impl.TOTAL_OS_MEMORY
 import fluxo.conf.impl.XMX
-import fluxo.conf.impl.e
-import fluxo.conf.impl.l
-import fluxo.conf.impl.v
-import fluxo.conf.impl.w
+import fluxo.log.e
+import fluxo.log.l
+import fluxo.log.v
+import fluxo.log.w
 import fluxo.util.readableByteSize
 import java.net.URLClassLoader
 import java.util.Properties

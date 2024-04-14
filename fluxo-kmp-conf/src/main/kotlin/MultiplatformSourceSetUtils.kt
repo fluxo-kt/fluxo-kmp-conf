@@ -4,13 +4,13 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm.Companion.ANDROID
 import fluxo.conf.impl.compileOnlyAndLog
-import fluxo.conf.impl.e
 import fluxo.conf.impl.implementation
 import fluxo.conf.impl.implementationAndLog
 import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.kotlin.KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION
 import fluxo.conf.kmp.SourceSetBundle
+import fluxo.log.e
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import org.gradle.api.GradleException

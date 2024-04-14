@@ -1,6 +1,6 @@
 package fluxo.shrink
 
-import fluxo.conf.impl.w
+import fluxo.log.w
 import java.io.File
 import java.lang.System.currentTimeMillis
 import java.net.URLClassLoader

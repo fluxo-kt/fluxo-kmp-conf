@@ -1,6 +1,6 @@
 package fluxo.conf.dsl.container.impl
 
-import fluxo.conf.impl.w
+import fluxo.log.w
 import org.gradle.api.logging.Logger
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType

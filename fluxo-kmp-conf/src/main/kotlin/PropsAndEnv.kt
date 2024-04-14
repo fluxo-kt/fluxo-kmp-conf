@@ -4,13 +4,13 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.KMP_TARGETS_ALL_PRO
 import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.KMP_TARGETS_PROP
 import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.SPLIT_TARGETS_PROP
 import fluxo.conf.feat.LOAD_KMM_CODE_COMPLETION_FLAG
-import fluxo.conf.impl.e
 import fluxo.conf.impl.envOrPropFlag
 import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.conf.impl.envOrPropValue
 import fluxo.conf.impl.envOrPropValueLenient
-import fluxo.conf.impl.i
 import fluxo.conf.impl.memoizeSafe
+import fluxo.log.e
+import fluxo.log.i
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
 import org.gradle.api.Project

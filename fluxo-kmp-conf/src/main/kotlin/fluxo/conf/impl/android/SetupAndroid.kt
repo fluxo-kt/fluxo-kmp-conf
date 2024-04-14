@@ -11,12 +11,12 @@ import com.android.build.gradle.internal.lint.AndroidLintTask
 import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAndLog
-import fluxo.conf.impl.e
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.kotlin.ksp
-import fluxo.conf.impl.l
 import fluxo.conf.impl.the
+import fluxo.log.e
+import fluxo.log.l
 import fluxo.vc.onLibrary
 import fluxo.vc.onVersion
 import org.gradle.api.Project

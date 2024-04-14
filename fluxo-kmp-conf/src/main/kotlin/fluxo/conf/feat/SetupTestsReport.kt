@@ -6,12 +6,12 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.impl.closureOf
 import fluxo.conf.impl.disableTask
-import fluxo.conf.impl.e
-import fluxo.conf.impl.l
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.register
 import fluxo.conf.impl.splitCamelCase
 import fluxo.conf.impl.withType
+import fluxo.log.e
+import fluxo.log.l
 import fluxo.test.TestReportResult
 import fluxo.test.TestReportService
 import fluxo.test.TestReportsMergeTask

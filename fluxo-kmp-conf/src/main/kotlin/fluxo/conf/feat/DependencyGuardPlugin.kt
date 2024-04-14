@@ -8,7 +8,7 @@ import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.DEPS_GUARD_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.impl.d
+import fluxo.log.d
 import java.util.Locale
 import org.gradle.api.Action
 import org.gradle.api.Project

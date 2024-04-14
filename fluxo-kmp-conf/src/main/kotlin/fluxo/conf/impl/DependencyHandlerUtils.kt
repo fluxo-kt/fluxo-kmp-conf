@@ -2,6 +2,9 @@
 
 package fluxo.conf.impl
 
+import fluxo.log.e
+import fluxo.log.l
+import fluxo.log.w
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencyConstraint
