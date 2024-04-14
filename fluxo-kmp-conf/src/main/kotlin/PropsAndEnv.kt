@@ -1,4 +1,6 @@
 @file:Suppress("TooManyFunctions", "ktPropBy")
+@file:JvmName("Fkc")
+@file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.KMP_TARGETS_ALL_PROP
 import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.KMP_TARGETS_PROP
@@ -16,12 +18,17 @@ import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
+
+// region Easy delegation
+
 public operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNull == true
 
 @JvmName("getValueOrNull")
 public operator fun <T : Any> Provider<T?>.getValue(t: Any?, p: Any?): T? = orNull
 
 public operator fun <T> Provider<T>.getValue(t: Any?, p: Any?): T = get()
+
+// endregion
 
 
 public fun Project.envOrPropValue(name: String): String? = envOrPropValue(name)
@@ -92,18 +99,26 @@ internal fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
         var result = envOrPropValue("SCM_TAG")
         if (result.isNullOrBlank()) {
             // current tag name
-            var tagName = runCommand("git tag -l --points-at HEAD")
-            if (tagName != null && tagName.length >= 2 && tagName[0] == 'v' && tagName[1].isDigit()) {
-                tagName = tagName.substring(1)
+            result = runCommand("git tag -l --points-at HEAD")
+            if (result != null &&
+                result.length >= 2 &&
+                result[0] == 'v' &&
+                result[1].isDigit()
+            ) {
+                result = result.substring(1)
             }
 
-            result = tagName
+            if (result == null) {
                 // current commit short hash
                 // FIXME: Consider using `GIT_COMMIT` (JitPack) or similar env var instead!
-                ?: runCommand("git rev-parse --short=7 HEAD")
+                result = runCommand("git rev-parse --short=7 HEAD")
                     // current branch name
                     // FIXME: Consider using `GIT_BRANCH` (JitPack) or similar env var instead!
-                    ?: if (allowBranch) runCommand("git rev-parse --abbrev-ref HEAD") else null
+                    ?: when {
+                        allowBranch -> runCommand("git rev-parse --abbrev-ref HEAD")
+                        else -> null
+                    }
+            }
         } else if (result.length == 40) {
             // full commit hash, sha1
             result = result.substring(0, 7)

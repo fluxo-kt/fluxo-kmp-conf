@@ -5,12 +5,17 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+__Public API is CHANGED!__ <br>
+_You need to replace `setup*` calls to `fkcSetup*` ones like this: <br>
+`setupMultiplatform` => `fkcSetupMultiplatform`._
+
 ### Added
 - bundle toml version catalog with the plugin as a resolving fallback.
 - add logging on auto changed yarn dependenciew for Kotlin/JS.
 - enable `androidResources.generateLocaleConfig` in android apps by default.
 
 ### Changed
+- rewise public APIs for ease of use.
 - disable Dokka by default.
 - unify `setupKotlin` API.
 

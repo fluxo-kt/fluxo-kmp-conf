@@ -79,7 +79,9 @@ public interface FluxoConfigurationExtension :
     }
 }
 
-internal fun Project.fluxoConfiguration(action: Action<in FluxoConfigurationExtension>) {
+internal fun Project.fluxoConfiguration(
+    action: Action<in FluxoConfigurationExtension>,
+) {
     extensions.configure(FluxoConfigurationExtension.NAME, action)
 }
 

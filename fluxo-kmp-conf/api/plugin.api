@@ -1,14 +1,8 @@
-public final class DependencyUtilsKt {
-	public static final fun ksp (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
-	public static final fun toModuleDependency (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
-	public static final fun toModuleDependency (Lorg/gradle/plugin/use/PluginDependency;)Ljava/lang/String;
-}
-
-public final class KmpHierarchyTemplateKt {
-	public static final fun getFluxoKmpConf (Lorg/jetbrains/kotlin/gradle/plugin/KotlinHierarchyTemplate$Templates;)Lkotlin/jvm/functions/Function1;
-}
-
-public final class MultiplatformSourceSetUtilsKt {
+public final class Fkc {
+	public static final fun areComposeMetricsEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun buildNumber (Lorg/gradle/api/Project;)Ljava/lang/String;
+	public static final fun buildNumberSuffix (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun buildNumberSuffix$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
 	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
 	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun bundle (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
@@ -27,6 +21,10 @@ public final class MultiplatformSourceSetUtilsKt {
 	public static final fun dependsOn (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lfluxo/conf/kmp/SourceSetBundle;)V
 	public static final fun dependsOn (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Ljava/lang/Iterable;)V
 	public static final fun dependsOnBundles (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Ljava/lang/Iterable;)V
+	public static final fun disableTests (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun envOrPropInt (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/Integer;
+	public static final fun envOrPropList (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/util/List;
+	public static final fun envOrPropValue (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun getAllSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getAllTargetsSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getAndroidNativeSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
@@ -48,7 +46,9 @@ public final class MultiplatformSourceSetUtilsKt {
 	public static final fun getCommonWasm (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonWasmNative (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonWatchos (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getDEFAULT_COMMON_JS_CONF ()Lkotlin/jvm/functions/Function1;
 	public static final fun getDarwinSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getFluxoKmpConf (Lorg/jetbrains/kotlin/gradle/plugin/KotlinHierarchyTemplate$Templates;)Lkotlin/jvm/functions/Function1;
 	public static final fun getIosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getJavaSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getJsSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
@@ -59,71 +59,45 @@ public final class MultiplatformSourceSetUtilsKt {
 	public static final fun getNativeSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getTest (Ljava/lang/Iterable;)Ljava/util/List;
 	public static final fun getTvosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
-	public static final fun getWasmNativeSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
-	public static final fun getWatchosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
-	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Lfluxo/conf/kmp/SourceSetBundle;)Ljava/util/Set;
-	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Ljava/util/Set;)Ljava/util/Set;
-}
-
-public final class PropsAndEnvKt {
-	public static final fun areComposeMetricsEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun buildNumber (Lorg/gradle/api/Project;)Ljava/lang/String;
-	public static final fun buildNumberSuffix (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-	public static synthetic fun buildNumberSuffix$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
-	public static final fun disableTests (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun envOrPropInt (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/Integer;
-	public static final fun envOrPropList (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/util/List;
-	public static final fun envOrPropValue (Lorg/gradle/api/Project;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Z
 	public static final fun getValueOrNull (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+	public static final fun getWasmNativeSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun getWatchosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
+	public static final fun iosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun iosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 	public static final fun isCI (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isDesugaringEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isMaxDebugEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isR8Disabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isRelease (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun signingKey (Lorg/gradle/api/Project;)Ljava/lang/String;
-	public static final fun useKotlinDebug (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-}
-
-public final class SetupAndroidKt {
-	public static final fun setupAndroidApp (Lorg/gradle/api/Project;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupAndroidApp$default (Lorg/gradle/api/Project;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-	public static final fun setupAndroidLibrary (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupAndroidLibrary$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-}
-
-public final class SetupGradlePluginKt {
-	public static final fun setupGradlePlugin (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupGradlePlugin$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-}
-
-public final class SetupIdeaPluginKt {
-	public static final fun setupIdeaPlugin (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupIdeaPlugin$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-}
-
-public final class SetupKotlinJsKt {
-	public static final fun getDEFAULT_COMMON_JS_CONF ()Lkotlin/jvm/functions/Function1;
-	public static final fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;I)V
-	public static synthetic fun testTimeout$default (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;IILjava/lang/Object;)V
-}
-
-public final class SetupKotlinKt {
-	public static final fun setupKotlin (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun setupKotlin$default (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
-}
-
-public final class SetupMultiplatformKt {
-	public static final fun iosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public static synthetic fun iosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun ksp (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
 	public static final fun macosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun macosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Lfluxo/conf/kmp/SourceSetBundle;)Ljava/util/Set;
+	public static final fun plus (Lfluxo/conf/kmp/SourceSetBundle;Ljava/util/Set;)Ljava/util/Set;
+	public static final fun setupAndroidApp (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupAndroidApp$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;ILjava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupAndroidLibrary (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupAndroidLibrary$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun setupBackgroundNativeTests (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;)V
+	public static final fun setupGradlePlugin (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupGradlePlugin$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupIdeaPlugin (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupIdeaPlugin$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupKotlin (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setupKotlin$default (Lorg/gradle/api/Project;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun setupMultiplatform (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
 	public static synthetic fun setupMultiplatform$default (Lorg/gradle/api/Project;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun setupRaw (Lorg/gradle/api/Project;Lorg/gradle/api/Action;)V
+	public static final fun signingKey (Lorg/gradle/api/Project;)Ljava/lang/String;
+	public static final fun testTimeout (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;I)V
+	public static synthetic fun testTimeout$default (Lorg/jetbrains/kotlin/gradle/targets/js/dsl/KotlinJsSubTargetDsl;IILjava/lang/Object;)V
+	public static final fun toModuleDependency (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun toModuleDependency (Lorg/gradle/plugin/use/PluginDependency;)Ljava/lang/String;
 	public static final fun tvosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun tvosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun useKotlinDebug (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun watchosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun watchosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
 }

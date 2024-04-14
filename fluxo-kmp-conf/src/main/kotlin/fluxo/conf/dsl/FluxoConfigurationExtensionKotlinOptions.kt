@@ -2,8 +2,8 @@
 
 package fluxo.conf.dsl
 
+import fkcSetupGradlePlugin
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import setupGradlePlugin
 
 @FluxoKmpConfDsl
 public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationExtensionCommon {
@@ -238,7 +238,7 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      *
      * Inherited from the parent project if not set.
      * Default value:
-     *  * `ExplicitApiMode.Strict` for Gradle plugins configured via [setupGradlePlugin]!
+     *  * `ExplicitApiMode.Strict` for Gradle plugins configured via [fkcSetupGradlePlugin]!
      *  * in other cases `null`.
      *
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension.explicitApi
@@ -248,7 +248,7 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
     /**
      * Sets [explicitApi] option to report issues as errors.
      *
-     * WARN: Automatically sets for Gradle plugins configured via [setupGradlePlugin]!
+     * WARN: Automatically sets for Gradle plugins configured via [fkcSetupGradlePlugin]!
      */
     public fun explicitApi() {
         explicitApi = ExplicitApiMode.Strict

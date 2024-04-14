@@ -1,3 +1,6 @@
+@file:JvmName("Fkc")
+@file:JvmMultifileClass
+
 import fluxo.conf.dsl.container.KmpConfigurationContainerDsl
 import fluxo.conf.dsl.container.KotlinTargetContainer
 import org.gradle.api.Action

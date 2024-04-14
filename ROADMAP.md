@@ -18,6 +18,14 @@
   * https://github.com/arrow-kt/arrow-gradle-config/blob/cba09cc/arrow-gradle-config-publish/src/main/kotlin/internal/PublishMppRootModuleInPlatform.kt#L13
 * Security setup
   * Setup for securing API keys in `BuildConfigs` (generated code in general) and in the usual code.
+* Support JVM application with `application` plugin.
+* GIT hooks
+  * Spotless
+  * Detekt
+  * KtLint
+* https://github.com/topjohnwu/libsu/blob/01570d643af91b0e271de018465a219eed8db322/service/build.gradle.kts#L21
+* Disambiguate existing javadoc and sources tasks
+* Check BuildConfig tasks (not called on IDE sync?!)
 * CI improvements
   * https://github.com/adevinta/spark-android/tree/main/.github
 * Gradle Doctor plugin

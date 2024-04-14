@@ -1,3 +1,6 @@
+@file:JvmName("Fkc")
+@file:JvmMultifileClass
+
 import fluxo.conf.impl.COMPILE_ONLY
 import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.capitalizeAsciiOnly

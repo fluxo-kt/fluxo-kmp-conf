@@ -25,7 +25,7 @@ val resDir: Provider<Directory> = layout.buildDirectory
         dir
     }
 
-setupGradlePlugin(
+fkcSetupGradlePlugin(
     pluginId = pluginId,
     pluginName = "fluxo-kmp-conf",
     pluginClass = "fluxo.conf.FluxoKmpConfPlugin",

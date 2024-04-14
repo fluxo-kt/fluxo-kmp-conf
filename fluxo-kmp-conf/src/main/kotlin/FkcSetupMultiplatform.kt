@@ -1,4 +1,6 @@
-@file:Suppress("TooManyFunctions")
+@file:Suppress("LongParameterList", "MaxLineLength", "DuplicatedCode")
+@file:JvmName("Fkc")
+@file:JvmMultifileClass
 
 import com.android.build.api.dsl.CommonExtension
 import fluxo.conf.dsl.FluxoConfigurationExtension
@@ -13,37 +15,63 @@ public typealias AndroidCommonExtension = CommonExtension<*, *, *, *, *, *>
 
 public typealias MultiplatformConfigurator = KotlinMultiplatformExtension.() -> Unit
 
-@Suppress("LongParameterList")
-public fun Project.setupMultiplatform(
+/**
+ * Lazily configures a Kotlin Multiplatform module (Gradle [Project]).
+ *
+ * @receiver The [Project] to configure.
+ *
+ * @param config Configuration block for the [FluxoConfigurationExtension].
+ *
+ * @param namespace The Android namespace to use for the project.
+ * @param enableBuildConfig Whether to enable the BuildConfig generation.
+ * @param setupCompose Whether to set up Compose in this module (auto-detected if already applied).
+ * @param optIns List of the Kotlin opt-ins to add in the project.
+ *
+ * @param android Configuration block for the Android target [AndroidCommonExtension].
+ * @param kmp Configuration block for the lazy KMP targets [KmpConfigurationContainerDsl].
+ * @param kotlin Configuration block for the [KotlinMultiplatformExtension].
+ *
+ * @see fluxo.conf.dsl.FluxoConfigurationExtension.androidNamespace
+ * @see fluxo.conf.dsl.FluxoConfigurationExtension.enableBuildConfig
+ * @see fluxo.conf.dsl.FluxoConfigurationExtension.enableCompose
+ * @see fluxo.conf.dsl.FluxoConfigurationExtension.optIns
+ */
+@JvmName("setupMultiplatform")
+public fun Project.fkcSetupMultiplatform(
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
     namespace: String? = null,
-    setupCompose: Boolean? = null,
     enableBuildConfig: Boolean? = null,
+    setupCompose: Boolean? = null,
     optIns: List<String>? = null,
-    configureAndroid: (AndroidCommonExtension.() -> Unit)? = null,
+    android: (AndroidCommonExtension.() -> Unit)? = null,
     kmp: (KmpConfigurationContainerDsl.() -> Unit)? = null,
-    body: MultiplatformConfigurator? = null,
-): Unit = fluxoConfiguration c@{
-    if (namespace != null) this.androidNamespace = namespace
-    if (setupCompose != null) this.enableCompose = setupCompose
-    if (enableBuildConfig != null) this.enableBuildConfig = enableBuildConfig
-    if (!optIns.isNullOrEmpty()) this.optIns += optIns
-    config?.invoke(this)
+    kotlin: (KotlinMultiplatformExtension.() -> Unit)? = null,
+) {
+    val project = this
+    project.fluxoConfiguration c@{
+        namespace?.let { this.androidNamespace = it }
+        setupCompose?.let { this.enableCompose = it }
+        enableBuildConfig?.let { this.enableBuildConfig = it }
 
-    if (kmp == null && body == null && configureAndroid == null) {
-        return@c
-    }
-
-    asKmp {
-        kmp?.invoke(this)
-
-        if (body != null) {
-            kotlinMultiplatform(body)
+        if (!optIns.isNullOrEmpty()) {
+            this.optIns += optIns
         }
 
-        if (configureAndroid != null) {
-            onAndroidTarget {
-                onAndroidExtension(configureAndroid)
+        config?.invoke(this)
+
+        if (kmp == null && kotlin == null && android == null) {
+            return@c
+        }
+
+        asKmp {
+            kmp?.invoke(this)
+
+            kotlin?.let { kotlinMultiplatform(it) }
+
+            if (android != null) {
+                onAndroidTarget {
+                    onAndroidExtension(android)
+                }
             }
         }
     }

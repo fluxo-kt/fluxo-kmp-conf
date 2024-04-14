@@ -1,3 +1,6 @@
+@file:JvmName("Fkc")
+@file:JvmMultifileClass
+
 import fluxo.conf.dsl.container.KotlinTargetContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl

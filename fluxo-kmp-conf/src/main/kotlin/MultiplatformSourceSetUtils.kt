@@ -1,4 +1,6 @@
 @file:Suppress("TooManyFunctions")
+@file:JvmName("Fkc")
+@file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl

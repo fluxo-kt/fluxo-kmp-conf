@@ -1,12 +1,12 @@
 package fluxo.conf.dsl.impl
 
+import fkcSetupAndroidApp
+import fkcSetupAndroidLibrary
+import fkcSetupGradlePlugin
+import fkcSetupIdeaPlugin
+import fkcSetupKotlin
+import fkcSetupMultiplatform
 import org.gradle.api.Project
-import setupAndroidApp
-import setupAndroidLibrary
-import setupGradlePlugin
-import setupIdeaPlugin
-import setupKotlin
-import setupMultiplatform
 
 internal enum class ConfigurationType {
     KOTLIN_MULTIPLATFORM,
@@ -19,10 +19,10 @@ internal enum class ConfigurationType {
 
 internal val ConfigurationType.builderMethod: String
     get() = when (this) {
-        ConfigurationType.KOTLIN_MULTIPLATFORM -> Project::setupMultiplatform.name
-        ConfigurationType.ANDROID_LIB -> Project::setupAndroidLibrary.name
-        ConfigurationType.ANDROID_APP -> Project::setupAndroidApp.name
-        ConfigurationType.KOTLIN_JVM -> Project::setupKotlin.name
-        ConfigurationType.IDEA_PLUGIN -> Project::setupIdeaPlugin.name
-        ConfigurationType.GRADLE_PLUGIN -> Project::setupGradlePlugin.name
+        ConfigurationType.KOTLIN_MULTIPLATFORM -> Project::fkcSetupMultiplatform.name
+        ConfigurationType.ANDROID_LIB -> Project::fkcSetupAndroidLibrary.name
+        ConfigurationType.ANDROID_APP -> Project::fkcSetupAndroidApp.name
+        ConfigurationType.KOTLIN_JVM -> Project::fkcSetupKotlin.name
+        ConfigurationType.IDEA_PLUGIN -> Project::fkcSetupIdeaPlugin.name
+        ConfigurationType.GRADLE_PLUGIN -> Project::fkcSetupGradlePlugin.name
     }

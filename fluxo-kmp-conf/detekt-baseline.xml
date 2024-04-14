@@ -24,6 +24,11 @@
     <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Opt-out configurable switch via `fluxoKmpConf { depsGuard = false }`</ID>
     <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Update when resolved (https://github.com/dropbox/dependency-guard/issues/3)</ID>
     <ID>ForbiddenComment:DependencyUtils.kt$// TODO: Support rich VersionConstraint</ID>
+    <ID>ForbiddenComment:FkcSetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>
+    <ID>ForbiddenComment:FkcSetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }</ID>
+    <ID>ForbiddenComment:FkcSetupGradlePlugin.kt$// TODO: Retry create pluginId from configuration if null?</ID>
+    <ID>ForbiddenComment:FkcSetupGradlePlugin.kt$// TODO: Support for multiple plugins</ID>
+    <ID>ForbiddenComment:FkcSetupKotlin.kt$// TODO: Support JVM application with `application` plugin</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$// TODO: Avoid casting</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionKotlin.kt$FluxoConfigurationExtensionKotlin$// FIXME: koverReport settings</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$// TODO: Add validation for githubProject value.</ID>
@@ -37,6 +42,7 @@
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Add env flag for dynamic switch-on when needed</ID>
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Auto detect if `-Xjdk-release` actually can be used.</ID>
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Detect if JVM toolchains are already enabled in the project.</ID>
+    <ID>ForbiddenComment:KotlinJsUtils.kt$// TODO: Uncomment once compiled for Kotlin 2.0</ID>
     <ID>ForbiddenComment:KotlinSetupDiagnosticTasks.kt$// TODO: @DisableCachingByDefault(because = "Not worth caching")</ID>
     <ID>ForbiddenComment:KotlinSourceSetsReportTask.kt$// TODO: Mark source sets with deprectaed or 3rd tier targets</ID>
     <ID>ForbiddenComment:LoadAndApplyPluginIfNotApplied.kt$// TODO: Check version for correctness</ID>
@@ -51,8 +57,6 @@
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// FIXME: Avoid duplicate logging between similar tasks</ID>
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: note dependency in the (root?) project classpath</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Automatic per-app language support</ID>
-    <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>
-    <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Support bundletool codeTransparency here.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
@@ -79,24 +83,13 @@
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Improve detekt task platform detection.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$DetectedTaskPlatform$// TODO: Detect common/metadata tasks?</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Check BuildConfig tasks (not called on IDE sync!)</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: Spotless setup</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: check all features</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: detekt plugins https://detekt.dev/marketplace/</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: git hooks</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// FIXME: https://github.com/topjohnwu/libsu/blob/01570d643af91b0e271de018465a219eed8db322/service/build.gradle.kts#L21</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// TODO: Retry create pluginId from configuration if null?</ID>
-    <ID>ForbiddenComment:SetupGradlePlugin.kt$// TODO: Try avoid this cast?</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Check KSP setup for KMP modules</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Detect if KMP is already applied and what targets are already configured.</ID>
-    <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Support JVM application with `application` plugin</ID>
     <ID>ForbiddenComment:SetupKotlinCompatibility.kt$// TODO: Detekt doesn't support 21 yet, enable when it does</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: With coil-bom:2.2.2 doesn't work as enforcedPlatform for Android and/or KMP</ID>
     <ID>ForbiddenComment:SetupKotlinExperimentalTestCompilation.kt$// TODO: Find a solution for KMP 2.0</ID>
-    <ID>ForbiddenComment:SetupKotlinJs.kt$// TODO: Uncomment once compiled for Kotlin 2.0</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to JvmCompatibility?</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.</ID>
@@ -134,15 +127,11 @@
     <ID>ForbiddenComment:VerifyApiWithReflection.kt$// TODO: Check parent classes and interfaces.</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
-    <ID>Indentation:PropsAndEnv.kt$ </ID>
     <ID>LongMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>LongMethod:SetupPublication.kt$context(FluxoKmpConfContext) private fun Project.setupPublicationRepositoryAndSigning( config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MaxLineLength:DependencyGuardPlugin.kt$/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.isClasspathConfig */</ID>
-    <ID>MaxLineLength:PropsAndEnv.kt$if</ID>
-    <ID>MaxLineLength:SetupMultiplatform.kt$*</ID>
     <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
-    <ID>MaximumLineLength:PropsAndEnv.kt$ </ID>
     <ID>MaximumLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$ </ID>
     <ID>NestedBlockDepth:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$fun buildTrees(): List&lt;GraphNode></ID>
     <ID>NestedBlockDepth:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$@Suppress("ReturnCount") fun execute( callType: ProcessorCallType, ignoreMemoryLimit: Boolean = false, ): Boolean</ID>

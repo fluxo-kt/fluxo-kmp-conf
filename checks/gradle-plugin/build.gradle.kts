@@ -8,7 +8,7 @@ plugins {
 group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
 
-setupGradlePlugin {
+fkcSetupGradlePlugin {
     allWarningsAsErrors = true
 
     // Two separate processing chains.

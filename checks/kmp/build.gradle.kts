@@ -4,7 +4,7 @@ plugins {
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
 
-setupMultiplatform(
+fkcSetupMultiplatform(
     config = {
         kotlinLangVersion = "last"
         kotlinApiVersion = "last"
