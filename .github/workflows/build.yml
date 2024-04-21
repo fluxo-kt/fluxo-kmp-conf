@@ -122,6 +122,7 @@ jobs:
           # queries: security-extended,security-and-quality
 
       - name: 'Build and check plugin itself'
+        timeout-minutes: 18
         run: ./gradlew build assemble check --continue --stacktrace --scan
 
       - name: Upload sarif report (Detekt)
@@ -134,18 +135,21 @@ jobs:
           category: detekt
 
       - name: 'Run check-gradle-plugin'
+        timeout-minutes: 6
         working-directory: checks/gradle-plugin
         run: ./gradlew build assemble check --continue --stacktrace --scan
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: 'Run check-kmp'
+        timeout-minutes: 12
         working-directory: checks/kmp
         run: ./gradlew build assemble check printKotlinSourceSetsGraph --continue --stacktrace --scan
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: 'Run self check'
+        timeout-minutes: 4
         working-directory: self
         run: ./gradlew build assemble check --continue --stacktrace --scan
         env:
@@ -165,6 +169,7 @@ jobs:
 
       - name: Perform CodeQL Analysis
         if: matrix.os == 'ubuntu'
+        timeout-minutes: 6
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
