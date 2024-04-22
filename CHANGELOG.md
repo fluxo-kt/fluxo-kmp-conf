@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.8.0] - 2024-04-22
+
 __Public API is CHANGED!__ <br>
 _You need to replace `setup*` calls to `fkcSetup*` ones like this: <br>
 `setupMultiplatform` => `fkcSetupMultiplatform`._
@@ -224,6 +227,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.8.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.8.0
 [0.7.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.7.0
 [0.7.0-alpha2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.7.0-alpha2
 [0.7.0-alpha1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.7.0-alpha1
