@@ -22,6 +22,7 @@ _You need to replace `setup*` calls to `fkcSetup*` ones like this: <br>
 
 ### Fixed
 - connect Gmazzo's `BuildConfigTask` to `prepareKotlinBuildScriptModel`.
+- do not use `-Xjdk-release` when compiled against the current JDK version.
 
 ### Updated
 - bump dependency-analysis to _1.31.0_.

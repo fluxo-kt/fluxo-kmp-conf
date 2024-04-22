@@ -69,9 +69,10 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
                     (!kotlin20orUpper || kotlinPluginVersion >= KOTLIN_2_0)
 
                 // Compile against the specified JDK API version, similarly to javac's `-release`.
-                // Only apply jdk-release in JVM builds
+                // Only apply jdk-release in JVM builds.
+                // Do not use when compiled against the current JDK version.
                 // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda.
-                if (useJdkRelease && !isAndroid) {
+                if (useJdkRelease && !isAndroid && jvmTarget != JRE_VERSION.toString()) {
                     compilerArgs.add("-Xjdk-release=$jvmTarget")
 
                     // TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+
