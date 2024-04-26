@@ -158,8 +158,7 @@ internal fun Int.toKotlinSupportedJvmMajorVersion(): Int {
         val maxSupportedTarget = when {
             // 1.9.20 added support for 21
             // https://kotlinlang.org/docs/whatsnew1920.html#kotlin-jvm
-            // TODO: Detekt doesn't support 21 yet, enable when it does
-            // pluginVersion >= KOTLIN_1_9_20 -> 21
+            pluginVersion >= KOTLIN_1_9_20 -> 21
             // 1.9.0 added support for 20
             // https://kotlinlang.org/docs/whatsnew19.html#kotlin-jvm
             pluginVersion >= KOTLIN_1_9 -> 20

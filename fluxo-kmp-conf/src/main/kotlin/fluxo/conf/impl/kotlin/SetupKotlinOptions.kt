@@ -64,15 +64,21 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             jvmTargetVersion?.let { jvmTarget ->
                 setupJvmCompatibility(jvmTarget)
 
-                // Somehow, jdk-release fails with kotlin lang 2.0 and Kotlin 1.9.
                 val useJdkRelease = kc.useJdkRelease &&
+                    // Only apply jdk-release in JVM (non-Android) builds.
+                    // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda.
+                    !isAndroid &&
+                    // Do not use when compiled against the current JDK version (useless).
+                    jvmTarget != JRE_VERSION.toString() &&
+                    // Somehow, jdk-release fails with kotlin lang 2.0 and Kotlin 1.9.
                     (!kotlin20orUpper || kotlinPluginVersion >= KOTLIN_2_0)
 
+                // TODO: Verify ct.sym fix later.
+                //  https://youtrack.jetbrains.com/issue/KT-67668/Xjdk-release18..20-crashes-compilation-for-Kotlin-2.0.0-RC1
+                //  https://bugs.openjdk.org/browse/JDK-8331027
+
                 // Compile against the specified JDK API version, similarly to javac's `-release`.
-                // Only apply jdk-release in JVM builds.
-                // Do not use when compiled against the current JDK version.
-                // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda.
-                if (useJdkRelease && !isAndroid && jvmTarget != JRE_VERSION.toString()) {
+                if (useJdkRelease) {
                     compilerArgs.add("-Xjdk-release=$jvmTarget")
 
                     // TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+
