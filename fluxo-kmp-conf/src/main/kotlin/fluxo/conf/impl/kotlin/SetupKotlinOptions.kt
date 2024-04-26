@@ -3,6 +3,7 @@ package fluxo.conf.impl.kotlin
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
 import fluxo.gradle.ioFile
+import fluxo.log.e
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
@@ -64,21 +65,32 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             jvmTargetVersion?.let { jvmTarget ->
                 setupJvmCompatibility(jvmTarget)
 
+                val jvmTargetInt = jvmTarget.toJvmMajorVersion()
                 val useJdkRelease = kc.useJdkRelease &&
                     // Only apply jdk-release in JVM (non-Android) builds.
                     // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda.
                     !isAndroid &&
                     // Do not use when compiled against the current JDK version (useless).
-                    jvmTarget != JRE_VERSION.toString() &&
+                    jvmTargetInt != JRE_VERSION &&
                     // Somehow, jdk-release fails with kotlin lang 2.0 and Kotlin 1.9.
                     (!kotlin20orUpper || kotlinPluginVersion >= KOTLIN_2_0)
 
+                // ct.sym is broken for -Xjdk-release=18+
+                // https://bugs.openjdk.org/browse/JDK-8331027
+                // https://youtrack.jetbrains.com/issue/KT-67668
                 // TODO: Verify ct.sym fix later.
-                //  https://youtrack.jetbrains.com/issue/KT-67668/Xjdk-release18..20-crashes-compilation-for-Kotlin-2.0.0-RC1
-                //  https://bugs.openjdk.org/browse/JDK-8331027
+                val broken = jvmTargetInt > JRE_17
+                if (useJdkRelease && broken && !BROKEN_JDK_RELEASE_LOGGED) {
+                    BROKEN_JDK_RELEASE_LOGGED = true
+                    conf.project.logger.e(
+                        "-Xjdk-release is broken for JRE 18..21, so it is disabled! \n",
+                        "https://bugs.openjdk.org/browse/JDK-8331027 \n",
+                        "https://youtrack.jetbrains.com/issue/KT-67668",
+                    )
+                }
 
                 // Compile against the specified JDK API version, similarly to javac's `-release`.
-                if (useJdkRelease) {
+                if (useJdkRelease && !broken) {
                     compilerArgs.add("-Xjdk-release=$jvmTarget")
 
                     // TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+
@@ -172,6 +184,9 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
 
     freeCompilerArgs = compilerArgs
 }
+
+@Volatile
+private var BROKEN_JDK_RELEASE_LOGGED = false
 
 private fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
     compilerArgs: MutableList<String>,

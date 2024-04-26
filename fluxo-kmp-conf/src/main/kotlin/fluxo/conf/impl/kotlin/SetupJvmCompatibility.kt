@@ -109,10 +109,12 @@ internal const val JRE_1_9 = 9
 
 internal const val JRE_11 = 11
 
+internal const val JRE_17 = 11
+
 internal const val JRE_21 = 21
 
 // https://www.oracle.com/java/technologies/downloads/
-private const val LTS_JDK_VERSION = 17
+private const val LTS_JDK_VERSION = JRE_21
 
 /**
  * StringConcatFactory from JRE 9+ isn't supported on Android without desugaring.
@@ -156,7 +158,7 @@ internal fun lastSupportedJvmTargetVersion(setupToolchain: Boolean): String =
     lastSupportedJvmMajorVersion(setupToolchain).asJvmTargetVersion()
 
 
-internal fun String.toJvmMajorVersion(setupToolchain: Boolean): Int {
+internal fun String.toJvmMajorVersion(setupToolchain: Boolean = false): Int {
     return when {
         isBlank() -> 0
 
