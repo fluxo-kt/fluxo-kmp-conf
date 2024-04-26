@@ -22,6 +22,10 @@
   * Spotless
   * Detekt
   * KtLint
+* GraalVM native build + UPX compression
+* Louvain algorithm to analyze class dependencies and rank deduced modules based on their conductance score. Lobzik is a Gradle plugin for helping to modularise large Android codebases.
+  * https://github.com/Mishkun/lobzik
+  * https://dev.to/mishkun/carving-the-path-to-modularity-a-lobzik-tool-case-study-on-the-protonmail-android-app-mid
 * https://github.com/topjohnwu/libsu/blob/01570d643af91b0e271de018465a219eed8db322/service/build.gradle.kts#L21
 * Disambiguate existing javadoc and sources tasks
 * Check BuildConfig tasks (not called on IDE sync?!)
@@ -250,6 +254,7 @@
   * https://github.com/KotlinCrypto/secure-random/pull/13
   * https://github.com/KotlinCrypto/core/pull/58
   * https://github.com/KotlinCrypto/core/pull/56
+  * https://github.com/JetBrains/java-annotations/pull/103
 * Common utils
   * https://github.com/aminography/CommonUtils/tree/1bfbe2d/library/src/main/java/com/aminography/commonutils
 * States and Events
