@@ -69,8 +69,8 @@ public final class Fkc {
 	public static final fun isCI (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isDesugaringEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isMaxDebugEnabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
-	public static final fun isR8Disabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun isRelease (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
+	public static final fun isShrinkerDisabled (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun ksp (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
 	public static final fun macosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun macosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
