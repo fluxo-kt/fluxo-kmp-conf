@@ -66,13 +66,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
 
       - name: Baseline
-        run: |
-          ./gradlew dependencyGuardBaseline detektBaseline --stacktrace
-          cd checks/gradle-plugin
-          ./gradlew dependencyGuardBaseline --stacktrace
-          cd ../kmp
-          ./gradlew dependencyGuardBaseline kotlinUpgradeYarnLock --stacktrace
-          cd ../..
+        run: ./baseline
 
       - name: Setup GIT
         run: |

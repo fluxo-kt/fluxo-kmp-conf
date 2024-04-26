@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Set Gradle options via env.
+export GRADLE_OPTS="-Dorg.gradle.caching=false -Dkotlin.incremental=false -Dorg.gradle.logging.stacktrace=all"
+
+./gradlew dependencyGuardBaseline plugin:apiDump detektBaseline -U --continue --rerun-tasks || exit 1
+cd checks/gradle-plugin && ./gradlew dependencyGuardBaseline apiDump -U --continue || exit 1
+cd ../kmp && ./gradlew dependencyGuardBaseline kotlinUpgradeYarnLock -U --continue || exit 1
+cd ../compose-desktop && ./gradlew dependencyGuardBaseline -U --continue || exit 1
+cd ../../
