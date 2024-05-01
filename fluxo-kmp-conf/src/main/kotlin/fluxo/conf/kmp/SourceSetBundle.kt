@@ -15,6 +15,9 @@ public interface SourceSetBundle {
     public operator fun contains(other: KotlinSourceSet): Boolean {
         return main == other || test == other || moreTests?.contains(other) == true
     }
+
+    @JvmSynthetic
+    public operator fun <T> invoke(action: SourceSetBundle.() -> T): T = action()
 }
 
 internal fun SourceSetBundle(

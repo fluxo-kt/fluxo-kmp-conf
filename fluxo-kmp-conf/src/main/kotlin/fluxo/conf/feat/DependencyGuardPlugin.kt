@@ -74,9 +74,9 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
 
 private fun Configuration.isShouldBeGuarded(): Boolean {
     return isCanBeResolved && name.lowercase(Locale.US).let { confNameL ->
-        isClasspathConfig(confNameL) && (
-            "release" in confNameL || NON_GUARD_MARKERS.none { it in confNameL }
-            )
+        if (!isClasspathConfig(confNameL)) return@let false
+        if (TEST_MARKERS.any { it in confNameL }) return@let false
+        "release" in confNameL || NON_GUARD_MARKERS.none { it in confNameL }
     }
 }
 

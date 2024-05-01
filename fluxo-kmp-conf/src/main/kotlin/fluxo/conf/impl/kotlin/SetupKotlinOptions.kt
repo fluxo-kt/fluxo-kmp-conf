@@ -41,7 +41,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         lang != null -> lang > KotlinLangVersion.KOTLIN_1_9
         else -> kotlinPluginVersion >= KOTLIN_2_0
     }
-    if (kotlin19orLower) {
+    if (kotlin19orLower && KOTLIN_UP_TO_1_9_OPTS.isNotEmpty()) {
         compilerArgs.addAll(KOTLIN_UP_TO_1_9_OPTS)
     }
 
@@ -240,13 +240,12 @@ private val DEFAULT_OPTS = arrayOf(
 ).asList()
 
 // Not supported in Kotlin 2.1 language version.
-private val KOTLIN_UP_TO_1_9_OPTS = arrayOf(
+@Suppress("RemoveExplicitTypeArguments", "RedundantSuppression")
+private val KOTLIN_UP_TO_1_9_OPTS = arrayOf<String>(
     // For incremental compilation, both flags should be supplied:
     //  -Xenable-incremental-compilation and -Xic-cache-dir.
-    "-Xenable-incremental-compilation",
-
-    // Inline functions using IR inliner instead of bytecode inliner for JVM targets.
-    "-Xir-inliner",
+    // "-Xenable-incremental-compilation",
+    // "-Xic-cache-dir=${System.getProperty("user.home")}/.kotlin/ic",
 
     // Support for IR backend parallel compilation:
     //  https://youtrack.jetbrains.com/issue/KT-46085

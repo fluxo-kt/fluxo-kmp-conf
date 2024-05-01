@@ -33,6 +33,7 @@
     <ID>ForbiddenComment:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$// TODO: Avoid casting</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionKotlin.kt$FluxoConfigurationExtensionKotlin$// FIXME: koverReport settings</ID>
     <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$// TODO: Add validation for githubProject value.</ID>
+    <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// FIXME: Detekt and use here if CI (GitHub) debug logs are enabled.</ID>
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.</ID>
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: GC stats</ID>
     <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
@@ -58,11 +59,13 @@
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// FIXME: Avoid duplicate logging between similar tasks</ID>
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: note dependency in the (root?) project classpath</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Automatic per-app language support</ID>
+    <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Support Kotlin bundled Compose compiler since Kotlin 2.0.0-RC2.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Support bundletool codeTransparency here.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Create a marker task for the main processing chain with a stable name.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Ensure the obfuscation mapping incrementality and compatibility when double-shrinking.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Provide unporcessed artifacts alongside the processed ones as a variant.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Publish the debug non-shrunken artifacts alongside the release shrunken ones.</ID>
@@ -94,6 +97,7 @@
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to JvmCompatibility?</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.</ID>
+    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Support for -Xemit-jvm-type-annotations</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Verify ct.sym fix later.</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: provide sources for KMP publications</ID>

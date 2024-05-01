@@ -8,7 +8,7 @@ import org.gradle.api.logging.Logger
 private const val TAG = "FluxoKmpConf"
 
 @Volatile
-internal var SHOW_DEBUG_LOGS = true
+internal var SHOW_DEBUG_LOGS = false
 
 
 private const val V = "v: "

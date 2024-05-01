@@ -26,7 +26,10 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     override var kotlinLangVersion: String?
         get() {
             return kotlinLangVersionProp.orNull ?: parent?.kotlinLangVersion ?: ctx.libs
-                .v("kotlinLangVersion", "kotlinLang", "kotlinLanguage")
+                .v(
+                    "kotlinLangVersion", "kotlinLang", "kotlinLanguage",
+                    allowFallback = false,
+                )
         }
         set(value) = kotlinLangVersionProp.set(value)
 
@@ -35,7 +38,10 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     override var kotlinApiVersion: String?
         get() {
             return kotlinApiVersionProp.orNull ?: parent?.kotlinApiVersion ?: ctx.libs
-                .v("kotlinApiVersion", "kotlinApi") ?: kotlinLangVersion
+                .v(
+                    "kotlinApiVersion", "kotlinApi",
+                    allowFallback = false,
+                ) ?: kotlinLangVersion
         }
         set(value) = kotlinApiVersionProp.set(value)
 
@@ -45,7 +51,10 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         get() {
             return kotlinTestsLangVersionProp.orNull
                 ?: parent?.kotlinTestsLangVersion
-                ?: ctx.libs.v("testsKotlinLangVersion", "testsKotlinLang")
+                ?: ctx.libs.v(
+                    "testsKotlinLangVersion", "testsKotlinLang",
+                    allowFallback = false,
+                )
         }
         set(value) = kotlinTestsLangVersionProp.set(value)
 
@@ -56,6 +65,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
             return kotlinCoreLibrariesProp.orNull ?: parent?.kotlinCoreLibraries ?: ctx.libs.v(
                 "kotlinCoreLibraries", "kotlinCoreLibrariesVersion",
                 "kotlinStdlib", "kotlin", "kotlinVersion",
+                allowFallback = false,
             )
         }
         set(value) = kotlinCoreLibrariesProp.set(value)
@@ -68,6 +78,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
             return javaLangTargetProp.orNull ?: parent?.javaLangTarget ?: ctx.libs.v(
                 "jvmTarget", "javaLangTarget", "javaLangSource", "javaToolchain",
                 "sourceCompatibility", "targetCompatibility",
+                allowFallback = false,
             )
         }
         set(value) = javaLangTargetProp.set(value)
@@ -77,7 +88,10 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     override var javaTestsLangTarget: String?
         get() {
             return javaTestsLangTargetProp.orNull ?: parent?.javaTestsLangTarget ?: ctx.libs
-                .v("jvmTestsTarget", "javaTestsLangTarget")
+                .v(
+                    "jvmTestsTarget", "javaTestsLangTarget",
+                    allowFallback = false,
+                )
         }
         set(value) = javaTestsLangTargetProp.set(value)
 

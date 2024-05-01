@@ -11,6 +11,7 @@ permissions:
 
 env:
   CI: true
+  RELEASE: true
   BUILD_NUMBER: ${{ github.run_number }}
   SCM_TAG: ${{ github.sha }}
   GRADLE_OPTS: |

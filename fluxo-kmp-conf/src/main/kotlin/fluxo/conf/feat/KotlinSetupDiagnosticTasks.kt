@@ -145,7 +145,7 @@ private fun Project.printTaskDescriptionFor(obj: String, type: String = "informa
 private const val T = "   "
 private const val P = "$T ->"
 
-private const val TASK_GROUP = "group"
+private const val TASK_GROUP = "fluxo-help"
 private const val TARGETS_TASK = "printKotlinTargetsInfo"
 private const val SOURCES_TASK = "printKotlinSourceSetsInfo"
 private const val SOURCES_GRAPH_TASK = "printKotlinSourceSetsGraph"

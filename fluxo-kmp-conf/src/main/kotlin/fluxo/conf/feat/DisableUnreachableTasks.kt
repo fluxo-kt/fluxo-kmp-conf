@@ -17,8 +17,7 @@ internal fun FluxoKmpConfContext.ensureUnreachableTasksDisabled() {
     // Usually, can be useful when:
     // - Not all targets are enabled;
     // - Tests are disabled;
-    val canBeUsefull = testsDisabled || !allTargetsEnabled ||
-        SHOW_DEBUG_LOGS || DEBUG_LOGS || isCI
+    val canBeUsefull = testsDisabled || !allTargetsEnabled
 
     // Don't run on IDE sync.
     if (!canBeUsefull || isProjectInSyncRun) {

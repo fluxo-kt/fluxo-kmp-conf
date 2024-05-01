@@ -25,9 +25,12 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
         compilations.configureEach {
             kotlinOptions {
                 moduleKind = "es"
-                useEsClasses = true
                 sourceMap = true
                 metaInfo = true
+                try {
+                    useEsClasses = true
+                } catch (_: Error) {
+                }
             }
         }
         try {
