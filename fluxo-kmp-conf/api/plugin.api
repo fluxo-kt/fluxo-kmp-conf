@@ -617,5 +617,6 @@ public abstract interface class fluxo/conf/kmp/SourceSetBundle {
 	public abstract fun getMain ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 	public fun getMoreTests ()[Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 	public abstract fun getTest ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
+	public synthetic fun invoke (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 }
 

@@ -9,4 +9,6 @@
 # ProGuard-only configuration.
 -skipnonpubliclibraryclasses
 
--keepkotlinmetadata
+# The `-keepkotlinmetadata` option is deprecated and will be removed in a future ProGuard release.
+# Please use `-keep class kotlin.Metadata` instead.
+#-keepkotlinmetadata

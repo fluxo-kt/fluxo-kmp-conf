@@ -100,7 +100,7 @@ dependencies {
     testImplementation(libs.proguard.plugin)
     testImplementation(libs.proguard.core)
     testImplementation(libs.r8)
-    testImplementation(kotlin("test", libs.versions.kotlin.get()))
+    testImplementation(kotlin("test", libs.versions.kotlin.asProvider().get()))
 }
 
 tasks.test {
@@ -180,6 +180,6 @@ buildConfig {
     }
     buildConfigField("PROGUARD_PLUGIN", libs.proguard.plugin)
     buildConfigField("PROGUARD_CORE", libs.proguard.core)
-    buildConfigField("KOTLINX_METADATA_JVM", libs.kotlinx.metadata.jvm)
+    buildConfigField("KOTLINX_METADATA_JVM", libs.kotlin.metadata.jvm)
     buildConfigField("R8", libs.r8)
 }

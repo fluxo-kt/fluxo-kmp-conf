@@ -129,13 +129,13 @@ proguard = "7.4.2"
 # ProGuardCORE, library to read, analyze, modify, and write JVM class files.
 # https://github.com/Guardsquare/proguard-core/releases
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-core.
-proguard-core = "9.1.2"
+proguard-core = "9.1.3"
 
 # Kotlin JVM metadata manipulation library.
 # Used by ProGuardCORE.
-# https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-metadata-jvm
+# https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-metadata-jvm
 #noinspection GradleDependency.
-kotlinx-metadata-jvm = "0.6.2"
+kotlin-metadata-jvm = "2.0.0-RC1"
 
 # R8 is a Google's code shrinker, obfuscator, and optimizer. Targeted for Android.
 # https://mvnrepository.com/artifact/com.android.tools/r8?repo=google
@@ -190,7 +190,7 @@ plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", ver
 
 proguard-plugin = { module = "com.guardsquare:proguard-gradle", version.ref = "proguard" }
 proguard-core = { module = "com.guardsquare:proguard-core", version.ref = "proguard-core" }
-kotlinx-metadata-jvm = { module = "org.jetbrains.kotlinx:kotlinx-metadata-jvm", version.ref = "kotlinx-metadata-jvm" }
+kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin-metadata-jvm" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 

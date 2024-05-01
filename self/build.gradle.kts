@@ -138,7 +138,7 @@ buildConfig {
     }
     buildConfigField("PROGUARD_PLUGIN", libs.proguard.plugin)
     buildConfigField("PROGUARD_CORE", libs.proguard.core)
-    buildConfigField("KOTLINX_METADATA_JVM", libs.kotlinx.metadata.jvm)
+    buildConfigField("KOTLINX_METADATA_JVM", libs.kotlin.metadata.jvm)
     buildConfigField("R8", libs.r8)
 }
 
