@@ -5,6 +5,11 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Updated
+- bump Android Gradle Plugin from _8.3.2_ to _8.4.0_ (compile-only dependency) in https://github.com/fluxo-kt/fluxo-kmp-conf/pull/48.
+- bump [io.nlopez.compose.rules:detekt](https://github.com/mrmans0n/compose-rules) from _0.3.15_ to _0.3.20_ in https://github.com/fluxo-kt/fluxo-kmp-conf/pull/53.
+- bump [binary-compatibility-validator-js](https://github.com/fluxo-kt/fluxo-bcv-js) from _0.2.0_ to _0.3.0_ in https://github.com/fluxo-kt/fluxo-kmp-conf/pull/52.
+
 
 ## [0.8.0] - 2024-04-22
 
