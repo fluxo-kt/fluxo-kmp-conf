@@ -196,6 +196,10 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         buildConfig = conf.enableBuildConfig
     }
 
+    // FIXME: Support Kotlin bundled Compose compiler since Kotlin 2.0.0-RC2.
+    //  https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compiler.html
+    //  https://android-developers.googleblog.com/2024/04/jetpack-compose-compiler-moving-to-kotlin-repository.html
+
     // Set compose compiler version
     ctx.libs.onVersion(ALIAS_ANDROIDX_COMPOSE_COMPILER) {
         composeOptions.kotlinCompilerExtensionVersion = it

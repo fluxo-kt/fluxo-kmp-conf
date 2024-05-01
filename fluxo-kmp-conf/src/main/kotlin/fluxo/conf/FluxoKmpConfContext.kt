@@ -115,6 +115,7 @@ internal abstract class FluxoKmpConfContext
         val gradle = project.gradle
         val logger = project.logger
 
+        // FIXME: Detekt and use here if CI (GitHub) debug logs are enabled.
         val isVerbose = isMaxDebug || logger.isInfoEnabled || project.isFluxoVerbose().get()
         if (isVerbose) {
             SHOW_DEBUG_LOGS = true

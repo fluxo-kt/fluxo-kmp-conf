@@ -226,6 +226,10 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * - [kotlinx.coroutines.ExperimentalCoroutinesApi]
      * - [kotlinx.coroutines.InternalCoroutinesApi]
      *
+     * Inherited from the parent project if not set.
+     *
+     * **Default value: `false`.**
+     *
      * @see setupCoroutines
      */
     public var optInInternal: Boolean?
@@ -262,12 +266,23 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
     }
 
 
+    /**
+     * Flag to treat all warnings as errors.
+     *
+     * Inherited from the parent project if not set.
+     *
+     * **Default value: `false`.**
+     *
+     * @see org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions.allWarningsAsErrors
+     */
     public var allWarningsAsErrors: Boolean?
 
     /**
      * Generate metadata for Java 1.8 reflection on method parameters.
      *
-     * Inherited from the parent project if not set. Default value: `false`.
+     * Inherited from the parent project if not set.
+     *
+     * **Default value: `false`.**
      *
      * [More details](https://docs.oracle.com/javase/tutorial/reflect/member/methodparameterreflection.html)
      *
@@ -280,7 +295,9 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * Flag to turn off dynamic invocations (`invokedynamic`) compilation for Kotlin lambdas
      * and SAM conversions (`indy` mode).
      *
-     * Inherited from the parent project if not set. Default value: `true`.
+     * Inherited from the parent project if not set.
+     *
+     * **Default value: `true`.**
      *
      * Indy mode produces faster and more compact bytecode,
      * using the `invokedynamic` JVM instruction.

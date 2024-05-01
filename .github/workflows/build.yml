@@ -200,3 +200,6 @@ jobs:
 
 # TODO: Integrate the dependency-review-action
 #  https://github.com/marketplace/actions/gradle-build-action#integrating-the-dependency-review-action
+
+# TODO: CI Improvements
+#  https://github.com/ajalt/clikt/blob/master/.github/workflows/build.yml

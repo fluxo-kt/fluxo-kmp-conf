@@ -23,6 +23,8 @@
   * Detekt
   * KtLint
 * GraalVM native build + UPX compression
+* IDEA Ext plugin (declare IDEA settings via gradle)
+  * https://github.com/JetBrains/gradle-idea-ext-plugin/wiki
 * Louvain algorithm to analyze class dependencies and rank deduced modules based on their conductance score. Lobzik is a Gradle plugin for helping to modularise large Android codebases.
   * https://github.com/Mishkun/lobzik
   * https://dev.to/mishkun/carving-the-path-to-modularity-a-lobzik-tool-case-study-on-the-protonmail-android-app-mid

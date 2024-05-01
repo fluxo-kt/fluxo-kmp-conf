@@ -23,6 +23,8 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
+// FIXME: Create a marker task for the main processing chain with a stable name.
+
 // FIXME: Run tests with minified artifacts.
 //  https://github.com/ArcticLampyrid/gradle-git-version/blob/23ccfc8/build.gradle.kts#L72
 
