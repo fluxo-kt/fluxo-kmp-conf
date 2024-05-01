@@ -51,8 +51,8 @@ com.squareup.retrofit2:retrofit:2.10.0
 com.squareup:javawriter:2.5.0
 dev.zacsweers.moshix:moshi-sealed-runtime:0.19.0
 gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext:1.1.8
-io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:0.2.0
-io.github.fluxo-kt:fluxo-bcv-js:0.2.0
+io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:0.3.0
+io.github.fluxo-kt:fluxo-bcv-js:0.3.0
 io.gitlab.arturbosch.detekt:detekt-api:1.23.6
 io.gitlab.arturbosch.detekt:detekt-core:1.23.6
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6
