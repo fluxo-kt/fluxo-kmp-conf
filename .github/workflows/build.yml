@@ -94,8 +94,10 @@ jobs:
             ~/.gradle/nodejs
             ~/.gradle/binaryen
             hashFiles('**/gradle/libs.versions.toml')
-          key: ${{ runner.os }}-kmp-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties', '**/gradle/libs.versions.toml') }}
-          #restore-keys: ${{ runner.os }}-kmp-
+          key: "${{ runner.os }}-kmp-${{ hashFiles('gradle/libs.versions.toml') }}-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}"
+          restore-keys: |
+            ${{ runner.os }}-kmp-${{ hashFiles('gradle/libs.versions.toml') }}
+            ${{ runner.os }}-kmp-
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
