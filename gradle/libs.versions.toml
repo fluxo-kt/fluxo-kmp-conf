@@ -164,7 +164,7 @@ guava = "33.1.0-jre"
 
 # Douglas Crockford's reference Java implementation of a JSON.
 # https://github.com/stleary/JSON-java/releases
-json = "20240205"
+json = "20240303"
 
 # endregion
 
