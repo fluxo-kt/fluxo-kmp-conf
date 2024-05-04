@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength")
+
 package fluxo.conf.feat
 
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardConfiguration
@@ -106,18 +108,26 @@ private val COMMON_CONFIGURATION = Action<DependencyGuardConfiguration> {
 private val RELEASE_CONFIGURATION = Action<DependencyGuardConfiguration> {
     COMMON_CONFIGURATION.execute(this)
     allowedFilter = { dependency ->
-        dependency.lowercase(Locale.US).let { d -> RELEASE_BLOCK_LIST.all { it !in d } }
+        dependency.lowercase(Locale.US).let { d ->
+            RELEASE_BLOCK_LIST.all {
+                // Used in Detekt, explicitly allowed.
+                // `io.github.davidburstrom.contester:contester-breakpoint`.
+                it !in d || it == TEST && "contest" in d
+            }
+        }
     }
 }
 
+private const val TEST = "test"
+
 private val RELEASE_BLOCK_LIST = arrayOf(
-    "junit",
-    "test",
-    "mock",
-    "truth",
     "assert",
-    "turbine",
+    "junit",
+    "mock",
     "robolectric",
+    "truth",
+    "turbine",
+    TEST,
 )
 
 private val TEST_MARKERS = arrayOf("test", "benchmark", "mock", "jmh")

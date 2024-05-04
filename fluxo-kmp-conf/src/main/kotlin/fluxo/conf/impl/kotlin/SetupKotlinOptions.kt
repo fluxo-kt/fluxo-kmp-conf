@@ -4,12 +4,13 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
 import fluxo.gradle.ioFile
 import fluxo.log.e
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 
-@Suppress("LongParameterList", "ComplexMethod", "LongMethod", "NestedBlockDepth")
+@Suppress("LongParameterList", "ComplexMethod", "LongMethod")
 internal fun KotlinCommonOptions.setupKotlinOptions(
     conf: FluxoConfigurationExtensionImpl,
     compilationName: String,
@@ -28,7 +29,11 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     val useLatestSettings = !releaseSettings && latestSettings
     val kc = conf.kotlinConfig
 
-    val compilerArgs = freeCompilerArgs.toMutableList()
+    if (warningsAsErrors) {
+        allWarningsAsErrors = true
+    }
+
+    val compilerArgs = freeCompilerArgs.toMutableSet()
     compilerArgs.addAll(DEFAULT_OPTS)
 
     val kotlinPluginVersion = context.kotlinPluginVersion
@@ -47,6 +52,15 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
 
     if (useLatestSettings) {
         compilerArgs.addAll(LATEST_OPTS)
+
+        conf.explicitApi?.let {
+            val v = when (it) {
+                ExplicitApiMode.Strict -> "strict"
+                ExplicitApiMode.Warning -> "warning"
+                ExplicitApiMode.Disabled -> "disable"
+            }
+            compilerArgs.add("-Xexplicit-api=$v")
+        }
     }
 
     // Required for multiplatform projects since Kotlin 1.9.20.
@@ -138,6 +152,11 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             isJs = true
             isJvm = false
             compilerArgs.addAll(JS_OPTS)
+
+            if (conf.isApplication) {
+                // Don't generate .meta.js and .kjsm files with library metadata.
+                metaInfo = false
+            }
         }
 
         else -> {
@@ -146,11 +165,16 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         }
     }
 
+    if ((kc.progressive || useLatestSettings) && lang.isCurrentOrLater) {
+        options.progressiveMode.set(true)
+        // compilerArgs.add("-progressive")
+    }
+
     if (useLatestSettings) {
-        @Suppress("DEPRECATION")
-        val useK2 = when {
+        val k2Used = when {
             kotlin20orUpper -> true
             else -> {
+                @Suppress("DEPRECATION")
                 kotlinPluginVersion >= KOTLIN_1_9 &&
                     kotlinPluginVersion < KOTLIN_2_0 &&
                     (isJvm || isJs) && useK2
@@ -164,9 +188,20 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         // Non-local break and continue are in preview since 2.0.
         // Unfortunately, in K2, the feature works only in JVM.
         // https://youtrack.jetbrains.com/issue/KT-1436/Support-non-local-break-and-continue
-        if (if (useK2) isJvm else kotlin19orLower) {
+        if (if (k2Used) isJvm else kotlin19orLower) {
             compilerArgs.add(langFeature("BreakContinueInInlineLambdas"))
         }
+
+        // K2 Explicit backing fields
+        // https://github.com/Kotlin/KEEP/issues/278#issuecomment-1152073904
+        // https://github.com/Kotlin/KEEP/pull/289
+        if (k2Used && kotlinPluginVersion >= KOTLIN_1_7) {
+            compilerArgs.add(langFeature("ExplicitBackingFields"))
+        }
+
+        // TODO: Guard conditions for when-with-subject (Kotlin 2.0.20)
+        //  https://youtrack.jetbrains.com/issue/KT-67787
+        // "-XXLanguage:+WhenGuards"
     }
 
     // OPT_IN_USAGE_ERROR is a warning in K2,
@@ -181,28 +216,26 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         compilerArgs.add("-Xdebug")
     }
 
-    if (kc.setupCompose) {
-        conf.setupKotlinComposeOptions(compilerArgs)
-    }
-
-    freeCompilerArgs = compilerArgs
+    freeCompilerArgs = compilerArgs.toList()
 }
 
 @Volatile
 private var BROKEN_JDK_RELEASE_LOGGED = false
 
-private fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
-    compilerArgs: MutableList<String>,
+internal fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
+    ko: KotlinCommonOptions,
+    isTest: Boolean,
 ) {
     val ctx = ctx
     val p = "plugin:androidx.compose.compiler.plugins.kotlin"
     if (suppressKotlinComposeCompatibilityCheck == true) {
         val kotlin = ctx.kotlinPluginVersion.toString()
-        compilerArgs.addAll("-P", "$p:suppressKotlinVersionCompatibilityCheck=$kotlin")
+        ko.freeCompilerArgs += listOf("-P", "$p:suppressKotlinVersionCompatibilityCheck=$kotlin")
     }
 
-    @Suppress("ComplexCondition")
-    if (!ctx.isCI && !ctx.isRelease && !ctx.composeMetricsEnabled && !ctx.isMaxDebug) {
+    val composeMetrics = !isTest &&
+        (ctx.composeMetricsEnabled || ctx.isCI || ctx.isRelease || ctx.isMaxDebug)
+    if (!composeMetrics) {
         return
     }
 
@@ -211,8 +244,8 @@ private fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
     // https://github.com/androidx/androidx/blob/androidx-main/compose/compiler/design/compiler-metrics.md#interpreting-compose-compiler-metrics
     val buildDir = project.layout.buildDirectory.ioFile.absolutePath
     val reportsDir = "$buildDir/reports/compose"
-    compilerArgs.addAll("-P", "$p:metricsDestination=$reportsDir")
-    compilerArgs.addAll("-P", "$p:reportsDestination=$reportsDir")
+    ko.freeCompilerArgs += listOf("-P", "$p:metricsDestination=$reportsDir")
+    ko.freeCompilerArgs += listOf("-P", "$p:reportsDestination=$reportsDir")
 
     @Suppress("MaxLineLength")
     // Note: convert the report to the human-readable HTML.

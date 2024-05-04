@@ -59,14 +59,19 @@ internal fun Logger.d(message: String, e: Throwable? = null) = when {
     else -> lifecycle("$D$message", e)
 }
 
+internal fun Logger.d(message: String, arg1: Any?) = when {
+    !SHOW_DEBUG_LOGS -> debug("{}: $message", TAG, arg1)
+    else -> lifecycle("{}$message", D, arg1)
+}
+
 internal fun Logger.d(message: String, arg1: Any?, arg2: Any?) = when {
-    !SHOW_DEBUG_LOGS -> debug("$TAG: $message", arg1, arg2)
-    else -> lifecycle("$D$message", arg1, arg2)
+    !SHOW_DEBUG_LOGS -> debug("{}: $message", TAG, arg1, arg2)
+    else -> lifecycle("{}$message", D, arg1, arg2)
 }
 
 internal fun Logger.d(message: String, arg1: Any?, arg2: Any?, arg3: Any?) = when {
-    !SHOW_DEBUG_LOGS -> debug("$TAG: $message", arg1, arg2, arg3)
-    else -> lifecycle("$D$message", arg1, arg2, arg3)
+    !SHOW_DEBUG_LOGS -> debug("{}: $message", TAG, arg1, arg2, arg3)
+    else -> lifecycle("{}$message", D, arg1, arg2, arg3)
 }
 
 

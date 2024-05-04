@@ -1,0 +1,35 @@
+#!/bin/sh
+
+./gradlew --stop --info
+
+echo ""
+echo "===================================="
+echo "======== RUN BASELINE TASKS ========"
+echo "===================================="
+
+# Append Gradle options to existing ones
+export GRADLE_OPTS="${GRADLE_OPTS} -Dorg.gradle.caching=false -Dkotlin.incremental=false -Dorg.gradle.logging.stacktrace=all"
+
+# -U: Refresh dependencies
+./gradlew dependencyGuardBaseline apiDump detektBaselineMerge -U --continue --rerun-tasks || exit 101
+
+echo ""
+echo "=======> checks/gradle-plugin"
+cd checks/gradle-plugin || exit 102
+pwd
+./gradlew dependencyGuardBaseline apiDump detektBaselineMerge -U --continue || exit 103
+
+echo ""
+echo "=======> checks/kmp"
+cd ../kmp || exit 104
+pwd
+./gradlew dependencyGuardBaseline detektBaselineMerge kotlinUpgradeYarnLock -U --continue || exit 105
+
+echo ""
+echo "=======> checks/compose-desktop"
+cd ../compose-desktop || exit 106
+pwd
+./gradlew dependencyGuardBaseline detektBaselineMerge -U --continue || exit 107
+
+# Go back to root
+cd ../../ || exit 108

@@ -2,9 +2,11 @@ package fluxo.conf
 
 import fluxo.conf.MergeDetektBaselinesTask.Companion.TASK_NAME
 import fluxo.gradle.ioFile
+import fluxo.log.d
 import fluxo.log.i
 import fluxo.log.l
 import io.github.detekt.tooling.api.BaselineProvider
+import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
@@ -56,6 +58,8 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
     @get:OutputFile
     abstract val outputFile: RegularFileProperty
 
+    private val rootProjectDir: File = project.rootProject.projectDir
+
     @TaskAction
     fun merge() {
         val files = baselineFiles.files
@@ -71,11 +75,17 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
         val bp = try {
             BaselineProvider.load()
         } catch (e: Throwable) {
-            throw IllegalStateException("Couldn't load BaselineProvider: $e", e)
+            try {
+                val cl = Class.forName("io.gitlab.arturbosch.detekt.core.baseline.BaselineFormat")
+                cl.getDeclaredConstructor().newInstance() as BaselineProvider
+            } catch (e2: Throwable) {
+                e.addSuppressed(e2)
+                throw IllegalStateException("Couldn't load BaselineProvider: $e", e)
+            }
         }
         val merged = baselineFiles
             .map {
-                logger.i("merge {}", it)
+                logger.d("merge {}", it)
                 bp.read(it.toPath())
             }
             .reduce { acc, baseline ->
@@ -93,7 +103,7 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
 
         val outputFile = outputFile.ioFile
         bp.write(targetPath = outputFile.toPath(), baseline = sorted)
-        val fileRelative = outputFile.absoluteFile.relativeTo(project.projectDir)
+        val fileRelative = outputFile.absoluteFile.relativeTo(rootProjectDir)
         logger.l("Merged Detekt baseline files to $fileRelative")
     }
 }

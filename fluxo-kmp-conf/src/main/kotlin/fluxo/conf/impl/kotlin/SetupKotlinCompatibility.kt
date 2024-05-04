@@ -18,22 +18,15 @@ import org.jetbrains.kotlin.gradle.plugin.sources.AbstractKotlinSourceSet
 
 internal typealias KCompilation = KotlinCompilation<KotlinCommonOptions>
 
-internal fun KCompilation.setupKotlinCompatibility(
+internal fun KotlinCommonOptions.setupKotlinCompatibility(
     conf: FluxoConfigurationExtensionImpl,
     isTest: Boolean,
     isExperimentalTest: Boolean,
 ) {
-    val kc = conf.kotlinConfig
-    kotlinOptions.apply {
-        val (lang, api) = kc
-            .langAndApiVersions(isTest = isTest, latestSettings = isExperimentalTest)
-        lang?.run { languageVersion = version }
-        api?.run { apiVersion = version }
-
-        if ((kc.progressive || isExperimentalTest) && lang.isCurrentOrLater) {
-            freeCompilerArgs += "-progressive"
-        }
-    }
+    val (lang, api) = conf.kotlinConfig
+        .langAndApiVersions(isTest = isTest, latestSettings = isExperimentalTest)
+    lang?.apply { languageVersion = version }
+    api?.apply { apiVersion = version }
 }
 
 internal fun KotlinProjectExtension.setupSourceSetsKotlinCompatibility(
@@ -74,7 +67,7 @@ internal val KOTLIN_1_4 = KotlinVersion(1, 4)
 
 private val KOTLIN_1_6 = KotlinVersion(1, 6)
 
-internal val KOTLIN_1_7 = KotlinVersion(1, 8)
+internal val KOTLIN_1_7 = KotlinVersion(1, 7)
 
 internal val KOTLIN_1_8 = KotlinVersion(1, 8)
 
@@ -137,7 +130,7 @@ internal fun String.toKotlinLangVersion(): KotlinLangVersion? {
     }
 }
 
-private val KotlinLangVersion?.isCurrentOrLater: Boolean
+internal val KotlinLangVersion?.isCurrentOrLater: Boolean
     get() = this == null || this >= KOTLIN_LANG_VERSION
 
 /** @see org.jetbrains.kotlin.gradle.dsl.KotlinVersion */

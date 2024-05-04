@@ -11,6 +11,8 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
@@ -82,6 +84,10 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
 
 internal fun KotlinJvmOptions.setupJvmCompatibility(jvmTarget: String) {
     this.jvmTarget = jvmTarget
+}
+
+internal fun KotlinJvmCompilerOptions.setupJvmCompatibility(jvmTarget: String) {
+    this.jvmTarget.set(JvmTarget.fromTarget(jvmTarget))
 }
 
 internal fun KCompilation.setupJvmCompatibility(jvmTarget: String) {

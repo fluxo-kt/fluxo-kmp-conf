@@ -8,8 +8,12 @@
 ### Added
 - allow using JRE 21 as target, already supported in tooling.
 
+### Changed
+- tune Kotlin compilation configuration a bit.
+
 ### Fixed
 - auto-disable `-Xjdk-release` for the broken configurations (_JRE 18..21_).
+- fix Detekt BaselineProvider loading and restore `detektBaselineMerge` usage.
 
 ### Updated
 - bump Android Gradle Plugin from _8.3.2_ to _8.4.0_ (compile-only dependency) in https://github.com/fluxo-kt/fluxo-kmp-conf/pull/48.

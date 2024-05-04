@@ -305,37 +305,34 @@ private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,
     isMultiplatform: Boolean = this is KotlinMultiplatformExtension,
 ) = setupTargets {
-    val compilations = compilations
     compilations.configureEach compilation@{
         val isExperimentalTest = isExperimentalLatestCompilation
         val isTest = isExperimentalTest || isTestRelated()
 
-        setupKotlinCompatibility(
-            conf = conf,
-            isTest = isTest,
-            isExperimentalTest = isExperimentalTest,
-        )
-
-        val ctx = conf.ctx
         val kc = conf.kotlinConfig
+        val jvmTargetVersion = kc.jvmTargetVersion(
+            isTest = isTest,
+            latestSettings = isExperimentalTest,
+        )
+        jvmTargetVersion?.let(::setupJvmCompatibility)
+
+        // As per Kotlin 1.9 `compilerOptions` are still unreliable.
+        // Use `kotlinOptions` instead for now.
         kotlinOptions.run {
             val platformType = target.platformType
             val isAndroid = platformType.let { KotlinPlatformType.androidJvm === it }
-            val isJs = !isAndroid && platformType
+            val isJsOrWasm = !isAndroid && platformType
                 .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
 
-            val warningsAsErrors = kc.warningsAsErrors &&
-                !isJs && !isTest && (ctx.isCI || ctx.isRelease)
+            val ctx = conf.ctx
+            val warningsAsErrors = conf.kotlinConfig.warningsAsErrors &&
+                !isJsOrWasm && !isTest && (ctx.isCI || ctx.isRelease)
 
-            if (warningsAsErrors) {
-                allWarningsAsErrors = true
-            }
-
-            val jvmTargetVersion = kc.jvmTargetVersion(
+            setupKotlinCompatibility(
+                conf = conf,
                 isTest = isTest,
-                latestSettings = isExperimentalTest,
+                isExperimentalTest = isExperimentalTest,
             )
-            jvmTargetVersion?.let(::setupJvmCompatibility)
 
             setupKotlinOptions(
                 conf = conf,
@@ -349,8 +346,14 @@ private fun KotlinProjectExtension.setupTargets(
             )
         }
 
+        // Compose options can work with errors using `compilerOptions`.
+        // Continue with `kotlinOptions` for now.
+        if (kc.setupCompose) {
+            conf.setupKotlinComposeOptions(kotlinOptions, isTest)
+        }
+
         // Disable test compilation if tests are disabled.
-        if (isTest && ctx.testsDisabled) {
+        if (isTest && conf.ctx.testsDisabled) {
             disableCompilation()
         }
     }

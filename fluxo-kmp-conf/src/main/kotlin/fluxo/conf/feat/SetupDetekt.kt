@@ -71,6 +71,8 @@ internal fun FluxoKmpConfContext.registerReportMergeTask(
 // FIXME: Setup the light-weight mode for the git hooks, to run only on the changed files.
 //  And probably without types resolution.
 
+// FIXME: Disable Detekt for the experimentalLatest test compilation.
+
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun Project.setupDetekt(
     conf: FluxoConfigurationExtensionImpl,

@@ -1,16 +1,22 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="kotlinUpgradeYarnLock (check-main)" type="GradleRunConfiguration" factoryName="Gradle" folderName="preparations">
+  <configuration default="false" name="detektBaselineMerge" type="GradleRunConfiguration" factoryName="Gradle" folderName="preparations">
     <ExternalSystemSettings>
+      <option name="env">
+        <map>
+          <entry key="CI" value="true" />
+          <entry key="RELEASE" value="true" />
+        </map>
+      </option>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/checks/kmp" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="--stacktrace --continue" />
+      <option name="scriptParameters" value="--stacktrace" />
       <option name="taskDescriptions">
         <list />
       </option>
       <option name="taskNames">
         <list>
-          <option value="kotlinUpgradeYarnLock" />
+          <option value="detektBaselineMerge" />
         </list>
       </option>
       <option name="vmOptions" />
