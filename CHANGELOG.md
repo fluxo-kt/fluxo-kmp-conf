@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Updated
+- bump com.mikepenz.aboutlibraries to _11.1.4_.
+
 
 ## [0.8.1] - 2024-05-05
 
