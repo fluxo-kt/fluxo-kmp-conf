@@ -1,11 +1,11 @@
 package fluxo.conf.dsl.impl
 
 import com.android.build.api.variant.VariantBuilder
-import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_COMPILE_SDK
-import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_MIN_SDK
-import fluxo.conf.data.BuildConstants.DEFAULT_ANDROID_TARGET_SDK
 import fluxo.conf.dsl.FluxoConfigurationExtensionAndroid
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
+import fluxo.conf.impl.android.DEFAULT_ANDROID_COMPILE_SDK
+import fluxo.conf.impl.android.DEFAULT_ANDROID_MIN_SDK
+import fluxo.conf.impl.android.DEFAULT_ANDROID_TARGET_SDK
 import fluxo.conf.impl.uncheckedCast
 import fluxo.vc.v
 import fluxo.vc.vInt
@@ -132,8 +132,8 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     val filterVariantsProp: Property<((Any) -> Boolean)?>
     val filterVariants: ((Any) -> Boolean)?
         get() = filterVariantsProp.orNull
-            // TODO: Avoid casting
-                ?: (parent as? FluxoConfigurationExtensionAndroidImpl)?.filterVariants
+        // TODO: Avoid casting
+            ?: (parent as? FluxoConfigurationExtensionAndroidImpl)?.filterVariants
 
     override fun filterVariants(predicate: (VariantBuilder) -> Boolean) {
         filterVariantsProp.set(uncheckedCast<(Any) -> Boolean>(predicate))

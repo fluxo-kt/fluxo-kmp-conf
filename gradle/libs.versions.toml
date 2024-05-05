@@ -62,24 +62,31 @@ ksp = "1.9.23-1.0.20"
 # 24 is default for new projects as of June 2023, required for AndroidX Security-Identity-Credential
 # 26 is required for native Java 8 support, e.g., `MethodHandle` usage (signature-polymorphic calls)
 # NOTE: Don't forget to edit related `-assumenosideeffects ... SDK_INT` as well!
+#
+# String preview version keys: `androidPreviewSdk`, `androidMinSdkPreview`, or `minSdkPreview`.
+# Int version keys: `androidMinSdk`, `minSdk`.
 androidMinSdk = "21"
 
 # androidTargetSdk >= 33 is required for Google Play new apps & app updates since August 31, 2023
 # https://support.google.com/googleplay/android-developer/answer/11926878
 # https://support.google.com/googleplay/android-developer/answer/9859152#targetsdk
 # https://developer.android.com/distribute/best-practices/develop/target-sdk
+#
+# Int version keys: `androidTargetSdk`, `targetSdk`.
+# String preview version keys: `androidPreviewSdk`, `androidTargetSdkPreview`, or `targetSdkPreview`.
 androidTargetSdk = "34"
 
-# Last version with sources available
+# The last version with sources available.
 # androidCompileSdk >= 28 is required for Firebase
+#
+# String preview version keys: `androidPreviewSdk`, `androidCompileSdkPreview`, or `compileSdkPreview`.
+# Int version keys: `androidCompileSdk`, `compileSdk`.
 androidCompileSdk = "34"
 
-# Last SDK for test builds
-androidLastSdk = "34"
-
-# Preview API for `MAX_DEBUG` builds
-# Zero value used to ignore this setting
-# E.g., to use the Android U preview use `androidPreviewSdk = "U"`
+# Preview API for debug builds.
+# Takes precedence over all other SDK versions!
+# "0" value used to ignore this setting.
+# E.g., to use the Android U preview use `androidPreviewSdk = "U"`.
 androidPreviewSdk = "0"
 
 # Compilers, packaging, deployment tools for Android apps.

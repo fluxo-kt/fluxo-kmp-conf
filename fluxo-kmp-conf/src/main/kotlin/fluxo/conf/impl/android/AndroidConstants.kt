@@ -3,6 +3,12 @@ package fluxo.conf.impl.android
 import fluxo.conf.data.BuildConstants
 import org.gradle.api.plugins.PluginAware
 
+internal const val DEFAULT_ANDROID_MIN_SDK: Int = 21
+
+internal const val DEFAULT_ANDROID_TARGET_SDK: Int = 34
+
+internal const val DEFAULT_ANDROID_COMPILE_SDK: Int = 34
+
 /**
  * @see org.jetbrains.kotlin.gradle.utils.androidPluginIds
  * @see org.jetbrains.kotlin.gradle.utils.findAppliedAndroidPluginIdOrNull
