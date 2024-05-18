@@ -143,8 +143,13 @@ private fun Project.setupGradleProjectPublication(
         tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
-            dirMode = "0755".toInt(radix = 8)
-            fileMode = "0644".toInt(radix = 8)
+            try {
+                // Deprecated in Gradle 8.8
+                dirMode = "0755".toInt(radix = 8)
+                fileMode = "0644".toInt(radix = 8)
+            } catch (e: Throwable) {
+                logger.e("dirMode/fileMode reproducibleArtifacts setup error: $e", e)
+            }
         }
     }
 }

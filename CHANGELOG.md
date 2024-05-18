@@ -6,6 +6,7 @@
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
 ### Updated
+- build(deps): bump Gradle from _8.6_ to _8.8-rc-1_.
 - bump com.mikepenz.aboutlibraries to _11.1.4_.
 
 
