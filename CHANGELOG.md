@@ -8,6 +8,9 @@
 ### Removed
 - delete deprecated Kotlin/Native targets, removed in Kotlin 2.0.
 
+### Added
+- auto downgrade Kotlin API version when it's greater than the language version (and warn about it).
+
 ### Changed
 - prepare for Kotlin 2.0.
 - rename `Unix` common source set to `Nix`. **BREAKING CHANGE!**

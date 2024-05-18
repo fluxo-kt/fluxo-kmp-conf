@@ -28,6 +28,13 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         lang = api
         api = null
     }
+    if (api != null && lang != null && api > lang) {
+        project.logger.w(
+            "Kotlin API version is downgraded from $api to $lang" +
+                ", as it can't be greater than the language version!"
+        )
+        api = null
+    }
 
     // TODO: Detect if JVM toolchains are already enabled in the project.
     val jvmToolchain = setupJvmToolchain
