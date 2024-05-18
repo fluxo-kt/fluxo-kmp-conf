@@ -2,6 +2,11 @@
 @file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
+import fluxo.conf.impl.kotlin.KOTLIN_2_0
+import fluxo.log.w
+import org.gradle.api.Action
+import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
@@ -23,16 +28,29 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
         }
 
         compilations.configureEach {
-            kotlinOptions {
-                moduleKind = "es"
-                sourceMap = true
-                metaInfo = true
+            // Fallback for Kotlin versions before 2.0
+            try {
+                @Suppress("DEPRECATION")
+                kotlinOptions {
+                    moduleKind = "es"
+                    sourceMap = true
+                    try {
+                        useEsClasses = true
+                    } catch (_: Error) {
+                    }
+                }
+            } catch (_: Throwable) {
+            }
+
+            compileTaskProvider.configure {
                 try {
-                    useEsClasses = true
-                } catch (_: Error) {
+                    compilerOptions(JsConfAction)
+                } catch (e: Throwable) {
+                    logger.w("Failed to set up JS compilerOptions: $e", e)
                 }
             }
         }
+
         try {
             useEsModules()
         } catch (_: Error) {
@@ -56,18 +74,33 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
                 testTimeout()
             }
         }
-        // Apply Binaryen optimizer to the WASM target
-        applyBinaryen()
+        // Apply Binaryen optimizer to the WASM target.
+        if (KotlinVersion.CURRENT < KOTLIN_2_0) {
+            // Binaryen is enabled by default in Kotlin 2.0.
+            applyBinaryen()
+        }
     } else {
+        // KotlinWasmTargetDsl is incomplete before the Kotlin 2.0
         try {
             @Suppress("ControlFlowWithEmptyBody")
             if (this is KotlinWasmTargetDsl) {
+                // Binaryen is enabled by default in Kotlin 2.0.
+                // applyBinaryen()
+
                 // TODO: Uncomment once compiled for Kotlin 2.0
-                // Apply Binaryen optimizer to the WASM target
-//                applyBinaryen()
-//
-//                binaries.executable()
+                // binaries.executable()
             }
+        } catch (_: Error) {
+        }
+    }
+}
+
+private object JsConfAction : Action<KotlinJsCompilerOptions> {
+    override fun execute(o: KotlinJsCompilerOptions) {
+        o.moduleKind.set(JsModuleKind.MODULE_ES)
+        o.sourceMap.set(true)
+        try {
+            o.useEsClasses.set(true)
         } catch (_: Error) {
         }
     }

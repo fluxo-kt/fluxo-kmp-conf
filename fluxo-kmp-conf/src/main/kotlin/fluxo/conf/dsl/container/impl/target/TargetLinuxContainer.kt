@@ -14,7 +14,7 @@ internal abstract class TargetLinuxContainer<T : KNT>(
     context: ContainerContext,
     name: String,
 ) : KmpTargetContainerImpl<T>(context, name, LINUX_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.Unix.Linux<T>,
+    KmpTargetContainerImpl.NonJvm.Native.Nix.Linux<T>,
     LinuxTarget<T> {
 
     interface Configure : LinuxTarget.Configure, ContainerHolderAware {
@@ -31,16 +31,6 @@ internal abstract class TargetLinuxContainer<T : KNT>(
         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
         override fun linuxArm32Hfp(targetName: String, configure: LinuxTarget<KNT>.() -> Unit) {
             holder.configure(targetName, ::Arm32Hfp, KmpTargetCode.LINUX_ARM32_HFP, configure)
-        }
-
-        @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun linuxMips32(targetName: String, configure: LinuxTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Mips32, KmpTargetCode.LINUX_MIPS32, configure)
-        }
-
-        @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun linuxMipsel32(targetName: String, configure: LinuxTarget<KNT>.() -> Unit) {
-            holder.configure(targetName, ::Mipsel32, KmpTargetCode.LINUX_MIPSEL32, configure)
         }
     }
 
@@ -63,21 +53,5 @@ internal abstract class TargetLinuxContainer<T : KNT>(
 
         @Suppress("DEPRECATION")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxArm32Hfp)
-    }
-
-    @Deprecated(DEPRECATED_TARGET_MSG)
-    class Mips32(context: ContainerContext, targetName: String) :
-        TargetLinuxContainer<KNT>(context, targetName) {
-
-        @Suppress("DEPRECATION", "DEPRECATION_ERROR", "KotlinRedundantDiagnosticSuppress")
-        override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxMips32)
-    }
-
-    @Deprecated(DEPRECATED_TARGET_MSG)
-    class Mipsel32(context: ContainerContext, targetName: String) :
-        TargetLinuxContainer<KNT>(context, targetName) {
-
-        @Suppress("DEPRECATION", "DEPRECATION_ERROR", "KotlinRedundantDiagnosticSuppress")
-        override fun KotlinMultiplatformExtension.createTarget() = createTarget(::linuxMipsel32)
     }
 }

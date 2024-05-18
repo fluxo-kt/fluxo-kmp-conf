@@ -1,7 +1,6 @@
 package fluxo.conf.dsl.container.target
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
-import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import fluxo.conf.impl.EMPTY_FUN
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests as KNTST
@@ -38,12 +37,6 @@ public interface AppleWatchosTarget<out T : KotlinNativeTarget> : KotlinTargetCo
 
         public fun watchosX64(
             targetName: String = "watchosX64",
-            configure: AppleWatchosTarget<KNTST>.() -> Unit = EMPTY_FUN,
-        )
-
-        @Deprecated(message = DEPRECATED_TARGET_MSG)
-        public fun watchosX86(
-            targetName: String = "watchosX86",
             configure: AppleWatchosTarget<KNTST>.() -> Unit = EMPTY_FUN,
         )
 

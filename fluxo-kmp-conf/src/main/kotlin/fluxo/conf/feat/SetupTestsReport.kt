@@ -168,7 +168,6 @@ private fun nativeFamilyFromString(platform: String?): Family = when {
 
     platform.equals("android", ignoreCase = true) -> Family.ANDROID
     platform.equals("linux", ignoreCase = true) -> Family.LINUX
-    platform.equals("wasm", ignoreCase = true) -> Family.WASM
 
     platform.equals("mingw", ignoreCase = true) ||
         platform.equals("win", ignoreCase = true) ||

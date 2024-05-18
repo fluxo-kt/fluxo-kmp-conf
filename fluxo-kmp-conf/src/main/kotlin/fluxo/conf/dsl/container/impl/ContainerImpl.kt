@@ -73,8 +73,6 @@ internal abstract class ContainerImpl(
 
         internal const val MINGW_SORT_ORDER: Byte = 51
 
-        internal const val WASM_NATIVE_SORT_ORDER: Byte = 61
-
         internal const val CUSTOM_SORT_ORDER: Byte = 101
 
         // endregion

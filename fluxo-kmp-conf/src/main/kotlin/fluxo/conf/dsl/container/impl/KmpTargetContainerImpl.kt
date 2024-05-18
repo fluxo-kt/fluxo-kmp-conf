@@ -9,11 +9,10 @@ import commonLinux
 import commonMacos
 import commonMingw
 import commonNative
+import commonNix
 import commonNonJvm
 import commonTvos
-import commonUnix
 import commonWasm
-import commonWasmNative
 import commonWatchos
 import dependsOn
 import fluxo.conf.impl.set
@@ -151,10 +150,10 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 
             interface AndroidNative : Native<KotlinNativeTarget>
 
-            interface Unix<T : KotlinNativeTarget> : Native<T> {
+            interface Nix<T : KotlinNativeTarget> : Native<T> {
 
                 companion object {
-                    const val UNIX = "unix"
+                    const val NIX = "nix"
                 }
 
                 override fun setupParentSourceSet(
@@ -162,14 +161,14 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     child: SourceSetBundle,
                 ) {
                     if (!allowManualHierarchy) return
-                    val bundle = k.commonUnix
+                    val bundle = k.commonNix
                     @Suppress("DEPRECATION")
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)
                 }
 
 
-                interface Apple<T : KotlinNativeTarget> : Unix<T> {
+                interface Apple<T : KotlinNativeTarget> : Nix<T> {
 
                     companion object {
                         const val APPLE = "apple"
@@ -256,7 +255,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     }
                 }
 
-                interface Linux<T : KotlinNativeTarget> : Unix<T> {
+                interface Linux<T : KotlinNativeTarget> : Nix<T> {
                     companion object {
                         const val LINUX = "linux"
                     }
@@ -285,24 +284,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                 ) {
                     if (!allowManualHierarchy) return
                     val bundle = k.commonMingw
-                    @Suppress("DEPRECATION")
-                    child dependsOn bundle
-                    super.setupParentSourceSet(k, bundle)
-                }
-            }
-
-            interface WasmNative : Native<KotlinNativeTarget> {
-                companion object {
-                    const val WASM_NATIVE = "wasmNative"
-                }
-
-                override fun setupParentSourceSet(
-                    k: KotlinMultiplatformExtension,
-                    child: SourceSetBundle,
-                ) {
-                    if (!allowManualHierarchy) return
-                    @Suppress("DEPRECATION")
-                    val bundle = k.commonWasmNative
                     @Suppress("DEPRECATION")
                     child dependsOn bundle
                     super.setupParentSourceSet(k, bundle)

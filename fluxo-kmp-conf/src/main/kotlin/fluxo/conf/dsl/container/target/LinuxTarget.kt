@@ -31,17 +31,5 @@ public interface LinuxTarget<out T : KotlinNativeTarget> : KotlinTargetContainer
             targetName: String = "linuxArm32Hfp",
             configure: LinuxTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
         )
-
-        @Deprecated(DEPRECATED_TARGET_MSG)
-        public fun linuxMips32(
-            targetName: String = "linuxMips32",
-            configure: LinuxTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
-        )
-
-        @Deprecated(DEPRECATED_TARGET_MSG)
-        public fun linuxMipsel32(
-            targetName: String = "linuxMipsel32",
-            configure: LinuxTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
-        )
     }
 }

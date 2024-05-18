@@ -18,7 +18,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     val context = ctx
     val pluginVersion = context.kotlinPluginVersion
     val coreLibs = kotlinCoreLibraries
-        ?.takeIf { it.isNotBlank() && it != pluginVersion.toString() }
+        ?.takeIf { it.isNotBlank() && it != "0" && it != pluginVersion.toString() }
         ?: k.coreLibrariesVersion
 
     // Note: apiVersion can't be greater than languageVersion!

@@ -2,7 +2,6 @@
 @file:JvmName("Fkc")
 @file:JvmMultifileClass
 
-import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm.Companion.ANDROID
 import fluxo.conf.impl.compileOnlyAndLog
@@ -21,7 +20,6 @@ import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
-import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -79,43 +77,37 @@ public val KotlinSourceSetContainer.commonWasm: SourceSetBundle
 public val KotlinSourceSetContainer.commonNative: SourceSetBundle
     get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.NATIVE)
 
-/** Parent [SourceSetBundle] for all Unix-based targets (Darwin/Apple, Linux) */
-public val KotlinSourceSetContainer.commonUnix: SourceSetBundle
-    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Unix.UNIX)
+/** Parent [SourceSetBundle] for all unix-like targets (Darwin/Apple, Linux, AndroidNative) */
+public val KotlinSourceSetContainer.commonNix: SourceSetBundle
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.NIX)
 
 /** Parent [SourceSetBundle] for all Darwin/Apple-based targets (iOS, macOS, tvOS, watchOS) */
 public val KotlinSourceSetContainer.commonApple: SourceSetBundle
-    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.APPLE)
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.Apple.APPLE)
 
 /** Parent [SourceSetBundle] for all iOS targets */
 public val KotlinSourceSetContainer.commonIos: SourceSetBundle
-    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Ios.IOS)
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.Apple.Ios.IOS)
 
 /** Parent [SourceSetBundle] for all macOS targets */
 public val KotlinSourceSetContainer.commonMacos: SourceSetBundle
-    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Macos.MACOS)
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.Apple.Macos.MACOS)
 
 /** Parent [SourceSetBundle] for all tvOS targets */
 public val KotlinSourceSetContainer.commonTvos: SourceSetBundle
-    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Tvos.TVOS)
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.Apple.Tvos.TVOS)
 
 /** Parent [SourceSetBundle] for all watchOS targets */
 public val KotlinSourceSetContainer.commonWatchos: SourceSetBundle
-    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Watchos.WATCHOS)
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.Apple.Watchos.WATCHOS)
 
 /** Parent [SourceSetBundle] for all Linux targets */
 public val KotlinSourceSetContainer.commonLinux: SourceSetBundle
-    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Unix.Linux.LINUX)
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.Linux.LINUX)
 
 /** Parent [SourceSetBundle] for all MinGW/Win targets */
 public val KotlinSourceSetContainer.commonMingw: SourceSetBundle
     get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Mingw.MINGW)
-
-/** Parent [SourceSetBundle] for all WASM/Native targets */
-@Deprecated(KmpTargetCode.DEPRECATED_TARGET_MSG)
-@Suppress("DeprecatedCallableAddReplaceWith")
-public val KotlinSourceSetContainer.commonWasmNative: SourceSetBundle
-    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.WasmNative.WASM_NATIVE)
 
 // endregion
 
@@ -169,10 +161,6 @@ public val <E> E.mingwSet: Set<SourceSetBundle>
 public val <E> E.androidNativeSet: Set<SourceSetBundle>
   where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.ANDROID)
-
-public val <E> E.wasmNativeSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
-    get() = nativeSourceSets(Family.WASM)
 
 
 /** All Apple (Darwin) targets */
@@ -382,14 +370,9 @@ public fun <E> E.commonCompileOnly(
     addConstraint: Boolean = true,
 ) where E : KotlinSourceSetContainer, E : KotlinTargetsContainer {
     val p = try {
-        project ?: targets.firstOrNull()?.project ?: when (this) {
-            is KotlinTopLevelExtension -> {
-                @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-                this.project
-            }
-
-            else -> throw NullPointerException("Please, provide project")
-        }
+        project
+            ?: targets.firstOrNull()?.project
+            ?: throw NullPointerException("Please, provide project")
     } catch (e: Throwable) {
         throw GradleException(
           "Unable to add common compileOnly dependency '$dependencyNotation': $e",

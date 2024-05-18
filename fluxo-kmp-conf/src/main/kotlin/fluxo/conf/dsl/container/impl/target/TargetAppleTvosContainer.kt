@@ -14,7 +14,7 @@ internal abstract class TargetAppleTvosContainer<T : KNT>(
     context: ContainerContext,
     name: String,
 ) : KmpTargetContainerImpl<T>(context, name, APPLE_TVOS_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Tvos<T>,
+    KmpTargetContainerImpl.NonJvm.Native.Nix.Apple.Tvos<T>,
     AppleTvosTarget<T> {
 
     interface Configure : AppleTvosTarget.Configure, ContainerHolderAware {

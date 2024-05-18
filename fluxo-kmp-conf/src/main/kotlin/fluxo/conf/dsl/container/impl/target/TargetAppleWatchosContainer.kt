@@ -3,7 +3,6 @@ package fluxo.conf.dsl.container.impl.target
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
 import fluxo.conf.dsl.container.impl.KmpTargetCode
-import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import fluxo.conf.dsl.container.impl.KmpTargetCode.WATCHOS_SIMULATOR_ARM64
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.AppleWatchosTarget
@@ -18,7 +17,7 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
     context: ContainerContext,
     name: String,
 ) : KmpTargetContainerImpl<T>(context, name, APPLE_WATCHOS_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Watchos<T>,
+    KmpTargetContainerImpl.NonJvm.Native.Nix.Apple.Watchos<T>,
     AppleWatchosTarget<T> {
 
     interface Configure : AppleWatchosTarget.Configure, ContainerHolderAware {
@@ -77,14 +76,6 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
             holder.configure(targetName, ::X64, KmpTargetCode.WATCHOS_X64, configure)
         }
 
-        @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun watchosX86(
-            targetName: String,
-            configure: AppleWatchosTarget<KNTS>.() -> Unit,
-        ) {
-            holder.configure(targetName, ::X86, KmpTargetCode.WATCHOS_X86, configure)
-        }
-
         override fun watchosSimulatorArm64(
             targetName: String,
             configure: AppleWatchosTarget<KNTS>.() -> Unit,
@@ -117,14 +108,6 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
         TargetAppleWatchosContainer<KNTS>(context, targetName) {
 
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::watchosX64)
-    }
-
-    @Deprecated(DEPRECATED_TARGET_MSG)
-    class X86(context: ContainerContext, targetName: String) :
-        TargetAppleWatchosContainer<KNTS>(context, targetName) {
-
-        @Suppress("DEPRECATION", "DEPRECATION_ERROR", "KotlinRedundantDiagnosticSuppress")
-        override fun KotlinMultiplatformExtension.createTarget() = createTarget(::watchosX86)
     }
 
     class SimulatorArm64(context: ContainerContext, targetName: String) :

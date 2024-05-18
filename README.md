@@ -81,20 +81,14 @@ pluginManagement {
    |     '-- android
    '-- nonJvm
          |-- commonJs
-            |-- js
-            '-- commonWasm (unstable, may be not available)
-                |-- wasmJs
-                '-- wasmWasi
+         |  |-- js
+         |  '-- commonWasm (unstable, may be not available)
+         |      |-- wasmJs
+         |      '-- wasmWasi (experimental)
          '-- native
-               |-- androidNative (tier 3)
-               |     |-- androidNativeArm32
-               |     |-- androidNativeArm64
-               |     |-- androidNativeX64
-               |     '-- androidNativeX86
-               |-- unix
+               |-- nix (unix-like systems)
                |     |-- apple
                |     |     |-- ios
-               |     |     |     |-- iosArm32 (deprecated)
                |     |     |     |-- iosArm64
                |     |     |     |-- iosX64
                |     |     |     '-- iosSimulatorArm64
@@ -110,19 +104,18 @@ pluginManagement {
                |     |           |-- watchosArm64
                |     |           |-- watchosDeviceArm64 (tier 3)
                |     |           |-- watchosX64
-               |     |           |-- watchosX86 (deprecated)
                |     |           '-- watchosSimulatorArm64
-               |     '-- linux
-               |           |-- linuxArm32Hfp (deprecated)
-               |           |-- linuxArm64
-               |           |-- linuxMips32 (deprecated)
-               |           |-- linuxMipsel32
-               |           '-- linuxX64 (deprecated)
-               |-- mingw
-               |     |-- mingwX64
-               |     '-- mingwX86 (deprecated)
-               '-- wasmNative
-                     '-- wasm32 (deprecated)
+               |     |-- linux
+               |     |     |-- linuxArm32Hfp (deprecated)
+               |     |     |-- linuxArm64
+               |     |     '-- linuxX64
+               |     '-- androidNative (tier 3, can has limited set of POSIX APIs)
+               |          |-- androidNativeArm32
+               |          |-- androidNativeArm64
+               |          |-- androidNativeX64
+               |          '-- androidNativeX86
+               '-- mingw (Windows with limited set of POSIX APIs)
+                     |-- mingwX64
 ```
 
 

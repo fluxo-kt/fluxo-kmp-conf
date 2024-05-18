@@ -101,9 +101,6 @@ private fun Project.printKotlinTargetsInfo() {
                 // source set specific to this compilation
                 compilation.kotlinSourceSets
 
-                compilation.compilerOptions.options
-                compilation.kotlinOptions
-
                 // List of compilation, which compiled outputs are used.
                 // Associating compilations establishes internal visibility between them.
                 compilation.associatedCompilations

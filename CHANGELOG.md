@@ -5,6 +5,13 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Removed
+- delete deprecated Kotlin/Native targets, removed in Kotlin 2.0.
+
+### Changed
+- prepare for Kotlin 2.0.
+- rename `Unix` common source set to `Nix`. **BREAKING CHANGE!**
+
 ### Updated
 - build(deps): bump Gradle from _8.6_ to _8.8-rc-1_.
 - bump com.mikepenz.aboutlibraries to _11.1.4_.

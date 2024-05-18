@@ -1,13 +1,10 @@
 package fluxo.conf.dsl.container.target
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
-import fluxo.conf.dsl.container.impl.KmpTargetCode.Companion.DEPRECATED_TARGET_MSG
 import fluxo.conf.impl.EMPTY_FUN
 import iosCompat
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
-
-// FIXME: Public hierarchy of targets for easier configuration
 
 public interface AppleIosTarget<out T : KotlinNativeTarget> : KotlinTargetContainer<T> {
 
@@ -25,12 +22,6 @@ public interface AppleIosTarget<out T : KotlinNativeTarget> : KotlinTargetContai
             iosSimulatorArm64(configure = configure)
         }
 
-
-        @Deprecated(message = DEPRECATED_TARGET_MSG)
-        public fun iosArm32(
-            targetName: String = "iosArm32",
-            configure: AppleIosTarget<KotlinNativeTarget>.() -> Unit = EMPTY_FUN,
-        )
 
         public fun iosArm64(
             targetName: String = "iosArm64",

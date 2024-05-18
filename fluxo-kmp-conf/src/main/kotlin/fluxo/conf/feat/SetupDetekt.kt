@@ -387,7 +387,7 @@ private fun DetectedTaskPlatform?.toKmpTargetCodes(): Array<KmpTargetCode> {
         DetectedTaskPlatform.LINUX -> KmpTargetCode.LINUX
         DetectedTaskPlatform.MINGW -> KmpTargetCode.MINGW
         DetectedTaskPlatform.JS -> arrayOf(KmpTargetCode.JS)
-        DetectedTaskPlatform.WASM -> KmpTargetCode.COMMON_WASM + KmpTargetCode.WASM32
+        DetectedTaskPlatform.WASM -> KmpTargetCode.COMMON_WASM
         DetectedTaskPlatform.ANDROID -> arrayOf(KmpTargetCode.ANDROID)
         DetectedTaskPlatform.JVM -> arrayOf(KmpTargetCode.JVM)
         null, DetectedTaskPlatform.UNKNOWN -> arrayOf()

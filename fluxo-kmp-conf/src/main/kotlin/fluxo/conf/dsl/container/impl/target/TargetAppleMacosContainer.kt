@@ -12,7 +12,7 @@ internal abstract class TargetAppleMacosContainer(
     context: ContainerContext,
     name: String,
 ) : KmpTargetContainerImpl<KotlinNativeTargetWithHostTests>(context, name, APPLE_MACOS_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.Unix.Apple.Macos,
+    KmpTargetContainerImpl.NonJvm.Native.Nix.Apple.Macos,
     AppleMacosTarget {
 
     interface Configure : AppleMacosTarget.Configure, ContainerHolderAware {

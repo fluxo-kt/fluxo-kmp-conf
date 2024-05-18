@@ -17,7 +17,6 @@
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Shared obfuscation dictionaries</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget.Configure$// TODO: Detect applied plugin (lib/app) and use appropriate container?</ID>
-    <ID>ForbiddenComment:AppleIosTarget.kt$// FIXME: Public hierarchy of targets for easier configuration</ID>
     <ID>ForbiddenComment:ContainerImpl.kt$ContainerImpl$// TODO: Utilize version available from PluginDependency</ID>
     <ID>ForbiddenComment:DependencyAnalysisPlugin.kt$// TODO: no need to declare transitive dependencies for the final app module</ID>
     <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Allow to customize configurations auto-filtration</ID>

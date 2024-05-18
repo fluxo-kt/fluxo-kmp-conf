@@ -8,7 +8,6 @@ import fluxo.conf.dsl.container.target.AppleWatchosTarget
 import fluxo.conf.dsl.container.target.JsTarget
 import fluxo.conf.dsl.container.target.LinuxTarget
 import fluxo.conf.dsl.container.target.MingwTarget
-import fluxo.conf.dsl.container.target.WasmNativeTarget
 import fluxo.conf.dsl.container.target.WasmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -23,8 +22,7 @@ public interface KmpConfigurationContainerDsl :
     LinuxTarget.Configure,
     MingwTarget.Configure,
     WasmTarget.Configure,
-    AndroidNativeTarget.Configure,
-    WasmNativeTarget.Configure {
+    AndroidNativeTarget.Configure {
 
     /**
      * Executes the given [action] for the KMP module with any target enabled.
@@ -37,5 +35,7 @@ public interface KmpConfigurationContainerDsl :
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension.targetHierarchy
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetHierarchyDsl.default
      */
-    public fun allDefaultTargets()
+    public fun allDefaultTargets(wasmWasi: Boolean = ENABLE_WASM_WASI)
 }
+
+private const val ENABLE_WASM_WASI = false

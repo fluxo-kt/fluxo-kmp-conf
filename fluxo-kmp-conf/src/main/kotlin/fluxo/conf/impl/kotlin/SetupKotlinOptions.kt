@@ -152,11 +152,6 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             isJs = true
             isJvm = false
             compilerArgs.addAll(JS_OPTS)
-
-            if (conf.isApplication) {
-                // Don't generate .meta.js and .kjsm files with library metadata.
-                metaInfo = false
-            }
         }
 
         else -> {
@@ -323,9 +318,6 @@ private val LATEST_OPTS = arrayOf(
     // for all calls with lambdas, which can't be resolved without it.
     // The corresponding calls' declarations may not be marked with @BuilderInference.
     "-Xenable-builder-inference",
-
-    // Enable experimental language feature: effect system.
-    "-Xeffect-system",
 
     // Enable new experimental generic type inference algorithm.
     "-Xnew-inference",
