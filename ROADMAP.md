@@ -10,6 +10,22 @@
 <details>
   <summary>Show</summary>
 
+* https://github.com/ZacSweers/MoshiX/pull/553/files
+* https://github.com/liutikas/gradle-best-practices
+* https://github.com/nebula-plugins/gradle-lint-plugin
+* https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630
+* https://github.com/WasmEdge/WasmEdge?tab=readme-ov-file#license
+* https://github.com/eygraber/gradle-conventions/blob/master/conventions-detekt/src/main/kotlin/com/eygraber/conventions/detekt/register_detekt_task.kt
+* https://github.com/takahirom/roborazzi/issues/302#issuecomment-2115873251
+* Kover plugin integration and support
+* Code quality rules:
+  * `first()` on Flow (not `StateFlow` or at least `SharedFlow`) isdangerous and easily can lead to infinite suspension.
+  * Same for `Deffered.await()`, `select{}` with no timeout option, etc.
+* https://developers.google.com/android/guides/setup
+  * Show open-source licenses `com.google.android.gms:oss-licenses-plugin`
+  * Strict version checking `com.google.android.gms:strict-version-matcher-plugin`
+* Support `-Xconsistent-data-class-copy-visibility` for Kotlin 2.0.20
+  * https://youtrack.jetbrains.com/issue/KT-11914/Confusing-data-class-copy-with-private-constructor
 * Support auto detection if `-Xjdk-release` can be used. Fail only for release builds. Warn otherwise.
   * _If there's no `ct.sym` file in JDK but `-Xjdk-release` is used, the compiler will stop with an error. The only workaround in that case is to remove `-Xjdk-release`._
   * https://youtrack.jetbrains.com/issue/KT-29974#focus=Comments-27-9458958.0-0
