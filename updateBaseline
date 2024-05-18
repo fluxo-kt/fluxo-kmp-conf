@@ -1,35 +1,53 @@
 #!/bin/sh
 
+# Double quote to prevent globbing and word splitting.
+# shellcheck disable=SC2086
+
 ./gradlew --stop --info
+
+COMMON_TASKS="dependencyGuardBaseline detektBaselineMerge --continue"
+export GRADLE_OPTS="${GRADLE_OPTS} -Dorg.gradle.caching=false -Dkotlin.incremental=false -Dorg.gradle.logging.stacktrace=all"
+export CI=true
+export RELEASE=true
+EXIT_CODE=0
 
 echo ""
 echo "===================================="
 echo "======== RUN BASELINE TASKS ========"
 echo "===================================="
 
-# Append Gradle options to existing ones
-export GRADLE_OPTS="${GRADLE_OPTS} -Dorg.gradle.caching=false -Dkotlin.incremental=false -Dorg.gradle.logging.stacktrace=all"
-
+# Force re-run for all the tasks
 # -U: Refresh dependencies
-./gradlew dependencyGuardBaseline apiDump detektBaselineMerge -U --continue --rerun-tasks || exit 101
+#COMMON_TASKS="${COMMON_TASKS} --rerun-tasks -U"
+
+./gradlew apiDump ${COMMON_TASKS} --rerun-tasks || EXIT_CODE=101
 
 echo ""
 echo "=======> checks/gradle-plugin"
 cd checks/gradle-plugin || exit 102
 pwd
-./gradlew dependencyGuardBaseline apiDump detektBaselineMerge -U --continue || exit 103
+./gradlew apiDump ${COMMON_TASKS} || EXIT_CODE=103
 
 echo ""
 echo "=======> checks/kmp"
 cd ../kmp || exit 104
 pwd
-./gradlew dependencyGuardBaseline detektBaselineMerge kotlinUpgradeYarnLock -U --continue || exit 105
+./gradlew kotlinUpgradeYarnLock ${COMMON_TASKS} || EXIT_CODE=105
 
 echo ""
 echo "=======> checks/compose-desktop"
 cd ../compose-desktop || exit 106
 pwd
-./gradlew dependencyGuardBaseline detektBaselineMerge -U --continue || exit 107
+./gradlew ${COMMON_TASKS} || EXIT_CODE=107
+
 
 # Go back to root
 cd ../../ || exit 108
+
+if [ ${EXIT_CODE} -ne 0 ]; then
+  echo ""
+  echo "================================"
+  echo "== BASELINE TASKS FAILED: ${EXIT_CODE} =="
+  echo "================================"
+  exit ${EXIT_CODE}
+fi
