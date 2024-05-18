@@ -11,6 +11,11 @@ version = libs.versions.version.get()
 
 // FIXME: Find a way to deduplicate configuration between `self` and `plugin` modules.
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 kotlin {
     sourceSets.main {
         kotlin.srcDir("../$pluginDir/src/main/kotlin")
@@ -28,6 +33,7 @@ kotlin {
         )
         optIn.add("kotlin.contracts.ExperimentalContracts")
         suppressWarnings = true
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
 
