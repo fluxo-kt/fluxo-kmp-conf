@@ -121,6 +121,7 @@
     <ID>ForbiddenComment:SetupSpotless.kt$// TODO: Use ktlint directly?</ID>
     <ID>ForbiddenComment:SetupSpotless.kt$// TODO: read base settings from .editorconfig ?</ID>
     <ID>ForbiddenComment:SetupTestsReport.kt$// TODO: Support Gradle before 8.0 (set service parameter and usesService) ?</ID>
+    <ID>ForbiddenComment:SetupValidatePluginTasks.kt$// TODO: Multiset configuration</ID>
     <ID>ForbiddenComment:SetupVerification.kt$// TODO: Test separate ktlint setup with gradle plugin</ID>
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// FIXME: Warn on data classes in public API!</ID>
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: Optionally keep $EntriesMappings and $DefaultImpls classes</ID>

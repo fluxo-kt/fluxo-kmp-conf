@@ -61,8 +61,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
 
             if (isRootProject && !ctx.testsDisabled) {
                 afterEvaluate {
-                    val enableVerification = conf.enableVerification == true
-                    if (enableVerification && conf.enableSpotless == true) {
+                    if (conf.setupVerification && conf.enableSpotless == true) {
                         target.setupSpotless(ctx)
                     }
                 }

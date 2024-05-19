@@ -63,12 +63,12 @@ public interface FluxoConfigurationExtensionCommon {
      * @see enableSpotless
      * @see enableDetektCompilerPlugin
      */
-    public var setupVerification: Boolean?
+    public var setupVerification: Boolean
 
     /**
      * Alias for [setupVerification]
      */
-    public var enableVerification: Boolean?
+    public var enableVerification: Boolean
         get() = setupVerification
         set(value) {
             setupVerification = value

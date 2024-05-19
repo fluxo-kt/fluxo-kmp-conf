@@ -11,7 +11,6 @@
   <summary>Show</summary>
 
 * https://github.com/ZacSweers/MoshiX/pull/553/files
-* https://github.com/liutikas/gradle-best-practices
 * https://github.com/nebula-plugins/gradle-lint-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630
 * https://github.com/WasmEdge/WasmEdge?tab=readme-ov-file#license
@@ -55,6 +54,8 @@
   * https://github.com/gciatto/kt-math
 * Build Variants setup
   * https://docs.gradle.org/current/userguide/variant_attributes.html
+  * https://github.com/JetBrains/kotlin/blob/f6d2151/repo/gradle-build-conventions/buildsrc-compat/src/main/kotlin/GradleCommon.kt
+  * https://github.com/liutikas/gradle-best-practices
 * Compose improvements
   * compose-report-to-html
     * https://github.com/PatilShreyas/compose-report-to-html/releases/tag/v1.3.0
@@ -92,6 +93,7 @@
     * Also, warn on any `org.gradle.internal` usage because its is internal API.
     * https://docs.gradle.org/8.5/userguide/configuration_cache.html#config_cache:requirements
     * https://marcelkliemannel.com/articles/2022/common-gradle-plugin-mistakes-and-good-practices/
+    * https://github.com/liutikas/gradle-best-practices
 * Linting
   * https://github.com/jeremymailen/kotlinter-gradle
   * https://dev.to/aseemwangoo/supercharge-your-kotlin-project-2mcb

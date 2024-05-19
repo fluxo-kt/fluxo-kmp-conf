@@ -293,8 +293,8 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
     @get:Input
     val setupVerificationProp: Property<Boolean?>
-    override var setupVerification: Boolean?
-        get() = setupVerificationProp.orNull ?: parent?.setupVerification
+    override var setupVerification: Boolean
+        get() = setupVerificationProp.orNull ?: parent?.setupVerification ?: true
         set(value) = setupVerificationProp.set(value)
 
     @get:Input

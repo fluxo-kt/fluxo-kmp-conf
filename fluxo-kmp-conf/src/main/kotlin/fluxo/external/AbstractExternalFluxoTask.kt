@@ -11,7 +11,9 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.LocalState
 import org.gradle.process.ExecOperations
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(because = "External tasks are not cacheable by default")
 internal abstract class AbstractExternalFluxoTask : DefaultTask() {
 
     @get:Inject

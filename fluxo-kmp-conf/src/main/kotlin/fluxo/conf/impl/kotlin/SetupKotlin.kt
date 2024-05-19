@@ -19,6 +19,7 @@ import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.builderMethod
+import fluxo.conf.feat.setupGradlePublishPlugin
 import fluxo.conf.feat.setupVerification
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
@@ -86,7 +87,7 @@ internal fun configureKotlinJvm(
         project.setupSamWithReceiver(ctx)
 
         // Main plugin for Gradle plugins authoring and publication
-        project.setupGradlePublishPlugin(ctx)
+        project.setupGradlePublishPlugin(conf)
     }
 
     // Add all plugins first, for configuring in next steps.
@@ -294,7 +295,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
         sourceSets[TEST_SOURCE_SET_NAME].kotlin.srcDir("build/generated/ksp/test/kotlin")
     }
 
-    if (conf.setupVerification != false && !ctx.testsDisabled) {
+    if (conf.setupVerification && !ctx.testsDisabled) {
         project.setupVerification(conf)
     }
 }

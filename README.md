@@ -115,7 +115,7 @@ pluginManagement {
                |          |-- androidNativeX64
                |          '-- androidNativeX86
                '-- mingw (Windows with limited set of POSIX APIs)
-                     |-- mingwX64
+                     '-- mingwX64
 ```
 
 
