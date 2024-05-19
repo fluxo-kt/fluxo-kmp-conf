@@ -16,6 +16,9 @@
 * https://github.com/WasmEdge/WasmEdge?tab=readme-ov-file#license
 * https://github.com/eygraber/gradle-conventions/blob/master/conventions-detekt/src/main/kotlin/com/eygraber/conventions/detekt/register_detekt_task.kt
 * https://github.com/takahirom/roborazzi/issues/302#issuecomment-2115873251
+* https://github.com/JakeWharton/kmp-missing-targets
+* https://github.com/eygraber/gradle-conventions
+  * https://github.com/eygraber/gradle-conventions/pull/367/files#diff-1534017ba077dda735977a1ef95679ee14e382237106d48a4ba8df35d82c1a89
 * Kover plugin integration and support
 * Code quality rules:
   * `first()` on Flow (not `StateFlow` or at least `SharedFlow`) isdangerous and easily can lead to infinite suspension.
@@ -105,7 +108,6 @@
     * https://github.com/tnorbye/kdoc-formatter
 * https://github.com/ashtanko/kotlin-app-template/tree/main
   * Github Action + git-hook + Issues Template
-*
   * https://github.com/danger/kotlin
 * __Infrastructure plugins__
   * https://github.com/slackhq/slack-gradle-plugin/
@@ -227,6 +229,7 @@
 * !! https://github.com/gmazzo/gradle-android-manifest-lock-plugin
 * Shadowing + minification
   * https://github.com/GradleUp/gr8 (Gr8 = Gradle + R8)
+  * https://github.com/nbadal/ktlint-intellij-plugin/pull/501/files
   * Task used by the UI and Android tests to check minification results and keep track of binary size.
     * https://github.com/lowasser/kotlinx.coroutines/blob/fcaa6df/buildSrc/src/main/kotlin/RunR8.kt
   * A Gradle plugin that infers Proguard/R8 keep rules for androidTest sources.

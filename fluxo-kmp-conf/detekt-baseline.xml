@@ -4,7 +4,6 @@
   <CurrentIssues>
     <ID>ArgumentListWrapping:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>CyclomaticComplexMethod:AbstractShrinkerTask.kt$AbstractShrinkerTask$@Suppress("LongMethod") private fun writeRootConfiguration( file: File, reportsDir: Directory, jarsConfigurationFile: File, shrinker: JvmShrinker, )</ID>
-    <ID>CyclomaticComplexMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Add automatic main class detection from the main jar manifest</ID>
@@ -35,6 +34,7 @@
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// FIXME: Detekt and use here if CI (GitHub) debug logs are enabled.</ID>
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.</ID>
     <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: GC stats</ID>
+    <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// FIXME: Prepare lazy APIs to avoid afterEvaluate in such cases.</ID>
     <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
     <ID>ForbiddenComment:FluxoPublicationConfig.kt$// TODO: Make an immutable resulting class</ID>
     <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt$// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
@@ -61,6 +61,7 @@
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Support Kotlin bundled Compose compiler since Kotlin 2.0.0-RC2.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Support bundletool codeTransparency here.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
+    <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Can be `config/lint/lint.xml`?</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
@@ -136,7 +137,6 @@
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>Indentation:MultiplatformSourceSetUtils.kt$ </ID>
-    <ID>LongMethod:SetupAndroidLint.kt$internal fun Project.setupAndroidLint( conf: FluxoConfigurationExtensionImpl, ignoredBuildTypes: List&lt;String>, ignoredFlavors: List&lt;String>, )</ID>
     <ID>LongMethod:SetupPublication.kt$context(FluxoKmpConfContext) private fun Project.setupPublicationRepositoryAndSigning( config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>

@@ -11,6 +11,7 @@
 ### Added
 - auto downgrade Kotlin API version when it's greater than the language version (and warn about it).
 - set up `validatePlugins` task for Gradle plugins. **BREAKING CHANGE!**
+- enable AndroidLint checks for all projects by default.
 
 ### Changed
 - prepare for Kotlin 2.0.

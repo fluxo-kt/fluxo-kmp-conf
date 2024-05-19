@@ -295,9 +295,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
         sourceSets[TEST_SOURCE_SET_NAME].kotlin.srcDir("build/generated/ksp/test/kotlin")
     }
 
-    if (conf.setupVerification && !ctx.testsDisabled) {
-        project.setupVerification(conf)
-    }
+    project.setupVerification(conf)
 }
 
 // FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions

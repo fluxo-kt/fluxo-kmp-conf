@@ -241,6 +241,12 @@ fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", ve
 
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 
+# https://mvnrepository.com/artifact/com.android.lint/com.android.lint.gradle.plugin?repo=google
+# https://maven.google.com/web/index.html#com.android.lint:com.android.lint.gradle.plugin
+# WARN: Do not forget to update the 'android.experimental.lint.version'
+#  in all `gradle.properties` files!
+android-lint = { id = "com.android.lint", version = "8.6.0-alpha02" }
+
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

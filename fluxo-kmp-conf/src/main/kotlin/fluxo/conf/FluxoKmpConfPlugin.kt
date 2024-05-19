@@ -60,8 +60,9 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             )
 
             if (isRootProject && !ctx.testsDisabled) {
+                // FIXME: Prepare lazy APIs to avoid afterEvaluate in such cases.
                 afterEvaluate {
-                    if (conf.setupVerification && conf.enableSpotless == true) {
+                    if (conf.setupVerification && conf.enableSpotless) {
                         target.setupSpotless(ctx)
                     }
                 }

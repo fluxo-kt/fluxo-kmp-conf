@@ -4,6 +4,14 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
+        google {
+            content {
+                includeGroup("com.android")
+                includeGroupByRegex("androidx\\..*")
+                includeGroupByRegex("com\\.android\\..*")
+                includeGroupByRegex("com\\.google\\..*")
+            }
+        }
         gradlePluginPortal()
     }
 

@@ -225,7 +225,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon
 	public abstract fun getEnableBuildConfig ()Z
 	public abstract fun getEnableDetektAutoCorrect ()Ljava/lang/Boolean;
 	public abstract fun getEnableDetektCompilerPlugin ()Ljava/lang/Boolean;
-	public abstract fun getEnableSpotless ()Ljava/lang/Boolean;
+	public abstract fun getEnableSpotless ()Z
 	public fun getEnableVerification ()Z
 	public abstract fun getSetupDependencies ()Z
 	public abstract fun getSetupKnownBoms ()Z
@@ -235,7 +235,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon
 	public abstract fun setEnableBuildConfig (Z)V
 	public abstract fun setEnableDetektAutoCorrect (Ljava/lang/Boolean;)V
 	public abstract fun setEnableDetektCompilerPlugin (Ljava/lang/Boolean;)V
-	public abstract fun setEnableSpotless (Ljava/lang/Boolean;)V
+	public abstract fun setEnableSpotless (Z)V
 	public fun setEnableVerification (Z)V
 	public abstract fun setSetupDependencies (Z)V
 	public abstract fun setSetupKnownBoms (Z)V

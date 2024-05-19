@@ -311,8 +311,8 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
     @get:Input
     val enableSpotlessProp: Property<Boolean?>
-    override var enableSpotless: Boolean?
-        get() = enableSpotlessProp.orNull ?: parent?.enableSpotless
+    override var enableSpotless: Boolean
+        get() = enableSpotlessProp.orNull ?: parent?.enableSpotless ?: false
         set(value) = enableSpotlessProp.set(value)
 
 

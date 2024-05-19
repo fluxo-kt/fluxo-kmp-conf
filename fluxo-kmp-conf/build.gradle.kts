@@ -44,14 +44,15 @@ fkcSetupGradlePlugin(
     },
 ) {
     githubProject = "fluxo-kt/fluxo-kmp-conf"
-    enableSpotless = true
     setupCoroutines = false
     experimentalLatestCompilation = true
 
     // Check shrinking possibilities with `R8(full)` chain,
     // but don't replace the outgoing jar.
     replaceOutgoingJar = false
-    shrink { fullMode = true }
+    shrink {
+        fullMode = true
+    }
 
     publicationConfig {
         developerId = "amal"

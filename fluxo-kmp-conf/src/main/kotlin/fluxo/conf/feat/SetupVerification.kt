@@ -3,6 +3,7 @@
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
+import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
@@ -24,16 +25,34 @@ internal fun FluxoKmpConfContext.setupVerificationRoot() {
 }
 
 internal fun Project.setupVerification(conf: FluxoConfigurationExtensionImpl) {
-    val context = conf.ctx
-    if (context.testsDisabled && !isRootProject && conf.enableSpotless == true) {
-        setupSpotless(context)
-    }
+    val ctx = conf.ctx
+    val testsDisabled = !conf.setupVerification || ctx.testsDisabled
 
     val ignoredBuildTypes = conf.noVerificationBuildTypes
     val ignoredFlavors = conf.noVerificationFlavors
-    setupDetekt(conf, ignoredBuildTypes, ignoredFlavors)
+    setupDetekt(conf, ignoredBuildTypes, ignoredFlavors, testsDisabled)
 
     withAnyPlugin(ANDROID_LIB_PLUGIN_ID, ANDROID_APP_PLUGIN_ID) {
-        setupAndroidLint(conf, ignoredBuildTypes, ignoredFlavors)
+        setupAndroidLint(conf, ignoredBuildTypes, ignoredFlavors, testsDisabled)
+    }
+
+    if (testsDisabled) {
+        return
+    }
+
+    if (!isRootProject && conf.enableSpotless) {
+        setupSpotless(ctx)
+    }
+
+    when (conf.mode) {
+        ConfigurationType.KOTLIN_MULTIPLATFORM,
+        ConfigurationType.KOTLIN_JVM,
+        ConfigurationType.GRADLE_PLUGIN,
+        ConfigurationType.IDEA_PLUGIN -> {
+            setupAndroidLintPluginWithNoAndroid(conf)
+        }
+        else -> {
+            // Do nothing
+        }
     }
 }

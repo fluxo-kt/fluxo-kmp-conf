@@ -78,9 +78,9 @@ internal fun Project.setupDetekt(
     conf: FluxoConfigurationExtensionImpl,
     ignoredBuildTypes: List<String>,
     ignoredFlavors: List<String>,
+    testsDisabled: Boolean,
 ) {
     val context = conf.ctx
-    val testsDisabled = context.testsDisabled
     if (!testsDisabled) {
         logger.l("setup Detekt")
 

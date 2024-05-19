@@ -113,7 +113,7 @@ public interface FluxoConfigurationExtensionCommon {
      *
      * @see setupVerification
      */
-    public var enableSpotless: Boolean?
+    public var enableSpotless: Boolean
 
     // endregion
 }

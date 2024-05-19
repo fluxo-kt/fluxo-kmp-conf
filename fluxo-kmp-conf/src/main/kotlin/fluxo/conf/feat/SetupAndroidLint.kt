@@ -1,6 +1,7 @@
 package fluxo.conf.feat
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.Lint
 import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import com.android.build.gradle.internal.lint.AndroidLintTask
 import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
@@ -44,44 +45,27 @@ internal fun FluxoKmpConfContext.registerLintMergeRootTask(): TaskProvider<Repor
 
 internal fun Project.setupAndroidLint(
     conf: FluxoConfigurationExtensionImpl,
-    ignoredBuildTypes: List<String>,
-    ignoredFlavors: List<String>,
+    ignoredBuildTypes: List<String> = emptyList(),
+    ignoredFlavors: List<String> = emptyList(),
+    testsDisabled: Boolean = !conf.setupVerification || conf.ctx.testsDisabled,
+    notForAndroid: Boolean = false,
 ) {
-    val context = conf.ctx
-    val disableLint = context.testsDisabled || !context.isTargetEnabled(KmpTargetCode.ANDROID)
-    configureExtension(ANDROID_EXT_NAME, CommonExtension::class) {
-        lint {
-            if (SHOW_DEBUG_LOGS) {
-                logger.v("Setup Android Lint (disable=$disableLint)")
+    val ctx = conf.ctx
+    val disableLint = testsDisabled || !ctx.isTargetEnabled(KmpTargetCode.ANDROID)
+    if (notForAndroid) {
+        configureExtension<Lint>(LINT_EXTENSION_NAME) {
+            configureAndroidLintExtension(conf)
+        }
+    } else {
+        configureExtension(ANDROID_EXT_NAME, CommonExtension::class) {
+            lint {
+                configureAndroidLintExtension(conf, disableLint)
             }
-
-            sarifReport = !disableLint
-            htmlReport = !disableLint
-            textReport = !disableLint
-            xmlReport = false
-
-            // Use baseline only for CI checks, show all problems in local development.
-            // Don't use if file doesn't exist, and we're running the `check` task.
-            if (context.isCI || context.isRelease) {
-                val file = file("lint-baseline.xml")
-                if (file.exists() || CHECK_TASK_NAME !in context.startTaskNames) {
-                    baseline = file
-                }
-            }
-
-            abortOnError = false
-            absolutePaths = false
-            checkAllWarnings = !disableLint
-            checkDependencies = false
-            checkReleaseBuilds = !disableLint
-            explainIssues = false
-            noLines = true
-            warningsAsErrors = !disableLint
         }
     }
 
     if (!disableLint) {
-        val mergeLintTask = context.mergeLintTask
+        val mergeLintTask = ctx.mergeLintTask
         tasks.withType<AndroidLintTask> {
             reportLintVersion()
             val taskName = name
@@ -118,6 +102,50 @@ internal fun Project.setupAndroidLint(
     tasks.withType<AndroidLintTextOutputTask>(disableIgnoredVariants)
     tasks.withType<AndroidLintAnalysisTask>(disableIgnoredVariants)
     tasks.withType<AndroidLintTask>(disableIgnoredVariants)
+}
+
+internal fun Lint.configureAndroidLintExtension(
+    conf: FluxoConfigurationExtensionImpl,
+    disableLint: Boolean = false,
+) {
+    val project = conf.project
+
+    if (SHOW_DEBUG_LOGS) {
+        project.logger.v("Setup Android Lint (disable=$disableLint)")
+    }
+
+    sarifReport = !disableLint
+    htmlReport = !disableLint
+    textReport = !disableLint
+    xmlReport = false
+
+    // Use baseline only for CI checks, show all problems in local development.
+    // Don't use if file doesn't exist, and we're running the `check` task.
+    val ctx = conf.ctx
+    if (ctx.isCI || ctx.isRelease) {
+        val baselineFile = project.layout.projectDirectory.file("lint-baseline.xml").asFile
+        if (baselineFile.exists() || CHECK_TASK_NAME !in ctx.startTaskNames) {
+            baseline = baselineFile
+        }
+    }
+
+    // TODO: Can be `config/lint/lint.xml`?
+    val confFile = project.rootProject.layout.projectDirectory.file("config/lint.xml").asFile
+    if (confFile.exists()) {
+        lintConfig = confFile
+    }
+
+    // fatal += "KotlincFE10"
+    // disable += "UnknownIssueId"
+
+    abortOnError = false
+    absolutePaths = false
+    checkAllWarnings = !disableLint
+    checkDependencies = false
+    checkReleaseBuilds = !disableLint
+    explainIssues = false
+    noLines = true
+    warningsAsErrors = !disableLint
 }
 
 private fun Task.reportLintVersion() {
@@ -184,3 +212,6 @@ private fun Task.reportLintVersion(lintTool: LintTool?): Boolean {
 
 private val IS_VERSION_REPORTED = AtomicBoolean()
 
+
+/** @see com.android.build.api.dsl.Lint */
+private const val LINT_EXTENSION_NAME = "lint"

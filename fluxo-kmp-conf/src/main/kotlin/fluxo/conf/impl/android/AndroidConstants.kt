@@ -16,6 +16,8 @@ internal const val DEFAULT_ANDROID_COMPILE_SDK: Int = 34
 internal const val ANDROID_APP_PLUGIN_ID = "com.android.application"
 internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
 
+internal const val ANDROID_LINT_PLUGIN_ID = "com.android.lint"
+
 // https://developer.android.com/jetpack/androidx/releases/room#2.6.0-alpha02
 internal const val ANDROIDX_ROOM_PLUGIN_ID = "androidx.room"
 
