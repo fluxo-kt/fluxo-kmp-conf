@@ -3,10 +3,10 @@ package fluxo.conf.impl.kotlin
 import MAIN_SOURCE_SET_NAME
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.capitalizeAsciiOnly
+import fluxo.gradle.addToCheckAndTestDependencies
 import fluxo.log.e
 import fluxo.log.l
 import org.gradle.api.NamedDomainObjectContainer
-import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
@@ -67,9 +67,7 @@ private fun KCompilation.setupExperimentalLatestCompilation(
             "'$name' compilation set up (experimental compilation with latest features)",
         )
         defaultSourceSet.dependsOn(mainCompilation.defaultSourceSet)
-        project.tasks.named(CHECK_TASK_NAME) {
-            dependsOn(compileTaskProvider)
-        }
+        project.addToCheckAndTestDependencies(compileTaskProvider, checkOnly = true)
     }
 }
 

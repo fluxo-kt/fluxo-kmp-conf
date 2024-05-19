@@ -34,7 +34,7 @@ import isShrinkerDisabled
 import javax.inject.Inject
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
-import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
+import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import scmTag

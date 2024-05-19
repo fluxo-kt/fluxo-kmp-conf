@@ -6,6 +6,7 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks
 import fluxo.conf.impl.register
+import fluxo.gradle.addToCheckAndTestDependencies
 import fluxo.log.l
 import fluxo.log.w
 import fluxo.shrink.SHRINKER_KEEP_GEN_TASK_NAME
@@ -13,15 +14,11 @@ import fluxo.shrink.ShrinkerVerificationTestTask
 import fluxo.shrink.getShrinkerVerifyTaskName
 import fluxo.shrink.registerShrinkerKeepRulesGenTask
 import fluxo.shrink.registerShrinkerTask
-import org.gradle.api.Action
-import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFile
-import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 // FIXME: Create a marker task for the main processing chain with a stable name.
 
@@ -279,14 +276,10 @@ internal fun setupArtifactsProcessing(
     }
 
     if (processArtifacts && chainTailTasks.isNotEmpty()) {
-        tasks.named(CHECK_TASK_NAME) {
-            dependsOn(chainTailTasks)
-        }
+        p.addToCheckAndTestDependencies(chainTailTasks, checkOnly = true)
     }
     if (testChainArtifact) {
-        val bind = Action<Task> { dependsOn(testTasks) }
-        tasks.named(TEST_TASK_NAME, bind)
-        tasks.named(CHECK_TASK_NAME, bind)
+        p.addToCheckAndTestDependencies(testTasks)
     }
 }
 

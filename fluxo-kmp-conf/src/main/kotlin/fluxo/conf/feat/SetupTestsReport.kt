@@ -17,7 +17,7 @@ import fluxo.test.TestReportService
 import fluxo.test.TestReportsMergeTask
 import org.gradle.api.Action
 import org.gradle.api.Task
-import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
+import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestDescriptor

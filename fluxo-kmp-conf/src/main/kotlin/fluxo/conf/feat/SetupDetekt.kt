@@ -27,8 +27,8 @@ import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.api.internal.tasks.JvmConstants.TEST_TASK_NAME
 import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
