@@ -225,9 +225,8 @@ private fun FluxoKmpConfContext.getPluginIdAndVersion(
     var catalogPluginAlias: String? = null
     val libs = libs
 
-    val (provider, alias) = libs.p(catalogPluginIds)
+    val (p, alias) = libs.p(catalogPluginIds)
         ?: (libs.p(catalogPluginId) to catalogPluginId)
-    val p = provider?.orNull
     if (p != null) {
         val pId = p.pluginId
         if (pId != pluginId) {
@@ -244,7 +243,7 @@ private fun FluxoKmpConfContext.getPluginIdAndVersion(
 
         // Find actual plugin alias in the version catalog.
         for (pAlias in libs.gradle?.pluginAliases.orEmpty()) {
-            val pp = libs.p(pAlias)?.orNull
+            val pp = libs.p(pAlias)
             if (pp?.pluginId != id) {
                 continue
             }

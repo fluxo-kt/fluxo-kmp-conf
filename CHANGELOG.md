@@ -15,6 +15,7 @@
 ### Changed
 - prepare for Kotlin 2.0.
 - rename `Unix` common source set to `Nix`. **BREAKING CHANGE!**
+- parse fallback toml catalog for enabled plugins.
 
 ### Updated
 - build(deps): bump Gradle from _8.6_ to _8.8-rc-1_.

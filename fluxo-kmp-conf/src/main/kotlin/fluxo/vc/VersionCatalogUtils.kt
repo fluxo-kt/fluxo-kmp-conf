@@ -74,15 +74,27 @@ internal fun FluxoVersionCatalog.onBundle(
 
 // region Plugins
 
-internal fun FluxoVersionCatalog.p(alias: String?): Provider<PluginDependency>? =
-    if (!alias.isNullOrEmpty()) gradle?.findPlugin(alias)?.getOrNull() else null
+internal fun FluxoVersionCatalog.p(
+    alias: String?,
+    allowFallback: Boolean = true,
+): PluginDependency? {
+    if (!alias.isNullOrEmpty()) {
+        var p = gradle?.findPlugin(alias)?.getOrNull()?.orNull
+        if (p == null && allowFallback) {
+            p = fallback?.plugins?.get(alias)
+        }
+        return p
+    }
+    return null
+}
 
 internal fun FluxoVersionCatalog.p(
     aliases: Array<out String>?,
-): Pair<Provider<PluginDependency>, String>? {
+    allowFallback: Boolean = true,
+): Pair<PluginDependency, String>? {
     if (aliases != null) {
         for (alias in aliases) {
-            val pluginDep = p(alias)
+            val pluginDep = p(alias, allowFallback = allowFallback)
             if (pluginDep != null) {
                 return pluginDep to alias
             }

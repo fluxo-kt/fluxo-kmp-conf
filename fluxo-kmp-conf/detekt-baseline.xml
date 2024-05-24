@@ -131,7 +131,7 @@
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: should androidUnitTestDebug depend on androidUnitTest?</ID>
-    <ID>ForbiddenComment:TomlResultCatalog.kt$TomlResultCatalog$// TODO: Parse bundles and plugins</ID>
+    <ID>ForbiddenComment:TomlResultCatalog.kt$TomlResultCatalog$// TODO: Parse bundles</ID>
     <ID>ForbiddenComment:VerifyApiWithReflection.kt$// TODO: Check parent classes and interfaces.</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
