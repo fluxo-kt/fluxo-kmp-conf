@@ -6,7 +6,9 @@
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
 
-## [0.9.0] - 2024-05-25
+## [0.9.1] - 2024-05-25
+
+_**0.9.0** was skipped due to the release publication issues!_
 
 ### Removed
 - delete deprecated Kotlin/Native targets, removed in Kotlin 2.0.
@@ -274,7 +276,7 @@ _Stabilization release._
 
 ## Notes
 
-[0.9.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.9.0
+[0.9.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.9.1
 [0.8.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.8.1
 [0.8.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.8.0
 [0.7.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.7.0

@@ -9,7 +9,7 @@
 [versions]
 
 # WARNING: Remember to update the version in `README.md` examples!
-version = "0.9.0"
+version = "0.9.1"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
