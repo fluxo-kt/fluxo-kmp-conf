@@ -167,7 +167,7 @@ okhttp = "4.12.0"
 
 # Google core libraries for Java.
 # https://github.com/google/guava/releases
-guava = "33.1.0-jre"
+guava = "33.2.0-jre"
 
 # Douglas Crockford's reference Java implementation of a JSON.
 # https://github.com/stleary/JSON-java/releases

@@ -24,7 +24,7 @@ com.google.code.findbugs:jsr305:3.0.2
 com.google.devtools.ksp:symbol-processing-gradle-plugin:1.9.23-1.0.20
 com.google.errorprone:error_prone_annotations:2.26.1
 com.google.guava:failureaccess:1.0.2
-com.google.guava:guava:33.1.0-jre
+com.google.guava:guava:33.2.0-jre
 com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
 com.google.j2objc:j2objc-annotations:3.0.0
 com.gradle.enterprise:com.gradle.enterprise.gradle.plugin:3.16.2
