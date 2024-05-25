@@ -136,6 +136,15 @@ jobs:
           sarif_file: build/detekt-merged.sarif
           category: detekt
 
+      - name: Upload sarif report (Lint)
+        if: (success() || failure()) &&
+          (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+        uses: github/codeql-action/upload-sarif@v3
+        continue-on-error: true
+        with:
+          sarif_file: build/lint-merged.sarif
+          category: lint
+
       - name: 'Run check-gradle-plugin'
         timeout-minutes: 6
         working-directory: checks/gradle-plugin
