@@ -104,17 +104,28 @@ internal fun <T : Any> ExtensionAware.configureExtension(
 ) = extensions.configure(name, action)
 
 /**
+ *
+ * @throws NoClassDefFoundError if [T] isn't on the classpath!
+ */
+internal fun <T : Any> ExtensionAware.configureExtension(
+    name: String,
+    type: KClass<T>? = null,
+    action: T.() -> Unit,
+) = extensions.configure(name, actionOf(action))
+
+/**
  * WARN: Prefer using [configureExtension] with name parameter instead of this if possible.
  *
  * NOTE: Uses [actionOf] to avoid bloating the bytecode.
  *
  * @throws NoClassDefFoundError if [T] isn't on the classpath!
  */
+@Suppress("DeprecatedCallableAddReplaceWith")
+@Deprecated("Prefer using configureExtension with name parameter instead of this if possible.")
 internal inline fun <reified T : Any> ExtensionAware.configureExtension(
     type: KClass<T>? = null,
     noinline action: T.() -> Unit,
 ) = extensions.configure(T::class.java, actionOf(action))
-
 
 
 internal val ExtensionAware.extra: ExtraPropertiesExtension

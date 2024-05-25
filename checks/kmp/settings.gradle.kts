@@ -4,10 +4,9 @@ pluginManagement {
         // Don't use exclusiveContent for androidx libraries so that snapshots work.
         google {
             content {
-                includeGroupByRegex("androidx.*")
-                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("android.*")
                 includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("android\\.arch.*")
+                includeGroupByRegex("com\\.google.*")
                 includeGroupByRegex("org\\.chromium.*")
             }
         }

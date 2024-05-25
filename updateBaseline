@@ -1,12 +1,13 @@
 #!/bin/sh
 
-# Double quote to prevent globbing and word splitting.
+# SC2086: Double quote to prevent globbing and word splitting.
 # shellcheck disable=SC2086
 
 ./gradlew --stop --info
 
-COMMON_TASKS="dependencyGuardBaseline detektBaselineMerge --continue"
-export GRADLE_OPTS="${GRADLE_OPTS} -Dorg.gradle.caching=false -Dkotlin.incremental=false -Dorg.gradle.logging.stacktrace=all"
+COMMON_TASKS="dependencyGuardBaseline detektBaselineMerge updateLintBaseline --continue -Dlint.baselines.continue=true"
+export GRADLE_OPTS="${GRADLE_OPTS} -Dorg.gradle.logging.stacktrace=all"
+export GRADLE_OPTS="${GRADLE_OPTS} -Dorg.gradle.caching=false -Dkotlin.incremental=false"
 export CI=true
 export RELEASE=true
 EXIT_CODE=0

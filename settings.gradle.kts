@@ -4,14 +4,17 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
+        // Google/Firebase/GMS/Androidx libraries
+        // Don't use exclusiveContent for androidx libraries so that snapshots work.
         google {
             content {
-                includeGroup("com.android")
-                includeGroupByRegex("androidx\\..*")
-                includeGroupByRegex("com\\.android\\..*")
-                includeGroupByRegex("com\\.google\\..*")
+                includeGroupByRegex("android.*")
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("org\\.chromium.*")
             }
         }
+        // For Gradle plugins only. Last because proxies to mavenCentral.
         gradlePluginPortal()
     }
 

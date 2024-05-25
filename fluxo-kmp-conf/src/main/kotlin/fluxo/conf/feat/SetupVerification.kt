@@ -3,6 +3,7 @@
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
+import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
@@ -48,9 +49,18 @@ internal fun Project.setupVerification(conf: FluxoConfigurationExtensionImpl) {
         ConfigurationType.KOTLIN_MULTIPLATFORM,
         ConfigurationType.KOTLIN_JVM,
         ConfigurationType.GRADLE_PLUGIN,
-        ConfigurationType.IDEA_PLUGIN -> {
-            setupAndroidLintPluginWithNoAndroid(conf)
+        ConfigurationType.IDEA_PLUGIN,
+        -> {
+            // If KMP has an Android target, Lint will be setup by the Android plugin.
+            val isNotKmpWithAndroid = conf.mode != ConfigurationType.KOTLIN_MULTIPLATFORM ||
+                !conf.ctx.isTargetEnabled(KmpTargetCode.ANDROID)
+
+            // FIXME: Setup Android Lint for non-Android targets in KMP
+            if (isNotKmpWithAndroid) {
+                setupAndroidLintPluginWithNoAndroid(conf)
+            }
         }
+
         else -> {
             // Do nothing
         }

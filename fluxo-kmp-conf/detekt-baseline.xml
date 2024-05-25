@@ -61,8 +61,8 @@
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Support Kotlin bundled Compose compiler since Kotlin 2.0.0-RC2.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Support bundletool codeTransparency here.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
-    <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Can be `config/lint/lint.xml`?</ID>
-    <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Setup Lint for NonAndroid projects</ID>
+    <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Cache the Lint configuration file?</ID>
+    <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Check variantName instead of the task name?</ID>
     <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Create a marker task for the main processing chain with a stable name.</ID>
@@ -87,6 +87,7 @@
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup the light-weight mode for the git hooks, to run only on the changed files.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Cache the config dir?</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Improve detekt task platform detection.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$DetectedTaskPlatform$// TODO: Detect common/metadata tasks?</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions</ID>
@@ -123,6 +124,7 @@
     <ID>ForbiddenComment:SetupSpotless.kt$// TODO: read base settings from .editorconfig ?</ID>
     <ID>ForbiddenComment:SetupTestsReport.kt$// TODO: Support Gradle before 8.0 (set service parameter and usesService) ?</ID>
     <ID>ForbiddenComment:SetupValidatePluginTasks.kt$// TODO: Multiset configuration</ID>
+    <ID>ForbiddenComment:SetupVerification.kt$// FIXME: Setup Android Lint for non-Android targets in KMP</ID>
     <ID>ForbiddenComment:SetupVerification.kt$// TODO: Test separate ktlint setup with gradle plugin</ID>
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// FIXME: Warn on data classes in public API!</ID>
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: Optionally keep $EntriesMappings and $DefaultImpls classes</ID>

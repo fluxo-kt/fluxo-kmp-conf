@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.android.lint)
     alias(libs.plugins.jetbrains.compose)
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }

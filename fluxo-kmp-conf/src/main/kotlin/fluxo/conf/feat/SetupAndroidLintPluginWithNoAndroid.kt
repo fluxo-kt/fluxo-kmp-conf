@@ -21,6 +21,10 @@ internal fun Project.setupAndroidLintPluginWithNoAndroid(conf: FluxoConfiguratio
     /*
      * References:
      *  https://github.com/ZacSweers/MoshiX/pull/553/files
+     *  https://github.com/JetBrains/compose-multiplatform-core/blob/3b8ba3c/buildSrc/private/src/main/kotlin/androidx/build/LintConfiguration.kt
+     *  https://github.com/JetBrains/compose-multiplatform-core/blob/c366505/buildSrc/private/src/main/kotlin/androidx/build/AndroidXImplPlugin.kt#L591
+     *  https://github.com/androidx/androidx/blob/8cc7a40/buildSrc/private/src/main/kotlin/androidx/build/LintConfiguration.kt#L49
+     *  https://github.com/slackhq/slack-gradle-plugin/blob/a9f12a9/slack-plugin/src/main/kotlin/slack/gradle/lint/LintTasks.kt#L105
      */
 
     /**

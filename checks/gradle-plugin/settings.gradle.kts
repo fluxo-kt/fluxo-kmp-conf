@@ -1,7 +1,7 @@
 pluginManagement {
     repositories {
         google()
-        mavenCentral()
+        // For Gradle plugins only. Last because proxies to mavenCentral.
         gradlePluginPortal()
     }
     includeBuild("../../")

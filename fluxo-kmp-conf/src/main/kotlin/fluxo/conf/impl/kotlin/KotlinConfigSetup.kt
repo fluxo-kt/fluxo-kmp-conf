@@ -36,6 +36,12 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         api = null
     }
 
+    val k2 = pluginVersion >= KOTLIN_2_0 || try {
+        lang != null && lang > KotlinLangVersion.KOTLIN_1_9
+    } catch (_: Throwable) {
+        false
+    }
+
     // TODO: Detect if JVM toolchains are already enabled in the project.
     val jvmToolchain = setupJvmToolchain
     var jvmTargetInt = jvmTarget?.toJvmMajorVersion(jvmToolchain) ?: 0
@@ -115,6 +121,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         api = api,
         tests = tests,
         coreLibs = coreLibs,
+        k2 = k2,
 
         jvmTarget = jvmTarget,
         jvmTargetInt = jvmTargetInt,

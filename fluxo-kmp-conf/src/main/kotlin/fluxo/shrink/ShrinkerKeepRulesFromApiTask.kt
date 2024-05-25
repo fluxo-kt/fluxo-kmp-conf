@@ -3,6 +3,7 @@ package fluxo.shrink
 import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks
 import fluxo.conf.impl.register
+import fluxo.gradle.FLUXO_TASK_GROUP
 import fluxo.gradle.ioFile
 import fluxo.log.e
 import fluxo.log.l
@@ -144,5 +145,3 @@ internal fun Project.registerShrinkerKeepRulesGenTask(
 }
 
 internal const val SHRINKER_KEEP_GEN_TASK_NAME = "generateShrinkerKeepRulesFromApi"
-
-internal const val FLUXO_TASK_GROUP = "fluxo"

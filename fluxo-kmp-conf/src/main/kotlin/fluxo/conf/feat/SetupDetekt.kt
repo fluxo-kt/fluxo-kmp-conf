@@ -37,6 +37,8 @@ private const val DEBUG_DETEKT_LOGS = false
 
 private const val MERGE_DETEKT_TASK_NAME = "mergeDetektSarif"
 
+internal const val CONFIG_DIR_NAME = "config"
+
 // https://detekt.dev/docs/introduction/reporting/#merging-reports
 internal fun FluxoKmpConfContext.registerDetektMergeRootTask(): TaskProvider<ReportMergeTask>? =
     registerReportMergeTask(
@@ -93,7 +95,7 @@ internal fun Project.setupDetekt(
         )
     }
 
-    val detektBaselineFile = file(DETEKT_BASELINE_FILE_NAME)
+    val detektBaselineFile = layout.projectDirectory.file(DETEKT_BASELINE_FILE_NAME)
     val mergeDetektBaselinesTask = when {
         testsDisabled || !context.hasStartTaskCalled(MergeDetektBaselinesTask.TASK_NAME) -> null
         else -> tasks.register<MergeDetektBaselinesTask>(MergeDetektBaselinesTask.TASK_NAME) {
@@ -119,20 +121,32 @@ internal fun Project.setupDetekt(
 
         // For GitHub or another report consumers to know
         // where the file with issue is to place annotations correctly.
-        basePath = rootProject.projectDir.absolutePath
+        val rootProjectDir = rootProject.layout.projectDirectory
+        basePath = rootProjectDir.asFile.absolutePath
 
         this.ignoredBuildTypes = ignoredBuildTypes
         this.ignoredFlavors = ignoredFlavors
 
+        // TODO: Cache the config dir?
+        var configDir = rootProjectDir.dir(CONFIG_DIR_NAME)
+            .takeIf { it.asFile.exists() } ?: rootProjectDir
+        configDir = configDir.let {
+            val detektDir = it.dir("detekt")
+            if (detektDir.asFile.exists()) detektDir else it
+        }
+
         val files = arrayListOf(
-            file("detekt.yml"),
-            rootProject.file("detekt.yml"),
-            rootProject.file("detekt-formatting.yml"),
+            layout.projectDirectory.file("detekt.yml"),
+            configDir.file("detekt.yml"),
+            configDir.file("detekt-formatting.yml"),
         )
         if (conf.kotlinConfig.setupCompose) {
-            files += rootProject.file("detekt-compose.yml")
+            files += configDir.file("detekt-compose.yml")
         }
-        files.retainAll { it.exists() && it.canRead() }
+        files.retainAll {
+            val f = it.asFile
+            f.exists() && f.canRead()
+        }
         if (files.isNotEmpty()) {
             @Suppress("SpreadOperator")
             config.from(*files.toTypedArray())
@@ -140,8 +154,8 @@ internal fun Project.setupDetekt(
 
         baseline = when {
             !detektMergeStarted -> detektBaselineFile
-            else -> baselineIntermediateDir.get().file("$BASELINE.$EXT").asFile
-        }
+            else -> baselineIntermediateDir.get().file("$BASELINE.$EXT")
+        }.asFile
 
         if (testsDisabled) {
             enableCompilerPlugin.set(false)

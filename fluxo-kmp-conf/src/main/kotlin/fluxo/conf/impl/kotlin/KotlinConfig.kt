@@ -18,6 +18,7 @@ internal class KotlinConfig(
     val api: KotlinLangVersion?,
     val tests: KotlinLangVersion?,
     val coreLibs: String,
+    val k2: Boolean,
 
     val jvmTarget: String?,
     val jvmTargetInt: Int,

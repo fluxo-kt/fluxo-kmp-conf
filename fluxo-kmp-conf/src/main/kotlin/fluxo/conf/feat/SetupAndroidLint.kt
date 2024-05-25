@@ -5,6 +5,8 @@ import com.android.build.api.dsl.Lint
 import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import com.android.build.gradle.internal.lint.AndroidLintTask
 import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
+import com.android.build.gradle.internal.lint.LINT_XML_CONFIG_FILE_NAME
+import com.android.build.gradle.internal.lint.LintModelWriterTask
 import com.android.build.gradle.internal.lint.LintTool
 import com.android.build.gradle.internal.tasks.AndroidVariantTask
 import com.android.build.gradle.tasks.ExtractAnnotations
@@ -28,13 +30,21 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
-// TODO: Setup Lint for NonAndroid projects
-//  https://github.com/JetBrains/compose-multiplatform-core/blob/3b8ba3c/buildSrc/private/src/main/kotlin/androidx/build/LintConfiguration.kt
-//  https://github.com/JetBrains/compose-multiplatform-core/blob/c366505/buildSrc/private/src/main/kotlin/androidx/build/AndroidXImplPlugin.kt#L591
-//  https://github.com/androidx/androidx/blob/8cc7a40/buildSrc/private/src/main/kotlin/androidx/build/LintConfiguration.kt#L49
-//  https://github.com/slackhq/slack-gradle-plugin/blob/a9f12a9/slack-plugin/src/main/kotlin/slack/gradle/lint/LintTasks.kt#L105
-
 private const val MERGE_LINT_TASK_NAME = "mergeLintSarif"
+private const val BASELINE_LINT_TASK_NAME = "updateLintBaseline"
+
+private const val BASELINE_FILE_NAME = "lint-baseline.xml"
+
+private val CONFIG_FILE_NAMES = arrayOf(
+    "$CONFIG_DIR_NAME/$LINT_XML_CONFIG_FILE_NAME",
+    "$CONFIG_DIR_NAME/lint/$LINT_XML_CONFIG_FILE_NAME",
+    LINT_XML_CONFIG_FILE_NAME, // "lint.xml"
+)
+
+private val VERSION_CHECKS = arrayOf(
+    "GradleDependency",
+    "NewerVersionAvailable",
+)
 
 internal fun FluxoKmpConfContext.registerLintMergeRootTask(): TaskProvider<ReportMergeTask>? =
     registerReportMergeTask(
@@ -51,47 +61,20 @@ internal fun Project.setupAndroidLint(
     notForAndroid: Boolean = false,
 ) {
     val ctx = conf.ctx
-    val disableLint = testsDisabled || !ctx.isTargetEnabled(KmpTargetCode.ANDROID)
-    if (notForAndroid) {
-        configureExtension<Lint>(LINT_EXTENSION_NAME) {
-            configureAndroidLintExtension(conf)
-        }
-    } else {
-        configureExtension(ANDROID_EXT_NAME, CommonExtension::class) {
-            lint {
-                configureAndroidLintExtension(conf, disableLint)
-            }
-        }
-    }
-
-    if (!disableLint) {
-        val mergeLintTask = ctx.mergeLintTask
-        tasks.withType<AndroidLintTask> {
-            reportLintVersion()
-            val taskName = name
-            if (mergeLintTask != null && taskName.startsWith("lintReport")) {
-                if (SHOW_DEBUG_LOGS) {
-                    logger.v("Setup merging of sarif Lint reports for task $taskName")
-                }
-                val lintTask = this
-                mergeLintTask.configure {
-                    input.from(lintTask.sarifReportOutputFile)
-                    dependsOn(lintTask)
-                }
-            }
-        }
+    val disableLint = testsDisabled || !notForAndroid && !ctx.isTargetEnabled(KmpTargetCode.ANDROID)
+    val isBaselineRequested = conf.ctx.hasStartTaskCalled(BASELINE_LINT_TASK_NAME)
+    configureAndroidLintExtension(conf, disableLint, isBaselineRequested, notForAndroid)
+    if (disableLint) {
+        return
     }
 
     val variants = (ignoredBuildTypes + ignoredFlavors)
         .ifNotEmpty { toHashSet().toTypedArray() }
-    if (variants.isNullOrEmpty()) {
-        tasks.withType<AndroidLintAnalysisTask> { reportLintVersion() }
-        return
-    }
     val disableIgnoredVariants: AndroidVariantTask.() -> Unit = {
         reportLintVersion()
-        if (enabled) {
+        if (enabled && !variants.isNullOrEmpty()) {
             for (v in variants) {
+                // TODO: Check variantName instead of the task name?
                 if (name.contains(v, ignoreCase = true)) {
                     disableTask()
                     break
@@ -99,19 +82,77 @@ internal fun Project.setupAndroidLint(
             }
         }
     }
+
+    configureAndroidLintTasks(conf, disableIgnoredVariants)
+
+    if (variants.isNullOrEmpty()) {
+        tasks.withType<AndroidLintAnalysisTask> { reportLintVersion() }
+        return
+    }
     tasks.withType<AndroidLintTextOutputTask>(disableIgnoredVariants)
     tasks.withType<AndroidLintAnalysisTask>(disableIgnoredVariants)
-    tasks.withType<AndroidLintTask>(disableIgnoredVariants)
+    tasks.withType<LintModelWriterTask>(disableIgnoredVariants)
+    // tasks.withType<AndroidLintTask>(disableIgnoredVariants) // Already configured
+}
+
+private fun Project.configureAndroidLintTasks(
+    conf: FluxoConfigurationExtensionImpl,
+    disableIgnoredVariants: AndroidVariantTask.() -> Unit,
+) = tasks.withType<AndroidLintTask> {
+    disableIgnoredVariants()
+
+    val taskName = name
+    val mergeLintTask = conf.ctx.mergeLintTask
+    if (mergeLintTask != null && taskName.startsWith("lintReport")) {
+        if (SHOW_DEBUG_LOGS) {
+            logger.v("Setup merging of sarif Lint reports for task $taskName")
+        }
+        val lintTask = this
+        mergeLintTask.configure {
+            input.from(lintTask.sarifReportOutputFile)
+            dependsOn(lintTask)
+        }
+    }
+
+    if (conf.kotlinConfig.k2) {
+        try {
+            useK2Uast.set(true)
+        } catch (_: Throwable) {
+        }
+    }
+}
+
+private fun Project.configureAndroidLintExtension(
+    conf: FluxoConfigurationExtensionImpl,
+    disableLint: Boolean,
+    isBaselineRequested: Boolean,
+    notForAndroid: Boolean,
+) {
+    val lintConfiguration: Lint.() -> Unit = {
+        configureAndroidLintExtension(
+            conf = conf,
+            disableLint = disableLint,
+            reBaseline = isBaselineRequested,
+        )
+    }
+    if (notForAndroid) {
+        configureExtension(name = LINT_EXTENSION_NAME, action = lintConfiguration)
+    } else {
+        configureExtension(name = ANDROID_EXT_NAME, CommonExtension::class) {
+            lint(lintConfiguration)
+        }
+    }
 }
 
 internal fun Lint.configureAndroidLintExtension(
     conf: FluxoConfigurationExtensionImpl,
-    disableLint: Boolean = false,
+    disableLint: Boolean,
+    reBaseline: Boolean,
 ) {
-    val project = conf.project
+    val p = conf.project
 
     if (SHOW_DEBUG_LOGS) {
-        project.logger.v("Setup Android Lint (disable=$disableLint)")
+        p.logger.v("Setup Android Lint (off=$disableLint, baseline=$reBaseline)")
     }
 
     sarifReport = !disableLint
@@ -122,21 +163,34 @@ internal fun Lint.configureAndroidLintExtension(
     // Use baseline only for CI checks, show all problems in local development.
     // Don't use if file doesn't exist, and we're running the `check` task.
     val ctx = conf.ctx
-    if (ctx.isCI || ctx.isRelease) {
-        val baselineFile = project.layout.projectDirectory.file("lint-baseline.xml").asFile
-        if (baselineFile.exists() || CHECK_TASK_NAME !in ctx.startTaskNames) {
+    val rootProjectDir = p.rootProject.layout.projectDirectory
+    if (reBaseline || ctx.isCI || ctx.isRelease) {
+        val baselineFile = p.layout.projectDirectory.file(BASELINE_FILE_NAME).asFile
+        if (reBaseline || baselineFile.exists() || CHECK_TASK_NAME !in ctx.startTaskNames) {
             baseline = baselineFile
         }
     }
 
-    // TODO: Can be `config/lint/lint.xml`?
-    val confFile = project.rootProject.layout.projectDirectory.file("config/lint.xml").asFile
-    if (confFile.exists()) {
-        lintConfig = confFile
+    // TODO: Cache the Lint configuration file?
+    var hasConfig = false
+    for (name in CONFIG_FILE_NAMES) {
+        val confFile = rootProjectDir.file(name).asFile
+        if (confFile.exists()) {
+            hasConfig = true
+            lintConfig = confFile
+            break
+        }
     }
-
-    // fatal += "KotlincFE10"
-    // disable += "UnknownIssueId"
+    if (!hasConfig) {
+        if (!reBaseline) {
+            informational += VERSION_CHECKS
+        }
+        // fatal += "KotlincFE10"
+        // disable += "UnknownIssueId"
+    }
+    if (reBaseline) {
+        disable += VERSION_CHECKS
+    }
 
     abortOnError = false
     absolutePaths = false

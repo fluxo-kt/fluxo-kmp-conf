@@ -46,7 +46,8 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
     }
 
     init {
-        description = "Collects all generated detekt baselines and merges them into the global one."
+        description = "Collects all generated detekt baselines" +
+            " and merges them into the global one (Fluxo task)."
         group = LifecycleBasePlugin.VERIFICATION_GROUP
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://googlesamples.github.io/android-custom-lint-rules/usage/lintxml.md.html -->
+<!-- https://github.com/adessoTurkey/android-sample-app/blob/0fee520/config/.lint.xml -->
+<!-- https://github.com/search?q=%3Clint%3E+language:xml&type=code -->
+<lint>
+  <!-- Possible severities: ignore, information, warning, error, fatal -->
+
+  <!-- Version updates are informational -->
+  <issue id="GradleDependency" severity="information" />
+  <issue id="NewerVersionAvailable" severity="information" />
+  <issue id="AndroidGradlePluginVersion" severity="information" />
+
+  <issue id="StopShip" severity="information" />
+</lint>

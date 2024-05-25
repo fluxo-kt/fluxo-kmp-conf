@@ -12,6 +12,7 @@
 - auto downgrade Kotlin API version when it's greater than the language version (and warn about it).
 - set up `validatePlugins` task for Gradle plugins. **BREAKING CHANGE!**
 - enable AndroidLint checks for all projects by default.
+- configure `updateLintBaseline` task for re-creating the baseline files.
 
 ### Changed
 - prepare for Kotlin 2.0.
@@ -19,7 +20,9 @@
 - parse fallback toml catalog for enabled plugins.
 
 ### Updated
-- build(deps): bump Gradle from _8.6_ to _8.8-rc-1_.
+- bump Gradle from _8.6_ to _8.8-rc-1_.
+- bump Android Gradle Plugin from _8.4.0_ to _8.4.1_ (compile-only dependency).
+- bump Android Lint to _8.6.0-alpha03_ (compile-only dependency).
 - bump com.mikepenz.aboutlibraries to _11.1.4_.
 
 
