@@ -10,6 +10,8 @@
 <details>
   <summary>Show</summary>
 
+* Kotlin Power-assert compiler plugin
+  * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
 * https://github.com/ZacSweers/MoshiX/pull/553/files
 * https://github.com/nebula-plugins/gradle-lint-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630

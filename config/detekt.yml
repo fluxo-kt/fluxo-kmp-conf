@@ -40,6 +40,8 @@ style:
     ignoreAnnotated: ['Preview']
 
 naming:
+  excludes:
+    - '**/build/generated/**'
   FunctionNaming:
     ignoreAnnotated: ['Composable']
   NoNameShadowing:
@@ -47,9 +49,9 @@ naming:
     active: false
 
 formatting:
-  excludes: [
-    '**/fluxo/conf/data/BuildConstants.kt',
-  ]
+  excludes:
+    - '**/fluxo/conf/data/BuildConstants.kt'
+    - '**/build/generated/**'
   ArgumentListWrapping:
     maxLineLength: 100
   FunctionSignature:

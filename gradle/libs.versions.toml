@@ -15,22 +15,22 @@ version = "0.10.0-SNAPSHOT"
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
 # javaLangTarget 11 required for Android Gradle Plugin and Android Lint.
 javaLangTarget = "11"
-kotlinLangVersion = "1.8"
-kotlinApiVersion = "1.8"
-kotlinCoreLibraries = "1.8.22"
+kotlinLangVersion = "1.9"
+kotlinApiVersion = "1.9"
+kotlinCoreLibraries = "1.9.24"
 
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
 # WARNING: Remember to update the version badge and examples in `README.md`!
-kotlin = "1.9.24"
+kotlin = "2.0.0"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
 jetbrains-compose = "1.6.10"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.24-1.0.20"
+ksp = "2.0.0-1.0.21"
 
 # region Android specific
 
@@ -182,7 +182,7 @@ ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.3.20" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.1" }
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
@@ -193,6 +193,7 @@ plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", v
 plugin-intellij = { module = "org.jetbrains.intellij.plugins:gradle-intellij-plugin", version.ref = "gradle-intellij-plugin" }
 plugin-jetbrains-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-kotlin-compose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 plugin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 
@@ -234,6 +235,7 @@ fluxo-conf = { id = "io.github.fluxo-kt.fluxo-kmp-conf", version.ref = "version"
 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-sam-receiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
@@ -307,4 +309,4 @@ build-config = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
 # Resolve all dependencies used in a Gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases
 # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
-about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.1.4" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.2.0" }

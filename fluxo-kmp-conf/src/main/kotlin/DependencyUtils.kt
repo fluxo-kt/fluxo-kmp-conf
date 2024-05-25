@@ -9,7 +9,6 @@ import org.gradle.api.provider.Provider
 import org.gradle.plugin.use.PluginDependency
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.Companion.COMMON_MAIN_SOURCE_SET_NAME
-import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 
 /**
  * Converts a [PluginDependency] to a usual module dependency
@@ -45,7 +44,9 @@ public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
     // instead of writing the ksp("dep")
     // use ksp<Target>() or add(ksp<SourceSet>).
     // https://kotlinlang.org/docs/ksp-multiplatform.html
-    val parent = (this as DefaultKotlinDependencyHandler).parent
+    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+    val parent = (this as org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler)
+        .parent
     var confName = parent.compileOnlyConfigurationName
         .replace(COMPILE_ONLY, "", ignoreCase = true)
     if (confName.startsWith(COMMON_MAIN_SOURCE_SET_NAME, ignoreCase = true)) {

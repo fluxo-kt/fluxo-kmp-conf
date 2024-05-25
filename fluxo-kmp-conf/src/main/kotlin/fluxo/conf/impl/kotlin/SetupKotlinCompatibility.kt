@@ -36,7 +36,7 @@ internal fun KotlinProjectExtension.setupSourceSetsKotlinCompatibility(
 ) = sourceSets.configureEach {
     val isTestSet = isTestRelated()
 
-    // Test compilations should be turned off from targets
+    // Test compilations should be turned off from targets.
     if (DISABLE_COMPILATIONS_FROM_SOURCE_SETS && isTestSet && disableTests) {
         @Suppress("UnsafeCast")
         (this as? AbstractKotlinSourceSet)?.compilations?.forEach { it.disableCompilation() }
@@ -81,7 +81,8 @@ internal val KOTLIN_2_0 = KotlinVersion(2, 0, 0)
 
 
 @Volatile
-private var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT
+internal var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT
+    private set
 
 internal lateinit var KOTLIN_PLUGIN_VERSION_RAW: String
 

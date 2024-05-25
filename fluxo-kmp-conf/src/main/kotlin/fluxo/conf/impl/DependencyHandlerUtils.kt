@@ -16,7 +16,6 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.HasKotlinDependencies
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 
 
 private const val IMPLEMENTATION = org.jetbrains.kotlin.gradle.utils.IMPLEMENTATION
@@ -178,8 +177,11 @@ private inline fun KotlinDependencyHandler.logKmpDependency(
     configurationNameAccessor: HasKotlinDependencies.() -> String,
 ) {
     val confName = try {
+        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
         when (this) {
-            is DefaultKotlinDependencyHandler -> configurationNameAccessor(parent)
+            is org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler ->
+                configurationNameAccessor(parent)
+
             else -> null
         }
     } catch (e: Throwable) {
@@ -220,7 +222,7 @@ private val Any.dn: String
                 return try {
                     @Suppress("RecursivePropertyAccessor")
                     this.orNull?.dn
-                } catch (e: Throwable) {
+                } catch (_: Throwable) {
                     null
                 } ?: toString()
             }

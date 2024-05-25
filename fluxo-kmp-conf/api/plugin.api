@@ -114,6 +114,7 @@ public final class fluxo/artifact/dsl/ProcessorCallType : java/lang/Enum {
 	public static final field BUNDLED Lfluxo/artifact/dsl/ProcessorCallType;
 	public static final field EXTERNAL Lfluxo/artifact/dsl/ProcessorCallType;
 	public static final field IN_MEMORY Lfluxo/artifact/dsl/ProcessorCallType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lfluxo/artifact/dsl/ProcessorCallType;
 	public static fun values ()[Lfluxo/artifact/dsl/ProcessorCallType;
 }

@@ -135,8 +135,12 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
                 compilerArgs.add("-Xuse-fast-jar-file-system")
             }
 
-            // class mode provides lambdas arguments names
+            // "indy" mode generates lambda functions using `invokedynamic` instruction.
+            // "class" mode provides lambdas arguments names and `reflect()` support.
+            // `invokedynamic` instruction is supported since Java 8 and Android API 26.
             // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
+            // https://kotlinlang.org/docs/whatsnew20.html#generation-of-lambda-functions-using-invokedynamic
+            // https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect.jvm/reflect.html
             val useIndyLambdas = kc.jvmTargetInt >= JRE_1_8 &&
                 (kc.useIndyLambdas || isCI || releaseSettings)
             (if (useIndyLambdas) "indy" else "class").let { mode ->
@@ -370,3 +374,6 @@ private val JS_OPTS = arrayOf(
     // Generate JavaScript with ES2015 classes.
     "-Xes-classes",
 ).asList()
+
+// TODO: -Xwasm-use-new-exception-proposal
+//  https://kotlinlang.org/docs/whatsnew20.html#new-exception-handling-proposal-is-now-supported-under-the-option

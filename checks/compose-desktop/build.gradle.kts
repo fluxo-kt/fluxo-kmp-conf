@@ -4,6 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.android.lint)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.compose)
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
@@ -39,6 +40,7 @@ dependencies {
     // For a library, use compose.desktop.common.
     // With compose.desktop.common you will also lose @Preview functionality.
     implementation(compose.desktop.currentOs)
+    implementation(compose.components.resources)
 
     testImplementation(compose.desktop.uiTestJUnit4)
 }

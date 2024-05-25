@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Updated
+- **bump Kotlin to _2.0.0_.**
+
 
 ## [0.9.1] - 2024-05-25
 

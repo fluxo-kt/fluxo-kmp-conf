@@ -69,6 +69,7 @@ dependencies {
     compileOnly(libs.plugin.intellij)
     compileOnly(libs.plugin.jetbrains.compose)
     compileOnly(libs.plugin.kotlin)
+    compileOnly(libs.plugin.kotlin.compose)
     compileOnly(libs.plugin.ksp)
 
     compileOnly(libs.plugins.gradle.enterprise.toModuleDependency())

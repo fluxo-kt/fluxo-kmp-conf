@@ -3,11 +3,14 @@
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
 import fluxo.conf.impl.kotlin.KOTLIN_2_0
+import fluxo.conf.impl.kotlin.KOTLIN_PLUGIN_VERSION
 import fluxo.log.w
 import org.gradle.api.Action
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalMainFunctionArgumentsDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinTargetWithNodeJsDsl
@@ -27,8 +30,14 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
             testTimeout()
         }
 
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        try {
+            compilerOptions(JsConfAction)
+        } catch (_: Throwable) {
+        }
+
         compilations.configureEach {
-            // Fallback for Kotlin versions before 2.0
+            // Fallback for older Kotlin versions
             try {
                 @Suppress("DEPRECATION")
                 kotlinOptions {
@@ -65,6 +74,13 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
     if (this is KotlinTargetWithNodeJsDsl) {
         nodejs {
             testTimeout()
+
+            // https://kotlinlang.org/docs/whatsnew20.html#passing-arguments-to-the-main-function
+            @OptIn(ExperimentalMainFunctionArgumentsDsl::class)
+            try {
+                passProcessArgvToMainFunction()
+            } catch (_: Throwable) {
+            }
         }
     }
 
@@ -77,18 +93,17 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
         // Apply Binaryen optimizer to the WASM target.
         if (KotlinVersion.CURRENT < KOTLIN_2_0) {
             // Binaryen is enabled by default in Kotlin 2.0.
+            @Suppress("DEPRECATION")
             applyBinaryen()
         }
     } else {
         // KotlinWasmTargetDsl is incomplete before the Kotlin 2.0
         try {
-            @Suppress("ControlFlowWithEmptyBody")
             if (this is KotlinWasmTargetDsl) {
                 // Binaryen is enabled by default in Kotlin 2.0.
                 // applyBinaryen()
 
-                // TODO: Uncomment once compiled for Kotlin 2.0
-                // binaries.executable()
+                binaries.executable()
             }
         } catch (_: Error) {
         }
@@ -102,6 +117,12 @@ private object JsConfAction : Action<KotlinJsCompilerOptions> {
         try {
             o.useEsClasses.set(true)
         } catch (_: Error) {
+        }
+
+        // Automatically turns on ES classes and modules and the newly supported ES generators.
+        // https://kotlinlang.org/docs/whatsnew20.html#new-compilation-target
+        if (KOTLIN_PLUGIN_VERSION >= KOTLIN_2_0) {
+            o.target.set("es2015")
         }
     }
 }
