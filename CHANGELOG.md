@@ -26,6 +26,7 @@
 - bump com.mikepenz.aboutlibraries to _11.1.4_.
 - bump dependency-analysis to _1.32.0_.
 - bump Guava to _33.2.0-jre_ (build-only dependency).
+- bump [proguard-core](https://github.com/Guardsquare/proguard-core) from _9.1.3_ to _9.1.4_.
 
 
 ## [0.8.1] - 2024-05-05

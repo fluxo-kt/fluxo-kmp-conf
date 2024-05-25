@@ -36,6 +36,7 @@
 -dontwarn com.mikepenz.aboutlibraries.**
 -dontwarn com.pinterest.ktlint.**
 -dontwarn java.lang.AbstractStringBuilder
+-dontwarn java.util.zip.ZipFile
 -dontwarn kotlin.**
 -dontwarn org.conscrypt.**
 -dontwarn org.jetbrains.**

@@ -163,6 +163,8 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:Classpath
     val toolJars: ConfigurableFileCollection = objects.fileCollection()
 
+    // FIXME: Setup JDK here from the toolchain or jvmTarget/jdk-release.
+    //  use centralized lookup for all such tasks.
     @get:Input
     val javaHome: Property<String> = objects.notNullProperty(System.getProperty("java.home"))
 

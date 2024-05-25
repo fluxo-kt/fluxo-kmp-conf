@@ -9,6 +9,7 @@
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Add automatic main class detection from the main jar manifest</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Benchmark and adjust best options for R8/ProGuard.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Make all dirs to use the chain and id in chain!</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Setup JDK here from the toolchain or jvmTarget/jdk-release.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Debugging</ID>

@@ -37,6 +37,7 @@
 }
 
 # Keep tasks functioning.
+-dontnote org.gradle.api.tasks.**
 -keep @interface org.gradle.api.tasks.**
 -keepclassmembers,allowoptimization,allowobfuscation,includedescriptorclasses class * implements org.gradle.api.Task {
     <init>();
@@ -82,4 +83,9 @@
 -dontnote com.android.build.gradle.internal.lint.LintTool
 -keep class com.android.build.gradle.internal.lint.LintTool {
     *** getVersion();
+}
+
+-dontnote com.android.tools.r8.Version
+-keep class com.android.tools.r8.Version {
+    *** LABEL;
 }
