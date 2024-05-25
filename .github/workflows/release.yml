@@ -23,7 +23,7 @@ env:
 
 jobs:
   release:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}
       cancel-in-progress: false
@@ -90,7 +90,7 @@ jobs:
           ALLOW_EMPTY_CHANGELOG: "false"
 
       - name: Publish plugin
-        if: github.repository == 'fluxo-kt/fluxo-kmp-conf'
+        if: always() && github.repository == 'fluxo-kt/fluxo-kmp-conf'
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
