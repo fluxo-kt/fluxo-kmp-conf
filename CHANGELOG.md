@@ -24,6 +24,7 @@
 - bump Android Gradle Plugin from _8.4.0_ to _8.4.1_ (compile-only dependency).
 - bump Android Lint to _8.6.0-alpha03_ (compile-only dependency).
 - bump com.mikepenz.aboutlibraries to _11.1.4_.
+- bump dependency-analysis to _1.32.0_.
 
 
 ## [0.8.1] - 2024-05-05
