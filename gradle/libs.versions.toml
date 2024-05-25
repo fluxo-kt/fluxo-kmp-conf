@@ -21,15 +21,15 @@ kotlinCoreLibraries = "1.8.22"
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
-# WARNING: Do not forget to update the version badge and examples in `README.md`!
-kotlin = "1.9.23"
+# WARNING: Remember to update the version badge and examples in `README.md`!
+kotlin = "1.9.24"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.6.2"
+jetbrains-compose = "1.6.10"
 
 # https://github.com/google/ksp/releases
-ksp = "1.9.23-1.0.20"
+ksp = "1.9.24-1.0.20"
 
 # region Android specific
 

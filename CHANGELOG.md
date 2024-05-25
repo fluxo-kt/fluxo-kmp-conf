@@ -20,6 +20,8 @@
 - parse fallback toml catalog for enabled plugins.
 
 ### Updated
+- bump Kotlin from _1.9.23_ to _1.9.24_.
+- bump jetbrains-compose to _1.6.10_.
 - bump Gradle from _8.6_ to _8.8-rc-1_.
 - bump Android Gradle Plugin from _8.4.0_ to _8.4.1_ (compile-only dependency).
 - bump Android Lint to _8.6.0-alpha03_ (compile-only dependency).

@@ -21,7 +21,7 @@ Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects
 Initially made for the [Fluxo][fluxo] state management framework and other libraries, then published for general use.
 
 Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
-[![Kotlin](http://img.shields.io/badge/Kotlin-1.9.23-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
+[![Kotlin](http://img.shields.io/badge/Kotlin-1.9.24-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
 [![Gradle](http://img.shields.io/badge/Gradle-8.8-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
 [![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.4-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
 
@@ -32,7 +32,7 @@ Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
 ```kotlin
 // in the `build.gradle.kts` of the target module
 plugins {
-  kotlin("multiplatform") version "1.9.23"
+  kotlin("multiplatform") version "1.9.24"
   id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.8.1" // <-- add here
 }
 ```
@@ -45,7 +45,7 @@ plugins {
 ```kotlin
 // in the `build.gradle.kts` of the target module
 plugins {
-  kotlin("multiplatform") version "1.9.23"
+  kotlin("multiplatform") version "1.9.24"
   id("io.github.fluxo-kt.fluxo-kmp-conf") // <-- add here, no version needed for jitpack usage
 }
 ```
