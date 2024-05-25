@@ -144,6 +144,7 @@ private fun Project.configureAndroidLintExtension(
     }
 }
 
+@Suppress("CyclomaticComplexMethod")
 internal fun Lint.configureAndroidLintExtension(
     conf: FluxoConfigurationExtensionImpl,
     disableLint: Boolean,
@@ -164,9 +165,11 @@ internal fun Lint.configureAndroidLintExtension(
     // Don't use if file doesn't exist, and we're running the `check` task.
     val ctx = conf.ctx
     val rootProjectDir = p.rootProject.layout.projectDirectory
+    var hasBaseline = false
     if (reBaseline || ctx.isCI || ctx.isRelease) {
         val baselineFile = p.layout.projectDirectory.file(BASELINE_FILE_NAME).asFile
         if (reBaseline || baselineFile.exists() || CHECK_TASK_NAME !in ctx.startTaskNames) {
+            hasBaseline = true
             baseline = baselineFile
         }
     }
@@ -187,6 +190,9 @@ internal fun Lint.configureAndroidLintExtension(
         }
         // fatal += "KotlincFE10"
         // disable += "UnknownIssueId"
+    }
+    if (hasBaseline) {
+        disable += "LintBaseline"
     }
     if (reBaseline) {
         disable += VERSION_CHECKS
