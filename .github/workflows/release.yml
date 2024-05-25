@@ -23,7 +23,7 @@ env:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     concurrency:
       group: ${{ github.workflow }}
       cancel-in-progress: false
@@ -34,6 +34,19 @@ jobs:
         with:
           disable-sudo: true
           egress-policy: audit
+          allowed-endpoints: >
+            api.github.com:443
+            dl.google.com:443
+            docs.oracle.com:443
+            github.com:443
+            jcenter.bintray.com:443
+            kotlinlang.org:443
+            objects.githubusercontent.com:443
+            plugins-artifacts.gradle.org:443
+            plugins.gradle.org:443
+            s3.amazonaws.com:443
+            scans-in.gradle.com:443
+            services.gradle.org:443
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,7 +74,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.7
+          gradle-version: release-candidate
           cache-disabled: true
           cache-read-only: true
 
