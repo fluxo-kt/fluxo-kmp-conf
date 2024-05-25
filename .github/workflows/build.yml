@@ -102,10 +102,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.7
+          gradle-version: release-candidate
           gradle-home-cache-cleanup: true
+          cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
           dependency-graph: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'generate-and-submit' || 'disabled'}}
+          add-job-summary-as-pr-comment: on-failure
           artifact-retention-days: 1
 
       # TODO: If it's a "build(deps): ..." commit, then run the dependency review actions,
@@ -128,8 +130,7 @@ jobs:
         run: ./gradlew build assemble check --continue --stacktrace --scan
 
       - name: Upload sarif report (Detekt)
-        if: (success() || failure()) &&
-          (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+        if: always() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
         uses: github/codeql-action/upload-sarif@v3
         continue-on-error: true
         with:
@@ -137,8 +138,7 @@ jobs:
           category: detekt
 
       - name: Upload sarif report (Lint)
-        if: (success() || failure()) &&
-          (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+        if: always() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
         uses: github/codeql-action/upload-sarif@v3
         continue-on-error: true
         with:
@@ -174,7 +174,7 @@ jobs:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: Upload the build report
-        if: success() || failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: '${{ matrix.os }}-build-report'
