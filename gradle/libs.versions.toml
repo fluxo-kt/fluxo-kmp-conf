@@ -8,7 +8,8 @@
 
 [versions]
 
-version = "0.8.2-SNAPSHOT"
+# WARNING: Remember to update the version in `README.md` examples!
+version = "0.9.0"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
@@ -96,7 +97,7 @@ androidBuildTools = "34.0.0"
 # Gradle plug-in to build Android applications.
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
-# WARNING: Do not forget to update the version badge in `README.md`!
+# WARNING: Remember to update the version badge in `README.md`!
 android-gradle-plugin = "8.4.1"
 
 # endregion
@@ -243,7 +244,7 @@ android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin
 
 # https://mvnrepository.com/artifact/com.android.lint/com.android.lint.gradle.plugin?repo=google
 # https://maven.google.com/web/index.html#com.android.lint:com.android.lint.gradle.plugin
-# WARN: Do not forget to update the 'android.experimental.lint.version'
+# WARN: Remember to update the 'android.experimental.lint.version'
 #  in all `gradle.properties` files!
 android-lint = { id = "com.android.lint", version = "8.6.0-alpha03" }
 
