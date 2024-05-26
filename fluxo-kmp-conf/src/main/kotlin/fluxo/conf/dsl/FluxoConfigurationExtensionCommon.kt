@@ -105,6 +105,18 @@ public interface FluxoConfigurationExtensionCommon {
 
 
     /**
+     * Flag to turn on the Android Lint setup for non-Android modules.
+     * Can be disabled by the [setupVerification] flag.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `true`.
+     *
+     * @see setupVerification
+     */
+    public var enableGenericAndroidLint: Boolean
+
+
+    /**
      * Flag to turn on the Spotless setup.
      * Can be disabled by the [setupVerification] flag.
      *

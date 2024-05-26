@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Added
+- allow disabling Android Lint when no Android plugin is used.
+
 
 ## [0.10.0] - 2024-05-26
 

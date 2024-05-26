@@ -13,7 +13,6 @@
 * Detect when called as an included build (run with no tasks).
   * Don't add Android Lint or any additional non-required tasks or plugins in this case.
   * Don't add Android Lint when old Gradle used (min supported Gradle is 8.7).
-  * Allow to disable Android Lint when no Android plugin used.
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630

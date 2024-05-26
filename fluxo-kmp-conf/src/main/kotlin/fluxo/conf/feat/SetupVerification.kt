@@ -51,12 +51,14 @@ internal fun Project.setupVerification(conf: FluxoConfigurationExtensionImpl) {
         ConfigurationType.GRADLE_PLUGIN,
         ConfigurationType.IDEA_PLUGIN,
         -> {
+            val enableGenericAndroidLint = conf.enableGenericAndroidLint
+
             // If KMP has an Android target, Lint will be setup by the Android plugin.
             val isNotKmpWithAndroid = conf.mode != ConfigurationType.KOTLIN_MULTIPLATFORM ||
                 !conf.ctx.isTargetEnabled(KmpTargetCode.ANDROID)
 
             // FIXME: Setup Android Lint for non-Android targets in KMP
-            if (isNotKmpWithAndroid) {
+            if (enableGenericAndroidLint && isNotKmpWithAndroid) {
                 setupAndroidLintPluginWithNoAndroid(conf)
             }
         }

@@ -310,6 +310,12 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = enableDetektAutoCorrectProp.set(value)
 
     @get:Input
+    val enableGenericAndroidLintProp: Property<Boolean?>
+    override var enableGenericAndroidLint: Boolean
+        get() = enableGenericAndroidLintProp.orNull ?: parent?.enableGenericAndroidLint ?: true
+        set(value) = enableGenericAndroidLintProp.set(value)
+
+    @get:Input
     val enableSpotlessProp: Property<Boolean?>
     override var enableSpotless: Boolean
         get() = enableSpotlessProp.orNull ?: parent?.enableSpotless ?: false
