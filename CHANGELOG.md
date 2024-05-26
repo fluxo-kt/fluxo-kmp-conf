@@ -7,6 +7,10 @@
 
 ### Updated
 - **bump Kotlin to _2.0.0_.**
+- update list of pinned build-time dependencies.
+
+### Fixed
+- fix the dependency pinning logic for buildscript dependencies.
 
 
 ## [0.9.1] - 2024-05-25

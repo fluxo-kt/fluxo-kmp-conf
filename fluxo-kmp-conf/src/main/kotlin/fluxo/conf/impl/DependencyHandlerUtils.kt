@@ -13,6 +13,7 @@ import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.ModuleVersionSelector
 import org.gradle.api.artifacts.dsl.DependencyConstraintHandler
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.HasKotlinDependencies
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
@@ -189,9 +190,7 @@ private inline fun KotlinDependencyHandler.logKmpDependency(
         null
     } ?: "KMP/$configurationName"
 
-    with(project) {
-        logDependency(confName, dependencyNotation, extra)
-    }
+    project.logDependency(confName, dependencyNotation, extra)
 }
 
 internal fun Project.logDependency(
@@ -200,7 +199,16 @@ internal fun Project.logDependency(
     extra: String = "",
     prefix: String = "",
 ) {
-    logger.l("$LOG_PREFIX$configurationName($prefix${dependencyNotation.dn})$extra")
+    logger.logDependency(configurationName, dependencyNotation, extra, prefix)
+}
+
+internal fun Logger.logDependency(
+    configurationName: String,
+    dependencyNotation: Any,
+    extra: String = "",
+    prefix: String = "",
+) {
+    l("$LOG_PREFIX$configurationName($prefix${dependencyNotation.dn})$extra")
 }
 
 private val Any.dn: String
