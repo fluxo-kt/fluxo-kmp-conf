@@ -86,6 +86,7 @@ jobs:
           java-version: '${{ matrix.java }}'
 
       - name: 'Cached KMP things (Konan, Node, Yarn, Binaryen)'
+        if: false
         uses: actions/cache@v4
         with:
           path: |
