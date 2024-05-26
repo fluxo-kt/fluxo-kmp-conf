@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.10.0] - 2024-05-26
+
 ### Updated
 - **bump Kotlin to _2.0.0_.**
 - bump Android Gradle Plugin from _8.4.1_ to _8.6.0-alpha03_ (compile-only dependency).
@@ -284,6 +287,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.10.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.10.0
 [0.9.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.9.1
 [0.8.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.8.1
 [0.8.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.8.0
