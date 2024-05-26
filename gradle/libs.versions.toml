@@ -268,6 +268,8 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-sam-receiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
+
 kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }
 fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version.ref = "fluxo-bcv-js" }
 
@@ -278,8 +280,6 @@ android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin
 # WARN: Remember to update the 'android.experimental.lint.version'
 #  in all `gradle.properties` files!
 android-lint = { id = "com.android.lint", version.ref = "android-gradle-plugin" }
-
-jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 

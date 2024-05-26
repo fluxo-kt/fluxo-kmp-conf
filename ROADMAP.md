@@ -10,10 +10,12 @@
 <details>
   <summary>Show</summary>
 
+* Detect when called as an included build (run with no tasks).
+  * Don't add Android Lint or any additional non-required tasks or plugins in this case.
+  * Don't add Android Lint when old Gradle used (min supported Gradle is 8.7).
+  * Allow to disable Android Lint when no Android plugin used.
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
-* https://github.com/ZacSweers/MoshiX/pull/553/files
-* https://github.com/nebula-plugins/gradle-lint-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630
 * https://github.com/WasmEdge/WasmEdge?tab=readme-ov-file#license
 * https://github.com/eygraber/gradle-conventions/blob/master/conventions-detekt/src/main/kotlin/com/eygraber/conventions/detekt/register_detekt_task.kt
@@ -157,7 +159,7 @@
         * When possible lazily calculate info.
         * https://github.com/nebula-plugins/gradle-contacts-plugin
           * Structure to define the owners of a project, then contributing this back to other plugins.
-      * Linter tool for identifying and reporting on patterns of misuse or deprecations in Gradle scripts.
+      * Linter tool for identifying and reporting on patterns of misuse or deprecations in Gradle scripts (groovy-only).
         * https://github.com/nebula-plugins/gradle-lint-plugin
         * https://docs.gradle.org/current/userguide/authoring_maintainable_build_scripts.html
       * Gradle plugin for providing reusable dependency resolution rules.
