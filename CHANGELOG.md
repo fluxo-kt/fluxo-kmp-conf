@@ -7,7 +7,8 @@
 
 ### Updated
 - **bump Kotlin to _2.0.0_.**
-- update list of pinned build-time dependencies.
+- bump Android Gradle Plugin from _8.4.1_ to _8.6.0-alpha03_ (compile-only dependency).
+- update the list of pinned build-time dependencies.
 
 ### Fixed
 - fix the dependency pinning logic for buildscript dependencies.

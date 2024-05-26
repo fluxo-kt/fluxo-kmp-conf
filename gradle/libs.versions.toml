@@ -88,7 +88,7 @@ androidCompileSdk = "34"
 # Takes precedence over all other SDK versions!
 # "0" value used to ignore this setting.
 # E.g., to use the Android U preview use `androidPreviewSdk = "U"`.
-androidPreviewSdk = "0"
+#androidPreviewSdk = "0"
 
 # Compilers, packaging, deployment tools for Android apps.
 # https://developer.android.com/tools/releases/build-tools
@@ -98,7 +98,7 @@ androidBuildTools = "34.0.0"
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # WARNING: Remember to update the version badge in `README.md`!
-android-gradle-plugin = "8.4.1"
+android-gradle-plugin = "8.6.0-alpha03"
 
 # endregion
 
@@ -276,7 +276,7 @@ android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin
 # https://maven.google.com/web/index.html#com.android.lint:com.android.lint.gradle.plugin
 # WARN: Remember to update the 'android.experimental.lint.version'
 #  in all `gradle.properties` files!
-android-lint = { id = "com.android.lint", version = "8.6.0-alpha03" }
+android-lint = { id = "com.android.lint", version.ref = "android-gradle-plugin" }
 
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
 

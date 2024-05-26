@@ -113,13 +113,6 @@ private fun Project.configureAndroidLintTasks(
             dependsOn(lintTask)
         }
     }
-
-    if (conf.kotlinConfig.k2) {
-        try {
-            useK2Uast.set(true)
-        } catch (_: Throwable) {
-        }
-    }
 }
 
 private fun Project.configureAndroidLintExtension(
