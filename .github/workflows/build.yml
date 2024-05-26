@@ -55,7 +55,7 @@ jobs:
         java: [ '22' ]
         os: [ 'macos', 'windows', 'ubuntu' ]
         # CodeQL supports ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift']
-        # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
+        # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support.
         language: [ 'java-kotlin' ]
 
     name: 'Build and check on ${{ matrix.os }}'
@@ -93,10 +93,8 @@ jobs:
             ~/.gradle/yarn
             ~/.gradle/nodejs
             ~/.gradle/binaryen
-            hashFiles('**/gradle/libs.versions.toml')
-          key: "${{ runner.os }}-kmp-${{ hashFiles('gradle/libs.versions.toml') }}-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}"
+          key: "${{ runner.os }}-kmp-2.0.0"
           restore-keys: |
-            ${{ runner.os }}-kmp-${{ hashFiles('gradle/libs.versions.toml') }}
             ${{ runner.os }}-kmp-
 
       - name: Setup Gradle
@@ -120,10 +118,10 @@ jobs:
           languages: ${{ matrix.language }}
           # If you wish to specify custom queries, you can do so here or in a config file.
           # By default, queries listed here will override any specified in a config file.
-          # Prefix the list here with "+" to use these queries and those in the config file.
+          # Prefix the list with "+" to use these queries, and those in the config file.
           #
           # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-          # queries: security-extended,security-and-quality
+          # queries: security-extended, security-and-quality
 
       - name: 'Build and check plugin itself'
         timeout-minutes: 18
