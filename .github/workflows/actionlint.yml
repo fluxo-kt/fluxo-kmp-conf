@@ -1,0 +1,37 @@
+name: ActionLint
+
+on:
+  push:
+    paths:
+      - '.github/actions/**.yml'
+      - '.github/workflows/*.yml'
+  pull_request:
+    paths:
+      - '.github/actions/**.yml'
+      - '.github/workflows/*.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    name: Validate Workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            files.pythonhosted.org:443
+            github.com:443
+            objects.githubusercontent.com:443
+            pypi.org:443
+            raw.githubusercontent.com:443
+            registry.npmjs.org:443
+
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/actionlint

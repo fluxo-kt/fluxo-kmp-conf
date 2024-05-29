@@ -1,0 +1,49 @@
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+name: actionlint
+description: ✅ Run actionlint for validating GitHub Actions workflow files.
+author: Art Shendrik
+branding:
+  icon: check-circle
+  color: gray-dark
+
+inputs:
+  files:
+    description: Comma-separated glob pattern list of files to check
+    required: false
+    default: '.github/workflows/*.yml, .github/actions/**.yaml'
+  flags:
+    description: Extra flags for the actionlint
+    required: false
+    default: ${{ null }}
+  fail-on-error:
+    description: Fail on error
+    required: false
+    default: ${{ true }}
+
+runs:
+  using: "composite"
+  steps:
+    # https://github.com/marketplace/actions/actionlint
+    # https://github.com/rhysd/actionlint/releases
+    # https://github.com/gmazzo/gradle-codeowners-plugin/pull/66/files
+    - name: actionlint
+      uses: raven-actions/actionlint@v1
+      id: al
+      with:
+        fail-on-error: ${{ inputs.fail-on-error }}
+        files: ${{ inputs.files }}
+        flags: ${{ inputs.flags }}
+
+    - name: actionlint Summary
+      continue-on-error: true
+      shell: bash
+      env:
+        AL_VERSION: ${{ steps.al.outputs.version-semver }}
+        AL_CACHE_HIT: ${{ steps.al.outputs.cache-hit }}
+      run: |
+        echo "Used actionlint version $AL_VERSION"
+        echo "actionlint cache used: $AL_CACHE_HIT"
+
+# Ref:
+#  https://github.com/gmazzo/gradle-codeowners-plugin/blob/346ed70/.github/actions/setup-host/action.yml (composite action example)
+#  https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions

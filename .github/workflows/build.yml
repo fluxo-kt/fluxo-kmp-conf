@@ -7,6 +7,7 @@ on:
       - '**.*ignore'
       - '**.md'
       - '**.txt'
+      - '**/actionlint**'
       - '**/pr-**.yml'
       - '**/release.yml'
       - '**dependabot.yml'
@@ -23,6 +24,7 @@ on:
       - '**.*ignore'
       - '**.md'
       - '**.txt'
+      - '**/actionlint**'
       - '**/pr-**.yml'
       - '**/release.yml'
       - '**dependabot.yml'
@@ -69,12 +71,6 @@ jobs:
         with:
           disable-sudo: true
           egress-policy: audit
-
-      # steps.v.outputs.run_url
-      - id: v
-        if: github.event_name == 'pull_request'
-        run: |
-          echo "run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -195,14 +191,18 @@ jobs:
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && failure()
         env:
-          GITHUB_ACTION_RUN_URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          OS: ${{ matrix.os }}
+          GH_WORKFLOW: ${{ github.workflow }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const { OS, GH_WORKFLOW, RUN_URL } = process.env
             github.rest.issues.createComment({
               issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo,
-              body: '❌ ${{ github.workflow }} [failed](${{ steps.v.outputs.run_url }}) on ${{ matrix.os }}.'
+              body: `❌ ${GH_WORKFLOW} [failed](${RUN_URL}) on ${OS}.`,
             })
+
 
 # TODO: Integrate commits linting
 #  https://github.com/lsc/serenity/blob/6ef8100/.github/workflows/lintcommits.yml

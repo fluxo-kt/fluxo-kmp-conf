@@ -41,12 +41,14 @@ jobs:
           RELEASE_PRE=false
           RELEASE_SUFFIX=""
           # Check release type
-          if [[ $GITHUB_REF_NAME =~ 'alpha' || $GITHUB_REF_NAME =~ 'beta' || $GITHUB_REF_NAME =~ 'rc' ]]; then
+          if [[ "$GITHUB_REF_NAME" =~ 'alpha' || "$GITHUB_REF_NAME" =~ 'beta' || "$GITHUB_REF_NAME" =~ 'rc' ]]; then
             echo "This is a pre-release!"
             RELEASE_PRE=true
             RELEASE_SUFFIX=" (pre release)"
           fi
+          # shellcheck disable=SC2086
           echo "RELEASE_PRE=$RELEASE_PRE" >> $GITHUB_ENV
+          # shellcheck disable=SC2086
           echo "RELEASE_SUFFIX=$RELEASE_SUFFIX" >> $GITHUB_ENV
 
       - name: GitHub Release
