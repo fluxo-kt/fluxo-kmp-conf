@@ -1,4 +1,4 @@
-name: ActionLint
+name: Validate Workflows
 
 on:
   push:
@@ -15,7 +15,6 @@ permissions:
 
 jobs:
   actionlint:
-    name: Validate Workflows
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
