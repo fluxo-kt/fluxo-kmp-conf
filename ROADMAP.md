@@ -13,6 +13,7 @@
 * Detect when called as an included build (run with no tasks).
   * Don't add Android Lint or any additional non-required tasks or plugins in this case.
   * Don't add Android Lint when old Gradle used (min supported Gradle is 8.7).
+* https://github.com/slackhq/slack-gradle-plugin/pull/641/files
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630
@@ -203,7 +204,7 @@
         * https://github.com/iurysza/kotlin-scaffold
 * https://github.com/BenWoodworth/Parameterize
 * https://github.com/kotlin-hands-on/kotlin-swift-interopedia
-* https://github.com/drewhamilton/poko/
+* https://github.com/drewhamilton/Poko/
   * https://github.com/saket/telephoto/releases/tag/0.7.1
 * https://telegra.ph/Compose-stabilityConfigurationPath-11-30
   * https://fvilarino.medium.com/exploring-jetpack-compose-compilers-stability-config-f1ccb197d6c0
@@ -224,6 +225,7 @@
   * https://github.com/CharlieTap/cachemap
   * https://github.com/CharlieTap/cachemap/tree/failing-native-benchmark
   * https://github.com/CharlieTap/cachemap/tree/benchmarking
+* https://github.com/Anamorphosee/stacktrace-decoroutinator
 * https://gitlab.com/opensavvy/ci-templates
   * https://gitlab.com/opensavvy/playgrounds/gradle/-/blob/main/.gitlab-ci.yml?ref_type=heads
 * https://github.com/gmazzo/gradle-codeowners-plugin
