@@ -12,6 +12,9 @@
 ### Changed
 - revise the hierarchy of the source sets using both the new `KotlinHierarchyTemplate` and the old way. **Can be a BREAKING CHANGE!**
 
+### Updated
+- bump Android Gradle Plugin _8.6.0-alpha04_ (compile-only dependency).
+
 
 ## [0.10.0] - 2024-05-26
 
