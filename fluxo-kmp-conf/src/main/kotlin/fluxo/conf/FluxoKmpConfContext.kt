@@ -207,8 +207,8 @@ internal abstract class FluxoKmpConfContext
                 val noTasks = startTaskNames.isEmpty()
                 if (noTasks) logger.l("INCLUDED BUILD!")
 
-                val pDir = parent.startParameter.projectDir
-                val dir = pDir?.run {
+                val pDir = parent.startParameter.run { projectDir ?: currentDir }
+                val dir = pDir.run {
                     val relDir = relativeTo(start.projectDir ?: project.projectDir)
                     if (relDir.path.startsWith("..")) pDir else relDir
                 }
