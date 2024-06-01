@@ -1,6 +1,7 @@
 package fluxo.conf.dsl.container.target
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.NonJvm.Native.Nix.AndroidNative.Companion.ANDROID_NATIVE
 import fluxo.conf.impl.EMPTY_FUN
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
@@ -40,9 +41,5 @@ public interface AndroidNativeTarget : KotlinTargetContainer<KotlinNativeTarget>
             targetName: String = "${ANDROID_NATIVE}X86",
             configure: AndroidNativeTarget.() -> Unit = EMPTY_FUN,
         )
-    }
-
-    private companion object {
-        private const val ANDROID_NATIVE = "androidNative"
     }
 }

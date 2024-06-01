@@ -32,6 +32,7 @@ public final class Fkc {
 	public static final fun getAppleSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getCommon (Lorg/gradle/api/NamedDomainObjectCollection;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommon (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun getCommonAndroidNative (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonApple (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonIos (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun getCommonJs (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Lfluxo/conf/kmp/SourceSetBundle;

@@ -12,7 +12,7 @@ internal abstract class TargetAndroidNativeContainer(
     context: ContainerContext,
     name: String,
 ) : KmpTargetContainerImpl<KotlinNativeTarget>(context, name, ANDROID_NATIVE_SORT_ORDER),
-    KmpTargetContainerImpl.NonJvm.Native.AndroidNative,
+    KmpTargetContainerImpl.NonJvm.Native.Nix.AndroidNative,
     AndroidNativeTarget {
 
     interface Configure : AndroidNativeTarget.Configure, ContainerHolderAware {

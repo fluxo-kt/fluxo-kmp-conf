@@ -1,6 +1,7 @@
 package fluxo.conf.dsl.container.impl
 
 import bundleFor
+import commonAndroidNative
 import commonApple
 import commonIos
 import commonJs
@@ -148,8 +149,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
             }
 
 
-            interface AndroidNative : Native<KotlinNativeTarget>
-
             interface Nix<T : KotlinNativeTarget> : Native<T> {
 
                 companion object {
@@ -266,6 +265,23 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     ) {
                         if (!allowManualHierarchy) return
                         val bundle = k.commonLinux
+                        @Suppress("DEPRECATION")
+                        child dependsOn bundle
+                        super.setupParentSourceSet(k, bundle)
+                    }
+                }
+
+                interface AndroidNative : Nix<KotlinNativeTarget> {
+                    companion object {
+                        const val ANDROID_NATIVE = "androidNative"
+                    }
+
+                    override fun setupParentSourceSet(
+                        k: KotlinMultiplatformExtension,
+                        child: SourceSetBundle,
+                    ) {
+                        if (!allowManualHierarchy) return
+                        val bundle = k.commonAndroidNative
                         @Suppress("DEPRECATION")
                         child dependsOn bundle
                         super.setupParentSourceSet(k, bundle)

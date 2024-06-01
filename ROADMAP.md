@@ -2,8 +2,9 @@
 
 ### Plan
 
-- Move `androidNative` intermediary source set to inherit from the `unix` source
-  set instead of `native` (breaking change; [1](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/blob/master/CHANGELOG.md#version-020-2024-02-25), [2](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/43)).
+- Adds experimental support to jvm for configuring multi-release Jars to include `module-info.java`
+  [1](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/45/files).
+
 
 ### Research roadmap
 

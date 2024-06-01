@@ -9,6 +9,9 @@
 - allow disabling Android Lint when no Android plugin is used.
 - detect when the project is a child of a composite build and has no startup tasks.
 
+### Changed
+- revise the hierarchy of the source sets using both the new `KotlinHierarchyTemplate` and the old way. **Can be a BREAKING CHANGE!**
+
 
 ## [0.10.0] - 2024-05-26
 

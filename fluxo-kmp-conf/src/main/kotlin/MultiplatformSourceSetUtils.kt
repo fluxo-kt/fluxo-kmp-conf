@@ -105,6 +105,10 @@ public val KotlinSourceSetContainer.commonWatchos: SourceSetBundle
 public val KotlinSourceSetContainer.commonLinux: SourceSetBundle
     get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.Linux.LINUX)
 
+/** Parent [SourceSetBundle] for all Linux targets */
+public val KotlinSourceSetContainer.commonAndroidNative: SourceSetBundle
+    get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Nix.AndroidNative.ANDROID_NATIVE)
+
 /** Parent [SourceSetBundle] for all MinGW/Win targets */
 public val KotlinSourceSetContainer.commonMingw: SourceSetBundle
     get() = sourceSets.bundle(KmpTargetContainerImpl.NonJvm.Native.Mingw.MINGW)
