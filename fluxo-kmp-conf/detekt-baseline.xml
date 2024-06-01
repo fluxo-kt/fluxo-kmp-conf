@@ -43,8 +43,7 @@
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Add env flag for dynamic switch-on when needed</ID>
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Auto detect if `-Xjdk-release` actually can be used.</ID>
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Detect if JVM toolchains are already enabled in the project.</ID>
-    <ID>ForbiddenComment:KotlinSetupDiagnosticTasks.kt$// TODO: @DisableCachingByDefault(because = "Not worth caching")</ID>
-    <ID>ForbiddenComment:KotlinSourceSetsReportTask.kt$// TODO: Mark source sets with deprectaed or 3rd tier targets</ID>
+    <ID>ForbiddenComment:KotlinSourceSetsReportTask.kt$// TODO: Mark source sets with deprecated or 3rd tier targets</ID>
     <ID>ForbiddenComment:LoadAndApplyPluginIfNotApplied.kt$// TODO: Check version for correctness</ID>
     <ID>ForbiddenComment:MultiplatformSourceSetUtils.kt$// TODO: Create bundles once and reuse or at least make them lazy evaluatable.</ID>
     <ID>ForbiddenComment:NodeGraphsRenderer.kt$NodeGraphsRenderer.LegendRenderer$// FIXME: This is not implemented yet.</ID>
@@ -143,12 +142,9 @@
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>MaximumLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$ </ID>
-    <ID>NestedBlockDepth:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$fun buildTrees(): List&lt;GraphNode></ID>
     <ID>NestedBlockDepth:SetupBinaryCompatibilityValidator.kt$internal fun setupBinaryCompatibilityValidator( conf: FluxoConfigurationExtensionImpl, project: Project = conf.project, )</ID>
     <ID>NestedBlockDepth:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$@Suppress("ReturnCount") fun execute( callType: ProcessorCallType, ignoreMemoryLimit: Boolean = false, ): Boolean</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
-    <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>
     <ID>ReturnCount:SetupArtifactsProcessing.kt$@Suppress("CyclomaticComplexMethod", "LongMethod") internal fun setupArtifactsProcessing( conf: FluxoConfigurationExtensionImpl, )</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>TooManyFunctions:SetupJvmCompatibility.kt$fluxo.conf.impl.kotlin.SetupJvmCompatibility.kt</ID>

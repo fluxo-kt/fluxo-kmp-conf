@@ -322,9 +322,9 @@ internal abstract class FluxoKmpConfContext
                 val size = allTasks.size
                 logger.d("Task graph has $size ${if (size == 1) "task" else "tasks"}")
                 val isLongList = size > MAX_TASKS_TO_LOG
-                val postfix = if (isLongList) ", ...(${size - MAX_TASKS_TO_LOG} more)" else ""
-                val tasks = if (isLongList) allTasks.take(MAX_TASKS_TO_LOG) else allTasks
-                val tasksStr = tasks.joinToString(postfix = postfix) { it.path }
+                val prefix = if (isLongList) "(${size - MAX_TASKS_TO_LOG} more), ..." else ""
+                val tasks = if (isLongList) allTasks.takeLast(MAX_TASKS_TO_LOG) else allTasks
+                val tasksStr = tasks.joinToString(prefix = prefix) { it.path }
                 logger.v("Task graph: $tasksStr")
             }
 

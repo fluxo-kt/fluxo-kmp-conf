@@ -10,6 +10,7 @@ import fluxo.conf.impl.register
 import fluxo.conf.impl.withType
 import fluxo.log.l
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
@@ -28,31 +29,36 @@ internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
         }
         rootProject.allprojects {
             plugins.withType<KotlinBasePlugin> {
-                // TODO: @DisableCachingByDefault(because = "Not worth caching")
                 val checkTask = tasks.namedOrNull(CHECK_TASK_NAME)
 
                 tasks.register(TARGETS_TASK) {
-                    group = TASK_GROUP
                     description = printTaskDescriptionFor("targets")
+                    commonConfiguration(checkTask)
                     doLast { printKotlinTargetsInfo() }
-                    checkTask?.let { mustRunAfter(it) }
                 }
                 tasks.register(SOURCES_TASK) {
-                    group = TASK_GROUP
                     description = printTaskDescriptionFor("source sets")
+                    commonConfiguration(checkTask)
                     doLast { printKotlinSourceSetsInfo() }
-                    checkTask?.let { mustRunAfter(it) }
                 }
 
                 tasks.register<KotlinSourceSetsReportTask>(SOURCES_GRAPH_TASK) {
-                    group = TASK_GROUP
                     description = printTaskDescriptionFor("source sets", "graph")
-                    checkTask?.let { mustRunAfter(it) }
+                    commonConfiguration(checkTask)
                 }
             }
         }
     }
 }
+
+private fun Task.commonConfiguration(deps: Any?) {
+    group = TASK_GROUP
+    notCompatibleWithConfigurationCache("Not cacheable")
+    deps?.let { mustRunAfter(it) }
+    // Ensure the task always runs
+    outputs.upToDateWhen { false }
+}
+
 
 private fun Project.printKotlinTargetsInfo() {
     println("Project '$path' Kotlin targets:")

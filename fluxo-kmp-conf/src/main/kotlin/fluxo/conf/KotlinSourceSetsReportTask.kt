@@ -1,3 +1,5 @@
+@file:Suppress("ReturnCount")
+
 package fluxo.conf
 
 import fluxo.conf.graph.AsciiGraphReportRenderer
@@ -23,12 +25,12 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.konan.target.KonanTarget.Companion.deprecatedTargets
 
-// TODO: Mark source sets with deprectaed or 3rd tier targets
+// TODO: Mark source sets with deprecated or 3rd tier targets
 
 @Suppress("UnstableApiUsage")
 @DisableCachingByDefault(because = "Not worth caching")
 internal abstract class KotlinSourceSetsReportTask :
-    AbstractProjectBasedReportTask<KotlinSourceSetsReportTask.KotlinSourceSetsModel>() {
+    AbstractProjectBasedReportTask<KotlinSourceSetsReportTask.StubModel>() {
 
     @get:Internal
     internal abstract val propShowTests: Property<Boolean>
@@ -47,7 +49,6 @@ internal abstract class KotlinSourceSetsReportTask :
         @Input get() = propShowOnlyTests.getOrElse(false)
         set(value) = propShowOnlyTests.set(value)
 
-
     private val lazyRenderer by lazy {
         val showTests = showTests || showOnlyTests
         AsciiGraphReportRenderer(
@@ -57,9 +58,16 @@ internal abstract class KotlinSourceSetsReportTask :
         )
     }
 
+    private val projectDir: File = project.layout.projectDirectory.asFile
+
     override fun getRenderer() = lazyRenderer
 
-    override fun generateReportFor(project: ProjectDetails, model: KotlinSourceSetsModel) {
+
+    override fun generateReportFor(pd: ProjectDetails, stub: StubModel) {
+        val projectDir = projectDir
+        val model = KotlinSourceSetsModel(project.kotlinExtension.sourceSets) {
+            it.relativeTo(projectDir).path
+        }
         var trees = model.buildTrees()
         while (true) {
             val filtered = trees.filter { it.canShow() }
@@ -75,12 +83,7 @@ internal abstract class KotlinSourceSetsReportTask :
         return if (showOnlyTests) isTest else showTests || !isTest
     }
 
-    override fun calculateReportModelFor(project: Project): KotlinSourceSetsModel {
-        val projectDir = project.projectDir
-        return KotlinSourceSetsModel(
-            project.kotlinExtension.sourceSets,
-        ) { it.relativeTo(projectDir).path }
-    }
+    override fun calculateReportModelFor(project: Project) = StubModel()
 
 
     /**
@@ -169,6 +172,7 @@ internal abstract class KotlinSourceSetsReportTask :
             }
         }
 
+        @Suppress("NestedBlockDepth")
         fun buildTrees(): List<GraphNode> {
             if (roots.isNotEmpty()) {
                 return roots
@@ -288,4 +292,6 @@ internal abstract class KotlinSourceSetsReportTask :
             output.append(")")
         }
     }
+
+    internal class StubModel
 }

@@ -18,6 +18,7 @@ internal class NodeGraphsRenderer(
 ) {
     private val legendRenderer = LegendRenderer(output)
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var isShowSinglePath = false
 
     fun render(items: Collection<RenderableNode>) {
@@ -130,6 +131,7 @@ internal class NodeGraphsRenderer(
                 output.withStyle(Info)
                     .println("(n) - A dependency that cannot be resolved.")
             }
+            @Suppress("ControlFlowWithEmptyBody")
             if (hasNonPrimaryTiers) {
                 // FIXME: This is not implemented yet.
             }
