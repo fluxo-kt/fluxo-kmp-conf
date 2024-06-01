@@ -147,6 +147,7 @@ jobs:
           category: lint
 
       - name: 'Run check-gradle-plugin'
+        if: always()
         timeout-minutes: 6
         working-directory: checks/gradle-plugin
         run: ./gradlew build assemble check --continue --stacktrace --scan
@@ -154,6 +155,7 @@ jobs:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: 'Run check-kmp'
+        if: always()
         timeout-minutes: 12
         working-directory: checks/kmp
         run: ./gradlew build assemble check printKotlinSourceSetsGraph --continue --stacktrace --scan
@@ -161,6 +163,7 @@ jobs:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: 'Run check-compose-desktop'
+        if: always()
         timeout-minutes: 14
         working-directory: checks/compose-desktop
         run: ./gradlew build assemble check packageReleaseDistributionForCurrentOS --continue --stacktrace --scan
