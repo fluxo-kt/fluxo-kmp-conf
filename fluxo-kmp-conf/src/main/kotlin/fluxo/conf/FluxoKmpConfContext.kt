@@ -34,6 +34,7 @@ import isShrinkerDisabled
 import javax.inject.Inject
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
@@ -280,7 +281,20 @@ internal abstract class FluxoKmpConfContext
     private fun taskGraphBasedProjectSyncDetection() {
         // TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.
         //  https://github.com/JetBrains/gradle-idea-ext-plugin
-        rootProject.gradle.taskGraph.whenReady {
+        val p = rootProject
+        val logger = p.logger
+        p.gradle.taskGraph.whenReady {
+            val allTasks: List<Task> = allTasks
+            if (SHOW_DEBUG_LOGS) {
+                val size = allTasks.size
+                logger.d("Task graph has $size ${if (size == 1) "task" else "tasks"}")
+                val isLongList = size > MAX_TASKS_TO_LOG
+                val postfix = if (isLongList) ", ...(${size - MAX_TASKS_TO_LOG} more)" else ""
+                val tasks = if (isLongList) allTasks.take(MAX_TASKS_TO_LOG) else allTasks
+                val tasksStr = tasks.joinToString(postfix = postfix) { it.path }
+                logger.v("Task graph: $tasksStr")
+            }
+
             if (!isProjectInSyncRun) {
                 val hasImportTaskInGraph = allTasks.any {
                     it.path.let { p ->
@@ -307,5 +321,7 @@ internal abstract class FluxoKmpConfContext
         // https://twitter.com/Sellmair/status/1619308362881187840
         internal const val KOTLIN_IDEA_IMPORT_TASK = "prepareKotlinIdeaImport"
         internal const val KOTLIN_IDEA_BSM_TASK = "prepareKotlinBuildScriptModel"
+
+        private const val MAX_TASKS_TO_LOG = 10
     }
 }
