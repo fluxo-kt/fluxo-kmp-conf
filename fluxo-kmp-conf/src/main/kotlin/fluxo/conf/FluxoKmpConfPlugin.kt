@@ -44,8 +44,10 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.checkIsRootProject("\"$PLUGIN_ID\" plugin")
-        checkGradleLifecycleBase(target)
         checkKotlinPlugin()
+
+        // Make sure there's a `clean`, and a `check` tasks in the root project.
+        checkGradleLifecycleBase(target)
 
         val ctx = FluxoKmpConfContext.getFor(target)
 

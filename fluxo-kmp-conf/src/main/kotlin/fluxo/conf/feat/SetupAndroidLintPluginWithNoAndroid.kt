@@ -4,11 +4,16 @@ import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_LINT_PLUGIN_ID
 import org.gradle.api.Project
+import org.gradle.util.GradleVersion
 
 /**
  * Setup Android Lint for non-Android projects.
  */
 internal fun Project.setupAndroidLintPluginWithNoAndroid(conf: FluxoConfigurationExtensionImpl) {
+    if (GradleVersion.current() < GradleVersion.version(MINIMUM_GRADLE_VERSION)) {
+        return
+    }
+
     // Available as separate artifact, but references the usual
     // `com.android.tools.build:gradle` artifact.
     conf.ctx.loadAndApplyPluginIfNotApplied(
@@ -41,3 +46,6 @@ internal fun Project.setupAndroidLintPluginWithNoAndroid(conf: FluxoConfiguratio
 private const val ANDROID_LINT_PLUGIN_CLASS_NAME = "com.android.build.gradle.LintPlugin"
 
 private val LINT_CATALOG_PLUGIN_IDS = arrayOf("android-lint", "lint")
+
+// Min supported Gradle is 8.7 for the newest Android Lint plugin.
+private const val MINIMUM_GRADLE_VERSION = "8.7"

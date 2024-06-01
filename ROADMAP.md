@@ -11,7 +11,6 @@
 <details>
   <summary>Show</summary>
 
-* Don't add Android Lint when old Gradle used (min supported Gradle is 8.7).
 * https://github.com/slackhq/slack-gradle-plugin/pull/641/files
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin

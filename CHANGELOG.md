@@ -12,6 +12,9 @@
 ### Changed
 - revise the hierarchy of the source sets using both the new `KotlinHierarchyTemplate` and the old way. **Can be a BREAKING CHANGE!**
 
+### Fixed
+- don't apply Android Lint when an old Gradle is used (min supported Gradle is 8.7).
+
 ### Updated
 - bump Android Gradle Plugin _8.6.0-alpha04_ (compile-only dependency).
 
