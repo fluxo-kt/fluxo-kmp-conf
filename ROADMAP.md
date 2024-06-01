@@ -10,9 +10,7 @@
 <details>
   <summary>Show</summary>
 
-* Detect when called as an included build (run with no tasks).
-  * Don't add Android Lint or any additional non-required tasks or plugins in this case.
-  * Don't add Android Lint when old Gradle used (min supported Gradle is 8.7).
+* Don't add Android Lint when old Gradle used (min supported Gradle is 8.7).
 * https://github.com/slackhq/slack-gradle-plugin/pull/641/files
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
@@ -24,6 +22,8 @@
 * https://github.com/eygraber/gradle-conventions
   * https://github.com/eygraber/gradle-conventions/pull/367/files#diff-1534017ba077dda735977a1ef95679ee14e382237106d48a4ba8df35d82c1a89
 * Kover plugin integration and support
+* Compose Screenshot Testing
+  * https://developer.android.com/studio/preview/compose-screenshot-testing
 * Code quality rules:
   * `first()` on Flow (not `StateFlow` or at least `SharedFlow`) isdangerous and easily can lead to infinite suspension.
   * Same for `Deffered.await()`, `select{}` with no timeout option, etc.

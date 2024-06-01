@@ -88,6 +88,13 @@ internal abstract class FluxoKmpConfContext
      */
     private val isInCompositeBuild: Boolean
 
+    /**
+     * Whether the project is a child of a composite build and has no startup tasks.
+     *
+     * `true` when the project has a parent build.
+     */
+    val isIncludedBuild: Boolean
+
     val isCI: Boolean = rootProject.isCI().get()
     val isRelease: Boolean = rootProject.isRelease().get()
     val isMaxDebug: Boolean = rootProject.isMaxDebugEnabled().get()
@@ -184,10 +191,31 @@ internal abstract class FluxoKmpConfContext
         isInCompositeBuild = includedBuilds > 0 || includedBuilds2 > 0
         val compositeMsg =
             "$includedBuilds gradle.includedBuilds, $includedBuilds2 start.includedBuilds"
+
         if (isInCompositeBuild) {
-            logger.l("COMPOSITE BUILD! ($compositeMsg)")
+            logger.l("COMPOSITE BUILD USED! ($compositeMsg)")
         } else if (isVerbose) {
-            logger.l("NOT in COMPOSITE build! ($compositeMsg)")
+            logger.l("NOT in a COMPOSITE build! ($compositeMsg)")
+        }
+
+        // Detect when the project is a child of a composite build
+        // and has no startup tasks.
+        // https://github.com/JetBrains/intellij-community/blob/ccb1ede/plugins/kotlin/gradle/gradle-tooling/impl/src/org/jetbrains/kotlin/idea/gradleTooling/PrepareKotlinIdeaImportTaskModelBuilder.kt#L84
+        isIncludedBuild = when (val parent = gradle.parent) {
+            null -> false
+            else -> {
+                val noTasks = startTaskNames.isEmpty()
+                if (noTasks) logger.l("INCLUDED BUILD!")
+
+                val pDir = parent.startParameter.projectDir
+                val dir = pDir?.run {
+                    val relDir = relativeTo(start.projectDir ?: project.projectDir)
+                    if (relDir.path.startsWith("..")) pDir else relDir
+                }
+                logger.l("Parent Gradle build: $dir")
+
+                noTasks
+            }
         }
 
         if (start.isDryRun) logger.l("DryRun mode is enabled!")
@@ -209,19 +237,24 @@ internal abstract class FluxoKmpConfContext
         // Disable all tests if:
         //  - `DISABLE_TESTS` is enabled;
         //  - `check` or `test` tasks are excluded from the build;
-        testsDisabled = project.disableTests().get() ||
-            start.excludedTaskNames.let { CHECK_TASK_NAME in it || TEST_TASK_NAME in it }
-
+        //  - is included build with no tasks (so it's a child of a composite build);
+        val testsDisabledReason = when {
+            isIncludedBuild -> "INCLUDED BUILD"
+            project.disableTests().get() -> "DISABLE_TESTS flag"
+            start.excludedTaskNames.let { CHECK_TASK_NAME in it || TEST_TASK_NAME in it } -> {
+                "EXCLUDED_TASKS${start.excludedTaskNames}"
+            }
+            else -> null
+        }
+        testsDisabled = testsDisabledReason != null
         if (testsDisabled) {
-            var reported = false
+            logger.w("Tests are disabled! Because of: $testsDisabledReason")
             for (name in startTaskNames) {
                 if (CHECK_TASK_NAME in name || TEST_TASK_NAME in name) {
-                    reported = true
                     logger.e("DISABLE_TESTS mode is enabled while calling $name task!")
                     break
                 }
             }
-            if (!reported) logger.w("Tests are disabled! (DISABLE_TESTS)")
         }
 
         logger.v("Cleaned start task names: $startTaskNames")

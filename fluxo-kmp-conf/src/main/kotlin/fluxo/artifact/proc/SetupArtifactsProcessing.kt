@@ -105,6 +105,12 @@ internal fun setupArtifactsProcessing(
         return
     }
 
+    val testsDisabled = conf.ctx.testsDisabled
+    var replaceOutgoingJar = conf.replaceOutgoingJar
+    if (!replaceOutgoingJar && testsDisabled) {
+        return
+    }
+
     val p = conf.project
     p.logger.l("Setup artifacts processing (shrink, optimize, shadow, etc.)")
 
@@ -129,9 +135,12 @@ internal fun setupArtifactsProcessing(
 
     val mainClassesProvider = p.getMainClassesProvider()
 
-    val testChainArtifact = !conf.ctx.testsDisabled
-    var replaceOutgoingJar = conf.replaceOutgoingJar
-    processorChains.forEachIndexed { chainId: Int, pc ->
+    val testChainArtifact = !testsDisabled
+    processorChains.forEachIndexed loop@{ chainId: Int, pc ->
+        if (!replaceOutgoingJar && testsDisabled) {
+            return@loop
+        }
+
         var stepId = 0
         var chainTailTask: TaskProvider<*>? = null
         var mainJar: Provider<RegularFile>? = null
@@ -228,9 +237,9 @@ internal fun setupArtifactsProcessing(
         // Replace the original artifact with processed one, but only once.
         // Replaces the default jar in outgoingVariants.
         // FIXME: Provide unporcessed artifacts alongside the processed ones as a variant.
-        val jarProvider = requireNotNull(mainJar)
         val lastChainTask = chainTailTask
         if (replaceOutgoingJar) {
+            val jarProvider = requireNotNull(mainJar)
             replaceOutgoingJar = false
             if (!isApplication) {
                 p.replaceOutgoingArtifactJarInConfigurations(
@@ -252,6 +261,7 @@ internal fun setupArtifactsProcessing(
         }
 
         if (testChainArtifact && !isApplication && lastChainTask != null) {
+            val jarProvider = requireNotNull(mainJar)
             val verifyTask = tasks.register<ShrinkerVerificationTestTask>(
                 name = getShrinkerVerifyTaskName(chainId = chainId),
             ) {
@@ -275,10 +285,10 @@ internal fun setupArtifactsProcessing(
         }
     }
 
-    if (processArtifacts && chainTailTasks.isNotEmpty()) {
-        p.addToCheckAndTestDependencies(chainTailTasks, checkOnly = true)
-    }
     if (testChainArtifact) {
+        if (processArtifacts && chainTailTasks.isNotEmpty()) {
+            p.addToCheckAndTestDependencies(chainTailTasks, checkOnly = true)
+        }
         p.addToCheckAndTestDependencies(testTasks)
     }
 }

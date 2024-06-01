@@ -33,11 +33,13 @@ internal fun setupBinaryCompatibilityValidator(
     val config = conf.apiValidationGetter
     val disabledByRelease = ctx.isRelease && config?.disableForNonRelease == true
     if (disabledByRelease || ctx.testsDisabled) {
-        val calledExplicitly = ctx.startTaskNames.any {
+        val isCalledExplicitly = ctx.startTaskNames.any {
             API_DUMP_SPEC.isSatisfiedBy(it) || API_CHECK_SPEC.isSatisfiedBy(it)
         }
-        if (!calledExplicitly) {
-            logger.l("BinaryCompatibilityValidator checks are disabled")
+        if (!isCalledExplicitly) {
+            if (!ctx.isIncludedBuild) {
+                logger.l("BinaryCompatibilityValidator checks are disabled")
+            }
             return
         }
     }

@@ -144,10 +144,12 @@
     <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>MaximumLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$ </ID>
     <ID>NestedBlockDepth:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$fun buildTrees(): List&lt;GraphNode></ID>
+    <ID>NestedBlockDepth:SetupBinaryCompatibilityValidator.kt$internal fun setupBinaryCompatibilityValidator( conf: FluxoConfigurationExtensionImpl, project: Project = conf.project, )</ID>
     <ID>NestedBlockDepth:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$@Suppress("ReturnCount") fun execute( callType: ProcessorCallType, ignoreMemoryLimit: Boolean = false, ): Boolean</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun GraphNode.isReachableThrough(node: GraphNode): Boolean</ID>
     <ID>ReturnCount:KotlinSourceSetsReportTask.kt$KotlinSourceSetsReportTask.SourceSetNodeRenderer$context(StyledTextOutput) @Suppress("CyclomaticComplexMethod") override fun renderAttrs(node: RenderableNode, parent: RenderableNode?)</ID>
+    <ID>ReturnCount:SetupArtifactsProcessing.kt$@Suppress("CyclomaticComplexMethod", "LongMethod") internal fun setupArtifactsProcessing( conf: FluxoConfigurationExtensionImpl, )</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>TooManyFunctions:SetupJvmCompatibility.kt$fluxo.conf.impl.kotlin.SetupJvmCompatibility.kt</ID>
     <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>
