@@ -20,6 +20,8 @@ jobs:
     concurrency:
       group: '${{ github.workflow }}-${{ github.ref }}'
       cancel-in-progress: true
+    env:
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
     steps:
       - name: Harden Runner
@@ -27,14 +29,6 @@ jobs:
         with:
           disable-sudo: true
           egress-policy: audit
-
-      - name: Run URL
-        env:
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        shell: bash
-        run: |
-          # shellcheck disable=SC2086
-          echo "RUN_URL=$RUN_URL" >> $GITHUB_OUTPUT
 
       # Verify that the PR is from Dependabot
       - uses: dependabot/fetch-metadata@v2
