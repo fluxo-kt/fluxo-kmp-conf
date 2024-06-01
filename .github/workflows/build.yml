@@ -11,14 +11,20 @@ on:
       - '**/pr-**.yml'
       - '**/release.yml'
       - '**dependabot.yml'
-  push:
-    # Avoid useless runs.
+    # Avoid useless and/or duplicate runs.
+    # Also, we merge with --ff-only,
+    # so we don't need to run on the merge commit.
     branches-ignore:
       # Dependabot creates both branch and PR. Avoid running twice.
       - 'dependabot/**'
+      - 'dev'
+      - 'feat*/**'
+      - 'fix/**'
+      - 'mr/**'
       - 'pr/**'
       - 'pull/**'
       - 'wip/**'
+  push:
     paths-ignore:
       - '**-validation.yml'
       - '**.*ignore'
