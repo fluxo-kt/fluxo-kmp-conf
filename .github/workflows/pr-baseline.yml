@@ -64,7 +64,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
 
       - name: Baseline
-        run: ./baseline
+        run: ./updateBaseline
 
       - name: Setup GIT
         run: |
