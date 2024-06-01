@@ -17,6 +17,7 @@
 
 ### Updated
 - bump Android Gradle Plugin _8.6.0-alpha04_ (compile-only dependency).
+- bump Gradle from _8.8-rc-1_ to _8.8_.
 
 
 ## [0.10.0] - 2024-05-26
