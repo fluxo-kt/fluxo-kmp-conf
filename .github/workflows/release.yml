@@ -12,11 +12,10 @@ permissions:
 env:
   CI: true
   RELEASE: true
+  DISABLE_TESTS: true
   BUILD_NUMBER: ${{ github.run_number }}
   SCM_TAG: ${{ github.sha }}
   GRADLE_OPTS: |
-    -Dorg.gradle.caching=false
-    -Dorg.gradle.configuration-cache=false
     -Dorg.gradle.daemon=false
     -Dorg.gradle.unsafe.watch-fs=false
     -Dorg.gradle.vfs.watch=false
@@ -94,7 +93,8 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           RELEASE: true
         run: >
-          ./gradlew publishPlugins --no-build-cache --no-configuration-cache --stacktrace --scan
+          ./gradlew publishPlugins
+          --no-build-cache --no-configuration-cache --stacktrace --scan
           -Pgradle.publish.key="${{ secrets.GRADLE_PUBLISH_KEY }}"
           -Pgradle.publish.secret="${{ secrets.GRADLE_PUBLISH_SECRET }}"
 
