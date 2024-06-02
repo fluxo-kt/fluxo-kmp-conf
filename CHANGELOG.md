@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.10.1] - 2024-06-02
+
 ### Added
 - allow disabling Android Lint when no Android plugin is used.
 - detect when the project is a child of a composite build and has no startup tasks.
@@ -304,6 +307,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.10.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.10.1
 [0.10.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.10.0
 [0.9.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.9.1
 [0.8.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.8.1
