@@ -228,7 +228,7 @@ bcutil = { module = "org.bouncycastle:bcutil-jdk18on", version.ref = "bouncycast
 
 # Google core libraries for Java.
 # https://github.com/google/guava/releases
-guava = { module = "com.google.guava:guava", version = "33.2.0-jre" }
+guava = { module = "com.google.guava:guava", version = "33.2.1-jre" }
 
 # Douglas Crockford's reference Java implementation of a JSON.
 # https://github.com/stleary/JSON-java/releases
