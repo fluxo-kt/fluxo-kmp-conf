@@ -51,7 +51,6 @@ env:
   BUILD_NUMBER: ${{ github.run_number }}
   SCM_TAG: ${{ github.sha }}
   #GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   DEPENDENCY_GRAPH_INCLUDE_CONFIGURATIONS: "^(?!(classpath)).*"
   DEPENDENCY_GRAPH_INCLUDE_PROJECTS: "^:(?!(buildSrc|test|check)).*"
 
@@ -70,6 +69,8 @@ jobs:
     timeout-minutes: 30
     runs-on: '${{ matrix.os }}-latest'
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    env:
+      GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: false
 
     steps:
       - name: Harden Runner
@@ -103,9 +104,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: release-candidate
           gradle-home-cache-cleanup: ${{ matrix.os != 'windows' }}
-          cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
+          cache-encryption-key: "${{ matrix.os != 'windows' && secrets.GRADLE_ENCRYPTION_KEY || '' }}"
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
           dependency-graph: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'generate-and-submit' || 'disabled'}}
           add-job-summary-as-pr-comment: on-failure
