@@ -70,9 +70,7 @@ jobs:
           cache-read-only: true
 
       - name: Update baseline
-        run: |
-          chmod +x updateBaseline
-          ./updateBaseline
+        run: ./updateBaseline
 
       - name: Setup GIT
         run: |
