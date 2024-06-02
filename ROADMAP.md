@@ -15,6 +15,10 @@
   * https://www.jetbrains.com/help/idea/open-close-and-move-projects.html#change-project-icon
   * https://www.jetbrains.com/help/idea/customize-actions-menus-and-toolbars.html#use-colors-in-toolbar
 * Create a unified root task `updateBaseline` that depends automatically on all baseline tasks for all connected tools.
+* Create a special tasks to save all extra detektPlugins in a single folder for easier usage from the IDE.
+  * Configure Detekt in the IDE right away to use this folder for plugins via `.idea/detekt.xml`.
+  * Also, set the project config file path in the same XML config.
+  * Research if it's possible to ask IDE to install the Detekt plugin if not installed.
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630
