@@ -327,4 +327,11 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     override var useDokka: Boolean?
         get() = useDokkaProp.orNull ?: parent?.useDokka
         set(value) = useDokkaProp.set(value)
+
+
+    @get:Input
+    val enableGradleDoctorProp: Property<Boolean>
+    override var enableGradleDoctor: Boolean
+        get() = enableGradleDoctorProp.orNull ?: true
+        set(value) = enableGradleDoctorProp.set(value)
 }

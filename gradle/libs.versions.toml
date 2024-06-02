@@ -315,6 +315,11 @@ deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "1.32
 # https://mvnrepository.com/artifact/com.dropbox.dependency-guard/dependency-guard
 deps-guard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 
+# Gradle Doctor: helps diagnose and fix common build problems.
+# https://runningcode.github.io/gradle-doctor/
+# https://plugins.gradle.org/plugin/com.osacky.doctor
+gradle-doctor = { id = "com.osacky.doctor", version = "0.10.0" }
+
 # `taskTree` task that prints the current task graph
 # https://github.com/dorongold/gradle-task-tree/blob/master/CHANGELOG.md#changelog
 # https://plugins.gradle.org/plugin/com.dorongold.task-tree

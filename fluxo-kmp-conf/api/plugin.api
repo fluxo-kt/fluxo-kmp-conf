@@ -228,6 +228,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon
 	public abstract fun getEnableDetektAutoCorrect ()Ljava/lang/Boolean;
 	public abstract fun getEnableDetektCompilerPlugin ()Ljava/lang/Boolean;
 	public abstract fun getEnableGenericAndroidLint ()Z
+	public abstract fun getEnableGradleDoctor ()Z
 	public abstract fun getEnableSpotless ()Z
 	public fun getEnableVerification ()Z
 	public abstract fun getSetupDependencies ()Z
@@ -239,6 +240,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionCommon
 	public abstract fun setEnableDetektAutoCorrect (Ljava/lang/Boolean;)V
 	public abstract fun setEnableDetektCompilerPlugin (Ljava/lang/Boolean;)V
 	public abstract fun setEnableGenericAndroidLint (Z)V
+	public abstract fun setEnableGradleDoctor (Z)V
 	public abstract fun setEnableSpotless (Z)V
 	public fun setEnableVerification (Z)V
 	public abstract fun setSetupDependencies (Z)V

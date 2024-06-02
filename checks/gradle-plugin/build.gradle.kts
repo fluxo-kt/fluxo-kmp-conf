@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.android.lint) apply false
     alias(libs.plugins.gradle.plugin.publish) apply false
     alias(libs.plugins.kotlinx.binCompatValidator) apply false
+    alias(libs.plugins.gradle.doctor) apply false
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
 

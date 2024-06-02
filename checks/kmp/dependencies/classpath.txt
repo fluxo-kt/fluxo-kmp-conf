@@ -74,6 +74,9 @@ com.google.testing.platform:core-proto:0.0.9-alpha02
 com.googlecode.concurrent-trees:concurrent-trees:2.6.1
 com.googlecode.javaewah:JavaEWAH:1.2.3
 com.googlecode.juniversalchardet:juniversalchardet:1.0.3
+com.gradle:develocity-gradle-plugin-adapters:1.0.2
+com.osacky.doctor:com.osacky.doctor.gradle.plugin:0.10.0
+com.osacky.doctor:doctor-plugin:0.10.0
 com.squareup.moshi:moshi-kotlin:1.12.0
 com.squareup.moshi:moshi:1.12.0
 com.squareup.okhttp3:okhttp-bom:4.12.0
@@ -124,6 +127,7 @@ io.netty:netty-resolver:4.1.93.Final
 io.netty:netty-transport-native-unix-common:4.1.93.Final
 io.netty:netty-transport:4.1.93.Final
 io.perfmark:perfmark-api:0.26.0
+io.reactivex.rxjava3:rxjava:3.1.8
 jakarta.activation:jakarta.activation-api:1.2.1
 jakarta.xml.bind:jakarta.xml.bind-api:2.3.2
 javax.annotation:javax.annotation-api:1.3.2
@@ -187,6 +191,7 @@ org.ow2.asm:asm-commons:9.6
 org.ow2.asm:asm-tree:9.6
 org.ow2.asm:asm-util:9.6
 org.ow2.asm:asm:9.7
+org.reactivestreams:reactive-streams:1.0.4
 org.slf4j:slf4j-api:1.7.36
 org.snakeyaml:snakeyaml-engine:2.6
 org.tensorflow:tensorflow-lite-metadata:0.1.0-rc2

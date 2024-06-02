@@ -170,6 +170,12 @@ internal abstract class FluxoKmpConfContext
             onProjectInSyncRun {
                 val reason = projectInSyncFlag.firstOrNull()
                 logger.d("onProjectInSyncRun, because $reason")
+                if (testsDisabled) {
+                    logger.w(
+                        "You may want to enable tests for the IDE synchronization " +
+                            "to configure all tasks!",
+                    )
+                }
             }
         }
 
@@ -244,6 +250,7 @@ internal abstract class FluxoKmpConfContext
             start.excludedTaskNames.let { CHECK_TASK_NAME in it || TEST_TASK_NAME in it } -> {
                 "EXCLUDED_TASKS${start.excludedTaskNames}"
             }
+
             else -> null
         }
         testsDisabled = testsDisabledReason != null

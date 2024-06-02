@@ -22,6 +22,7 @@ import fluxo.conf.feat.prepareModuleDependencyGraphPlugin
 import fluxo.conf.feat.prepareTaskInfoPlugin
 import fluxo.conf.feat.prepareTaskTreePlugin
 import fluxo.conf.feat.setupBinaryCompatibilityValidator
+import fluxo.conf.feat.setupGradleDoctorPlugin
 import fluxo.conf.feat.setupGradleProjectPublication
 import fluxo.conf.feat.setupSpotless
 import fluxo.conf.feat.setupTestsReport
@@ -64,6 +65,9 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             if (isRootProject && !ctx.testsDisabled) {
                 // FIXME: Prepare lazy APIs to avoid afterEvaluate in such cases.
                 afterEvaluate {
+                    if (conf.enableGradleDoctor) {
+                        ctx.setupGradleDoctorPlugin()
+                    }
                     if (conf.setupVerification && conf.enableSpotless) {
                         target.setupSpotless(ctx)
                     }

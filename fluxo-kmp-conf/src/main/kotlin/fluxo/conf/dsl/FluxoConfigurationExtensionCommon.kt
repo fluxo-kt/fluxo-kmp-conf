@@ -127,5 +127,16 @@ public interface FluxoConfigurationExtensionCommon {
      */
     public var enableSpotless: Boolean
 
+
+    /**
+     * Flag to apply the Gradle Doctor plugin.
+     *
+     * Only applicable for root module.
+     * Default value: `true`.
+     *
+     * @see setupVerification
+     */
+    public var enableGradleDoctor: Boolean
+
     // endregion
 }

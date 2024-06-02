@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.android.lint) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.gradle.doctor) apply false
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
 

@@ -57,8 +57,6 @@
 * Check BuildConfig tasks (not called on IDE sync?!)
 * CI improvements
   * https://github.com/adevinta/spark-android/tree/main/.github
-* Gradle Doctor plugin
-  * https://github.com/runningcode/gradle-doctor
 * Repo/build/CI examples.
   * https://github.com/gciatto/kt-math
 * Build Variants setup
