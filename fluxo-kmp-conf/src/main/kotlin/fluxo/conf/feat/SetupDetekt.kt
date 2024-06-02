@@ -84,11 +84,12 @@ internal fun Project.setupDetekt(
 ) {
     val context = conf.ctx
     if (!testsDisabled) {
-        logger.l("setup Detekt")
+        val asCompilerPlugin = conf.enableDetektCompilerPlugin == true
+        logger.l("setup Detekt" + if (asCompilerPlugin) " as COMPILER PLUGIN" else "")
 
         // Detekt is always availabe in the classpath as an implementation dependency.
         pluginManager.apply(
-            when (conf.enableDetektCompilerPlugin) {
+            when (asCompilerPlugin) {
                 true -> DetektKotlinCompilerPlugin::class.java
                 else -> DetektPlugin::class.java
             },
