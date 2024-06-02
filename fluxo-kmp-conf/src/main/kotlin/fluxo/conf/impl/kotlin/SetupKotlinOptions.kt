@@ -2,7 +2,6 @@ package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
-import fluxo.gradle.ioFile
 import fluxo.log.e
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
@@ -220,40 +219,6 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
 
 @Volatile
 private var BROKEN_JDK_RELEASE_LOGGED = false
-
-internal fun FluxoConfigurationExtensionImpl.setupKotlinComposeOptions(
-    ko: KotlinCommonOptions,
-    isTest: Boolean,
-) {
-    val ctx = ctx
-    val p = "plugin:androidx.compose.compiler.plugins.kotlin"
-    if (suppressKotlinComposeCompatibilityCheck == true) {
-        val kotlin = ctx.kotlinPluginVersion.toString()
-        ko.freeCompilerArgs += listOf("-P", "$p:suppressKotlinVersionCompatibilityCheck=$kotlin")
-    }
-
-    val composeMetrics = !isTest &&
-        (ctx.composeMetricsEnabled || ctx.isCI || ctx.isRelease || ctx.isMaxDebug)
-    if (!composeMetrics) {
-        return
-    }
-
-    // Output Compose Compiler metrics to the specified directory.
-    // https://chris.banes.dev/composable-metrics/
-    // https://github.com/androidx/androidx/blob/androidx-main/compose/compiler/design/compiler-metrics.md#interpreting-compose-compiler-metrics
-    val buildDir = project.layout.buildDirectory.ioFile.absolutePath
-    val reportsDir = "$buildDir/reports/compose"
-    ko.freeCompilerArgs += listOf("-P", "$p:metricsDestination=$reportsDir")
-    ko.freeCompilerArgs += listOf("-P", "$p:reportsDestination=$reportsDir")
-
-    @Suppress("MaxLineLength")
-    // Note: convert the report to the human-readable HTML.
-    // https://patilshreyas.github.io/compose-report-to-html/
-    // TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.
-    // $ composeReport2Html -app LW -overallStatsReport app_primaryDebug-module.json -detailedStatsMetrics app_primaryDebug-composables.csv -composableMetrics app_primaryDebug-composables.txt -classMetrics app_primaryDebug-classes.txt -o htmlReportDebug
-    // $ composeReport2Html -app LW -overallStatsReport app_primaryRelease-module.json -detailedStatsMetrics app_primaryRelease-composables.csv -composableMetrics app_primaryRelease-composables.txt -classMetrics app_primaryRelease-classes.txt -o htmlReportRelease
-    return
-}
 
 /** @see org.jetbrains.kotlin.config.LanguageFeature */
 @Suppress("SameParameterValue")

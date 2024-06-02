@@ -19,7 +19,10 @@ internal val PluginAware.hasKsp: Boolean get() = pluginManager.hasPlugin(KSP_PLU
 internal val PluginAware.hasKapt: Boolean get() = pluginManager.hasPlugin(KAPT_PLUGIN_ID)
 
 internal val PluginAware.hasKmpCompose: Boolean
-    get() = pluginManager.hasPlugin(JETBRAINS_COMPOSE_PLUGIN_ID)
+    get() = pluginManager.hasPlugin(KMP_COMPOSE_PLUGIN_ID)
+
+internal val PluginAware.hasKotlinCompose: Boolean
+    get() = pluginManager.hasPlugin(KOTLIN_COMPOSE_PLUGIN_ID)
 
 
 internal val Project.mppExt: KotlinMultiplatformExtension

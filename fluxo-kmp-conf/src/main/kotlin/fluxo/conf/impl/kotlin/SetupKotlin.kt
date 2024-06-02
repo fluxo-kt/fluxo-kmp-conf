@@ -283,7 +283,9 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
 
     coreLibrariesVersion = kc.coreLibs
 
-    setupTargets(conf)
+    val composeConfig = conf.setupCompose()
+
+    setupTargets(conf, composeConfig)
     setupSourceSetsKotlinCompatibility(kc)
 
     // TODO: Check KSP setup for KMP modules
@@ -299,9 +301,10 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
 }
 
 // FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions
-@Suppress("CyclomaticComplexMethod")
+@Suppress("CyclomaticComplexMethod", "LongMethod")
 private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,
+    composeConfig: ComposeConfiguration?,
     isMultiplatform: Boolean = this is KotlinMultiplatformExtension,
 ) = setupTargets {
     compilations.configureEach compilation@{
@@ -315,15 +318,15 @@ private fun KotlinProjectExtension.setupTargets(
         )
         jvmTargetVersion?.let(::setupJvmCompatibility)
 
-        // As per Kotlin 1.9 `compilerOptions` are still unreliable.
+        // In Kotlin 1.9 `compilerOptions` are still unreliable.
         // Use `kotlinOptions` instead for now.
+        val ctx = conf.ctx
         kotlinOptions.run {
             val platformType = target.platformType
             val isAndroid = platformType.let { KotlinPlatformType.androidJvm === it }
             val isJsOrWasm = !isAndroid && platformType
                 .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
 
-            val ctx = conf.ctx
             val warningsAsErrors = conf.kotlinConfig.warningsAsErrors &&
                 !isJsOrWasm && !isTest && (ctx.isCI || ctx.isRelease)
 
@@ -345,14 +348,12 @@ private fun KotlinProjectExtension.setupTargets(
             )
         }
 
-        // Compose options can work with errors using `compilerOptions`.
-        // Continue with `kotlinOptions` for now.
-        if (kc.setupCompose) {
-            conf.setupKotlinComposeOptions(kotlinOptions, isTest)
+        if (composeConfig != null) {
+            setupComposeLegacyWay(conf, composeConfig, isTest)
         }
 
         // Disable test compilation if tests are disabled.
-        if (isTest && conf.ctx.testsDisabled) {
+        if (isTest && ctx.testsDisabled) {
             disableCompilation()
         }
     }

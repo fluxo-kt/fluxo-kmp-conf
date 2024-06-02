@@ -116,6 +116,10 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     val setupRoom = setupRoom == true || project.hasRoomPlugin
 
+    val hasKotlinCompose = project.hasKotlinCompose
+    val setupCompose = enableCompose == true || project.hasKmpCompose || hasKotlinCompose
+    val useKotlinCompose = hasKotlinCompose || setupCompose && pluginVersion >= KOTLIN_2_0
+
     val kc = KotlinConfig(
         lang = lang,
         api = api,
@@ -142,7 +146,8 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         setupKsp = setupKsp == true || setupRoom || project.hasKsp,
         setupKapt = setupKapt == true || project.hasKapt,
         setupRoom = setupRoom,
-        setupCompose = enableCompose == true || project.hasKmpCompose,
+        setupCompose = setupCompose,
+        useKotlinCompose = useKotlinCompose,
         setupCoroutines = setupCoroutines,
         setupSerialization = setupKotlinXSerialization,
         optIns = optIns,

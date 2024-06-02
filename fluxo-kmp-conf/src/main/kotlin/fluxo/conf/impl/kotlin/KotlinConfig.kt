@@ -40,6 +40,7 @@ internal class KotlinConfig(
     val setupKapt: Boolean,
     val setupRoom: Boolean,
     val setupCompose: Boolean,
+    val useKotlinCompose: Boolean,
     val setupCoroutines: Boolean,
     val setupSerialization: Boolean,
     val optIns: Set<String>,

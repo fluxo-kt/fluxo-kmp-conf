@@ -1,6 +1,6 @@
 package fluxo.artifact.proc
 
-import fluxo.conf.impl.kotlin.JETBRAINS_COMPOSE_PLUGIN_ID
+import fluxo.conf.impl.kotlin.KMP_COMPOSE_PLUGIN_ID
 import fluxo.conf.impl.memoizeSafe
 import fluxo.log.w
 import org.gradle.api.Project
@@ -72,7 +72,7 @@ internal fun Project.composeDesktopApplication(): Any? {
 internal fun Project.onComposeDesktopApplication(
     action: (JvmApplication) -> Unit,
 ) {
-    pluginManager.withPlugin(JETBRAINS_COMPOSE_PLUGIN_ID) {
+    pluginManager.withPlugin(KMP_COMPOSE_PLUGIN_ID) {
         extensions.configure<ComposeExtension>("compose") c@{
             this.extensions.configure<DesktopExtension>("desktop") {
                 // No lazy API here, wait for the evaluation to be sure.

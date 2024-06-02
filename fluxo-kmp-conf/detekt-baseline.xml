@@ -78,6 +78,7 @@
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Allow to call shrinker by task name even if it's disabled.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support Android minification with Fluxo processing chain.</ID>
     <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support auto-disabling kotlin null checks generation for the shrunken release builds.</ID>
+    <ID>ForbiddenComment:SetupCompose.kt$// TODO: Make Compose Compiler metrics in HTML automatically with Gradle.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable Detekt for the experimentalLatest test compilation.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
     <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup checks for the non source set kotlin files (e.g., *.kts scripts).</ID>
@@ -98,7 +99,6 @@
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: -Xwasm-use-new-exception-proposal</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Guard conditions for when-with-subject (Kotlin 2.0.20)</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Make conversion of Compose Compiler metrics to HTML automatically with Gradle.</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Support for -Xemit-jvm-type-annotations</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Verify ct.sym fix later.</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>

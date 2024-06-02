@@ -69,7 +69,9 @@ org.jetbrains.dokka:dokka-core:1.9.20
 org.jetbrains.dokka:dokka-gradle-plugin:1.9.20
 org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:1.9.20
 org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.17.3
+org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.0.0
 org.jetbrains.kotlin.plugin.sam.with.receiver:org.jetbrains.kotlin.plugin.sam.with.receiver.gradle.plugin:2.0.0
+org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.0.0
 org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.23
 org.jetbrains.kotlin:kotlin-gradle-plugin-annotations:2.0.0
 org.jetbrains.kotlin:kotlin-gradle-plugin-api:2.0.0

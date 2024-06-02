@@ -65,8 +65,14 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     /**
      * Flag to enable the Compose feature.
      * Uses native capability for Android modules, multiplatform JetBrains Compose otherwise.
+     * Supports the new Kotlin Compose compiler plugin.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `false`.
      *
      * @see com.android.build.api.dsl.BuildFeatures.compose
+     * @see org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
+     * @see org.jetbrains.compose.ComposeExtension
      */
     public var enableCompose: Boolean?
 

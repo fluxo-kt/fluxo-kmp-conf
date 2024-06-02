@@ -11,7 +11,6 @@
 <details>
   <summary>Show</summary>
 
-* https://github.com/slackhq/slack-gradle-plugin/pull/641/files
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630
