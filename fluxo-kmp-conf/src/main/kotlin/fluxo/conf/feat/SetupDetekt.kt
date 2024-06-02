@@ -232,10 +232,22 @@ internal fun Project.setupDetekt(
 
         context.libs.run {
             dependencies {
-                onLibrary("detekt-formatting") { detektPlugins(it) }
+                arrayOf(
+                    "detekt-arrow",
+                    "detekt-compiler",
+                    "detekt-explicit",
+                    "detekt-faire",
+                    "detekt-formatting",
+                    "detekt-hbmartin",
+                    "detekt-ruleauthors",
+                    "detekt-verify-implementation",
+                ).forEach { id -> onLibrary(id) { detektPlugins(it) } }
 
                 if (kc.setupCompose) {
                     onLibrary("detekt-compose") { detektPlugins(it) }
+                }
+                if (!conf.isApplication) {
+                    onLibrary("detekt-libraries") { detektPlugins(it) }
                 }
             }
         }

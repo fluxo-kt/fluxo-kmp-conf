@@ -14,6 +14,7 @@
 * Project appearance in the IDE.
   * https://www.jetbrains.com/help/idea/open-close-and-move-projects.html#change-project-icon
   * https://www.jetbrains.com/help/idea/customize-actions-menus-and-toolbars.html#use-colors-in-toolbar
+* Create a unified root task `updateBaseline` that depends automatically on all baseline tasks for all connected tools.
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630
@@ -72,17 +73,11 @@
 * https://github.com/square/radiography
 * https://github.com/JetBrains-Research/reflekt
 * https://github.com/mikepenz/AboutLibraries
-* https://github.com/gradle/gradle/issues/26091#issuecomment-1798137734
+* Publication tasks configuration cache problems.
+  * https://github.com/gradle/gradle/issues/26091#issuecomment-1798137734
 * https://github.com/BenWoodworth/Parameterize
-* Set JDK release for kotlin compilation safety (`-Xjdk-release=`)
-* Detekt rules
-  * Enable more rules aside from baseline
-  * https://github.com/hbmartin/hbmartin-detekt-rules
-  * https://github.com/woltapp/arrow-detekt-rules
+* Detekt
   * https://github.com/yandexmobile/detekt-rules-ui-tests
-  * https://detekt.dev/docs/rules/libraries/
-  * https://detekt.dev/docs/rules/ruleauthors
-  * https://github.com/topics/detekt-rules
   * https://detekt.dev/marketplace
     * https://detekt.dev/marketplace/#unpublished
   * Custom detekt/lint rules
@@ -92,6 +87,22 @@
     * Бед практис передавать мьютбл (collection, etc.) в параметрах
     * Add lint check to warn about calls to mutableStateOf with a State object
       * https://issuetracker.google.com/issues/169445918
+    * Forbid on `java.util.Locale` in Android or commonJvm code.
+      * It's not linked to Android `Context` or `Configuration` and can lead to issues with localization.
+      * Public declarations in the private companion object are still compiled as public in bytecode with additional deprecation annotation.
+        * It's better to use private in this case to simplify bytecode and a shrinker life.
+      * Replace set with list (for public) or array (for private) things if no `contains` method used?
+      * Replace `setOf` with `hashSetOf` (casted as read-only `Set`) when order is actually not important.
+      * Prefer method reference to usual lambda with on action when acceptable.
+      * Replace .not() with ! operator.
+        * https://github.com/colematthew4/detekt-operator
+      * **Architecture**
+        * UseCase.
+          * Should be Main-safe.
+          * Should not use blocking operations.
+          * No platform-specific code or UI layer.  E.g. should not have any dependencies on Android.
+          * Should have a single responsibility. Only one method.
+          * Should not have any state/fields.
   * Create detekt rules for Gradle plugins best practices
     * e.g., not to use `org.gradle.api.tasks.TaskCollection.matching`, `findByName`, etc. when `named` or `withType`
       is enough (don't early create tasks).
@@ -105,6 +116,7 @@
   * https://github.com/jeremymailen/kotlinter-gradle
   * https://dev.to/aseemwangoo/supercharge-your-kotlin-project-2mcb
   * https://habr.com/ru/companies/ru_mts/articles/797053/
+  * https://github.com/SonarSource/sonar-kotlin
   * Konsist
     * https://github.com/LemonAppDev/konsist
     * https://proandroiddev.com/protect-kotlin-project-architecture-using-konsist-3bfbe1ad0eea

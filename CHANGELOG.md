@@ -10,6 +10,7 @@
 - detect when the project is a child of a composite build and has no startup tasks.
 - configure Compose with the new Kotlin compiler plugin.
 - use the Gradle Doctor plugin.
+- support and use more Detekt rulesets.
 
 ### Changed
 - revise the hierarchy of the source sets using both the new `KotlinHierarchyTemplate` and the old way. **Can be a BREAKING CHANGE!**

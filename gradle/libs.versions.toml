@@ -179,13 +179,50 @@ bouncycastle = "1.78.1"
 [libraries]
 ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 
+#region Detekt rules
+
+# https://mrmans0n.github.io/compose-rules/detekt/#enabling-rules
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.3" }
+
+# https://github.com/Faire/faire-detekt-rules/releases
+detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.2.4" }
+
+# https://github.com/hbmartin/hbmartin-detekt-rules/releases
+detekt-hbmartin = { module = "com.github.hbmartin:hbmartin-detekt-rules", version = "0.1.4" }
+
+# https://github.com/BraisGabin/detekt-compiler-rules/releases
+detekt-compiler = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", version = "0.0.4" }
+
+# TODO: https://github.com/colematthew4/detekt-operator
+#detekt-operator = { module = "io.cole.matthew.detekt.operator:detekt-operator", version = "0.0.1" }
+
+# https://github.com/cph-cachet/detekt-verify-implementation/releases
+detekt-verify-implementation = { module = "dk.cachet.detekt.extensions:detekt-verify-implementation", version = "1.2.6" }
+
+# https://github.com/Ivy-Apps/detekt-explicit/tags
+detekt-explicit = { module = "com.github.Ivy-Apps:detekt-explicit", version = "0.0.8" }
+
+# https://github.com/woltapp/arrow-detekt-rules/releases
+detekt-arrow = { module = "com.wolt.arrow.detekt:rules", version = "0.4.0" }
+
+# TODO: https://github.com/TWiStErRob/net.twisterrob.detekt/tree/main/object-calisthenics
+#detekt-object-calisthenics = { module = "detekt-object-calisthenics", version = "0.0.0" }
+
+# TODO: https://github.com/Mkohm/detekt-hint
+#detekt-hint = { module = "detekt-hint", version = "0.0.0" }
+
+# TODO: https://github.com/udaan-com/detekt-sidekt
+#  https://github.com/thewisenerd/detekt-sidekt
+#detekt-sidekt = { module = "detekt-sidekt", version = "0.0.0" }
+
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
-detekt-ruleauthors = { module = "io.gitlab.arturbosch.detekt:detekt-rules-ruleauthors", version.ref = "detekt" }
+#detekt-ruleauthors = { module = "io.gitlab.arturbosch.detekt:detekt-rules-ruleauthors", version.ref = "detekt" }
+
+# endregion
 
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }

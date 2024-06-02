@@ -42,6 +42,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         gradlePluginPortal()
+        maven(url = "https://www.jitpack.io") {
+            content {
+                includeGroupByRegex("com\\.github\\..*")
+            }
+        }
     }
 }
 

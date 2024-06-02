@@ -1,9 +1,10 @@
 # https://detekt.github.io/detekt/configurations.html
 # https://github.com/detekt/detekt/blob/main/detekt-core/src/main/resources/default-detekt-config.yml
 # https://github.com/detekt/detekt/blob/main/detekt-formatting/src/main/resources/config/config.yml
+# https://github.com/Ivy-Apps/ivy-wallet/blob/50f0446/config/detekt/config.yml
 
 config:
-  validation: true
+  validation: false
   warningsAsErrors: false
   checkExhaustiveness: false
 
@@ -66,3 +67,30 @@ formatting:
     active: true
     autoCorrect: true
     layout: '*'
+
+# https://github.com/detekt/detekt/blob/main/detekt-rules-libraries/src/main/resources/config/config.yml
+libraries:
+  LibraryEntitiesShouldNotBePublic:
+    active: false
+
+# https://github.com/hbmartin/hbmartin-detekt-rules/blob/7e73ca8/src/main/resources/config/config.yml
+HbmartinRuleSet:
+  AvoidMutableCollections:
+    active: false
+  AvoidVarsExceptWithDelegate:
+    active: false
+  DontForceCast:
+    active: false
+  NoCallbacksInFunctions:
+    active: false
+  NoVarsInConstructor:
+    active: false
+  WhenBranchSingleLineOrBraces:
+    active: false
+
+# https://github.com/Ivy-Apps/detekt-explicit/blob/f67bdff/src/main/resources/config/config.yml
+IvyExplicit:
+  NoImplicitFunctionReturnType:
+    active: false
+  DataClassDefaultValues:
+    active: false
