@@ -11,6 +11,9 @@
 <details>
   <summary>Show</summary>
 
+* Project appearance in the IDE.
+  * https://www.jetbrains.com/help/idea/open-close-and-move-projects.html#change-project-icon
+  * https://www.jetbrains.com/help/idea/customize-actions-menus-and-toolbars.html#use-colors-in-toolbar
 * Kotlin Power-assert compiler plugin
   * https://kotlinlang.org/docs/whatsnew20.html#experimental-kotlin-power-assert-compiler-plugin
 * https://github.com/jacobras/Human-Readable/commit/041c5dedbd2aa1079616ceb445c93ab3c7547630
