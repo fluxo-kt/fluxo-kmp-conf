@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.10.2] - 2024-06-08
+
 ### Updated
 - bump jetbrains-compose to [_1.6.11_](https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.6.11).
 - bump KSP to [_1.0.22_](https://github.com/google/ksp/releases/tag/2.0.0-1.0.22).
@@ -315,6 +318,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.10.2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.10.2
 [0.10.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.10.1
 [0.10.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.10.0
 [0.9.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.9.1
