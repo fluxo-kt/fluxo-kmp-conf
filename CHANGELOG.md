@@ -5,6 +5,14 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Updated
+- bump jetbrains-compose to [_1.6.11_](https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.6.11).
+- bump KSP to [_1.0.22_](https://github.com/google/ksp/releases/tag/2.0.0-1.0.22).
+- bump Android Gradle Plugin _8.6.0-alpha05_ (compile-only dependency).
+- bump KtLint from _1.2.1_ to [_1.3.0_](https://github.com/pinterest/ktlint/releases/tag/1.3.0).
+- bump mrmans0n's Detekt Compose Rules to [_0.4.4_](https://github.com/mrmans0n/compose-rules/releases/tag/v0.4.4).
+- bump kotlin-compile-testing (kctfork) to [_0.5.0_](https://github.com/ZacSweers/kotlin-compile-testing/releases/tag/0.5.0) (test-only dependency).
+
 
 ## [0.10.1] - 2024-06-02
 

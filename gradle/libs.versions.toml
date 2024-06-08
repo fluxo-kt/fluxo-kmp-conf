@@ -28,10 +28,10 @@ kotlin = "2.0.0"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.6.10"
+jetbrains-compose = "1.6.11"
 
 # https://github.com/google/ksp/releases
-ksp = "2.0.0-1.0.21"
+ksp = "2.0.0-1.0.22"
 
 # region Android specific
 
@@ -99,7 +99,7 @@ androidBuildTools = "34.0.0"
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # WARNING: Remember to update the version badge in `README.md`!
-android-gradle-plugin = "8.6.0-alpha04"
+android-gradle-plugin = "8.6.0-alpha05"
 
 # endregion
 
@@ -120,7 +120,7 @@ dokka = "1.9.20"
 detekt = "1.23.6"
 
 # https://github.com/pinterest/ktlint/releases
-ktlint = "1.2.1"
+ktlint = "1.3.0"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
 spotless = "6.25.0"
@@ -184,7 +184,7 @@ ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 # https://mrmans0n.github.io/compose-rules/detekt/#enabling-rules
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.3" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.4" }
 
 # https://github.com/Faire/faire-detekt-rules/releases
 detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.2.4" }
@@ -242,7 +242,7 @@ asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 # Testing Kotlin and Java annotation processors, compiler plugins, and code generation.
 # https://github.com/ZacSweers/kotlin-compile-testing/releases
 # https://github.com/tschuchortdev/kotlin-compile-testing/releases.
-kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.4.1" }
+kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.5.0" }
 
 # Annotations for JVM-based languages
 # https://repo1.maven.org/maven2/org/jetbrains/annotations/
