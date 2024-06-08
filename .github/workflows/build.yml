@@ -53,6 +53,7 @@ env:
   #GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   DEPENDENCY_GRAPH_INCLUDE_CONFIGURATIONS: "^(?!(classpath)).*"
   DEPENDENCY_GRAPH_INCLUDE_PROJECTS: "^:(?!(buildSrc|test|check)).*"
+  IS_DEFAULT_BRANCH: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
 
 jobs:
   buildAndCheck:
@@ -89,7 +90,7 @@ jobs:
           java-version: '${{ matrix.java }}'
 
       - name: 'Cached KMP things (Konan, Node, Yarn, Binaryen)'
-        if: false
+        if: false # Seems slower than without it.
         uses: actions/cache@v4
         with:
           path: |
@@ -104,10 +105,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-home-cache-cleanup: ${{ matrix.os != 'windows' }}
-          cache-encryption-key: "${{ matrix.os != 'windows' && secrets.GRADLE_ENCRYPTION_KEY || '' }}"
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
-          dependency-graph: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'generate-and-submit' || 'disabled'}}
+          gradle-home-cache-cleanup: true
+          cache-disabled: ${{ matrix.os == 'windows' }} # super slow on Windows.
+          cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
+          cache-read-only: ${{ !env.IS_DEFAULT_BRANCH }}
+          dependency-graph: ${{ env.IS_DEFAULT_BRANCH && 'generate-and-submit' || 'disabled'}}
           add-job-summary-as-pr-comment: on-failure
           artifact-retention-days: 1
 
@@ -131,7 +133,7 @@ jobs:
         run: ./gradlew build assemble check --continue --stacktrace --scan
 
       - name: Upload sarif report (Detekt)
-        if: always() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+        if: always() && (github.event_name == 'pull_request' || env.IS_DEFAULT_BRANCH)
         uses: github/codeql-action/upload-sarif@v3
         continue-on-error: true
         with:
@@ -139,7 +141,7 @@ jobs:
           category: detekt
 
       - name: Upload sarif report (Lint)
-        if: always() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+        if: always() && (github.event_name == 'pull_request' || env.IS_DEFAULT_BRANCH)
         uses: github/codeql-action/upload-sarif@v3
         continue-on-error: true
         with:
