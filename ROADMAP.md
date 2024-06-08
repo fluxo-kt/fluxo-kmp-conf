@@ -29,6 +29,8 @@
 * https://github.com/eygraber/gradle-conventions
   * https://github.com/eygraber/gradle-conventions/pull/367/files#diff-1534017ba077dda735977a1ef95679ee14e382237106d48a4ba8df35d82c1a89
 * Kover plugin integration and support
+* Only export the framework under an Xcode build as part of the pre-build step script ("XCODE_VERSION_MAJOR")
+  * https://github.com/badoo/Reaktive/pull/777/files#diff-06dc42069b6b1b646cdb9afdcdfea2a3175691cc744e94302ac4a9fec1555b7aR12
 * Compose Screenshot Testing
   * https://developer.android.com/studio/preview/compose-screenshot-testing
 * Code quality rules:
