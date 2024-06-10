@@ -1,13 +1,8 @@
+@file:Suppress("KDocUnresolvedReference", "NestedBlockDepth")
+
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.data.BuildConstants.FLUXO_BCV_JS_PLUGIN_ALIAS
-import fluxo.conf.data.BuildConstants.FLUXO_BCV_JS_PLUGIN_ID
-import fluxo.conf.data.BuildConstants.FLUXO_BCV_JS_PLUGIN_VERSION
-import fluxo.conf.data.BuildConstants.KOTLINX_BCV_PLUGIN_ALIAS
-import fluxo.conf.data.BuildConstants.KOTLINX_BCV_PLUGIN_ALIAS2
-import fluxo.conf.data.BuildConstants.KOTLINX_BCV_PLUGIN_ID
-import fluxo.conf.data.BuildConstants.KOTLINX_BCV_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
 import fluxo.conf.dsl.DEFAULT_CONSTRUCTOR_MARKER_CLASS
@@ -64,15 +59,8 @@ private fun Project.setupKmpBinaryCompatibilityValidator(
 ) {
     setupBinaryCompatibilityValidator(config, ctx)
 
-    if (config?.jsApiChecks != false && ctx.isTargetEnabled(KmpTargetCode.JS)) {
-        logger.l("Setup Fluxo TS-based BinaryCompatibilityValidator for JS")
-        ctx.loadAndApplyPluginIfNotApplied(
-            id = FLUXO_BCV_JS_PLUGIN_ID,
-            className = FLUXO_BCV_JS_PLUGIN_CLASS_NAME,
-            version = FLUXO_BCV_JS_PLUGIN_VERSION,
-            catalogPluginId = FLUXO_BCV_JS_PLUGIN_ALIAS,
-            project = this,
-        )
+    if (config?.tsApiChecks != false && ctx.isTargetEnabled(KmpTargetCode.JS)) {
+        setupBinaryCompatibilityValidatorTs(config, ctx)
     }
 
     // API checks are available only for JVM and Android targets.
@@ -99,8 +87,8 @@ private fun Project.setupBinaryCompatibilityValidator(
     ctx.loadAndApplyPluginIfNotApplied(
         id = KOTLINX_BCV_PLUGIN_ID,
         className = KOTLINX_BCV_PLUGIN_CLASS_NAME,
-        version = KOTLINX_BCV_PLUGIN_VERSION,
-        catalogPluginIds = arrayOf(KOTLINX_BCV_PLUGIN_ALIAS, KOTLINX_BCV_PLUGIN_ALIAS2),
+        catalogPluginIds = KOTLINX_BCV_PLUGIN_ALIASES,
+        catalogVersionIds = KOTLINX_BCV_PLUGIN_ALIASES,
         project = this,
         // Explicit classpath for direct plugin classes interaction.
         canLoadDynamically = false,
@@ -118,6 +106,16 @@ private fun Project.setupBinaryCompatibilityValidator(
         }
     }
 }
+
+private const val KOTLINX_BCV_PLUGIN_ID: String =
+    "org.jetbrains.kotlinx.binary-compatibility-validator"
+
+private val KOTLINX_BCV_PLUGIN_ALIASES = arrayOf(
+    "bcv",
+    "kotlinx-bcv",
+    "kotlinx-binCompatValidator",
+    "binCompatValidator",
+)
 
 private fun getTargetForTaskName(taskName: String): ApiTarget? {
     val targetName = taskName.removeSuffix("ApiCheck").takeUnless { it == taskName } ?: return null
@@ -169,10 +167,6 @@ internal fun TaskProvider<*>.bindToApiDumpTasks(optional: Boolean = false) {
         }
     }
 }
-
-
-/** @see fluxo.bcvjs.FluxoBcvJsPlugin */
-private const val FLUXO_BCV_JS_PLUGIN_CLASS_NAME = "fluxo.bcvjs.FluxoBcvJsPlugin"
 
 /** @see kotlinx.validation.BinaryCompatibilityValidatorPlugin */
 private const val KOTLINX_BCV_PLUGIN_CLASS_NAME =

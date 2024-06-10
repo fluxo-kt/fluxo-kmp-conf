@@ -5,6 +5,12 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Changed
+- rename `jsApiChecks` property to `tsApiChecks`. **BREAKING CHANGE!**
+
+### Updated
+- bump [binary-compatibility-validator-js](https://github.com/fluxo-kt/fluxo-bcv-js) from _0.3.0_ to [_1.0.0_](https://github.com/fluxo-kt/fluxo-bcv-js/releases/tag/v1.0.0).
+
 
 ## [0.10.2] - 2024-06-08
 

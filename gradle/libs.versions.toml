@@ -107,9 +107,9 @@ android-gradle-plugin = "8.6.0-alpha05"
 # https://github.com/Kotlin/binary-compatibility-validator/releases
 bcv = "0.14.0"
 
-# Kotlin/JS API support for the KotlinX Binary Compatibility Validator based on the generated TS definitions.
+# Kotlin JS/WASM TypeScript definitions API support for the KotlinX Binary Compatibility Validator.
 # https://github.com/fluxo-kt/fluxo-bcv-js/releases.
-fluxo-bcv-js = "0.3.0"
+fluxo-bcv-js = "1.0.0"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases

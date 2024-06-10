@@ -96,6 +96,9 @@ dependencies {
     compileOnly(libs.plugin.ksp)
 
     compileOnly(libs.plugins.gradle.enterprise.toModuleDependency())
+    compileOnly(libs.plugins.kotlin.sam.receiver.toModuleDependency())
+    compileOnly(libs.plugins.kotlinx.binCompatValidator.toModuleDependency())
+    compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
 
     testCompileOnly(libs.jetbrains.annotations)
     testImplementation(libs.kotlin.compile.testing)
@@ -144,13 +147,6 @@ buildConfig {
         }
     }
 
-    buildConfigField("KOTLIN_SAM_RECEIVER", libs.plugins.kotlin.sam.receiver)
-    buildConfigField(
-        "KOTLINX_BCV",
-        libs.plugins.kotlinx.binCompatValidator,
-        alias2 = "kotlinx-binCompatValidator",
-    )
-    buildConfigField("FLUXO_BCV_JS", libs.plugins.fluxo.bcv.js)
     buildConfigField("DOKKA", libs.plugins.dokka)
     buildConfigField("GRADLE_PLUGIN_PUBLISH", libs.plugins.gradle.plugin.publish)
     buildConfigField("COMPLETE_KOTLIN", libs.plugins.complete.kotlin)

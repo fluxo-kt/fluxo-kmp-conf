@@ -153,17 +153,17 @@ public final class fluxo/conf/dsl/BinaryCompatibilityValidatorConfig {
 	public final fun getDisableForNonRelease ()Z
 	public final fun getIgnoredClasses ()Ljava/util/Set;
 	public final fun getIgnoredPackages ()Ljava/util/Set;
-	public final fun getJsApiChecks ()Z
 	public final fun getKlibSignatureVersion ()Ljava/lang/Integer;
 	public final fun getKlibValidationEnabled ()Z
 	public final fun getNonPublicMarkers ()Ljava/util/Set;
+	public final fun getTsApiChecks ()Z
 	public final fun setDisableForNonRelease (Z)V
 	public final fun setIgnoredClasses (Ljava/util/Set;)V
 	public final fun setIgnoredPackages (Ljava/util/Set;)V
-	public final fun setJsApiChecks (Z)V
 	public final fun setKlibSignatureVersion (Ljava/lang/Integer;)V
 	public final fun setKlibValidationEnabled (Z)V
 	public final fun setNonPublicMarkers (Ljava/util/Set;)V
+	public final fun setTsApiChecks (Z)V
 }
 
 public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtension : fluxo/conf/dsl/FluxoConfigurationExtensionAndroid, fluxo/conf/dsl/FluxoConfigurationExtensionKotlin, fluxo/conf/dsl/FluxoConfigurationExtensionPublication {

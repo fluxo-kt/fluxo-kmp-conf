@@ -1,8 +1,6 @@
 package fluxo.conf.impl.kotlin
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.data.BuildConstants.KOTLIN_SAM_RECEIVER_PLUGIN_ALIAS
-import fluxo.conf.data.BuildConstants.KOTLIN_SAM_RECEIVER_PLUGIN_ID
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.log.e
 import org.gradle.api.HasImplicitReceiver
@@ -11,11 +9,11 @@ import org.jetbrains.kotlin.samWithReceiver.gradle.SamWithReceiverExtension
 
 internal fun Project.setupSamWithReceiver(ctx: FluxoKmpConfContext) {
     val result = ctx.loadAndApplyPluginIfNotApplied(
-        id = KOTLIN_SAM_RECEIVER_PLUGIN_ID,
+        id = KT_SAM_RECEIVER_PLUGIN_ID,
         className = KT_SAM_RECEIVER_PLUGIN_CLASS,
         version = runCatching { KOTLIN_PLUGIN_VERSION_RAW }.getOrNull(),
-        catalogPluginId = KOTLIN_SAM_RECEIVER_PLUGIN_ALIAS,
-        catalogVersionId = "kotlin",
+        catalogPluginId = KT_SAM_RECEIVER_PLUGIN_ALIAS,
+        catalogVersionIds = arrayOf("kotlin", KT_SAM_RECEIVER_PLUGIN_ALIAS),
         project = this,
     )
     if (!result.applied) {
@@ -51,3 +49,8 @@ private const val KT_SAM_RECEIVER_PLUGIN_CLASS =
     "org.jetbrains.kotlin.samWithReceiver.gradle.SamWithReceiverGradleSubplugin"
 
 private const val KT_SAM_RECEIVER_EXTENSION = "samWithReceiver"
+
+internal const val KT_SAM_RECEIVER_PLUGIN_ID: String =
+    "org.jetbrains.kotlin.plugin.sam.with.receiver"
+
+internal const val KT_SAM_RECEIVER_PLUGIN_ALIAS: String = "kotlin-sam-receiver"

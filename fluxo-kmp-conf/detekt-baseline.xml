@@ -169,7 +169,6 @@
     <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>MaximumLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$ </ID>
     <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String></ID>
-    <ID>NestedBlockDepth:SetupBinaryCompatibilityValidator.kt$internal fun setupBinaryCompatibilityValidator( conf: FluxoConfigurationExtensionImpl, project: Project = conf.project, )</ID>
     <ID>NestedBlockDepth:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$@Suppress("ReturnCount") fun execute( callType: ProcessorCallType, ignoreMemoryLimit: Boolean = false, ): Boolean</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>NoNotNullOperator:AbstractShrinkerTask.kt$AbstractShrinkerTask$callFallbackOrder.last()!!</ID>
