@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Updated
+- bump task-tree to [_4.0.0_](https://github.com/dorongold/gradle-task-tree/releases/tag/4.0.0).
+
 
 ## [0.11.0] - 2024-06-10
 
