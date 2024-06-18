@@ -110,9 +110,7 @@ private val RELEASE_CONFIGURATION = Action<DependencyGuardConfiguration> {
     allowedFilter = { dependency ->
         dependency.lowercase(Locale.US).let { d ->
             RELEASE_BLOCK_LIST.all {
-                // Used in Detekt, explicitly allowed.
-                // `io.github.davidburstrom.contester:contester-breakpoint`.
-                it !in d || it == TEST && "contest" in d
+                it !in d || it == TEST && RELEASE_TEST_EXCLUDES.any { e -> e in d }
             }
         }
     }
@@ -128,6 +126,14 @@ private val RELEASE_BLOCK_LIST = arrayOf(
     "truth",
     "turbine",
     TEST,
+)
+
+private val RELEASE_TEST_EXCLUDES = arrayOf(
+    // Used in Detekt, explicitly allowed.
+    // `io.github.davidburstrom.contester:contester-breakpoint`.
+    "con$TEST",
+    // `org.jetbrains.kotlinx:kotlinx-io-bytestring`.
+    "by${TEST}ring",
 )
 
 private val TEST_MARKERS = arrayOf("test", "benchmark", "mock", "jmh")
