@@ -121,7 +121,8 @@ pluginManagement {
 
 ### Build and development notes
 
-- **REQUIRES ENABLED GIT SYMLINKS** for the project to work correctly!
+- **REQUIRES ENABLED GIT SYMLINKS** for the project to work correctly **during plugin development**!
+  - Usually it's already enabled on Linux or macOS.
   - On Windows, see [this doc](https://github.com/git-for-windows/git/wiki/Symbolic-Links) for more info.
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for more info on how to contribute.
 

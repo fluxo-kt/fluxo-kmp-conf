@@ -11,6 +11,8 @@
 <details>
   <summary>Show</summary>
 
+* `-Xconsistent-data-class-copy-visibility` for Kotlin 2.0.20
+  * https://kotlinlang.org/docs/whatsnew-eap.html#language-data-class-copy-function-to-have-the-same-visibility-as-constructor
 * Project appearance in the IDE.
   * https://www.jetbrains.com/help/idea/open-close-and-move-projects.html#change-project-icon
   * https://www.jetbrains.com/help/idea/customize-actions-menus-and-toolbars.html#use-colors-in-toolbar
@@ -301,6 +303,9 @@
   * https://github.com/KotlinCrypto/core/pull/58
   * https://github.com/KotlinCrypto/core/pull/56
   * https://github.com/JetBrains/java-annotations/pull/103
+  * https://github.com/oshai/kotlin-logging/issues/365
+  * https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/50/files
+  * https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/45/commits/cc603b37d2e5bd09f9b391edcf0ff3ccdc26dec2
 * Common utils
   * https://github.com/aminography/CommonUtils/tree/1bfbe2d/library/src/main/java/com/aminography/commonutils
 * States and Events
