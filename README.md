@@ -33,7 +33,7 @@ Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
 // in the `build.gradle.kts` of the target module
 plugins {
   kotlin("multiplatform") version "2.0.0"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.11.0" // <-- add here
+  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.12.0" // <-- add here
 }
 ```
 
@@ -59,7 +59,7 @@ pluginManagement {
   }
   resolutionStrategy.eachPlugin {
     if (requested.id.toString() == "io.github.fluxo-kt.fluxo-kmp-conf")
-      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:626ba9d3ed") // <-- specify version or commit
+      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:2af752e214") // <-- specify version or commit
   }
 }
 ```
