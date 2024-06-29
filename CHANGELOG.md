@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Fixed
+- fix the broken test-main dependencies in the intermediate KMP source sets.
+
 ### Added
 - set `unitTest` source set tree for Android to the usual `test` tree.
 

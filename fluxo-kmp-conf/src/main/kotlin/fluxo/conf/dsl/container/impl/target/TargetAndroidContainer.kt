@@ -94,13 +94,12 @@ internal abstract class TargetAndroidContainer<T>(
 
         setupAndroid(project)
 
-        if (!allowManualHierarchy) {
-            return
-        }
-
         val layoutV2 = ctx.androidLayoutV2
         val bundle = k.sourceSets.bundleFor(target, androidLayoutV2 = layoutV2, isAndroid = true)
         setupParentSourceSet(k, bundle)
+        if (!allowManualHierarchy) {
+            return
+        }
 
         /**
          * Configure Android's variants,

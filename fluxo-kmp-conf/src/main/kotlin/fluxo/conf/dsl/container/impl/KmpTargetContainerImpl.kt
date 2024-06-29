@@ -55,9 +55,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 
     override fun setup(k: KotlinMultiplatformExtension) {
         val target = k.createTarget()
-        if (allowManualHierarchy) {
-            setupParentSourceSet(k, k.bundleFor(target))
-        }
+        setupParentSourceSet(k, k.bundleFor(target))
     }
 
 
@@ -69,9 +67,12 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
         }
 
         override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
-            // Android source sets can always require manual hierarchy setup.
-            if (!allowManualHierarchy && !child.isAndroid) return
             val bundle = k.commonJvm
+
+            // Fix the broken test-main dependencies in the intermediate KMP source sets.
+            bundle.test.dependsOn(bundle.main)
+
+            if (!allowManualHierarchy) return
             @Suppress("DEPRECATION")
             child dependsOn bundle
             super.setupParentSourceSet(k, bundle)
