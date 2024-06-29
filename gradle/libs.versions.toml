@@ -13,7 +13,7 @@ version = "0.12.0-SNAPSHOT"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!
-# javaLangTarget 11 required for Android Gradle Plugin and Android Lint.
+# javaLangTarget 11 is required for Android Gradle Plugin and Android Lint.
 javaLangTarget = "11"
 kotlinLangVersion = "1.9"
 kotlinApiVersion = "1.9"
@@ -69,7 +69,7 @@ ksp = "2.0.0-1.0.22"
 # Int version keys: `androidMinSdk`, `minSdk`.
 androidMinSdk = "21"
 
-# androidTargetSdk >= 33 is required for Google Play new apps & app updates since August 31, 2023
+# androidTargetSdk >= 33 have been required for Google Play new apps & app updates since August 31, 2023
 # https://support.google.com/googleplay/android-developer/answer/11926878
 # https://support.google.com/googleplay/android-developer/answer/9859152#targetsdk
 # https://developer.android.com/distribute/best-practices/develop/target-sdk
@@ -93,13 +93,13 @@ androidCompileSdk = "34"
 
 # Compilers, packaging, deployment tools for Android apps.
 # https://developer.android.com/tools/releases/build-tools
-androidBuildTools = "34.0.0"
+androidBuildTools = "35.0.0"
 
 # Gradle plug-in to build Android applications.
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # WARNING: Remember to update the version badge in `README.md`!
-android-gradle-plugin = "8.6.0-alpha05"
+android-gradle-plugin = "8.6.0-alpha08"
 
 # endregion
 
@@ -128,14 +128,14 @@ spotless = "6.25.0"
 # Gradle plugin for building plugins for IntelliJ-based IDEs
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij
 # https://github.com/JetBrains/gradle-intellij-plugin/releases
-gradle-intellij-plugin = "1.17.3"
+gradle-intellij-plugin = "1.17.4"
 
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-gradle.
 proguard = "7.5.0"
 
-# ProGuardCORE, library to read, analyze, modify, and write JVM class files.
+# ProGuardCORE, a library to read, analyze, modify, and write JVM class files.
 # https://github.com/Guardsquare/proguard-core/releases
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-core.
 proguard-core = "9.1.4"
@@ -192,7 +192,7 @@ detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.2.4" }
 # https://github.com/hbmartin/hbmartin-detekt-rules/releases
 detekt-hbmartin = { module = "com.github.hbmartin:hbmartin-detekt-rules", version = "0.1.4" }
 
-# https://github.com/BraisGabin/detekt-compiler-rules/releases
+# https://github.com/BraisGabin/detekt-compiler-rules/tags
 detekt-compiler = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", version = "0.0.4" }
 
 # TODO: https://github.com/colematthew4/detekt-operator
@@ -242,7 +242,7 @@ asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 # Testing Kotlin and Java annotation processors, compiler plugins, and code generation.
 # https://github.com/ZacSweers/kotlin-compile-testing/releases
 # https://github.com/tschuchortdev/kotlin-compile-testing/releases.
-kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.5.0" }
+kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.5.1" }
 
 # Annotations for JVM-based languages
 # https://repo1.maven.org/maven2/org/jetbrains/annotations/
@@ -380,4 +380,4 @@ build-config = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
 # Resolve all dependencies used in a Gradle module, with associated license and further information.
 # https://github.com/mikepenz/AboutLibraries/releases
 # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
-about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.2.1" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.2.2" }

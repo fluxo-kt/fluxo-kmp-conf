@@ -7,9 +7,11 @@
 
 ### Changed
 - add more granular control over targets in the `allDefaultTargets` helper.
+- allow `bytestring` named dependencies in the DependencyGuard plugin despite the `test` substring.
 
 ### Updated
 - bump task-tree to [_4.0.0_](https://github.com/dorongold/gradle-task-tree/releases/tag/4.0.0).
+- bump Android Gradle Plugin to _8.6.0-alpha08_ (compile-only dependency).
 
 
 ## [0.11.0] - 2024-06-10
@@ -26,7 +28,7 @@
 ### Updated
 - bump jetbrains-compose to [_1.6.11_](https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.6.11).
 - bump KSP to [_1.0.22_](https://github.com/google/ksp/releases/tag/2.0.0-1.0.22).
-- bump Android Gradle Plugin _8.6.0-alpha05_ (compile-only dependency).
+- bump Android Gradle Plugin to _8.6.0-alpha05_ (compile-only dependency).
 - bump KtLint from _1.2.1_ to [_1.3.0_](https://github.com/pinterest/ktlint/releases/tag/1.3.0).
 - bump mrmans0n's Detekt Compose Rules to [_0.4.4_](https://github.com/mrmans0n/compose-rules/releases/tag/v0.4.4).
 - bump kotlin-compile-testing (kctfork) to [_0.5.0_](https://github.com/ZacSweers/kotlin-compile-testing/releases/tag/0.5.0) (test-only dependency).
@@ -48,7 +50,7 @@
 - don't apply Android Lint when an old Gradle is used (min supported Gradle is 8.7).
 
 ### Updated
-- bump Android Gradle Plugin _8.6.0-alpha04_ (compile-only dependency).
+- bump Android Gradle Plugin to _8.6.0-alpha04_ (compile-only dependency).
 - bump Gradle from _8.8-rc-1_ to _8.8_.
 
 
