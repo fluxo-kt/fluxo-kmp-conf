@@ -11,8 +11,17 @@
 <details>
   <summary>Show</summary>
 
+* Gradle 8.8 support
+  * https://docs.gradle.org/8.8/release-notes.html#new-gradle-lifecycle-callbacks
+* `org.gradle.unsafe.isolated-projects=true` for Kotlin 2.0.20 (JVM/Android/KAPT only)
+  * https://kotlinlang.slack.com/archives/C0KLZSCHF/p1718741426896649
+  * https://docs.gradle.org/nightly/userguide/isolated_projects.html
+  * https://docs.gradle.org/8.8/release-notes.html#isolated-project-views
 * `-Xconsistent-data-class-copy-visibility` for Kotlin 2.0.20
   * https://kotlinlang.org/docs/whatsnew-eap.html#language-data-class-copy-function-to-have-the-same-visibility-as-constructor
+* Streamline kotlin configuration and JDK setup
+  * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.17.2
+  * https://github.com/slackhq/slack-gradle-plugin/pull/883/files
 * Project appearance in the IDE.
   * https://www.jetbrains.com/help/idea/open-close-and-move-projects.html#change-project-icon
   * https://www.jetbrains.com/help/idea/customize-actions-menus-and-toolbars.html#use-colors-in-toolbar
@@ -130,6 +139,8 @@
     * https://proandroiddev.com/protect-kotlin-project-architecture-using-konsist-3bfbe1ad0eea
   * KDoc formatting
     * https://github.com/tnorbye/kdoc-formatter
+  * KtFmt
+    * https://github.com/androidx/androidx/commit/dcaa116fbfda77e64a319e1668056ce3b032469f
 * https://github.com/ashtanko/kotlin-app-template/tree/main
   * Github Action + git-hook + Issues Template
   * https://github.com/danger/kotlin
@@ -257,9 +268,12 @@
   * https://github.com/nbadal/ktlint-intellij-plugin/pull/501/files
   * Task used by the UI and Android tests to check minification results and keep track of binary size.
     * https://github.com/lowasser/kotlinx.coroutines/blob/fcaa6df/buildSrc/src/main/kotlin/RunR8.kt
-  * A Gradle plugin that infers Proguard/R8 keep rules for androidTest sources.
+  * **A Gradle plugin that infers Proguard/R8 keep rules for androidTest sources.**
     * https://slackhq.github.io/keeper/
       * https://github.com/slackhq/Keeper
+    * Example of successful integration
+      * https://github.com/ankidroid/Anki-Android/pull/16635
+        * https://issuetracker.google.com/issues/126429384#comment19
   * dProtect obfuscator
     * https://github.com/open-obfuscator/dProtect
   * Optimize app images
