@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Added
+- set `unitTest` source set tree for Android to the usual `test` tree.
+
 ### Changed
 - add more granular control over targets in the `allDefaultTargets` helper.
 - allow `bytestring` named dependencies in the DependencyGuard plugin despite the `test` substring.

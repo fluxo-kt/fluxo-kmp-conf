@@ -18,11 +18,14 @@ import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.container
 import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.kotlin.KOTLIN_1_9
+import fluxo.conf.impl.kotlin.KOTLIN_2_0
 import fluxo.conf.impl.set
 import fluxo.conf.kmp.SourceSetBundle
+import fluxo.log.e
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
 internal abstract class TargetAndroidContainer<T>(
@@ -60,7 +63,9 @@ internal abstract class TargetAndroidContainer<T>(
     override fun KotlinMultiplatformExtension.createTarget() = when {
         /** `androidTarget` should be used since Kotlin 1.9.0 instead of `android`. */
         // https://kotl.in/android-target-dsl.
-        context.kotlinPluginVersion >= KOTLIN_1_9 -> createTarget(::androidTarget)
+        context.kotlinPluginVersion >= KOTLIN_1_9 ->
+            createTarget(::androidTarget)
+
         else ->
             @Suppress("DEPRECATION")
             createTarget(::android)
@@ -69,13 +74,31 @@ internal abstract class TargetAndroidContainer<T>(
     final override fun setup(k: KotlinMultiplatformExtension) {
         val target = k.createTarget()
         val project = target.project
+        val ctx = context.ctx
+
+        // Use a usual test source set tree for Android unit tests.
+        // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html#writing-and-running-tests-with-compose-multiplatform
+        @Suppress("OPT_IN_USAGE")
+        try {
+            target.unitTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+            target.instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+        } catch (e: Throwable) {
+            if (ctx.kotlinPluginVersion >= KOTLIN_2_0) {
+                project.logger.e(
+                    "Failed to set unitTest and instrumentedTest" +
+                        " source set trees for Android to `test`",
+                    e,
+                )
+            }
+        }
+
         setupAndroid(project)
 
         if (!allowManualHierarchy) {
             return
         }
 
-        val layoutV2 = context.ctx.androidLayoutV2
+        val layoutV2 = ctx.androidLayoutV2
         val bundle = k.sourceSets.bundleFor(target, androidLayoutV2 = layoutV2, isAndroid = true)
         setupParentSourceSet(k, bundle)
 

@@ -138,8 +138,8 @@ internal class KmpConfigurationContainerDslImpl(
         kotlinMultiplatform {
             if (kpv >= KOTLIN_1_9_20) {
                 // Apply the extended default hierarchy explicitly (needed after 1.9.20-RC).
-                // It'll create, for example, the iosMain source set.
-                // https://kotlinlang.org/docs/whatsnew1920.html#set-up-the-target-hierarchy
+                // It creates, for example, the iosMain source set.
+                // https://kotlinlang.org/docs/whatsnew1920.html#set-up-the-target-hierarchy.
                 @OptIn(ExperimentalKotlinGradlePluginApi::class)
                 applyDefaultHierarchyTemplate(KotlinHierarchyTemplate.fluxoKmpConf)
             }
