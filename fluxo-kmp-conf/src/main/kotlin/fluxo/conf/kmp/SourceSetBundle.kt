@@ -10,6 +10,7 @@ public interface SourceSetBundle {
     public val main: KotlinSourceSet
     public val test: KotlinSourceSet
     public val moreTests: Array<KotlinSourceSet>? get() = null
+    public val isAndroid: Boolean get() = false
 
     @JvmSynthetic
     public operator fun contains(other: KotlinSourceSet): Boolean {
@@ -24,18 +25,21 @@ internal fun SourceSetBundle(
     main: Provider<KotlinSourceSet>,
     test: Provider<KotlinSourceSet>,
     moreTests: Provider<Array<KotlinSourceSet>?>? = null,
-): SourceSetBundle = SourceSetBundleLazy(main, test, moreTests)
+    isAndroid: Boolean = false,
+): SourceSetBundle = SourceSetBundleLazy(main, test, moreTests, isAndroid = isAndroid)
 
 internal fun SourceSetBundle(
     main: KotlinSourceSet,
     test: KotlinSourceSet,
     moreTests: Array<KotlinSourceSet>? = null,
-): SourceSetBundle = SourceSetBundleSimple(main, test, moreTests)
+    isAndroid: Boolean = false,
+): SourceSetBundle = SourceSetBundleSimple(main, test, moreTests, isAndroid = isAndroid)
 
 private class SourceSetBundleLazy(
     main: Provider<KotlinSourceSet>,
     test: Provider<KotlinSourceSet>,
-    moreTests: Provider<Array<KotlinSourceSet>?>? = null,
+    moreTests: Provider<Array<KotlinSourceSet>?>?,
+    override val isAndroid: Boolean = false,
 ) : SourceSetBundleBase() {
     override val main: KotlinSourceSet by main.memoize()
     override val test: KotlinSourceSet by test.memoize()
@@ -47,7 +51,8 @@ private class SourceSetBundleLazy(
 private class SourceSetBundleSimple(
     override val main: KotlinSourceSet,
     override val test: KotlinSourceSet,
-    override val moreTests: Array<KotlinSourceSet>? = null,
+    override val moreTests: Array<KotlinSourceSet>?,
+    override val isAndroid: Boolean,
 ) : SourceSetBundleBase()
 
 private abstract class SourceSetBundleBase : SourceSetBundle {

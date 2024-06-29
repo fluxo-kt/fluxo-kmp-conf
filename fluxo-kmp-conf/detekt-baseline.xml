@@ -163,7 +163,6 @@
     <ID>ForbiddenPublicDataClass:FluxoPublicationConfig.kt$FluxoPublicationConfig</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
-    <ID>Indentation:MultiplatformSourceSetUtils.kt$ </ID>
     <ID>LongMethod:SetupPublication.kt$context(FluxoKmpConfContext) private fun Project.setupPublicationRepositoryAndSigning( config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>

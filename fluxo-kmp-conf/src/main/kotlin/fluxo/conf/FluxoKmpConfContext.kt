@@ -308,7 +308,7 @@ internal abstract class FluxoKmpConfContext
                 }
             }
 
-            else -> projectInSyncFlag.all {
+            else -> projectInSyncFlag.configureEach {
                 try {
                     context.action()
                 } catch (e: Throwable) {

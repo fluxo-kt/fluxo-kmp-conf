@@ -11,7 +11,7 @@ internal open class CustomTypeContainer<T>(
 
     fun add(action: T.() -> Unit): Boolean = set.add(action)
 
-    fun setupCustom(k: T) = set.all { k.this() }
+    fun setupCustom(k: T) = set.configureEach { k.this() }
 
 
     override val sortOrder: Byte = CUSTOM_SORT_ORDER

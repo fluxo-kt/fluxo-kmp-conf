@@ -34,7 +34,7 @@ internal abstract class ContainerImpl(
     private val pluginIds = context.objects.set<String>()
 
     fun applyPluginsWith(pluginManager: PluginManager) {
-        pluginIds.all {
+        pluginIds.configureEach {
             pluginManager.apply(this)
         }
     }

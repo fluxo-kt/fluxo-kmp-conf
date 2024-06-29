@@ -3,7 +3,6 @@
 @file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
-import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm.Companion.ANDROID
 import fluxo.conf.impl.compileOnlyAndLog
 import fluxo.conf.impl.implementation
 import fluxo.conf.impl.implementationAndLog
@@ -120,84 +119,84 @@ public val KotlinSourceSetContainer.commonMingw: SourceSetBundle
 
 /** [SourceSetBundle]s for all enabled targets */
 public val <E> E.allSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = allTargetsSet
 
 /** [SourceSetBundle]s for all enabled targets */
 public val <E> E.allTargetsSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = targets.toSourceSetBundles()
 
 /** androidJvm, jvm */
 public val <E> E.javaSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = targets.matching {
         it.platformType == KotlinPlatformType.androidJvm ||
-          it.platformType == KotlinPlatformType.jvm
+            it.platformType == KotlinPlatformType.jvm
     }.toSourceSetBundles()
 
 /** androidJvm */
 public val <E> E.androidSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = targets.matching { it.platformType == KotlinPlatformType.androidJvm }
-      .toSourceSetBundles()
+        .toSourceSetBundles()
 
 /** js */
 public val <E> E.jsSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = targets.matching { it.platformType == KotlinPlatformType.js }.toSourceSetBundles()
 
 
 /** All Kotlin/Native targets */
 public val <E> E.nativeSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets()
 
 
 public val <E> E.linuxSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.LINUX)
 
 public val <E> E.mingwSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.MINGW)
 
 public val <E> E.androidNativeSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.ANDROID)
 
 
 /** All Apple (Darwin) targets */
 public val <E> E.appleSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.IOS, Family.OSX, Family.WATCHOS, Family.TVOS)
 
 /** All Apple (Darwin) targets */
 public val <E> E.darwinSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = appleSet
 
 public val <E> E.iosSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.IOS)
 
 public val <E> E.watchosSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.WATCHOS)
 
 public val <E> E.tvosSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.TVOS)
 
 public val <E> E.macosSet: Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
     get() = nativeSourceSets(Family.OSX)
 
 
 private fun <E> E.nativeSourceSets(vararg families: Family = Family.values()): Set<SourceSetBundle>
-  where E : KotlinSourceSetContainer, E : KotlinTargetsContainer =
-  targets.filter { it is KotlinNativeTarget && it.konanTarget.family in families }
-    .toSourceSetBundles()
+    where E : KotlinSourceSetContainer, E : KotlinTargetsContainer =
+    targets.filter { it is KotlinNativeTarget && it.konanTarget.family in families }
+        .toSourceSetBundles()
 
 context(KotlinSourceSetContainer)
 private fun Iterable<KotlinTarget>.toSourceSetBundles(): Set<SourceSetBundle> {
@@ -219,15 +218,16 @@ internal fun KotlinSourceSetContainer.bundleFor(target: KotlinTarget) = sourceSe
 internal fun NamedDomainObjectContainer<out KotlinSourceSet>.bundleFor(
     target: KotlinTarget,
     androidLayoutV2: Boolean? = null,
+    isAndroid: Boolean = androidLayoutV2 != null,
 ): SourceSetBundle {
     val compilations = target.compilations
     return when {
         compilations.isEmpty() || androidLayoutV2 != null ->
-            bundle(target.name, androidLayoutV2 = androidLayoutV2)
+            bundle(target.name, androidLayoutV2 = androidLayoutV2, isAndroid = isAndroid)
 
         else -> SourceSetBundle(
-          main = compilations.getByName(MAIN_SOURCE_SET_NAME).defaultSourceSet,
-          test = compilations.getByName(TEST_SOURCE_SET_NAME).defaultSourceSet,
+            main = compilations.getByName(MAIN_SOURCE_SET_NAME).defaultSourceSet,
+            test = compilations.getByName(TEST_SOURCE_SET_NAME).defaultSourceSet,
         )
     }
 }
@@ -235,34 +235,36 @@ internal fun NamedDomainObjectContainer<out KotlinSourceSet>.bundleFor(
 public fun KotlinSourceSetContainer.bundle(
     name: String,
     androidLayoutV2: Boolean? = null,
-): SourceSetBundle = sourceSets.bundle(name, androidLayoutV2)
+    isAndroid: Boolean = androidLayoutV2 != null,
+): SourceSetBundle = sourceSets.bundle(name, androidLayoutV2, isAndroid = isAndroid)
 
 public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
     name: String,
     androidLayoutV2: Boolean? = null,
+    isAndroid: Boolean = androidLayoutV2 != null,
 ): SourceSetBundle {
     val mainSourceSet = maybeCreate(name + MAIN_SOURCE_SET_POSTFIX)
 
     // region Support for androidSourceSetLayout v2
     // https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema
     /** @see fluxo.conf.dsl.container.impl.target.TargetAndroidContainer.setup */
-    val isAndroid = name == ANDROID
     if (isAndroid) {
         val useV1 = androidLayoutV2?.not()
-          ?: names.let { "androidAndroidTest" in it || "androidTest" in it }
+            ?: names.let { "androidAndroidTest" in it || "androidTest" in it }
         val instrumentedTest =
-          maybeCreate(if (!useV1) "androidInstrumentedTest" else "androidAndroidTest")
+            maybeCreate(if (!useV1) "androidInstrumentedTest" else "androidAndroidTest")
         return SourceSetBundle(
-          main = mainSourceSet,
-          test = maybeCreate(if (!useV1) "androidUnitTest" else "androidTest"),
-          moreTests = arrayOf(instrumentedTest),
+            main = mainSourceSet,
+            test = maybeCreate(if (!useV1) "androidUnitTest" else "androidTest"),
+            moreTests = arrayOf(instrumentedTest),
+            isAndroid = true,
         )
     }
     // endregion
 
     return SourceSetBundle(
-      main = mainSourceSet,
-      test = maybeCreate(name + TEST_SOURCE_SET_POSTFIX),
+        main = mainSourceSet,
+        test = maybeCreate(name + TEST_SOURCE_SET_POSTFIX),
     )
 }
 
@@ -274,15 +276,15 @@ public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
 public fun NamedDomainObjectContainer<out KotlinSourceSet>.bundle(
     name: String? = null,
 ): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, SourceSetBundle>> =
-  PropertyDelegateProvider { _, property ->
-      val bundle = bundle(name = name ?: property.name)
-      ReadOnlyProperty { _, _ -> bundle }
-  }
+    PropertyDelegateProvider { _, property ->
+        val bundle = bundle(name = name ?: property.name)
+        ReadOnlyProperty { _, _ -> bundle }
+    }
 
 public fun KotlinSourceSetContainer.bundle(
     name: String? = null,
 ): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, SourceSetBundle>> =
-  sourceSets.bundle(name)
+    sourceSets.bundle(name)
 
 internal const val MAIN_SOURCE_SET_NAME = "main"
 internal const val TEST_SOURCE_SET_NAME = "test"
@@ -295,17 +297,18 @@ internal const val TEST_SOURCE_SET_POSTFIX = "Test"
 // region Dependecies declaration
 
 public operator fun SourceSetBundle.plus(other: SourceSetBundle): Set<SourceSetBundle> =
-  this + setOf(other)
+    this + setOf(other)
 
 public operator fun SourceSetBundle.plus(other: Set<SourceSetBundle>): Set<SourceSetBundle> =
-  setOf(this) + other
+    setOf(this) + other
 
 @Deprecated(KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION)
 public infix fun SourceSetBundle.dependsOn(other: SourceSetBundle) {
     main.dependsOn(other.main)
-    test.dependsOn(other.test)
+    val otherTest = other.test
+    test.dependsOn(otherTest)
     moreTests?.forEach {
-        it.dependsOn(other.test)
+        it.dependsOn(otherTest)
     }
 }
 
@@ -379,8 +382,8 @@ public fun <E> E.commonCompileOnly(
             ?: throw NullPointerException("Please, provide project")
     } catch (e: Throwable) {
         throw GradleException(
-          "Unable to add common compileOnly dependency '$dependencyNotation': $e",
-          e,
+            "Unable to add common compileOnly dependency '$dependencyNotation': $e",
+            e,
         )
     }
 
@@ -406,8 +409,8 @@ public fun <E> E.commonCompileOnly(
         if (addConstraint) {
             if (dependencyNotation is Dependency && dependencyNotation.version.isNullOrEmpty()) {
                 p.logger.w(
-                  "Dependency version is empty, " +
-                    "can't add a constraint: $dependencyNotation",
+                    "Dependency version is empty, " +
+                        "can't add a constraint: $dependencyNotation",
                 )
             } else {
                 dependencies.constraints.implementation(dependencyNotation)

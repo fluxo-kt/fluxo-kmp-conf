@@ -4,13 +4,13 @@ public final class Fkc {
 	public static final fun buildNumberSuffix (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 	public static synthetic fun buildNumberSuffix$default (Lorg/gradle/api/Project;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
 	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
-	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun bundle (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;Z)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun bundle (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;)Lkotlin/properties/PropertyDelegateProvider;
-	public static final fun bundle (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;Ljava/lang/Boolean;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static final fun bundle (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;Ljava/lang/Boolean;Z)Lfluxo/conf/kmp/SourceSetBundle;
 	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;ILjava/lang/Object;)Lkotlin/properties/PropertyDelegateProvider;
-	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static synthetic fun bundle$default (Lorg/gradle/api/NamedDomainObjectContainer;Ljava/lang/String;Ljava/lang/Boolean;ZILjava/lang/Object;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static synthetic fun bundle$default (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;ILjava/lang/Object;)Lkotlin/properties/PropertyDelegateProvider;
-	public static synthetic fun bundle$default (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lfluxo/conf/kmp/SourceSetBundle;
+	public static synthetic fun bundle$default (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/String;Ljava/lang/Boolean;ZILjava/lang/Object;)Lfluxo/conf/kmp/SourceSetBundle;
 	public static final fun commonCompileOnly (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/Object;Lorg/gradle/api/Project;Z)V
 	public static synthetic fun commonCompileOnly$default (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;Ljava/lang/Object;Lorg/gradle/api/Project;ZILjava/lang/Object;)V
 	public static final fun dependencies (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function1;)V
@@ -603,5 +603,6 @@ public abstract interface class fluxo/conf/kmp/SourceSetBundle {
 	public fun getMoreTests ()[Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 	public abstract fun getTest ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
 	public synthetic fun invoke (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public fun isAndroid ()Z
 }
 

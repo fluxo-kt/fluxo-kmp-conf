@@ -38,7 +38,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 
     private val lazyTarget = context.objects.set<T.() -> Unit>()
 
-    internal val lazyTargetConf: T.() -> Unit = { lazyTarget.all { this() } }
+    internal val lazyTargetConf: T.() -> Unit = { lazyTarget.configureEach { this() } }
 
     override fun target(action: T.() -> Unit) {
         lazyTarget.add(action)
@@ -69,7 +69,8 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
         }
 
         override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
-            if (!allowManualHierarchy) return
+            // Android source sets can always require manual hierarchy setup.
+            if (!allowManualHierarchy && !child.isAndroid) return
             val bundle = k.commonJvm
             @Suppress("DEPRECATION")
             child dependsOn bundle

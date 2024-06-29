@@ -76,26 +76,41 @@ internal abstract class TargetAndroidContainer<T>(
         }
 
         val layoutV2 = context.ctx.androidLayoutV2
-        val bundle = k.sourceSets.bundleFor(target, androidLayoutV2 = layoutV2)
+        val bundle = k.sourceSets.bundleFor(target, androidLayoutV2 = layoutV2, isAndroid = true)
         setupParentSourceSet(k, bundle)
 
         /**
-         * Configure Android's variants
+         * Configure Android's variants,
+         * source sets for them are added later.
          *
          * @see org.jetbrains.kotlin.gradle.utils.forAllAndroidVariants
          * @see org.jetbrains.kotlin.gradle.plugin.AndroidProjectHandler
          */
-        val disambiguationClassifier = target.disambiguationClassifier
-        k.sourceSets.all {
-            if (name.startsWith(disambiguationClassifier) && this !in bundle) {
-                // TODO: should androidUnitTestDebug depend on androidUnitTest?
-                // TODO: provide a `setupParentSourceSet` with a single SourceSet arg
-                val variantBundle = when {
-                    isTestRelated() -> SourceSetBundle(main = bundle.main, test = this)
-                    else -> SourceSetBundle(main = this, test = bundle.test)
-                }
-                setupParentSourceSet(k, variantBundle)
+        val classifier = target.disambiguationClassifier // android
+        k.sourceSets.configureEach s@{
+            val name = name
+            val isVariantAndroidSourceSet = name.startsWith(classifier) &&
+                "Native" !in name && // exclude `androidNative`
+                this !in bundle
+            if (!isVariantAndroidSourceSet) {
+                return@s
             }
+
+            // TODO: should androidUnitTestDebug depend on androidUnitTest?
+            // TODO: provide a `setupParentSourceSet` with a single SourceSet arg
+
+            val m: KotlinSourceSet
+            val t: KotlinSourceSet
+            if (isTestRelated()) {
+                m = bundle.main
+                t = this
+            } else {
+                m = this
+                t = bundle.test
+            }
+
+            val variantBundle = SourceSetBundle(main = m, test = t, isAndroid = true)
+            setupParentSourceSet(k, variantBundle)
         }
     }
 
@@ -127,7 +142,7 @@ internal abstract class TargetAndroidContainer<T>(
         override fun setupAndroid(project: Project) {
             project.configureExtension<BaseAppModuleExtension>(ANDROID_EXT_NAME) {
                 setupAndroidExtension()
-                lazyAndroid.all { this() }
+                lazyAndroid.configureEach { this() }
             }
         }
     }
@@ -142,7 +157,7 @@ internal abstract class TargetAndroidContainer<T>(
         override fun setupAndroid(project: Project) {
             project.configureExtension<LibraryExtension>(ANDROID_EXT_NAME) {
                 setupAndroidExtension()
-                lazyAndroid.all { this() }
+                lazyAndroid.configureEach { this() }
             }
         }
     }
