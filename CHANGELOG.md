@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Changed
+- add more granular control over targets in the `allDefaultTargets` helper.
+
 ### Updated
 - bump task-tree to [_4.0.0_](https://github.com/dorongold/gradle-task-tree/releases/tag/4.0.0).
 

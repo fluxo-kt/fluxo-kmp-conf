@@ -82,42 +82,61 @@ internal class KmpConfigurationContainerDslImpl(
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension.targetHierarchy
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetHierarchyDsl.default
      */
-    override fun allDefaultTargets(wasmWasi: Boolean) {
+    @Suppress("CyclomaticComplexMethod")
+    override fun allDefaultTargets(
+        jvm: Boolean,
+        android: Boolean,
+
+        apple: Boolean,
+        ios: Boolean,
+        watchos: Boolean,
+        tvos: Boolean,
+        macos: Boolean,
+
+        linux: Boolean,
+        mingw: Boolean,
+
+        js: Boolean,
+        wasm: Boolean,
+        wasmWasi: Boolean,
+    ) {
         // KotlinMultiplatformExtension.targetHierarchy
         // https://kotlinlang.org/docs/whatsnew1820.html#new-approach-to-source-set-hierarchy
 
-        jvm()
-        androidLibrary()
-        js()
+        if (jvm) jvm()
+        if (android) androidLibrary()
+        if (js) js()
 
-        ios()
-        watchos()
-        tvos()
-        macos()
+        if (ios) ios()
+        if (watchos) watchos()
+        if (tvos) tvos()
+        if (macos) macos()
 
-        linux()
-        mingw()
+        if (linux) linux()
+        if (mingw) mingw()
 
         // WASM target has a problem with Gradle 8+
         // Reason: One task uses the output of another task
         //  without declaring an explicit or implicit dependency.
         // Fixed in Kotlin 2.0.
-        val kotlinPluginVersion = holder.kotlinPluginVersion
-        @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
-        if (kotlinPluginVersion >= KOTLIN_1_8_20 &&
-            (kotlinPluginVersion >= KOTLIN_2_0 || isGradleNotFailingOnImplicitTaskDependencies())
-        ) {
-            wasmJs()
+        val kpv = holder.kotlinPluginVersion
+        if (wasm) {
+            @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
+            if (kpv >= KOTLIN_1_8_20 &&
+                (kpv >= KOTLIN_2_0 || isGradleNotFailingOnImplicitTaskDependencies())
+            ) {
+                wasmJs()
 
-            // WASI target is available since Kotlin 1.9.20.
-            // Both WASI and JS can be used together since Kotlin 2.0.
-            if (wasmWasi && kotlinPluginVersion >= KOTLIN_2_0) {
-                wasmWasi()
+                // WASI target has been available since Kotlin 1.9.20.
+                // Both WASI and JS can have been used together since Kotlin 2.0.
+                if (wasmWasi && kpv >= KOTLIN_2_0) {
+                    wasmWasi()
+                }
             }
         }
 
         kotlinMultiplatform {
-            if (kotlinPluginVersion >= KOTLIN_1_9_20) {
+            if (kpv >= KOTLIN_1_9_20) {
                 // Apply the extended default hierarchy explicitly (needed after 1.9.20-RC).
                 // It'll create, for example, the iosMain source set.
                 // https://kotlinlang.org/docs/whatsnew1920.html#set-up-the-target-hierarchy

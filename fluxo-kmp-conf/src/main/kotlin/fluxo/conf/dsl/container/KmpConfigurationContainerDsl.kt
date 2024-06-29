@@ -35,7 +35,23 @@ public interface KmpConfigurationContainerDsl :
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension.targetHierarchy
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetHierarchyDsl.default
      */
-    public fun allDefaultTargets(wasmWasi: Boolean = ENABLE_WASM_WASI)
+    public fun allDefaultTargets(
+        jvm: Boolean = true,
+        android: Boolean = true,
+
+        apple: Boolean = true,
+        ios: Boolean = apple,
+        watchos: Boolean = apple,
+        tvos: Boolean = apple,
+        macos: Boolean = apple,
+
+        linux: Boolean = true,
+        mingw: Boolean = true,
+
+        js: Boolean = true,
+        wasm: Boolean = true,
+        wasmWasi: Boolean = wasm && ENABLE_WASM_WASI,
+    )
 }
 
 private const val ENABLE_WASM_WASI = false

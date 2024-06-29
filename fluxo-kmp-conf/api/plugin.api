@@ -439,8 +439,8 @@ public abstract interface class fluxo/conf/dsl/container/Container : java/lang/C
 }
 
 public abstract interface class fluxo/conf/dsl/container/KmpConfigurationContainerDsl : fluxo/conf/dsl/container/KotlinConfigurationContainerDsl, fluxo/conf/dsl/container/target/AndroidNativeTarget$Configure, fluxo/conf/dsl/container/target/AppleIosTarget$Configure, fluxo/conf/dsl/container/target/AppleMacosTarget$Configure, fluxo/conf/dsl/container/target/AppleTvosTarget$Configure, fluxo/conf/dsl/container/target/AppleWatchosTarget$Configure, fluxo/conf/dsl/container/target/JsTarget$Configure, fluxo/conf/dsl/container/target/LinuxTarget$Configure, fluxo/conf/dsl/container/target/MingwTarget$Configure, fluxo/conf/dsl/container/target/WasmTarget$Configure {
-	public abstract fun allDefaultTargets (Z)V
-	public static synthetic fun allDefaultTargets$default (Lfluxo/conf/dsl/container/KmpConfigurationContainerDsl;ZILjava/lang/Object;)V
+	public abstract fun allDefaultTargets (ZZZZZZZZZZZZ)V
+	public static synthetic fun allDefaultTargets$default (Lfluxo/conf/dsl/container/KmpConfigurationContainerDsl;ZZZZZZZZZZZZILjava/lang/Object;)V
 	public abstract fun kotlinMultiplatform (Lkotlin/jvm/functions/Function1;)V
 }
 
