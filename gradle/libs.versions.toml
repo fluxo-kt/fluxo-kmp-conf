@@ -334,7 +334,7 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.enterprise
 # NOTE: Don't forget to edit version in all `settings.gradle.kts` files as well!
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.16.2" }
+gradle-enterprise = { id = "com.gradle.enterprise", version = "3.17.5" }
 
 # Gradle Versions Plugin: provides a task to determine, which dependencies have updates.
 # https://github.com/ben-manes/gradle-versions-plugin/releases

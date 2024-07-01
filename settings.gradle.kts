@@ -34,7 +34,7 @@ pluginManagement {
 //  https://github.com/ZacSweers/CatchUp/blob/f1cb33f62e5f8b49825ac27f89a954f7f23f41ac/settings.gradle.kts#L92
 
 plugins {
-    id("com.gradle.enterprise") version "3.16.2"
+    id("com.gradle.enterprise") version "3.17.5"
 }
 
 dependencyResolutionManagement {

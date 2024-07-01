@@ -7,6 +7,7 @@
     <ID>AvoidFirstOrLastOnList:ParseJvmApiDump.kt$last</ID>
     <ID>AvoidFirstOrLastOnList:SetupJvmCompatibility.kt$first</ID>
     <ID>AvoidFirstOrLastOnList:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$first</ID>
+    <ID>CompilerWarning:BuildScanPlugin.kt$BuildScanExtension</ID>
     <ID>CompilerWarning:DependencyAnalysisPlugin.kt$configureExtension</ID>
     <ID>CompilerWarning:FkcSetupIdeaPlugin.kt$configureExtension</ID>
     <ID>CompilerWarning:KotlinJsUtils.kt$compilerOptions</ID>
