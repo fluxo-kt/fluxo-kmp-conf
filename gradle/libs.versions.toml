@@ -105,7 +105,7 @@ android-gradle-plugin = "8.6.0-alpha08"
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
-bcv = "0.14.0"
+bcv = "0.16.2"
 
 # Kotlin JS/WASM TypeScript definitions API support for the KotlinX Binary Compatibility Validator.
 # https://github.com/fluxo-kt/fluxo-bcv-js/releases.
