@@ -84,7 +84,7 @@ org.jetbrains.kotlin:kotlin-sam-with-receiver:2.0.0
 org.jetbrains.kotlin:kotlin-tooling-core:2.0.0
 org.jetbrains.kotlin:kotlin-util-io:2.0.0
 org.jetbrains.kotlin:kotlin-util-klib:2.0.0
-org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.14.0
-org.jetbrains.kotlinx:binary-compatibility-validator:0.14.0
+org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.16.2
+org.jetbrains.kotlinx:binary-compatibility-validator:0.16.2
 org.ow2.asm:asm:9.7
 org.tomlj:tomlj:1.1.1

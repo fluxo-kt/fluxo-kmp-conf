@@ -197,13 +197,12 @@ org.jetbrains.kotlin:kotlin-stdlib:1.9.22
 org.jetbrains.kotlin:kotlin-tooling-core:2.0.0
 org.jetbrains.kotlin:kotlin-util-io:2.0.0
 org.jetbrains.kotlin:kotlin-util-klib:2.0.0
-org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.14.0
-org.jetbrains.kotlinx:binary-compatibility-validator:0.14.0
+org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin:0.16.2
+org.jetbrains.kotlinx:binary-compatibility-validator:0.16.2
 org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3
 org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3
 org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.1
-org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.2
 org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.4.1
 org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1
 org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.4.1
