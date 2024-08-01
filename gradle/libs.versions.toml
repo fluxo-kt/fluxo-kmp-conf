@@ -99,7 +99,7 @@ androidBuildTools = "35.0.0"
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # WARNING: Remember to update the version badge in `README.md`!
-android-gradle-plugin = "8.6.0-alpha08"
+android-gradle-plugin = "8.7.0-alpha03"
 
 # endregion
 
