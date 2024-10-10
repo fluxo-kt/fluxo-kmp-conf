@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.12.1] - 2024-10-10
+
 ### Changed
 - ⚠ removed context-receivers support (dropped in Kotlin 2.1).
 
