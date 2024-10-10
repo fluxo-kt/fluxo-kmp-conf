@@ -11,6 +11,8 @@
 <details>
   <summary>Show</summary>
 
+* Interesting KMP architecture sample
+  * https://github.com/VasilyRylov/architecture-samples/tree/main
 * GitHub signed commits
   * https://github.com/qoomon/actions--create-commit
 * https://kotlinlang.org/docs/whatsnew-eap.html#data-class-copy-function-to-have-the-same-visibility-as-constructor
