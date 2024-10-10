@@ -5,6 +5,8 @@ package fluxo.conf.impl.kotlin
 import MAIN_SOURCE_SET_POSTFIX
 import TEST_SOURCE_SET_POSTFIX
 import commonCompileOnly
+import commonMain
+import commonTest
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.JSR305_DEPENDENCY
@@ -26,45 +28,47 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-context(Project)
-internal fun DependencyHandler.setupKotlinDependencies(
+internal fun Project.setupKotlinDependencies(
+    dh: DependencyHandler,
     libs: FluxoVersionCatalog?,
     kc: KotlinConfig,
     isApplication: Boolean = false,
 ) {
-    compileOnlyWithConstraint(JSR305_DEPENDENCY)
+    compileOnlyWithConstraint(dh, JSR305_DEPENDENCY)
 
     if (kc.setupKnownBoms) {
-        val bom = kotlin("bom", kc.coreLibs)
-        implementation(if (isApplication) enforcedPlatform(bom) else platform(bom))
+        val bom = dh.kotlin("bom", kc.coreLibs)
+        implementation(dh, if (isApplication) dh.enforcedPlatform(bom) else dh.platform(bom))
     }
     if (kc.addStdlibDependency) {
-        implementation(kotlin("stdlib", kc.coreLibs))
+        implementation(dh, dh.kotlin("stdlib", kc.coreLibs))
     }
-    testImplementation(kotlin("test-junit"))
+    testImplementation(dh, dh.kotlin("test-junit"))
 
     libs ?: return
 
-    libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(it) }
+    libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(dh, it) }
 
     if (kc.setupCoroutines) {
         kc.setupKnownBoms && libs.onLibrary("kotlinx-coroutines-bom") {
             implementation(
-                if (isApplication) enforcedPlatform(it) else platform(it),
+                dh,
+                if (isApplication) dh.enforcedPlatform(it) else dh.platform(it),
                 excludeJetbrainsAnnotations,
             )
-            implementation(COROUTINES_DEPENDENCY)
-        } || libs.onLibrary("kotlinx-coroutines-core") { implementation(it) }
+            implementation(dh, COROUTINES_DEPENDENCY)
+        } || libs.onLibrary("kotlinx-coroutines-core") { implementation(dh, it) }
 
-        libs.onLibrary("kotlinx-coroutines-test") { testImplementation(it) }
-        libs.onLibrary("kotlinx-coroutines-debug") { testImplementation(it) }
+        libs.onLibrary("kotlinx-coroutines-test") { testImplementation(dh, it) }
+        libs.onLibrary("kotlinx-coroutines-debug") { testImplementation(dh, it) }
     }
 
     if (!kc.setupKnownBoms) return
 
     val bomImplementation: (Provider<MinimalExternalModuleDependency>) -> Unit = {
         implementation(
-            if (isApplication) enforcedPlatform(it) else platform(it),
+            dh,
+            if (isApplication) dh.enforcedPlatform(it) else dh.platform(it),
             excludeJetbrainsAnnotations,
         )
     }
@@ -77,8 +81,8 @@ internal fun DependencyHandler.setupKotlinDependencies(
     val hasOkioBom = libs.onLibrary("square-okio-bom", bomImplementation)
     val hasOkhttpBom = libs.onLibrary("square-okhttp-bom", bomImplementation)
 
-    constraints {
-        val constraintImpl: (Any) -> Unit = { implementation(it) }
+    dh.constraints {
+        val constraintImpl: (Any) -> Unit = { implementation(this, it) }
 
         if (!hasOkioBom) libs.onLibrary("square-okio", constraintImpl)
         if (!hasOkhttpBom) libs.onLibrary("square-okhttp", constraintImpl)
@@ -92,9 +96,9 @@ internal fun DependencyHandler.setupKotlinDependencies(
     }
 }
 
-context(Project)
 @Suppress("CyclomaticComplexMethod")
-internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
+internal fun Project.setupMultiplatformDependencies(
+    kmpe: KotlinMultiplatformExtension,
     conf: FluxoConfigurationExtensionImpl,
     isApplication: Boolean = conf.project.hasAndroidAppPlugin,
 ) {
@@ -102,7 +106,7 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
     val kc = conf.kotlinConfig
     val project = conf.project
     val dh = project.dependencies
-    val sourceSets = sourceSets
+    val sourceSets = kmpe.sourceSets
 
     sourceSets.commonMain.dependencies {
         if (kc.setupKnownBoms) {
@@ -152,9 +156,9 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
     val constraints = dh.constraints
     if (kc.setupCompose) {
         // Jetbrains KMP Compose
-        val jbCompose = (this as ExtensionAware).extensions.findByName("compose")
+        val jbCompose = (kmpe as ExtensionAware).extensions.findByName("compose")
         if (jbCompose != null && jbCompose is org.jetbrains.compose.ComposePlugin.Dependencies) {
-            commonCompileOnly(jbCompose.runtime, project)
+            kmpe.commonCompileOnly(jbCompose.runtime, project)
         }
 
         // AndroidX Compose
@@ -162,7 +166,7 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
             libs.onLibrary("androidx-compose-runtime") { lib ->
                 sourceSets.register(CommonJvm.ANDROID + MAIN_SOURCE_SET_POSTFIX) {
                     dependencies { compileOnlyAndLog(lib) }
-                    constraints.implementation(lib)
+                    implementation(constraints, lib)
                 }
             }
         }
@@ -175,7 +179,7 @@ internal fun KotlinMultiplatformExtension.setupMultiplatformDependencies(
             // https://issuetracker.google.com/issues/216293107
             val compileOnlyWithConstraint: (Any) -> Unit = {
                 compileOnlyAndLog(it)
-                constraints.implementation(it)
+                implementation(constraints, it)
             }
 
             // Java-only annotations

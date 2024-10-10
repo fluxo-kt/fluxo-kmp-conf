@@ -32,24 +32,21 @@ internal fun DependencyHandler.kotlin(module: String, version: String? = null): 
     "org.jetbrains.kotlin:kotlin-$module${version?.let { ":$version" }.orEmpty()}"
 
 
-context(Project)
-internal fun DependencyHandler.ksp(dependencyNotation: Any) =
-    addAndLog("ksp", dependencyNotation)
+internal fun Project.ksp(dh: DependencyHandler, dependencyNotation: Any) =
+    addAndLog(dh, "ksp", dependencyNotation)
 
 
-context(Project)
-internal fun DependencyHandler.implementation(dependencyNotation: Any) =
-    addAndLog(IMPLEMENTATION, dependencyNotation)
+internal fun Project.implementation(dh: DependencyHandler, dependencyNotation: Any) =
+    addAndLog(dh, IMPLEMENTATION, dependencyNotation)
 
-context(Project)
-internal fun DependencyHandler.implementation(
+internal fun Project.implementation(
+    dh: DependencyHandler,
     dependencyNotation: Provider<*>,
     configuration: ExternalModuleDependency.() -> Unit,
-) = addConfiguredDependencyTo(this, IMPLEMENTATION, dependencyNotation, configuration)
+) = addConfiguredDependencyTo(dh, IMPLEMENTATION, dependencyNotation, configuration)
 
-context(Project)
-internal fun DependencyConstraintHandler.implementation(constraintNotation: Any) =
-    addAndLog(IMPLEMENTATION, constraintNotation)
+internal fun Project.implementation(dch: DependencyConstraintHandler, constraintNotation: Any) =
+    addAndLog(dch, IMPLEMENTATION, constraintNotation)
 
 internal fun KotlinDependencyHandler.implementationAndLog(dependencyNotation: Any) =
     implementation(dependencyNotation).also {
@@ -68,47 +65,41 @@ internal fun <T : Dependency> KotlinDependencyHandler.implementationAndLog(
 }
 
 
-context(Project)
-internal fun DependencyHandler.testImplementation(dependencyNotation: Any) =
-    addAndLog("testImplementation", dependencyNotation)
+internal fun Project.testImplementation(dh: DependencyHandler, dependencyNotation: Any) =
+    addAndLog(dh, "testImplementation", dependencyNotation)
 
 
-context(Project)
-internal fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? =
-    addAndLog("androidTestImplementation", dependencyNotation)
+internal fun Project.androidTestImplementation(
+    dh: DependencyHandler,
+    dependencyNotation: Any
+): Dependency? = addAndLog(dh, "androidTestImplementation", dependencyNotation)
 
-context(Project)
-internal fun DependencyHandler.androidTestImplementation(
+internal fun Project.androidTestImplementation(
+    dh: DependencyHandler,
     dependencyNotation: Provider<*>,
     configuration: ExternalModuleDependency.() -> Unit,
-) = addConfiguredDependencyTo(this, "androidTestImplementation", dependencyNotation, configuration)
+) = addConfiguredDependencyTo(dh, "androidTestImplementation", dependencyNotation, configuration)
 
 
-context(Project)
-internal fun DependencyHandler.debugImplementation(dependencyNotation: Any) =
-    addAndLog("debugImplementation", dependencyNotation)
+internal fun Project.debugImplementation(dh: DependencyHandler, dependencyNotation: Any) =
+    addAndLog(dh, "debugImplementation", dependencyNotation)
 
-context(Project)
-internal fun DependencyHandler.debugCompileOnly(dependencyNotation: Any) =
-    addAndLog("debugCompileOnly", dependencyNotation)
+internal fun Project.debugCompileOnly(dh: DependencyHandler, dependencyNotation: Any) =
+    addAndLog(dh, "debugCompileOnly", dependencyNotation)
 
 
-context(Project)
-internal fun DependencyHandler.runtimeOnly(dependencyNotation: Any) =
-    addAndLog("runtimeOnly", dependencyNotation)
+internal fun Project.runtimeOnly(dh: DependencyHandler, dependencyNotation: Any) =
+    addAndLog(dh, "runtimeOnly", dependencyNotation)
 
 
-context(Project)
-internal fun DependencyHandler.compileOnly(dependencyNotation: Any) =
-    addAndLog(COMPILE_ONLY, dependencyNotation)
+internal fun Project.compileOnly(dh: DependencyHandler, dependencyNotation: Any) =
+    addAndLog(dh, COMPILE_ONLY, dependencyNotation)
 
-context(Project)
-internal fun DependencyHandler.compileOnlyWithConstraint(dependencyNotation: Any) {
-    compileOnly(dependencyNotation)
-    constraints.implementation(dependencyNotation)
+internal fun Project.compileOnlyWithConstraint(dh: DependencyHandler, dependencyNotation: Any) {
+    compileOnly(dh, dependencyNotation)
+    implementation(dh.constraints, dependencyNotation)
 }
 
-context(Project)
 internal fun KotlinDependencyHandler.compileOnlyAndLog(dependencyNotation: Any) =
     compileOnly(dependencyNotation).also {
         logKmpDependency(COMPILE_ONLY, it ?: dependencyNotation) {
@@ -147,22 +138,22 @@ private fun Project.addConfiguredDependencyTo(
 }
 
 
-context(Project)
-internal fun DependencyHandler.addAndLog(
+internal fun Project.addAndLog(
+    dh: DependencyHandler,
     configurationName: String,
     dependencyNotation: Any,
-) = add(configurationName, dependencyNotation).also {
+) = dh.add(configurationName, dependencyNotation).also {
     logDependency(configurationName, it ?: dependencyNotation)
 }
 
 
-context(Project)
-private fun DependencyConstraintHandler.addAndLog(
+private fun Project.addAndLog(
+    dch: DependencyConstraintHandler,
     configurationName: String,
     dependencyNotation: Any,
 ): DependencyConstraint? {
     try {
-        return add(configurationName, dependencyNotation).also {
+        return dch.add(configurationName, dependencyNotation).also {
             logDependency(configurationName, dependencyNotation, prefix = "constraint ")
         }
     } catch (e: Throwable) {

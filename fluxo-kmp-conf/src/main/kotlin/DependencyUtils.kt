@@ -56,6 +56,6 @@ public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
     }
     confName = "ksp${confName.capitalizeAsciiOnly()}"
     return with(project) {
-        dependencies.addAndLog(confName, dependencyNotation)
+        addAndLog(dependencies, confName, dependencyNotation)
     }
 }

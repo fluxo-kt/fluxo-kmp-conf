@@ -17,30 +17,30 @@ import fluxo.vc.onLibrary
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 
-context(Project)
 @Suppress("LongMethod")
-internal fun DependencyHandler.setupAndroidDependencies(
+internal fun Project.setupAndroidDependencies(
+    dh: DependencyHandler,
     libs: FluxoVersionCatalog,
     isApplication: Boolean,
     kc: KotlinConfig,
 ) {
-    androidTestImplementation(kotlin("test-junit", kc.coreLibs))
+    androidTestImplementation(dh, dh.kotlin("test-junit", kc.coreLibs))
 
-    val impl: (Any) -> Unit = { implementation(it) }
-    val compileConstraint: (Any) -> Unit = { compileOnlyWithConstraint(it) }
-    val debugImpl: (Any) -> Unit = { debugImplementation(it) }
-    val testImpl: (Any) -> Unit = { testImplementation(it) }
-    val androidTestImpl: (Any) -> Unit = { androidTestImplementation(it) }
+    val impl: (Any) -> Unit = { implementation(dh, it) }
+    val compileConstraint: (Any) -> Unit = { compileOnlyWithConstraint(dh, it) }
+    val debugImpl: (Any) -> Unit = { debugImplementation(dh, it) }
+    val testImpl: (Any) -> Unit = { testImplementation(dh, it) }
+    val androidTestImpl: (Any) -> Unit = { androidTestImplementation(dh, it) }
 
     libs.onLibrary("androidx-annotation", compileConstraint)
     libs.onLibrary("androidx-annotation-experimental", compileConstraint)
 
     if (kc.setupCoroutines) {
-        libs.onLibrary("kotlinx-coroutines-debug") { debugCompileOnly(it) }
+        libs.onLibrary("kotlinx-coroutines-debug") { debugCompileOnly(dh, it) }
         libs.onLibrary("kotlinx-coroutines-test") {
-            androidTestImplementation(it) {
+            androidTestImplementation(dh, it) {
                 // https://github.com/Kotlin/kotlinx.coroutines/tree/ca14606/kotlinx-coroutines-debug#debug-agent-and-android
-                exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-debug")
+                this.exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-debug")
             }
         }
     }
@@ -64,7 +64,7 @@ internal fun DependencyHandler.setupAndroidDependencies(
     if (isApplication) {
         libs.onLibrary("androidx-activity", impl)
         libs.onLibrary("androidx-lifecycle-runtime", impl)
-        libs.onLibrary("androidx-profileInstaller") { runtimeOnly(it) }
+        libs.onLibrary("androidx-profileInstaller") { runtimeOnly(dh, it) }
 
         if (kc.setupCompose) {
             // BackHandler, setContent, ReportDrawn, rememberLauncherForActivityResult, and so on.
@@ -101,13 +101,13 @@ internal fun DependencyHandler.setupAndroidDependencies(
 
     if (kc.setupKnownBoms) {
         libs.onLibrary("firebase-bom") {
-            implementation(if (isApplication) enforcedPlatform(it) else platform(it))
+            implementation(dh, if (isApplication) dh.enforcedPlatform(it) else dh.platform(it))
         }
-        libs.onLibrary("androidx-compose-bom") { implementation(platform(it)) }
+        libs.onLibrary("androidx-compose-bom") { implementation(dh, dh.platform(it)) }
     }
 
     if (kc.setupRoom) {
-        libs.onLibrary("androidx-room-compiler") { ksp(it) }
+        libs.onLibrary("androidx-room-compiler") { ksp(dh, it) }
         libs.onLibrary("androidx-room-runtime", impl)
         libs.onLibrary("androidx-room-testing", testImpl)
         libs.onLibrary("androidx-room-common", compileConstraint)
@@ -121,8 +121,8 @@ internal fun DependencyHandler.setupAndroidDependencies(
 
     if (!kc.setupKnownBoms) return
 
-    constraints {
-        val constraintImpl: (Any) -> Unit = { implementation(it) }
+    dh.constraints {
+        val constraintImpl: (Any) -> Unit = { implementation(this, it) }
         libs.onBundle("androidx", constraintImpl)
         libs.onBundle("accompanist", constraintImpl)
         libs.onBundle("android-common", constraintImpl)

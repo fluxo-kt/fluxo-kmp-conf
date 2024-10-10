@@ -12,8 +12,8 @@ version = libs.versions.version.get()
 // FIXME: Find a way to deduplicate configuration between `self` and `plugin` modules.
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 kotlin {
@@ -25,7 +25,6 @@ kotlin {
     compilerOptions {
         @Suppress("MaxLineLength")
         freeCompilerArgs.addAll(
-            "-Xcontext-receivers",
             // Kotlin's assignment overloading for Gradle plugins.
             // Lookup the Gradle repo for more details. Also:
             // https://stackoverflow.com/a/76022933/1816338.
@@ -33,7 +32,7 @@ kotlin {
         )
         optIn.add("kotlin.contracts.ExperimentalContracts")
         suppressWarnings = true
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 

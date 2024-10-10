@@ -35,6 +35,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 private const val DEBUG_DETEKT_LOGS = false
 
+private const val DETEKT_MAX_SUPPORTED_KOTLIN_VERSION = "2.1"
+
 private const val MERGE_DETEKT_TASK_NAME = "mergeDetektSarif"
 
 internal const val CONFIG_DIR_NAME = "config"
@@ -170,7 +172,11 @@ internal fun Project.setupDetekt(
         kc.jvmTarget?.let { jvmTarget = it }
 
         val (lang) = kc.langAndApiVersions(isTest = false)
-        lang?.let { languageVersion.set(it.version) }
+        lang?.let {
+            val v = it.version
+            val max = DETEKT_MAX_SUPPORTED_KOTLIN_VERSION
+            languageVersion.set(if (v.toFloat() <= max.toFloat()) v else max)
+        }
 
         if (mergeDetektBaselinesTask != null) {
             baseline.set(baselineIntermediateDir.map { it.file("$BASELINE-$name.$EXT") })
@@ -201,7 +207,11 @@ internal fun Project.setupDetekt(
             kc.jvmTarget?.let { jvmTarget = it }
 
             val (lang) = kc.langAndApiVersions(isTest = false)
-            lang?.let { languageVersion = it.version }
+            lang?.let {
+                val v = it.version
+                val max = DETEKT_MAX_SUPPORTED_KOTLIN_VERSION
+                languageVersion = if (v.toFloat() <= max.toFloat()) v else max
+            }
 
             if (DEBUG_DETEKT_LOGS) {
                 debug = true
@@ -242,13 +252,13 @@ internal fun Project.setupDetekt(
                     "detekt-hbmartin",
                     "detekt-ruleauthors",
                     "detekt-verify-implementation",
-                ).forEach { id -> onLibrary(id) { detektPlugins(it) } }
+                ).forEach { id -> onLibrary(id) { detektPlugins(dh = this, it) } }
 
                 if (kc.setupCompose) {
-                    onLibrary("detekt-compose") { detektPlugins(it) }
+                    onLibrary("detekt-compose") { detektPlugins(dh = this, it) }
                 }
                 if (!conf.isApplication) {
-                    onLibrary("detekt-libraries") { detektPlugins(it) }
+                    onLibrary("detekt-libraries") { detektPlugins(dh = this, it) }
                 }
             }
         }
@@ -256,9 +266,8 @@ internal fun Project.setupDetekt(
 }
 
 
-context(Project)
-private fun DependencyHandler.detektPlugins(dependencyNotation: Any) =
-    addAndLog("detektPlugins", dependencyNotation)
+private fun Project.detektPlugins(dh: DependencyHandler, dependencyNotation: Any) =
+    addAndLog(dh, "detektPlugins", dependencyNotation)
 
 private const val BASELINE = "baseline"
 
@@ -275,7 +284,7 @@ private fun Detekt.taskPlatform(): DetectedTaskPlatform {
 }
 
 private fun Detekt.isDetektTaskAllowed(ctx: FluxoKmpConfContext): Boolean = with(ctx) {
-    getTaskDetailsFromName(name).platform.isTaskAllowed()
+    isTaskAllowed(getTaskDetailsFromName(name).platform)
 }
 
 private fun getTaskDetailsFromName(
@@ -390,8 +399,7 @@ private enum class DetectedTaskPlatform {
     // TODO: Detect common/metadata tasks?
 }
 
-context(FluxoKmpConfContext)
-private fun DetectedTaskPlatform?.isTaskAllowed(): Boolean {
+private fun FluxoKmpConfContext.isTaskAllowed(platform: DetectedTaskPlatform?): Boolean {
     // TODO: Improve detekt task platform detection.
     //  task :detekt detected as platform UNKNOWN
     //  task :detektMetadataMain detected as platform UNKNOWN
@@ -401,10 +409,10 @@ private fun DetectedTaskPlatform?.isTaskAllowed(): Boolean {
     //  task :detektMetadataNonJvmMain detected as platform UNKNOWN
     //  task :detektMetadataUnixMain detected as platform UNKNOWN
 
-    return when (this) {
+    return when (platform) {
         // Always allow common tasks or tasks for unknown platforms.
         null, DetectedTaskPlatform.UNKNOWN -> true
-        else -> toKmpTargetCodes().any(::isTargetEnabled)
+        else -> platform.toKmpTargetCodes().any(::isTargetEnabled)
     }
 }
 

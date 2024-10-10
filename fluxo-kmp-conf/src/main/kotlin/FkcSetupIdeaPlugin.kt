@@ -1,15 +1,13 @@
-@file:Suppress("LongParameterList")
+@file:Suppress("LongParameterList", "KDocUnresolvedReference")
 @file:JvmName("Fkc")
 @file:JvmMultifileClass
 
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.fluxoConfiguration
-import fluxo.conf.impl.configureExtension
-import fluxo.conf.impl.withType
 import org.gradle.api.Project
-import org.jetbrains.intellij.IntelliJPluginExtension
-import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+// import org.jetbrains.intellij.IntelliJPluginExtension
+// import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 
 /**
  * Configures an IntelliJ IDEA Plugin module (Gradle [Project]).
@@ -31,6 +29,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
  * @see org.jetbrains.intellij.IntelliJPluginExtension.updateSinceUntilBuild
  * @see org.jetbrains.intellij.tasks.PatchPluginXmlTask.sinceBuild
  */
+@Suppress("UNUSED_PARAMETER")
 @JvmName("setupIdeaPlugin")
 public fun Project.fkcSetupIdeaPlugin(
     config: (FluxoConfigurationExtension.() -> Unit)? = null,
@@ -39,7 +38,7 @@ public fun Project.fkcSetupIdeaPlugin(
     sinceBuild: String? = null,
     intellijVersion: String,
     kotlin: (KotlinJvmProjectExtension.() -> Unit)? = null,
-    plugin: (IntelliJPluginExtension.() -> Unit)? = null,
+    plugin: (Any.() -> Unit)? = null, // IntelliJPluginExtension
 ) {
     val project = this
     project.fluxoConfiguration {
@@ -51,19 +50,19 @@ public fun Project.fkcSetupIdeaPlugin(
         asIdeaPlugin {
             kotlin?.let { this.kotlin(it) }
 
-            if (sinceBuild != null) {
-                project.tasks.withType<PatchPluginXmlTask> {
-                    this.sinceBuild.set(sinceBuild)
-                }
-            }
+//            if (sinceBuild != null) {
+//                project.tasks.withType<PatchPluginXmlTask> {
+//                    this.sinceBuild.set(sinceBuild)
+//                }
+//            }
 
-            project.configureExtension<IntelliJPluginExtension> {
-                this.version.set(intellijVersion)
-                if (sinceBuild != null) {
-                    updateSinceUntilBuild.set(false)
-                }
-                plugin?.invoke(this)
-            }
+//            project.configureExtension<IntelliJPluginExtension> {
+//                this.version.set(intellijVersion)
+//                if (sinceBuild != null) {
+//                    updateSinceUntilBuild.set(false)
+//                }
+//                plugin?.invoke(this)
+//            }
         }
     }
 }

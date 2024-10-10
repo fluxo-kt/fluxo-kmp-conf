@@ -9,8 +9,8 @@ import org.gradle.internal.logging.text.StyledTextOutput.Style.Info
 internal open class SimpleNodeRenderer(
     private val showTests: Boolean = false,
 ) : NodeRenderer {
-    context(StyledTextOutput)
     override fun renderNode(
+        sto: StyledTextOutput,
         node: RenderableNode,
         alreadyRendered: Boolean,
         parent: RenderableNode?,
@@ -19,15 +19,18 @@ internal open class SimpleNodeRenderer(
         if (!showTests) {
             name = name.removeSuffix("Main")
         }
-        text(name)
+        sto.text(name)
 
-        renderAttrs(node, parent)
+        renderAttrs(sto, node, parent)
 
         if (alreadyRendered) {
-            withStyle(Info).text(" (*)")
+            sto.withStyle(Info).text(" (*)")
         }
     }
 
-    context(StyledTextOutput)
-    protected open fun renderAttrs(node: RenderableNode, parent: RenderableNode?) {}
+    protected open fun renderAttrs(
+        sto: StyledTextOutput,
+        node: RenderableNode,
+        parent: RenderableNode?,
+    ) {}
 }

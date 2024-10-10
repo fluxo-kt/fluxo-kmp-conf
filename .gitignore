@@ -3,6 +3,7 @@
 .fleet/
 .idea/
 .kotlin/
+.vale*
 projectFilesBackup*/
 
 # Gradle

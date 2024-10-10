@@ -97,7 +97,7 @@ internal abstract class ShrinkerVerificationTestTask : AbstractTestTask() {
         // Read generated definitions and parse the Kotlin APIs format.
         val signatures = LinkedHashMap<String, ClassSignature>(@Suppress("MagicNumber") 64)
         generatedDefinitions.forEach { file ->
-            file.bufferedReader().use { it.parseJvmApiDumpTo(signatures) }
+            file.bufferedReader().use { parseJvmApiDumpTo(it, signatures) }
         }
 
         return ShrinkerVerificationTestExecutionSpec(

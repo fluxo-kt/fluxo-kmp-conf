@@ -125,26 +125,29 @@ public val <E> E.allSet: Set<SourceSetBundle>
 /** [SourceSetBundle]s for all enabled targets */
 public val <E> E.allTargetsSet: Set<SourceSetBundle>
     where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
-    get() = targets.toSourceSetBundles()
+    get() = toSourceSetBundles(targets)
 
 /** androidJvm, jvm */
 public val <E> E.javaSet: Set<SourceSetBundle>
     where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
-    get() = targets.matching {
-        it.platformType == KotlinPlatformType.androidJvm ||
-            it.platformType == KotlinPlatformType.jvm
-    }.toSourceSetBundles()
+    get() = toSourceSetBundles(
+        targets.matching {
+            it.platformType == KotlinPlatformType.androidJvm ||
+                it.platformType == KotlinPlatformType.jvm
+        },
+    )
 
 /** androidJvm */
 public val <E> E.androidSet: Set<SourceSetBundle>
     where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
-    get() = targets.matching { it.platformType == KotlinPlatformType.androidJvm }
-        .toSourceSetBundles()
+    get() = toSourceSetBundles(
+        targets.matching { it.platformType == KotlinPlatformType.androidJvm },
+    )
 
 /** js */
 public val <E> E.jsSet: Set<SourceSetBundle>
     where E : KotlinSourceSetContainer, E : KotlinTargetsContainer
-    get() = targets.matching { it.platformType == KotlinPlatformType.js }.toSourceSetBundles()
+    get() = toSourceSetBundles(targets.matching { it.platformType == KotlinPlatformType.js })
 
 
 /** All Kotlin/Native targets */
@@ -193,14 +196,17 @@ public val <E> E.macosSet: Set<SourceSetBundle>
     get() = nativeSourceSets(Family.OSX)
 
 
+@Suppress("EnumValuesSoftDeprecate")
 private fun <E> E.nativeSourceSets(vararg families: Family = Family.values()): Set<SourceSetBundle>
     where E : KotlinSourceSetContainer, E : KotlinTargetsContainer =
-    targets.filter { it is KotlinNativeTarget && it.konanTarget.family in families }
-        .toSourceSetBundles()
+    toSourceSetBundles(
+        targets.filter { it is KotlinNativeTarget && it.konanTarget.family in families },
+    )
 
-context(KotlinSourceSetContainer)
-private fun Iterable<KotlinTarget>.toSourceSetBundles(): Set<SourceSetBundle> {
-    return mapNotNullTo(LinkedHashSet()) {
+private fun KotlinSourceSetContainer.toSourceSetBundles(
+    targets: Iterable<KotlinTarget>,
+): Set<SourceSetBundle> {
+    return targets.mapNotNullTo(LinkedHashSet()) {
         when (it.platformType) {
             KotlinPlatformType.common -> null
             else -> bundleFor(it)
@@ -394,7 +400,7 @@ public fun <E> E.commonCompileOnly(
         }
 
         /*
-         * A compileOnly dependencies aren't applicable for Kotlin/Native.
+         * compileOnly dependencies aren't applicable for Kotlin/Native.
          * Use `implementation` or `api` dependency type instead.
          * Set it in the shared "native" target.
          */
@@ -413,7 +419,7 @@ public fun <E> E.commonCompileOnly(
                         "can't add a constraint: $dependencyNotation",
                 )
             } else {
-                dependencies.constraints.implementation(dependencyNotation)
+                implementation(dependencies.constraints, dependencyNotation)
             }
         }
     }

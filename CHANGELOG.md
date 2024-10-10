@@ -5,6 +5,16 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Changed
+- ⚠ removed context-receivers support (dropped in Kotlin 2.1).
+
+### Updated
+- bump Kotlin to _2.0.20_!
+- bump Jetbrains Compose to _1.7.0-rc01_ (compile-only dependency).
+- bump Android Gradle Plugin to _8.7.0_ (compile-only dependency).
+- bump binary-compatibility-validator to _0.16.3_.
+- bump a lot of other dependencies to the latest versions.
+
 
 ## [0.12.0] - 2024-06-29
 
@@ -344,6 +354,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.12.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.12.1
 [0.12.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.12.0
 [0.11.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.11.0
 [0.10.2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.10.2

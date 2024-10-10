@@ -77,7 +77,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
 
         val projectName = name
         tasks.withType<AbstractTestTask> configuration@{
-            if (!enabled || mergedReportTask == null || !isTestTaskAllowed()) {
+            if (!enabled || mergedReportTask == null || !isTestTaskAllowed(this)) {
                 disableTask()
                 return@configuration
             }
@@ -130,27 +130,24 @@ private val COMMON_TEST_TASKS_NAMES: Set<String> = hashSetOf(
 )
 
 
-context(FluxoKmpConfContext)
-internal fun AbstractTestTask.isTestTaskAllowed(): Boolean {
-    val isAllowed = when (this) {
+internal fun FluxoKmpConfContext.isTestTaskAllowed(task: AbstractTestTask): Boolean {
+    val isAllowed = when (task) {
         is KotlinJsTest -> isTargetEnabled(KmpTargetCode.JS)
 
         is KotlinNativeTest ->
-            nativeFamilyFromString(platformFromTaskName(name)).isCompilationAllowed()
+            isCompilationAllowed(nativeFamilyFromString(platformFromTaskName(task.name)))
 
         // JVM/Android tests
         else -> isTargetEnabled(KmpTargetCode.JVM) || isTargetEnabled(KmpTargetCode.ANDROID)
     }
     if (!isAllowed) {
-        logger.e("Unexpected test task $name! Target should be disabled")
+        task.logger.e("Unexpected test task ${task.name}! Target should be disabled")
     }
     return isAllowed
 }
 
-context(FluxoKmpConfContext)
-private fun Family.isCompilationAllowed(): Boolean {
-    return KmpTargetCode.fromKotlinFamily(this).any(::isTargetEnabled)
-}
+private fun FluxoKmpConfContext.isCompilationAllowed(family: Family): Boolean =
+    KmpTargetCode.fromKotlinFamily(family).any(::isTargetEnabled)
 
 private fun platformFromTaskName(name: String): String? =
     name.splitCamelCase(limit = 2).firstOrNull()

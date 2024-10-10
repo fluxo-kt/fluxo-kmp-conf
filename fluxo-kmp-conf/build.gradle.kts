@@ -100,7 +100,7 @@ dependencies {
     compileOnly(libs.plugins.kotlinx.binCompatValidator.toModuleDependency())
     compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
 
-    testCompileOnly(libs.jetbrains.annotations)
+    testCompileOnly(libs.jetbrains.annotation)
     testImplementation(libs.kotlin.compile.testing)
     testImplementation(libs.proguard.plugin)
     testImplementation(libs.proguard.core)

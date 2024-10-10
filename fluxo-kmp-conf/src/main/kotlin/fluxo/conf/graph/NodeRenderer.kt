@@ -7,9 +7,13 @@ import org.gradle.internal.logging.text.StyledTextOutput
  */
 internal fun interface NodeRenderer {
     companion object {
-        internal val NO_OP = NodeRenderer { _, _, _ -> }
+        internal val NO_OP = NodeRenderer { _, _, _, _ -> }
     }
 
-    context(StyledTextOutput)
-    fun renderNode(node: RenderableNode, alreadyRendered: Boolean, parent: RenderableNode?)
+    fun renderNode(
+        sto: StyledTextOutput,
+        node: RenderableNode,
+        alreadyRendered: Boolean,
+        parent: RenderableNode?,
+    )
 }

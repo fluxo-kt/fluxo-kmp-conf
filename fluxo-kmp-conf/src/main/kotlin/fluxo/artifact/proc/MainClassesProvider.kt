@@ -43,7 +43,7 @@ internal fun Project.getMainClassesProvider(): Provider<out Iterable<String>> {
         }
 
         return@p emptyList()
-    }.memoizeSafe()
+    }.memoizeSafe(logger)
 }
 
 /**

@@ -67,7 +67,7 @@ public fun Project.isShrinkerDisabled(): Provider<Boolean> = provider {
         envOrPropFlagValue("ENABLE_SHRINKER")
 
     disabled && !enabled
-}.memoizeSafe()
+}.memoizeSafe(logger)
 
 public fun Project?.buildNumber(): String? = envOrPropValueLenient("BUILD_NUMBER")
 
@@ -135,7 +135,7 @@ internal fun Project.scmTag(allowBranch: Boolean = true): Provider<String?> {
             result = result.substring(0, 7)
         }
         result
-    }.memoizeSafe()
+    }.memoizeSafe(logger)
 }
 
 @Suppress("UnstableApiUsage")

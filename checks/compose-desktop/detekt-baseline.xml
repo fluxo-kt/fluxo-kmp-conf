@@ -1,5 +1,8 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues></CurrentIssues>
+  <CurrentIssues>
+    <ID>MaxLineLength:Res.kt$Res$getResourceUri</ID>
+    <ID>MaxLineLength:Res.kt$Res$readResourceBytes</ID>
+  </CurrentIssues>
 </SmellBaseline>

@@ -101,37 +101,37 @@ internal fun setupGradleProjectPublication(
         CALL_TASK_PREFIXES.any { prefix -> name.startsWith(prefix) }
     }
     ctx.onProjectInSyncRun(forceIf = isCalled) {
-        conf.project.setupGradleProjectPublication(config, conf)
+        setupGradleProjectPublication(conf.project, config, conf)
     }
 }
 
-context(FluxoKmpConfContext)
-private fun Project.setupGradleProjectPublication(
+private fun FluxoKmpConfContext.setupGradleProjectPublication(
+    p: Project,
     config: FluxoPublicationConfig,
     conf: FluxoConfigurationExtensionImpl,
 ) {
     val useDokka = conf.useDokka == false
     when (val type = conf.mode) {
         ConfigurationType.KOTLIN_MULTIPLATFORM ->
-            setupPublicationMultiplatform(config, useDokka)
+            setupPublicationMultiplatform(p, config, useDokka)
 
         ConfigurationType.ANDROID_LIB ->
-            setupPublicationAndroidLibrary(config, useDokka)
+            setupPublicationAndroidLibrary(p, config, useDokka)
 
         ConfigurationType.GRADLE_PLUGIN ->
-            setupPublicationGradlePlugin(config, useDokka)
+            setupPublicationGradlePlugin(p, config, useDokka)
 
         ConfigurationType.KOTLIN_JVM ->
-            setupPublicationKotlinJvm(config, useDokka)
+            setupPublicationKotlinJvm(p, config, useDokka)
 
         else -> {
-            logger.e("Unsupported project type for publication: $type")
+            p.logger.e("Unsupported project type for publication: $type")
 
             // Java-only project support is experimental
-            if (!SHOW_DEBUG_LOGS || !hasExtension { JavaPluginExtension::class }) {
+            if (!SHOW_DEBUG_LOGS || !p.hasExtension { JavaPluginExtension::class }) {
                 return
             }
-            setupPublicationJava(config)
+            setupPublicationJava(p, config)
         }
     }
 
@@ -139,8 +139,8 @@ private fun Project.setupGradleProjectPublication(
     // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
     // https://github.com/JetBrains/kotlin/commit/68fdeaf
     if (conf.reproducibleArtifacts != false) {
-        logger.l("reproducible artifacts set up")
-        tasks.withType<AbstractArchiveTask> {
+        p.logger.l("reproducible artifacts set up")
+        p.tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
             try {
@@ -154,8 +154,8 @@ private fun Project.setupGradleProjectPublication(
     }
 }
 
-context(FluxoKmpConfContext)
-private fun Project.setupPublicationMultiplatform(
+private fun FluxoKmpConfContext.setupPublicationMultiplatform(
+    p: Project,
     config: FluxoPublicationConfig,
     useDokka: Boolean,
 ) {
@@ -165,30 +165,31 @@ private fun Project.setupPublicationMultiplatform(
     }
 
     // FIXME: provide sources for KMP publications
-    val publishing = applyMavenPublishPlugin(config)
+    val publishing = p.applyMavenPublishPlugin(config)
     setupPublicationExtension(
+        p = p,
         publishing = publishing,
         config = config,
         useDokka = useDokka,
         type = ConfigurationType.GRADLE_PLUGIN,
     )
-    setupPublicationRepositoryAndSigning(config, publishing)
+    setupPublicationRepositoryAndSigning(p, config, publishing)
 
-    mppExt.apply {
+    p.mppExt.apply {
         if (targets.any { it.platformType == KotlinPlatformType.androidJvm }) {
             try {
                 // Kotlin before 1.9
                 @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
                 android().publishLibraryVariants(RELEASE, DEBUG)
             } catch (e: Throwable) {
-                logger.e("android.publishLibraryVariants error: $e", e)
+                p.logger.e("android.publishLibraryVariants error: $e", e)
             }
         }
     }
 }
 
-context(FluxoKmpConfContext)
-private fun Project.setupPublicationAndroidLibrary(
+private fun FluxoKmpConfContext.setupPublicationAndroidLibrary(
+    p: Project,
     config: FluxoPublicationConfig,
     useDokka: Boolean,
 ) {
@@ -196,21 +197,21 @@ private fun Project.setupPublicationAndroidLibrary(
         return
     }
 
-    val publishing = applyMavenPublishPlugin(config)
+    val publishing = p.applyMavenPublishPlugin(config)
 
-    val androidExtension = the<LibraryExtension>()
+    val androidExtension = p.the<LibraryExtension>()
 
     val sourcePaths = androidExtension.sourceSets[MAIN_SOURCE_SET_NAME].java.srcDirs
-    val sourceJarTask = registerSourceJarTask(sourcePaths)
-    val javadocTask = setupJavadocTask(config, useDokka = useDokka)
+    val sourceJarTask = p.registerSourceJarTask(sourcePaths)
+    val javadocTask = setupJavadocTask(p, config, useDokka = useDokka)
 
     fun PublicationContainer.createMavenPublication(name: String, artifactIdSuffix: String) {
         create<MavenPublication>(name) {
-            from(components[name])
+            from(p.components[name])
             artifact(sourceJarTask)
             artifact(javadocTask)
 
-            val project = project
+            val project = p.project
             groupId = config.group
             version = config.version
             artifactId = "${project.name}$artifactIdSuffix"
@@ -219,18 +220,18 @@ private fun Project.setupPublicationAndroidLibrary(
         }
     }
 
-    afterEvaluate {
+    p.afterEvaluate {
         publishing.publications {
-            createMavenPublication(name = DEBUG, artifactIdSuffix = "-$DEBUG")
-            createMavenPublication(name = RELEASE, artifactIdSuffix = "")
+            this.createMavenPublication(name = DEBUG, artifactIdSuffix = "-$DEBUG")
+            this.createMavenPublication(name = RELEASE, artifactIdSuffix = "")
         }
     }
 
-    setupPublicationRepositoryAndSigning(config, publishing)
+    setupPublicationRepositoryAndSigning(p, config, publishing)
 }
 
-context(FluxoKmpConfContext)
-private fun Project.setupPublicationGradlePlugin(
+private fun FluxoKmpConfContext.setupPublicationGradlePlugin(
+    p: Project,
     config: FluxoPublicationConfig,
     useDokka: Boolean,
 ) {
@@ -238,19 +239,20 @@ private fun Project.setupPublicationGradlePlugin(
         return
     }
 
-    val publishing = applyMavenPublishPlugin(config)
+    val publishing = p.applyMavenPublishPlugin(config)
 
-    val gradlePluginExtension = gradlePluginExt.apply {
+    val gradlePluginExtension = p.gradlePluginExt.apply {
         config.projectUrl?.let { website.set(it) }
         config.publicationUrl?.let { vcsUrl.set(it) }
     }
 
     val sourcePaths = gradlePluginExtension.pluginSourceSet.java.srcDirs +
-        kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
-    val sourceJarTask = registerSourceJarTask(sourcePaths)
+        p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
+    val sourceJarTask = p.registerSourceJarTask(sourcePaths)
 
     // TODO: Should wrap `setupPublicationExtension` in afterEvaluate?
     setupPublicationExtension(
+        p = p,
         publishing = publishing,
         config = config,
         useDokka = useDokka,
@@ -258,11 +260,11 @@ private fun Project.setupPublicationGradlePlugin(
         type = ConfigurationType.GRADLE_PLUGIN,
     )
 
-    setupPublicationRepositoryAndSigning(config, publishing, mavenRepo = false)
+    setupPublicationRepositoryAndSigning(p, config, publishing, mavenRepo = false)
 }
 
-context(FluxoKmpConfContext)
-private fun Project.setupPublicationKotlinJvm(
+private fun FluxoKmpConfContext.setupPublicationKotlinJvm(
+    p: Project,
     config: FluxoPublicationConfig,
     useDokka: Boolean,
 ) {
@@ -270,30 +272,29 @@ private fun Project.setupPublicationKotlinJvm(
         return
     }
 
-    val publishing = applyMavenPublishPlugin(config)
+    val publishing = p.applyMavenPublishPlugin(config)
 
-    val sourcePaths = kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
-    val sourceJarTask = registerSourceJarTask(sourcePaths)
+    val sourcePaths = p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
+    val sourceJarTask = p.registerSourceJarTask(sourcePaths)
 
-    setupPublicationExtension(publishing, config, useDokka = useDokka, sourceJarTask)
-    setupPublicationRepositoryAndSigning(config, publishing)
+    setupPublicationExtension(p, publishing, config, useDokka = useDokka, sourceJarTask)
+    setupPublicationRepositoryAndSigning(p, config, publishing)
 }
 
-context(FluxoKmpConfContext)
-private fun Project.setupPublicationJava(config: FluxoPublicationConfig) {
+private fun FluxoKmpConfContext.setupPublicationJava(p: Project, config: FluxoPublicationConfig) {
     if (!isTargetEnabled(KmpTargetCode.JVM)) {
         return
     }
 
-    val publishing = applyMavenPublishPlugin(config)
+    val publishing = p.applyMavenPublishPlugin(config)
 
-    val javaPluginExtension = the<JavaPluginExtension>()
+    val javaPluginExtension = p.the<JavaPluginExtension>()
 
     val sourcePaths = javaPluginExtension.sourceSets[MAIN_SOURCE_SET_NAME].java.srcDirs
-    val sourceJarTask = registerSourceJarTask(sourcePaths)
+    val sourceJarTask = p.registerSourceJarTask(sourcePaths)
 
-    setupPublicationExtension(publishing, config, useDokka = false, sourceJarTask)
-    setupPublicationRepositoryAndSigning(config, publishing)
+    setupPublicationExtension(p, publishing, config, useDokka = false, sourceJarTask)
+    setupPublicationRepositoryAndSigning(p, config, publishing)
 }
 
 
@@ -345,8 +346,8 @@ private fun MavenPublication.setupPublicationPom(
 
 private val signingKeyNotificationLogged = AtomicBoolean()
 
-context(FluxoKmpConfContext)
-private fun Project.setupPublicationRepositoryAndSigning(
+private fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning(
+    p: Project,
     config: FluxoPublicationConfig,
     publishing: PublishingExtension,
     mavenRepo: Boolean = true,
@@ -354,38 +355,38 @@ private fun Project.setupPublicationRepositoryAndSigning(
     val notify = signingKeyNotificationLogged.compareAndSet(false, true)
     val isSigningEnabled = config.isSigningEnabled
     if (isSigningEnabled) {
-        if (notify) logger.l("SIGNING_KEY SET, applying signing configuration")
-        pluginManager.apply(SIGNING_EXT_NAME)
+        if (notify) p.logger.l("SIGNING_KEY SET, applying signing configuration")
+        p.pluginManager.apply(SIGNING_EXT_NAME)
     } else if (notify) {
         // TODO: Warn only when assemble and/or publishing is really called.
-        logger.w("SIGNING_KEY IS NOT SET! Publications are unsigned")
+        p.logger.w("SIGNING_KEY IS NOT SET! Publications are unsigned")
     }
     if (isSigningEnabled) {
-        configureExtension<SigningExtension>(name = SIGNING_EXT_NAME) {
-            logger.l("setup publications signing configuration")
-            useInMemoryPgpKeys(config.signingKey, config.signingPassword)
-            sign(publishing.publications)
+        p.configureExtension<SigningExtension>(name = SIGNING_EXT_NAME) {
+            p.logger.l("setup publications signing configuration")
+            this.useInMemoryPgpKeys(config.signingKey, config.signingPassword)
+            this.sign(publishing.publications)
 
             // Signature is a hard requirement if publishing a non-snapshot
             if (!config.isSnapshot) {
-                isRequired = true
+                this.isRequired = true
             }
         }
     }
 
     if (!testsDisabled) {
         publishing.repositories {
-            logger.l("'$LOCAL_REPO_NAME' maven repository added for tests and local development")
+            p.logger.l("'$LOCAL_REPO_NAME' maven repository added for tests and local development")
             maven {
                 name = LOCAL_REPO_NAME
-                url = uri(rootProject.file(LOCAL_REPO_PATH))
+                url = p.uri(p.rootProject.file(LOCAL_REPO_PATH))
             }
 
             if (mavenRepo) {
                 maven {
                     val url = config.repositoryUrl
                     setUrl(url)
-                    logger.l("setup maven repository: $url")
+                    p.logger.l("setup maven repository: $url")
 
                     credentials {
                         username = config.repositoryUserName
@@ -397,7 +398,7 @@ private fun Project.setupPublicationRepositoryAndSigning(
 
         // Use the local repository publication as a check.
         // `publishAllPublicationsToLocalDevRepository`.
-        tasks.named(CHECK_TASK_NAME) {
+        p.tasks.named(CHECK_TASK_NAME) {
             val repoName = LOCAL_REPO_NAME.uppercaseFirstChar()
             dependsOn("publishAllPublicationsTo${repoName}Repository")
         }
@@ -408,7 +409,7 @@ private fun Project.setupPublicationRepositoryAndSigning(
     // Also see
     // - https://github.com/voize-gmbh/reakt-native-toolkit/commit/baf0392
     // - https://github.com/gradle-nexus/publish-plugin/issues/208
-    val tasks = tasks
+    val tasks = p.tasks
     // TODO: Take jar tasks from project outputs instead of tasks?
     val jarTasks = arrayOf(
         tasks.withType<JarJvm>(),
@@ -428,7 +429,7 @@ private fun Project.setupPublicationRepositoryAndSigning(
         jarTasks.forEach { mustRunAfter(it) }
     }
 
-    // Invalidate jar task when the artifact version changes
+    // Invalidate the jar task when the artifact version changes
     // (e.g., for the GIT HEAD-based snapshots)
     val version = config.version
     jarTasks.forEach {
@@ -439,22 +440,22 @@ private fun Project.setupPublicationRepositoryAndSigning(
 }
 
 
-context(FluxoKmpConfContext)
-private fun Project.setupPublicationExtension(
+private fun FluxoKmpConfContext.setupPublicationExtension(
+    p: Project,
     publishing: PublishingExtension,
     config: FluxoPublicationConfig,
     useDokka: Boolean,
     sourceJarTask: Any? = null,
     type: ConfigurationType? = null,
 ) {
-    val javadocTask = setupJavadocTask(config, useDokka = useDokka, type)
+    val javadocTask = setupJavadocTask(p, config, useDokka = useDokka, type)
     publishing.publications.withType<MavenPublication> {
         val pName = name
 
         config.projectName?.let { projectName ->
             val aid = artifactId
             if (aid.isNullOrBlank() || !aid.startsWith(projectName, ignoreCase = true)) {
-                logger.l("publication '$pName': artifactId replace ($aid -> $projectName)")
+                p.logger.l("publication '$pName': artifactId replace ($aid -> $projectName)")
                 artifactId = projectName
             }
         }
@@ -464,14 +465,14 @@ private fun Project.setupPublicationExtension(
 
         val coords = "$groupId:$artifactId:$version"
         val artifacts = if (skipArtifacts) "" else "; artifacts added"
-        logger.l("setup maven publication '$pName': '$coords'$artifacts")
+        p.logger.l("setup maven publication '$pName': '$coords'$artifacts")
 
         if (!skipArtifacts) {
             sourceJarTask?.let { artifact(it) }
             artifact(javadocTask)
         }
 
-        setupPublicationPom(project, config)
+        setupPublicationPom(p.project, config)
     }
 }
 
@@ -511,8 +512,8 @@ internal val Project.gradlePluginExt: GradlePluginDevelopmentExtension
     get() = extensions.getByName<GradlePluginDevelopmentExtension>(GRADLE_PLUGIN_EXT_NAME)
 
 
-context(FluxoKmpConfContext)
-private fun Project.setupJavadocTask(
+private fun FluxoKmpConfContext.setupJavadocTask(
+    p: Project,
     config: FluxoPublicationConfig,
     useDokka: Boolean,
     type: ConfigurationType? = null,
@@ -526,18 +527,18 @@ private fun Project.setupJavadocTask(
                 id = BuildConstants.DOKKA_PLUGIN_ID,
                 version = BuildConstants.DOKKA_PLUGIN_VERSION,
                 catalogPluginId = BuildConstants.DOKKA_PLUGIN_ALIAS,
-                project = this,
+                project = p,
             )
             if (result.applied) {
-                logger.l("setup Dokka publication")
-                return getOrCreateDokkaTask(type)
+                p.logger.l("setup Dokka publication")
+                return p.getOrCreateDokkaTask(type)
             }
         } catch (e: Throwable) {
-            logger.w("Fallback to Javadoc due to Dokka setup error: $e", e)
+            p.logger.w("Fallback to Javadoc due to Dokka setup error: $e", e)
         }
     }
-    logger.l("regular Javadoc publication fallback set up instead of Dokka")
-    return getOrCreateJavadocTask()
+    p.logger.l("regular Javadoc publication fallback set up instead of Dokka")
+    return p.getOrCreateJavadocTask()
 }
 
 private fun Project.getOrCreateDokkaTask(

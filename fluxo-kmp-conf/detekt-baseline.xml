@@ -8,12 +8,15 @@
     <ID>AvoidFirstOrLastOnList:SetupJvmCompatibility.kt$first</ID>
     <ID>AvoidFirstOrLastOnList:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$first</ID>
     <ID>CompilerWarning:DependencyAnalysisPlugin.kt$configureExtension</ID>
-    <ID>CompilerWarning:FkcSetupIdeaPlugin.kt$configureExtension</ID>
+    <ID>CompilerWarning:KmpConfigurationContainerDslImpl.kt$KmpConfigurationContainerDslImpl$ExperimentalWasmDsl</ID>
     <ID>CompilerWarning:KotlinJsUtils.kt$compilerOptions</ID>
     <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$targets</ID>
     <ID>CompilerWarning:SetupArtifactsProcessing.kt$API_DIR</ID>
     <ID>CompilerWarning:SetupArtifactsProcessing.kt$inputFiles</ID>
     <ID>CompilerWarning:SetupCompose.kt$KotlinCommonOptions</ID>
+    <ID>CompilerWarning:SetupCompose.kt$enableIntrinsicRemember</ID>
+    <ID>CompilerWarning:SetupCompose.kt$enableNonSkippingGroupOptimization</ID>
+    <ID>CompilerWarning:SetupCompose.kt$enableStrongSkippingMode</ID>
     <ID>CompilerWarning:SetupCompose.kt$kotlinOptions</ID>
     <ID>CompilerWarning:SetupJvmCompatibility.kt$KCompilation</ID>
     <ID>CompilerWarning:SetupJvmCompatibility.kt$KotlinJvmOptions</ID>
@@ -27,6 +30,15 @@
     <ID>CompilerWarning:SetupPublication.kt$fileMode</ID>
     <ID>CompilerWarning:SetupTestsReport.kt$this is Test</ID>
     <ID>CompilerWarning:ShrinkerKeepRulesFromApiTask.kt$API_DIR</ID>
+    <ID>CompilerWarning:TargetWasmContainer.kt$ExperimentalWasmDsl</ID>
+    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.Configure$ExperimentalWasmDsl</ID>
+    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmJs$ExperimentalWasmDsl</ID>
+    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmJs$wasm</ID>
+    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmJs$wasmJs</ID>
+    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmWasi$ExperimentalWasmDsl</ID>
+    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmWasi$wasmWasi</ID>
+    <ID>CompilerWarning:WasmTarget.kt$ExperimentalWasmDsl</ID>
+    <ID>CompilerWarning:WasmTarget.kt$WasmTarget.Configure$ExperimentalWasmDsl</ID>
     <ID>CyclomaticComplexMethod:AbstractShrinkerTask.kt$AbstractShrinkerTask$@Suppress("LongMethod") private fun writeRootConfiguration( file: File, reportsDir: Directory, jarsConfigurationFile: File, shrinker: JvmShrinker, )</ID>
     <ID>DataClassTypedIDs:FluxoPublicationConfig.kt$FluxoPublicationConfig$public var developerId: String? = null</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
@@ -163,8 +175,9 @@
     <ID>ForbiddenPublicDataClass:FluxoPublicationConfig.kt$FluxoPublicationConfig</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
-    <ID>LongMethod:SetupPublication.kt$context(FluxoKmpConfContext) private fun Project.setupPublicationRepositoryAndSigning( config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
+    <ID>LongMethod:SetupPublication.kt$private fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning( p: Project, config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
+    <ID>MagicNumber:SetupDetekt.kt$2.1</ID>
     <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>MaximumLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$ </ID>
     <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String></ID>
@@ -172,11 +185,13 @@
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>NoNotNullOperator:AbstractShrinkerTask.kt$AbstractShrinkerTask$callFallbackOrder.last()!!</ID>
     <ID>ReturnCount:SetupArtifactsProcessing.kt$@Suppress("CyclomaticComplexMethod", "LongMethod") internal fun setupArtifactsProcessing( conf: FluxoConfigurationExtensionImpl, )</ID>
+    <ID>SpacingAroundComma:SetupAndroid.kt$,</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>TooManyFunctions:SetupJvmCompatibility.kt$fluxo.conf.impl.kotlin.SetupJvmCompatibility.kt</ID>
     <ID>UnnecessaryPassThroughClass:InteroperabilityUtils.kt$KotlinClosure2&lt;in T, in U, V : Any> : Closure</ID>
     <ID>UnnecessaryPassThroughClass:KotlinMultiplatformActionContainer.kt$KotlinMultiplatformActionContainer : CustomTypeContainerContainerKotlinMultiplatformAware</ID>
     <ID>UnnecessaryPassThroughClass:KotlinProjectActionContainer.kt$KotlinProjectActionContainer : CustomTypeContainerContainerKotlinAware</ID>
     <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>
+    <ID>UnusedPrivateProperty:SetupDetekt.kt$private const val DETEKT_MAX_SUPPORTED_KOTLIN_VERSION = "2.1"</ID>
   </CurrentIssues>
 </SmellBaseline>

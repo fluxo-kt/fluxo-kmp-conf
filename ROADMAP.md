@@ -11,6 +11,23 @@
 <details>
   <summary>Show</summary>
 
+* GitHub signed commits
+  * https://github.com/qoomon/actions--create-commit
+* https://kotlinlang.org/docs/whatsnew-eap.html#data-class-copy-function-to-have-the-same-visibility-as-constructor
+* https://kotlinlang.org/docs/whatsnew-eap.html#concurrent-marking-in-garbage-collector
+* `-Xrender-internal-diagnostic-names`
+  * https://youtrack.jetbrains.com/issue/KT-59109/K2-Introduce-uniform-and-default-way-of-presenting-diagnostic-ID#focus=Comments-27-7501055.0-0
+  * https://youtrack.jetbrains.com/issue/KT-8087#focus=Comments-27-10705666.0-0
+* SoftRefLRUPolicyMSPerMB + ReservedCodeCacheSize JVM args
+  * https://github.com/slackhq/foundry/commit/0b2a5b832819ce8959f6d0f5ba1c3a4ee809f90a
+  * https://www.jasonpearson.dev/softreflrupolicymspermb-in-jvm-builds/
+  * https://www.jasonpearson.dev/codecache-in-jvm-builds/
+* https://checks.google.com/
+  * Auto complience tool
+* Filter duplicate lint issues from the merged baseline and report.
+* Gradle plugin to create Kotlin/JS projects using Vite
+  * https://gitlab.com/opensavvy/automation/kotlin-vite
+* https://github.com/LionZXY/detekt-decompose-rule
 * Gradle 8.8 support
   * https://docs.gradle.org/8.8/release-notes.html#new-gradle-lifecycle-callbacks
 * `org.gradle.unsafe.isolated-projects=true` for Kotlin 2.0.20 (JVM/Android/KAPT only)
@@ -72,6 +89,7 @@
   * https://dev.to/mishkun/carving-the-path-to-modularity-a-lobzik-tool-case-study-on-the-protonmail-android-app-mid
 * https://github.com/topjohnwu/libsu/blob/01570d643af91b0e271de018465a219eed8db322/service/build.gradle.kts#L21
 * Disambiguate existing javadoc and sources tasks
+  * https://youtrack.jetbrains.com/issue/KT-54207
 * Check BuildConfig tasks (not called on IDE sync?!)
 * CI improvements
   * https://github.com/adevinta/spark-android/tree/main/.github
@@ -364,4 +382,13 @@
     * https://github.com/Kotlin/kotlinx.serialization/blob/1116f5f/gradle/publish-mpp-root-module-in-platform.gradle#L6-L45
   * Arrow does the same
     * https://github.com/arrow-kt/arrow-gradle-config/blob/0.12.0-rc.20/arrow-gradle-config-publish/src/main/kotlin/internal/PublishMppRootModuleInPlatform.kt
+* Coroutines
+  * https://t.me/kotlin_adept/48
+    * https://t.me/kotlin_adept/48?comment=227
+    * https://t.me/kotlin_adept/48?comment=230
+      * https://t.me/kotlin_adept/48?comment=233
+      * https://github.com/Kotlin/kotlinx.coroutines/issues/2867#issuecomment-1458487275
+    * https://github.com/MarcinMoskala/kotlin-coroutines-recipes
+    * https://github.com/hoc081098/FlowExt
+    * https://github.com/revolut-mobile/RxData/tree/master
 </details>

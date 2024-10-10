@@ -19,10 +19,12 @@ internal const val KEEP_RULES_GEN_DBG = false
  *
  * @TODO: Can be optimized for performance
  */
-context(Task)
 @Suppress("CyclomaticComplexMethod", "LongMethod", "NestedBlockDepth")
-internal fun BufferedReader.parseJvmApiDumpTo(signatures: LinkedHashMap<String, ClassSignature>) {
-    val lines = lineSequence()
+internal fun Task.parseJvmApiDumpTo(
+    br: BufferedReader,
+    signatures: LinkedHashMap<String, ClassSignature>,
+) {
+    val lines = br.lineSequence()
         .map(String::trim)
         .filter(String::isNotEmpty)
 
@@ -346,8 +348,7 @@ private fun MutableMap<String, ClassSignature>.getOrCreate(
 
 // region Modifiers
 
-context(Task)
-private fun modifiersForAnnotation(
+private fun Task.modifiersForAnnotation(
     modifiers: List<String>,
     type: ClassType,
     line: String,
@@ -359,11 +360,10 @@ private fun modifiersForAnnotation(
         "Unexpected $type modifiers: $modifiers\n\t$line"
     }
     @Suppress("MagicNumber")
-    return modifiers.dropLast(3).filterModifiers() + INTERFACE
+    return filterModifiers(modifiers.dropLast(3)) + INTERFACE
 }
 
-context(Task)
-private fun modifiersForInterface(
+private fun Task.modifiersForInterface(
     modifiers: List<String>,
     type: ClassType,
     line: String,
@@ -372,11 +372,10 @@ private fun modifiersForInterface(
     check(mAbstract == ABSTRACT) {
         "Unexpected $type modifiers: $modifiers\n\t$line"
     }
-    return modifiers.dropLast(2).filterModifiers() + INTERFACE
+    return filterModifiers(modifiers.dropLast(2)) + INTERFACE
 }
 
-context(Task)
-private fun modifiersForEnum(
+private fun Task.modifiersForEnum(
     modifiers: List<String>,
     type: ClassType,
     line: String,
@@ -384,20 +383,18 @@ private fun modifiersForEnum(
     check(modifiers.lastOrNull() == FINAL) {
         "Unexpected $type modifiers: $modifiers\n\t$line"
     }
-    return modifiers.dropLast(1).filterModifiers() + ENUM
+    return filterModifiers(modifiers.dropLast(1)) + ENUM
 }
 
-context(Task)
-private fun modifiersForClass(modifiers: List<String>) =
-    modifiers.filterModifiers() + CLASS
+private fun Task.modifiersForClass(modifiers: List<String>) =
+    filterModifiers(modifiers) + CLASS
 
-context(Task)
-private fun List<String>.filterModifiers(): List<String> {
-    if (any { it !in ALLOWED_CLASS_MODIFIERS }) {
-        logger.e("Unexpected modifiers: {}", this)
-        return filter { it in ALLOWED_CLASS_MODIFIERS }
+private fun Task.filterModifiers(list: List<String>): List<String> {
+    if (list.any { it !in ALLOWED_CLASS_MODIFIERS }) {
+        logger.e("Unexpected modifiers: {}", list)
+        return list.filter { it in ALLOWED_CLASS_MODIFIERS }
     }
-    return this
+    return list
 }
 
 // endregion

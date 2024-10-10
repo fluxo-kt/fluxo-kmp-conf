@@ -279,7 +279,7 @@ internal fun setupArtifactsProcessing(
                 }
                 generatedDefinitions.setFrom(apiFiles)
             }
-            p.run { verifyTask.bindToApiDumpTasks(optional = true) }
+            p.run { bindToApiDumpTasks(verifyTask, optional = true) }
             chainTailTasks += verifyTask
             testTasks += verifyTask
         }

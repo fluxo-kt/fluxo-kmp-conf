@@ -59,7 +59,7 @@ internal fun Project.setupFinalizeAndroidDsl(ctx: FluxoKmpConfContext) {
             // Add leakcanary to all build types in the app
             if (isApplication && !isReleaseBuildType && bt.name != DEBUG) {
                 libs.onLibrary(ALIAS_LEAK_CANARY) { d ->
-                    dependencies.addAndLog("${bt.name}Implementation", d)
+                    addAndLog(dependencies, "${bt.name}Implementation", d)
                 }
             }
 

@@ -98,7 +98,10 @@ internal class NodeGraphsRenderer(
         isDuplicate: Boolean = false,
         nodeRenderer: NodeRenderer = this.nodeRenderer,
     ) {
-        renderer.visit({ nodeRenderer.renderNode(node, isDuplicate, parent) }, isLast)
+        renderer.visit(
+            { nodeRenderer.renderNode(sto = this, node, isDuplicate, parent) },
+            isLast,
+        )
     }
 
     fun complete() {

@@ -228,21 +228,24 @@ private fun langFeature(name: String) = "-XXLanguage:+$name"
 // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
 // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/js/jsExtraHelp.out
 // https://github.com/JetBrains/kotlin/blob/master/compiler/cli/cli-common/src/org/jetbrains/kotlin/cli/common/arguments/CommonCompilerArguments.kt
-private val DEFAULT_OPTS = arrayOf(
-    // Check uniqueness of signatures at klib generating phase
-    "-Xklib-enable-signature-clash-checks",
+private val DEFAULT_OPTS: List<String> = listOf(
 
-    // Enable context receivers. Only works for JVM targets by 2023.07.
-    "-Xcontext-receivers",
-).asList()
+    // Experimental context receivers are deprecated and will be superseded by context parameters.
+    // https://github.com/Kotlin/KEEP/blob/context-parameters/proposals/context-parameters.md.
+    // "-Xcontext-receivers",
+)
 
-// Not supported in Kotlin 2.1 language version.
+// Not supported in the Kotlin 2.1 language version.
 @Suppress("RemoveExplicitTypeArguments", "RedundantSuppression")
 private val KOTLIN_UP_TO_1_9_OPTS = arrayOf<String>(
+    // Check uniqueness of signatures at klib generating phase.
+    // Not supported in the Kotlin 2.1+
+//    "-Xklib-enable-signature-clash-checks",
+
     // For incremental compilation, both flags should be supplied:
-    //  -Xenable-incremental-compilation and -Xic-cache-dir.
-    // "-Xenable-incremental-compilation",
-    // "-Xic-cache-dir=${System.getProperty("user.home")}/.kotlin/ic",
+    //  -Xenable-incremental-compilation and -Xic-cache-dir
+//    "-Xenable-incremental-compilation",
+//    "-Xic-cache-dir=${System.getProperty("user.home")}/.kotlin/ic",
 
     // Support for IR backend parallel compilation:
     //  https://youtrack.jetbrains.com/issue/KT-46085
@@ -253,8 +256,8 @@ private val KOTLIN_UP_TO_1_9_OPTS = arrayOf<String>(
     // and compile at the same time.
     // Also reserved 2 cores for Gradle multitasking.
     // On Apple M1 Max parallelism reduces compilation time by 1/3.
-    // Seems to be not supported in Kotlin 2.0+ and failing in Kotlin 1.9.21.
-    // "-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
+    // Seems to be not supported in Kotlin 2.0+ and failing in Kotlin 1.9.21
+//    "-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
 ).asList()
 
 /** Latest options for early testing Kotlin compatibility or for non-production compilations. */
@@ -320,7 +323,9 @@ private val JVM_OPTS = arrayOf(
     "-Xjvm-default=all",
     "-Xtype-enhancement-improvements-strict-mode",
     "-Xvalidate-bytecode",
-    "-Xvalidate-ir",
+
+    // Not supported in the Kotlin 2.1 language version.
+    // "-Xvalidate-ir",
 ).asList()
 
 // Remove utility bytecode, eliminating names/data leaks in release obfuscated code.

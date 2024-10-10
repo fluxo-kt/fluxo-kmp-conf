@@ -71,10 +71,10 @@ internal fun configureKotlinJvm(
     } else if (type === IDEA_PLUGIN) {
         ctx.loadAndApplyPluginIfNotApplied(id = INTELLIJ_PLUGIN_ID, project = project)
 
-        // IDEA plugins require Java 11
+        // IDEA plugins require Java 17
         val jvmTarget = conf.jvmTarget
-        if (jvmTarget == null || jvmTarget.asJvmMajorVersion() < JRE_11) {
-            conf.jvmTarget = JRE_11.toString()
+        if (jvmTarget == null || jvmTarget.asJvmMajorVersion() < JRE_17) {
+            conf.jvmTarget = JRE_17.toString()
         }
     }
 
@@ -108,7 +108,8 @@ internal fun configureKotlinJvm(
         if (conf.setupDependencies) {
             val deps = project.dependencies
             with(project) {
-                deps.setupKotlinDependencies(
+                setupKotlinDependencies(
+                    deps,
                     ctx.libs,
                     conf.kotlinConfig,
                     isApplication = isApp,
@@ -211,9 +212,7 @@ internal fun configureKotlinMultiplatform(
         setupKotlinExtensionAndProject(conf)
 
         if (conf.setupDependencies) {
-            with(project) {
-                setupMultiplatformDependencies(conf)
-            }
+            project.setupMultiplatformDependencies(kmpe = this, conf)
         } else {
             project.logger.v("Configuring Kotlin dependencies disabled")
         }

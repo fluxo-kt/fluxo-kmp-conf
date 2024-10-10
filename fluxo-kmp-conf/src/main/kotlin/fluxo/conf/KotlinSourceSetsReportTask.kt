@@ -243,9 +243,12 @@ internal abstract class KotlinSourceSetsReportTask :
 
     internal class SourceSetNodeRenderer(showTests: Boolean) : SimpleNodeRenderer(showTests) {
 
-        context(StyledTextOutput)
         @Suppress("CyclomaticComplexMethod")
-        override fun renderAttrs(node: RenderableNode, parent: RenderableNode?) {
+        override fun renderAttrs(
+            sto: StyledTextOutput,
+            node: RenderableNode,
+            parent: RenderableNode?,
+        ) {
             if (node.attrs.isEmpty() || node !is KotlinSourceSetGraphNode) {
                 return
             }
@@ -286,7 +289,7 @@ internal abstract class KotlinSourceSetsReportTask :
                 hasWarning -> StyledTextOutput.Style.Error
                 else -> StyledTextOutput.Style.Info
             }
-            val output = withStyle(style)
+            val output = sto.withStyle(style)
             output.append(" (")
             items.joinTo(output, ", ")
             output.append(")")

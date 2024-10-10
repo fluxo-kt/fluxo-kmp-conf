@@ -177,9 +177,7 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
 
         // Custom desugaring dependency.
         ctx.libs.onLibrary(ALIAS_DESUGAR_LIBS) {
-            with(project) {
-                dependencies.addAndLog("coreLibraryDesugaring", it)
-            }
+            project.addAndLog(project.dependencies,"coreLibraryDesugaring", it)
         }
     }
 
@@ -212,13 +210,12 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         tasks.withType(AndroidLintTextOutputTask::class.java, disableTask)
     }
 
-    with(project) {
-        project.dependencies.setupAndroidDependencies(
-            ctx.libs,
-            isApplication = isApplication,
-            kc = conf.kotlinConfig,
-        )
-    }
+    project.setupAndroidDependencies(
+        project.dependencies,
+        ctx.libs,
+        isApplication = isApplication,
+        kc = conf.kotlinConfig,
+    )
 
     project.setupFinalizeAndroidDsl(ctx)
 }

@@ -3,19 +3,19 @@
 package fluxo.conf.impl
 
 import fluxo.log.e
-import org.gradle.api.Project
 import org.gradle.api.internal.provider.AbstractMinimalProvider
 import org.gradle.api.internal.provider.DefaultValueSourceProviderFactory
 import org.gradle.api.internal.provider.ProviderInternal
 import org.gradle.api.internal.provider.ValueSupplier
+import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
 
 /** @see memoize */
-context(Project)
-internal fun <T> Provider<T>.memoizeSafe(): Provider<T> {
+internal fun <T> Provider<T>.memoizeSafe(logger: Logger?): Provider<T> {
     return try {
         memoize()
     } catch (e: Throwable) {
+        if (logger == null) throw e
         logger.e("Failed to memoize provider: $e", e)
         this
     }

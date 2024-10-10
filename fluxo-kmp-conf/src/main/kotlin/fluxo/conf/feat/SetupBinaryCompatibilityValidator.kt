@@ -147,23 +147,21 @@ private enum class ApiTarget {
  * @see kotlinx.validation.configureCheckTasks
  * @see kotlinx.validation.KotlinApiBuildTask
  */
-context(Project)
-internal fun TaskProvider<*>.bindToApiDumpTasks(optional: Boolean = false) {
+internal fun Project.bindToApiDumpTasks(task: TaskProvider<*>, optional: Boolean = false) {
     val tasks = tasks
-    val task = this
     plugins.withId(KOTLINX_BCV_PLUGIN_ID) {
         val apiDumpTasks = tasks.namedCompat(API_DUMP_SPEC)
         if (!optional) {
-            apiDumpTasks.configureEach { finalizedBy(task) }
+            apiDumpTasks.configureEach { this.finalizedBy(task) }
         }
-        configure { dependsOn(apiDumpTasks) }
+        task.configure { this.dependsOn(apiDumpTasks) }
 
         // Fix the issue with Gradle:
         //  "Task 'apiCheck' uses this output of task 'apiDump'
         //  without declaring an explicit or implicit dependency."
         val apiCheckTasks = tasks.namedCompat(API_CHECK_SPEC)
         apiCheckTasks.configureEach {
-            mustRunAfter(apiDumpTasks)
+            this.mustRunAfter(apiDumpTasks)
         }
     }
 }
