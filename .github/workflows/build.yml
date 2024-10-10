@@ -105,7 +105,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-home-cache-cleanup: true
           cache-disabled: ${{ matrix.os == 'windows' }} # super slow on Windows.
           cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
           cache-read-only: ${{ !env.IS_DEFAULT_BRANCH }}
