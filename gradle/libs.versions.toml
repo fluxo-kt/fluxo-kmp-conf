@@ -29,7 +29,7 @@ kotlinCoreLibraries = "1.9.24"
 kotlin = "2.0.20"
 
 # https://github.com/google/ksp/releases
-ksp = "2.0.20-1.0.25"
+ksp = "2.0.21-1.0.26"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
