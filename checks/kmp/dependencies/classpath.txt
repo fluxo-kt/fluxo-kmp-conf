@@ -146,9 +146,9 @@ org.apache.httpcomponents:httpclient:4.5.14
 org.apache.httpcomponents:httpcore:4.4.16
 org.apache.httpcomponents:httpmime:4.5.6
 org.bitbucket.b_c:jose4j:0.9.5
-org.bouncycastle:bcpkix-jdk18on:1.78.1
-org.bouncycastle:bcprov-jdk18on:1.78.1
-org.bouncycastle:bcutil-jdk18on:1.78.1
+org.bouncycastle:bcpkix-jdk18on:1.79
+org.bouncycastle:bcprov-jdk18on:1.79
+org.bouncycastle:bcutil-jdk18on:1.79
 org.checkerframework:checker-qual:3.43.0
 org.codehaus.mojo:animal-sniffer-annotations:1.23
 org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r

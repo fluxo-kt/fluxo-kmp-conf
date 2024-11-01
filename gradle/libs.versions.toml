@@ -174,7 +174,7 @@ okio = "3.9.1"
 # https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on
 # https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
 # https://mvnrepository.com/artifact/org.bouncycastle/bcutil-jdk18on
-bouncycastle = "1.78.1"
+bouncycastle = "1.79"
 
 # endregion
 
