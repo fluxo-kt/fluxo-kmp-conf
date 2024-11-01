@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.6.0-alpha05" type="baseline" client="gradle" dependencies="false" name="AGP (8.6.0-alpha05)" variant="all" version="8.6.0-alpha05">
+<issues format="6" by="lint 8.7.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.7.0)" variant="all" version="8.7.0">
 
     <issue
         id="StopShip"
@@ -8,6 +8,42 @@
             file="src/main/kotlin/fluxo/artifact/dsl/ArtifactProcessingChain.kt"
             line="9"
             column="33"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.library than 8.7.0 is available: 8.7.2">
+        <location
+            file="$HOME/work/fluxo-kmp-conf/fluxo-kmp-conf/gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.library than 8.7.0 is available: 8.7.2">
+        <location
+            file="$HOME/work/fluxo-kmp-conf/fluxo-kmp-conf/gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.tools.build:gradle than 8.7.0 is available: 8.7.2">
+        <location
+            file="$HOME/work/fluxo-kmp-conf/fluxo-kmp-conf/gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.tools.build:gradle than 8.7.0 is available: 8.7.2">
+        <location
+            file="$HOME/work/fluxo-kmp-conf/fluxo-kmp-conf/gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
     </issue>
 
 </issues>
