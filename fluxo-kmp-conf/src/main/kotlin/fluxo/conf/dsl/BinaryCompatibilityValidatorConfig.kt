@@ -54,11 +54,12 @@ public class BinaryCompatibilityValidatorConfig(
 
     /**
      * Whether to verify Kotlin JS/WASM TypeScript definitions APIs.
+     * Uses an additional plugin for this.
      *
      * See [fluxo-bcv-js](https://github.com/fluxo-kt/fluxo-bcv-js) for more info.
      */
     // https://github.com/fluxo-kt/fluxo-bcv-js
-    public var tsApiChecks: Boolean = true,
+    public var tsApiChecks: Boolean = false,
 
 
     /**

@@ -5,6 +5,15 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Changed
+- change default values and logic for some configuration options for safety and convenience in the new projects (experimental and/or complicated options should be opt-in)
+  - enableApiValidation = `false`
+  - setupVerification = `false`
+  - enableGenericAndroidLint = `false`
+  - enableGradleDoctorProp = `false`
+  - latestSettingsForTests = `false`
+  - BinaryCompatibilityValidatorConfig.tsApiChecks = `false`
+
 ### Updated
 - bump Kotlin to _2.0.21_!
 - bump KSP to [_1.0.28_](https://github.com/google/ksp/releases/tag/2.0.21-1.0.28).

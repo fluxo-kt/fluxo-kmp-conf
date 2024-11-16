@@ -261,7 +261,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     @get:Input
     val enableApiValidationProp: Property<Boolean?>
     override var enableApiValidation: Boolean
-        get() = enableApiValidationProp.orNull ?: parent?.enableApiValidation ?: true
+        get() = enableApiValidationProp.orNull ?: parent?.enableApiValidation ?: false
         set(value) = enableApiValidationProp.set(value)
 
     @get:Input
@@ -294,7 +294,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     @get:Input
     val setupVerificationProp: Property<Boolean?>
     override var setupVerification: Boolean
-        get() = setupVerificationProp.orNull ?: parent?.setupVerification ?: true
+        get() = setupVerificationProp.orNull ?: parent?.setupVerification ?: false
         set(value) = setupVerificationProp.set(value)
 
     @get:Input
@@ -312,7 +312,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     @get:Input
     val enableGenericAndroidLintProp: Property<Boolean?>
     override var enableGenericAndroidLint: Boolean
-        get() = enableGenericAndroidLintProp.orNull ?: parent?.enableGenericAndroidLint ?: true
+        get() = enableGenericAndroidLintProp.orNull ?: parent?.enableGenericAndroidLint ?: false
         set(value) = enableGenericAndroidLintProp.set(value)
 
     @get:Input
@@ -332,6 +332,6 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     @get:Input
     val enableGradleDoctorProp: Property<Boolean>
     override var enableGradleDoctor: Boolean
-        get() = enableGradleDoctorProp.orNull ?: true
+        get() = enableGradleDoctorProp.orNull ?: false
         set(value) = enableGradleDoctorProp.set(value)
 }

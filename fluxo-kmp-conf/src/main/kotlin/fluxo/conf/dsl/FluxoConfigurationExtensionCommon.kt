@@ -6,10 +6,10 @@ import org.gradle.api.Incubating
 public interface FluxoConfigurationExtensionCommon {
 
     /**
-     * Flags project as an application.
+     * Flags a project as an application.
      *
      * Enables some settings targeted for applications.
-     * E.g. disables the binary compatibility validator.
+     * E.g., disables the binary compatibility validator.
      *
      * NOT inherited from the parent project if not set.
      * Default value: `false`.
@@ -58,7 +58,7 @@ public interface FluxoConfigurationExtensionCommon {
      * Flag to turn on ALL the set of verification features, like Detekt, Spotless, and so on.
      *
      * Inherited from the parent project if not set.
-     * Default value: `true`.
+     * Default value: `false`.
      *
      * @see enableSpotless
      * @see enableDetektCompilerPlugin
@@ -109,7 +109,7 @@ public interface FluxoConfigurationExtensionCommon {
      * Can be disabled by the [setupVerification] flag.
      *
      * Inherited from the parent project if not set.
-     * Default value: `true`.
+     * Default value: `false`.
      *
      * @see setupVerification
      */
@@ -131,8 +131,8 @@ public interface FluxoConfigurationExtensionCommon {
     /**
      * Flag to apply the Gradle Doctor plugin.
      *
-     * Only applicable for root module.
-     * Default value: `true`.
+     * Only applicable for the root module.
+     * Default value: `false`.
      *
      * @see setupVerification
      */

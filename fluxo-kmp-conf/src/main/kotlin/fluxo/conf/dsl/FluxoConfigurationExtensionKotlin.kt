@@ -101,9 +101,9 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * API dump is also used to generate R8/ProGuard keep rules!
      *
-     * Default value: `true`.
+     * Default value: `false`.
      *
-     * @see fluxo.minification.FluxoShrinkerConfig.autoGenerateKeepRulesFromApis
+     * @see FluxoConfigurationExtensionPublication.autoGenerateKeepRulesFromApis
      */
     public var enableApiValidation: Boolean
 

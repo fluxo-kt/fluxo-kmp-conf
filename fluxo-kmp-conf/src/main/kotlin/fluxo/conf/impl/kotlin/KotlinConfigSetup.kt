@@ -77,7 +77,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
 
     var tests = kotlinTestsLangVersion?.toKotlinLangVersion()
-    val latestTests = latestSettingsForTests != false
+    val latestTests = latestSettingsForTests == true
     if (tests == null && canUseLatestSettings && latestTests) {
         tests = LATEST_KOTLIN_LANG_VERSION
     }

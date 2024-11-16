@@ -11,7 +11,13 @@ group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
 
 fkcSetupGradlePlugin {
+    setupVerification = true
+    enableApiValidation = true
+    enableGenericAndroidLint = true
+    experimentalLatestCompilation = true
+    latestSettingsForTests = true
     allWarningsAsErrors = true
+    enableGradleDoctor = true
 
     // Two separate processing chains.
     // First provides the output jar for the module.

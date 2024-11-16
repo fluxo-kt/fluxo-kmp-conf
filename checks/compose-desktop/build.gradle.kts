@@ -34,6 +34,13 @@ fkcSetupKotlinApp {
     replaceOutgoingJar = true
     shrink { fullMode = true }
     shrinkWithProGuard()
+
+    experimentalLatestCompilation = true
+    latestSettingsForTests = true
+    setupVerification = true
+    enableApiValidation = true
+    enableGenericAndroidLint = true
+    enableGradleDoctor = true
 }
 
 dependencies {

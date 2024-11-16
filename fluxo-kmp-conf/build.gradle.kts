@@ -44,8 +44,14 @@ fkcSetupGradlePlugin(
     },
 ) {
     githubProject = "fluxo-kt/fluxo-kmp-conf"
-    setupCoroutines = false
+    enableGradleDoctor = true
+//    enableSpotless = true
+    setupVerification = true
+    enableApiValidation = true
+    enableGenericAndroidLint = true
+    latestSettingsForTests = true
     experimentalLatestCompilation = true
+    setupCoroutines = false
 
     // Check shrinking possibilities with `R8(full)` chain,
     // but don't replace the outgoing jar.

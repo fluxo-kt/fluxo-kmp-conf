@@ -12,7 +12,10 @@ fkcSetupMultiplatform(
         javaLangTarget = "current"
         kotlinCoreLibraries = ""
         experimentalLatestCompilation = true
-        enableApiValidation = false
+        latestSettingsForTests = true
+        setupVerification = true
+        enableGenericAndroidLint = true
+        enableGradleDoctor = true
     },
     kmp = { allDefaultTargets() },
 )
