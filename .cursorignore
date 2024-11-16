@@ -1,0 +1,18 @@
+# https://docs.cursor.com/context/ignore-files (.cursorignore)
+# https://developer.android.com/studio/preview/gemini/aiexclude
+# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+
+.ai/notes/
+.build/
+.gradle/
+.vale*
+.idea/
+.kotlin/
+gradlew*
+out/
+
+*.jks
+*.keystore
+
+*.log
+_/
