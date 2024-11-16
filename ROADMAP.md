@@ -13,6 +13,8 @@
 
 * Interesting KMP architecture sample
   * https://github.com/VasilyRylov/architecture-samples/tree/main
+* Compose Multiplatform lib that prints the reason for recomposition in Logcat
+  * https://github.com/theapache64/rebugger
 * GitHub signed commits
   * https://github.com/qoomon/actions--create-commit
 * https://kotlinlang.org/docs/whatsnew-eap.html#data-class-copy-function-to-have-the-same-visibility-as-constructor
@@ -24,6 +26,8 @@
   * https://github.com/slackhq/foundry/commit/0b2a5b832819ce8959f6d0f5ba1c3a4ee809f90a
   * https://www.jasonpearson.dev/softreflrupolicymspermb-in-jvm-builds/
   * https://www.jasonpearson.dev/codecache-in-jvm-builds/
+* -Pkotlin_ir_validation_mode=error
+  * https://youtrack.jetbrains.com/issue/KT-72475
 * https://checks.google.com/
   * Auto complience tool
 * Filter duplicate lint issues from the merged baseline and report.

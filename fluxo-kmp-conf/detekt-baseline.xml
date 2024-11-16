@@ -11,6 +11,7 @@
     <ID>CompilerWarning:KmpConfigurationContainerDslImpl.kt$KmpConfigurationContainerDslImpl$ExperimentalWasmDsl</ID>
     <ID>CompilerWarning:KotlinJsUtils.kt$compilerOptions</ID>
     <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$targets</ID>
+    <ID>CompilerWarning:SetupAndroid.kt$exec</ID>
     <ID>CompilerWarning:SetupArtifactsProcessing.kt$API_DIR</ID>
     <ID>CompilerWarning:SetupArtifactsProcessing.kt$inputFiles</ID>
     <ID>CompilerWarning:SetupCompose.kt$KotlinCommonOptions</ID>
@@ -177,7 +178,6 @@
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>LongMethod:SetupPublication.kt$private fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning( p: Project, config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>MagicNumber:SetupDetekt.kt$2.1</ID>
     <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>MaximumLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$ </ID>
     <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String></ID>
@@ -192,6 +192,5 @@
     <ID>UnnecessaryPassThroughClass:KotlinMultiplatformActionContainer.kt$KotlinMultiplatformActionContainer : CustomTypeContainerContainerKotlinMultiplatformAware</ID>
     <ID>UnnecessaryPassThroughClass:KotlinProjectActionContainer.kt$KotlinProjectActionContainer : CustomTypeContainerContainerKotlinAware</ID>
     <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>
-    <ID>UnusedPrivateProperty:SetupDetekt.kt$private const val DETEKT_MAX_SUPPORTED_KOTLIN_VERSION = "2.1"</ID>
   </CurrentIssues>
 </SmellBaseline>

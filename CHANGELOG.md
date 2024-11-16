@@ -5,6 +5,13 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Updated
+- bump Kotlin to _2.0.21_!
+- bump KSP to [_1.0.28_](https://github.com/google/ksp/releases/tag/2.0.21-1.0.28).
+- bump JetBrains Compose to [_1.7.1_](https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.7.1).
+- bump Android Gradle Plugin to _8.7.2_ (compile-only dependency).
+- bump a lot of other dependencies to the latest versions.
+
 
 ## [0.12.1] - 2024-10-10
 
