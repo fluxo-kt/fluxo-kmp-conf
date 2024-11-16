@@ -10,5 +10,9 @@ public enum class ProcessorCallType {
         @JvmField
         internal val DEFAULT_FALLBACK_ORDER =
             arrayOf(EXTERNAL, BUNDLED, IN_MEMORY).asList()
+
+        @JvmField
+        internal val PREFER_BUNDLED_FALLBACK_ORDER =
+            arrayOf(BUNDLED, EXTERNAL, IN_MEMORY).asList()
     }
 }

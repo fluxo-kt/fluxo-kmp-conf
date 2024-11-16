@@ -22,6 +22,8 @@ import fluxo.log.e
 import fluxo.log.l
 import fluxo.log.v
 import fluxo.log.w
+import fluxo.shrink.BUNDLED_PROGUARD_VERSION
+import fluxo.shrink.BUNDLED_R8_VERSION
 import fluxo.util.readableByteSize
 import fluxo.vc.FluxoVersionCatalog
 import getValue
@@ -144,24 +146,11 @@ internal abstract class FluxoKmpConfContext
                 m += " from ${readableByteSize(ram)} RAM"
             }
 
-            // Bundled/Classpath R8 version
-            try {
-                // https://r8.googlesource.com/r8/+refs
-                // https://issuetracker.google.com/issues/193543616#comment4
-                // https://mvnrepository.com/artifact/com.android.tools/r8
-                /** Cannot use [com.android.tools.r8.Version.LABEL] directly here
-                 *  as it will be inlined during compilation. */
-                val r8 = com.android.tools.r8.Version.getVersionString().substringBefore(" (")
-                m += ", Bundled R8 $r8"
-            } catch (_: Throwable) {
-            }
+            // Classpath/Bundled R8 version
+            BUNDLED_R8_VERSION?.let { r8 -> m += ", Bundled R8 $r8" }
 
-            // Bundled/Classpath ProGuard version
-            try {
-                val pg = proguard.ProGuard.getVersion()
-                m += ", Bundled ProGuard $pg"
-            } catch (_: Throwable) {
-            }
+            // Classpath/Bundled ProGuard version
+            BUNDLED_PROGUARD_VERSION?.let { pg -> m += ", Bundled ProGuard $pg" }
 
             logger.l(m)
         }

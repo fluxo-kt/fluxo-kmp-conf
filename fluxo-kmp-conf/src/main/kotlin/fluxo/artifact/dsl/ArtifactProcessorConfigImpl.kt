@@ -50,7 +50,6 @@ internal class ArtifactProcessorConfigImpl(
 
     override val callFallbackOrder: ListProperty<ProcessorCallType> =
         objects.listProperty<ProcessorCallType>()
-            .convention(ProcessorCallType.DEFAULT_FALLBACK_ORDER)
 
     override val configurationFiles: ConfigurableFileCollection = objects.fileCollection()
     override val optimize: Property<Boolean> = objects.notNullProperty(true)

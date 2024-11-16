@@ -43,9 +43,10 @@ internal class ShrinkerReflectiveCaller(
     @Suppress("ReturnCount")
     fun execute(
         callType: ProcessorCallType,
+        version: String,
         ignoreMemoryLimit: Boolean = false,
     ): Boolean {
-        logger.v("Trying to run $shrinker in-memory ($callType)...")
+        logger.v("Trying to run $shrinker$version in-memory ($callType)...")
 
         val xmx = XMX
         if (!ignoreMemoryLimit && xmx < MIN_XMX_FOR_IN_MEMORY) {
@@ -74,12 +75,14 @@ internal class ShrinkerReflectiveCaller(
                         ProGuard -> callProGuard(clazz, args)
                     }
                     return true
-                } else {
-                    logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")
                 }
+                logger.w(
+                    "$shrinker$version could not be loaded in-memory" +
+                        " as $callType (class=$className)!",
+                )
             }
         } catch (e: Throwable) {
-            throw GradleException("Failed to run $callType $shrinker in-memory! $e", e)
+            throw GradleException("Failed to run $callType $shrinker$version in-memory! $e", e)
         }
         return false
     }
@@ -147,14 +150,22 @@ internal class ShrinkerReflectiveCaller(
 
     /** Class name to arguments */
     private fun args(): Pair<String, Array<String>> {
-        val args = getShrinkerArgs()
-        return args.first() to args.map {
+        val args = getShrinkerArgs().toMutableList()
+        val classIndex = args.indexOfFirst {
+            !it.startsWith('-') && '/' !in it && '\\' !in it && !it.endsWith(".jar")
+        }
+        check(classIndex >= 0) { "No class name found in $shrinker args: $args" }
+
+        val className = args[classIndex]
+        args.removeAt(classIndex)
+
+        return className to args.map {
             when {
                 !it.startsWith('"') -> it
                 // Required for R8
                 else -> it.trim('"').replace("\\\\", "\\")
             }
-        }.drop(1).toTypedArray()
+        }.toTypedArray()
     }
 
     /**

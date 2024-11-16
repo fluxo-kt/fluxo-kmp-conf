@@ -188,7 +188,6 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:Optional
     val callFallbackOrder: ListProperty<ProcessorCallType> =
         objects.listProperty<ProcessorCallType>()
-            .convention(ProcessorCallType.DEFAULT_FALLBACK_ORDER)
 
     @get:Internal
     val maxHeapSize: Property<String?> = objects.nullableProperty()
@@ -271,7 +270,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         // FIXME: When java toolchain used or JDK target is specified, read the specified JDK.
         // TODO: Can be cached for a JDK.
 
-        val shrinker = shrinker.get()
+        val shrinker: JvmShrinker = shrinker.get()
         val jmods = when (shrinker) {
             ProGuard -> getJmods(javaHome)
             else -> {
@@ -337,7 +336,15 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         // 2. Try to use the bundled ProGuard/R8.
         // 3. Fallback to custom classloader.
         val callFallbackOrder = callFallbackOrder.get()
-            .ifEmpty { ProcessorCallType.DEFAULT_FALLBACK_ORDER }
+            .ifEmpty {
+                when {
+                    shrinker == R8 && PREFER_BUNDLED_R8.get() ->
+                        ProcessorCallType.PREFER_BUNDLED_FALLBACK_ORDER
+
+                    else ->
+                        ProcessorCallType.DEFAULT_FALLBACK_ORDER
+                }
+            }
             .toCollection(LinkedHashSet())
 
         // TODO: Process output and print only main information if not verbose
@@ -348,10 +355,18 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val last = callFallbackOrder.last()!!
         val start = currentTimeMillis()
         callType@ for (callType in callFallbackOrder) {
+            val version = when {
+                callType != ProcessorCallType.BUNDLED -> REMOTE_SHRINKER_VERSION[shrinker]
+                else -> when (shrinker) {
+                    ProGuard -> BUNDLED_PROGUARD_VERSION
+                    R8 -> BUNDLED_R8_VERSION
+                }
+            }.let { if (it.isNullOrEmpty()) "" else " v$it" }
+
             try {
                 when (callType) {
                     ProcessorCallType.EXTERNAL -> {
-                        logger.l("Calling $shrinker externally!")
+                        logger.l("Calling $shrinker$version externally!")
                         callShrikerExternally(javaHome, rootConfigFile, outJars, reportsDir)
                     }
 
@@ -361,10 +376,14 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                                 shrinker = shrinker,
                                 logger = logger,
                                 toolJars = toolJars,
-                            ) { getShrinkerArgs(rootConfigFile, outJars, reportsDir, javaHome) }
+                            ) {
+                                getShrinkerArgs(
+                                    rootConfigFile, outJars, reportsDir, javaHome, external = false,
+                                )
+                            }
                         }
                         val isLastFallback = last == callType
-                        if (!caller.execute(callType, ignoreMemoryLimit = isLastFallback)) {
+                        if (!caller.execute(callType, version, ignoreMemoryLimit = isLastFallback)) {
                             continue@callType
                         }
                     }
@@ -372,7 +391,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                 called = true
                 break@callType
             } catch (e: Throwable) {
-                logger.e("$callType $shrinker shrinker call failed: $e")
+                logger.e("$callType $shrinker$version shrinker call failed: $e")
                 when (ex) {
                     null -> ex = e
                     else -> e.addSuppressed(ex)

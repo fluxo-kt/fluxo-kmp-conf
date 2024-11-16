@@ -26,6 +26,7 @@ import fluxo.gradle.not
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.l
 import fluxo.log.v
+import fluxo.log.w
 import fluxo.vc.l
 import fluxo.vc.v
 import org.gradle.api.DefaultTask
@@ -34,6 +35,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
@@ -148,6 +150,30 @@ private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
     } else if (version != null) {
         coords += ":$version"
     }
+    if (version == null) {
+        version = parts.getOrNull(2)
+    }
+
+    var bundledIsPreferred = false
+    if (!version.isNullOrEmpty()) {
+        var message = "Remote $shrinker version is $version"
+        val bundledR8 = BUNDLED_R8_VERSION
+        if (shrinker === JvmShrinker.R8 && bundledR8 != null && version != bundledR8) {
+            try {
+                val v = GradleVersion.version(version.substringBefore('-'))
+                val b = GradleVersion.version(bundledR8.substringBefore('-'))
+                if (v < b) {
+                    message += " (bundled R8 is preferred: $bundledR8)"
+                    PREFER_BUNDLED_R8.set(true)
+                    bundledIsPreferred = true
+                }
+            } catch (e: Throwable) {
+                project.logger.w("Invalid $shrinker version $version? $e")
+            }
+        }
+        project.logger.v(message)
+        REMOTE_SHRINKER_VERSION[shrinker] = version
+    }
     if (!isVerbose) {
         notifyThatToolIsStarting(shrinker.name, version)
     }
@@ -164,7 +190,9 @@ private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
     }.onEach { notation ->
         // FIXME: Avoid duplicate logging between similar tasks
         // TODO: note dependency in the (root?) project classpath
-        project.logDependency(toolLc, notation)
+        if (!bundledIsPreferred) {
+            project.logDependency(toolLc, notation)
+        }
     }.let {
         toolCoordinates.set(it.joinToString())
         toolJars.from(project.detachedDependency(it))

@@ -7,8 +7,8 @@ import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks
 import fluxo.conf.impl.register
 import fluxo.gradle.addToCheckAndTestDependencies
+import fluxo.log.e
 import fluxo.log.l
-import fluxo.log.w
 import fluxo.shrink.SHRINKER_KEEP_GEN_TASK_NAME
 import fluxo.shrink.ShrinkerVerificationTestTask
 import fluxo.shrink.getShrinkerVerifyTaskName
@@ -91,7 +91,7 @@ import org.gradle.api.tasks.TaskProvider
  * @see proguard.ProGuard
  * @see proguard.ProGuard.getVersion
  */
-@Suppress("CyclomaticComplexMethod", "LongMethod")
+@Suppress("CyclomaticComplexMethod", "LongMethod", "ReturnCount")
 internal fun setupArtifactsProcessing(
     conf: FluxoConfigurationExtensionImpl,
 ) {
@@ -166,7 +166,7 @@ internal fun setupArtifactsProcessing(
                     val hasNextObfuscator =
                         hasNext && next?.obfuscateIncrementally?.orNull != false
                     if (obfuscate && hasNextObfuscator && !config.obfuscateIncrementally.get()) {
-                        p.logger.w(
+                        p.logger.e(
                             "'obfuscateIncrementally' is disabled for the shrinker $shrinker, " +
                                 "but enabled for the next processor in the chain" +
                                 " (${next?.processor}). It's probably a mistake!",
@@ -194,7 +194,7 @@ internal fun setupArtifactsProcessing(
 
                         inputFiles = when {
                             // R8 Always provides only one output file.
-                            // If more than one artifact is processed (e.g. app mode),
+                            // If more than one artifact is processed (e.g., app mode),
                             // it works as a shadowing (uber-jar).
                             shrinker === JvmShrinker.R8 && isApplication -> null
 
