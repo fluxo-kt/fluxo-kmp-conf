@@ -383,7 +383,12 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                             }
                         }
                         val isLastFallback = last == callType
-                        if (!caller.execute(callType, version, ignoreMemoryLimit = isLastFallback)) {
+                        val result = caller.execute(
+                            callType = callType,
+                            version = version,
+                            ignoreMemoryLimit = isLastFallback,
+                        )
+                        if (!result) {
                             continue@callType
                         }
                     }

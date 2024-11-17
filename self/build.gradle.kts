@@ -71,7 +71,7 @@ dependencies {
     compileOnly(libs.plugin.kotlin.compose)
     compileOnly(libs.plugin.ksp)
 
-    compileOnly(libs.plugins.gradle.enterprise.toModuleDependency())
+    compileOnly(libs.plugins.develocity.toModuleDependency())
     compileOnly(libs.plugins.kotlin.sam.receiver.toModuleDependency())
     compileOnly(libs.plugins.kotlinx.binCompatValidator.toModuleDependency())
     compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
@@ -141,10 +141,12 @@ buildConfig {
     buildConfigField("R8", libs.r8)
 }
 
-if (project.hasProperty("buildScan")) {
+develocity {
+    // https://docs.gradle.com/develocity/gradle-plugin/current/
     buildScan {
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
+        publishing.onlyIf { false }
+        termsOfUseUrl.set("https://gradle.com/help/legal-terms-of-use")
+        termsOfUseAgree.set("yes")
     }
 }
 

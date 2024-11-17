@@ -117,6 +117,7 @@ internal fun Project.registerShrinkerTask(
 }
 
 
+@Suppress("NestedBlockDepth", "LongMethod")
 private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
     conf: FluxoConfigurationExtensionImpl,
     isVerbose: Boolean,

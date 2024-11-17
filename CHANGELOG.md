@@ -9,7 +9,8 @@
 - fix bundled shrinker loading.
 
 ### Changed
-- and prefer bundled R8 if it’s newer by default.
+- migrate to the new Develocity plugin for the build scans.
+- prefer bundled R8 if it’s newer by default.
 - change default values and logic for some configuration options for safety and convenience in the new projects (experimental and/or complicated options should be opt-in)
   - enableApiValidation = `false`
   - setupVerification = `false`

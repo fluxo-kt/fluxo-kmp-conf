@@ -40,7 +40,7 @@ internal class ShrinkerReflectiveCaller(
      *
      * @return `true` if the shrinker was run in-memory, `false` otherwise.
      */
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "NestedBlockDepth")
     fun execute(
         callType: ProcessorCallType,
         version: String,

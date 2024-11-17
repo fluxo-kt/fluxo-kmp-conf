@@ -91,7 +91,7 @@ androidCompileSdk = "35"
 # Preview API for debug builds.
 # Takes precedence over all other SDK versions!
 # "0" value used to ignore this setting.
-# E.g., to use the Android U preview use `androidPreviewSdk = "U"`.
+# E.g., to use the Android U preview, use `androidPreviewSdk = "U"`.
 #androidPreviewSdk = "0"
 
 # Compilers, packaging, deployment tools for Android apps.
@@ -271,7 +271,7 @@ bcutil = { module = "org.bouncycastle:bcutil-jdk18on", version.ref = "bouncycast
 # https://github.com/google/guava/releases
 guava = { module = "com.google.guava:guava", version = "33.3.1-jre" }
 
-# Douglas Crockford's reference Java implementation of a JSON.
+# Douglas Crockford's reference implementation of a JSON.
 # https://github.com/stleary/JSON-java/releases
 json = { module = "org.json:json", version = "20240303" }
 
@@ -335,12 +335,11 @@ complete-kotlin = { id = "com.louiscad.complete-kotlin", version = "1.1.0" }
 # https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.3.0" }
 
-# Build scans, data to speed up build and improve build reliability.
-# TODO: Migrate to "com.gradle.develocity" plugin.
+# Build scans, data to speed up the build and improve build reliability.
 # https://scans.gradle.com/plugin/
-# https://plugins.gradle.org/plugin/com.gradle.enterprise
-# NOTE: Don't forget to edit version in all `settings.gradle.kts` files as well!
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.16.2" }
+# https://plugins.gradle.org/plugin/com.gradle.develocity
+# NOTE: Don't forget to edit a version in all `settings.gradle.kts` files as well!
+develocity = { id = "com.gradle.develocity", version = "3.18.2" }
 
 # Gradle Versions Plugin: provides a task to determine, which dependencies have updates.
 # https://github.com/ben-manes/gradle-versions-plugin/releases

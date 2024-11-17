@@ -101,7 +101,7 @@ dependencies {
     compileOnly(libs.plugin.kotlin.compose)
     compileOnly(libs.plugin.ksp)
 
-    compileOnly(libs.plugins.gradle.enterprise.toModuleDependency())
+    compileOnly(libs.plugins.develocity.toModuleDependency())
     compileOnly(libs.plugins.kotlin.sam.receiver.toModuleDependency())
     compileOnly(libs.plugins.kotlinx.binCompatValidator.toModuleDependency())
     compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
