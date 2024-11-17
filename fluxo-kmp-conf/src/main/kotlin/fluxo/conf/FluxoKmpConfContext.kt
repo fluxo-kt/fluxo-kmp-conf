@@ -15,6 +15,7 @@ import fluxo.conf.impl.XMX
 import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
 import fluxo.conf.impl.kotlin.mppAndroidSourceSetLayoutVersion
+import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.tryAsBoolean
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
@@ -40,6 +41,7 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
+import org.gradle.util.GradleVersion
 import scmTag
 import useKotlinDebug
 
@@ -311,6 +313,25 @@ internal abstract class FluxoKmpConfContext
         // TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.
         //  https://github.com/JetBrains/gradle-idea-ext-plugin
         val p = rootProject
+
+        // New Gradle limits the lazy plugin configuration,
+        // so we can't rely on the `onProjectInSyncRun` to be work.
+        val gradleVersion = GradleVersion.current()
+        if (gradleVersion >= GradleVersion.version("8.11")) {
+            markProjectInSync(reason = "$gradleVersion")
+        }
+
+        // taskGraph is ready AFTER the configuration phase,
+        // so it's better to detect sync as early as possible.
+        if (!isProjectInSyncRun) {
+            p.tasks.namedCompat { it == KOTLIN_IDEA_IMPORT_TASK || it == KOTLIN_IDEA_BSM_TASK }
+                .configureEach {
+                    if (!isProjectInSyncRun) {
+                        markProjectInSync(reason = "project has import task in graph ($name)")
+                    }
+                }
+        }
+
         val logger = p.logger
         p.gradle.taskGraph.whenReady {
             val allTasks: List<Task> = allTasks
@@ -330,7 +351,7 @@ internal abstract class FluxoKmpConfContext
                         p.endsWith(KOTLIN_IDEA_IMPORT_TASK) || p.endsWith(KOTLIN_IDEA_BSM_TASK)
                     }
                 }
-                if (hasImportTaskInGraph && !isProjectInSyncRun) {
+                if (hasImportTaskInGraph) {
                     markProjectInSync(reason = "project has import task in graph")
                 }
             }

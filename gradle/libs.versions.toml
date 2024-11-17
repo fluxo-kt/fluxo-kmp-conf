@@ -133,6 +133,12 @@ spotless = "6.25.0"
 # https://github.com/JetBrains/intellij-platform-gradle-plugin/releases
 intellij-platform = "2.1.0"
 
+# Universal Gradle plugin for artifact publication to any Maven instance.
+# https://github.com/vanniktech/gradle-maven-publish-plugin/blob/main/docs/what.md
+# https://github.com/vanniktech/gradle-maven-publish-plugin/releases
+# https://mvnrepository.com/artifact/com.vanniktech.maven.publish.base/com.vanniktech.maven.publish.base.gradle.plugin
+vanniktech-mvn-publish = "0.30.0"
+
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-gradle.
@@ -323,6 +329,9 @@ android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin
 # WARN: Remember to update the 'android.experimental.lint.version'
 #  in all `gradle.properties` files!
 android-lint = { id = "com.android.lint", version.ref = "android-gradle-plugin" }
+
+vanniktech-mvn-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-mvn-publish" }
+vanniktech-mvn-publishBase = { id = "com.vanniktech.maven.publish.base", version.ref = "vanniktech-mvn-publish" }
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 

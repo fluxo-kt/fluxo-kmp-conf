@@ -2,11 +2,9 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>ArgumentListWrapping:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
     <ID>AvoidFirstOrLastOnList:AbstractShrinkerTask.kt$AbstractShrinkerTask$first</ID>
     <ID>AvoidFirstOrLastOnList:ParseJvmApiDump.kt$last</ID>
     <ID>AvoidFirstOrLastOnList:SetupJvmCompatibility.kt$first</ID>
-    <ID>AvoidFirstOrLastOnList:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$first</ID>
     <ID>CompilerWarning:DependencyAnalysisPlugin.kt$configureExtension</ID>
     <ID>CompilerWarning:KmpConfigurationContainerDslImpl.kt$KmpConfigurationContainerDslImpl$ExperimentalWasmDsl</ID>
     <ID>CompilerWarning:KotlinJsUtils.kt$compilerOptions</ID>
@@ -27,8 +25,8 @@
     <ID>CompilerWarning:SetupKotlinOptions.kt$KotlinCommonOptions</ID>
     <ID>CompilerWarning:SetupKotlinOptions.kt$KotlinJsOptions</ID>
     <ID>CompilerWarning:SetupKotlinOptions.kt$KotlinJvmOptions</ID>
-    <ID>CompilerWarning:SetupPublication.kt$dirMode</ID>
-    <ID>CompilerWarning:SetupPublication.kt$fileMode</ID>
+    <ID>CompilerWarning:SetupPublication.kt$config: FluxoPublicationConfig</ID>
+    <ID>CompilerWarning:SetupPublication.kt$project: Project</ID>
     <ID>CompilerWarning:SetupTestsReport.kt$this is Test</ID>
     <ID>CompilerWarning:ShrinkerKeepRulesFromApiTask.kt$API_DIR</ID>
     <ID>CompilerWarning:TargetWasmContainer.kt$ExperimentalWasmDsl</ID>
@@ -41,6 +39,7 @@
     <ID>CompilerWarning:WasmTarget.kt$ExperimentalWasmDsl</ID>
     <ID>CompilerWarning:WasmTarget.kt$WasmTarget.Configure$ExperimentalWasmDsl</ID>
     <ID>CyclomaticComplexMethod:AbstractShrinkerTask.kt$AbstractShrinkerTask$@Suppress("LongMethod") private fun writeRootConfiguration( file: File, reportsDir: Directory, jarsConfigurationFile: File, shrinker: JvmShrinker, )</ID>
+    <ID>DataClassTypedIDs:FluxoPublicationConfig.kt$FluxoPublicationConfig$/** PGP signing key ID */ public var signingKeyId: String? = null</ID>
     <ID>DataClassTypedIDs:FluxoPublicationConfig.kt$FluxoPublicationConfig$public var developerId: String? = null</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
@@ -146,9 +145,8 @@
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Avoid publication setup when possible</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Decorate the build logs with maven coordinates of published artifacts</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Distinguish between common and platform-specific publications</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Make configurable (sanitize/verify)</ID>
+    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Make configurable (+ sanitize/verify)</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Protect publication tasks from invalid GIT state (dirty, untracked files, etc.)</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Replace Gradle Plugin publishing with something less broken (official is just a mess)?</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Set RC/alpha/beta releases status to Ivy's: milestone/integration when it will be possible</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Should wrap `setupPublicationExtension` in afterEvaluate?</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Take jar tasks from project outputs instead of tasks?</ID>
@@ -161,6 +159,8 @@
     <ID>ForbiddenComment:SetupSpotless.kt$// TODO: read base settings from .editorconfig ?</ID>
     <ID>ForbiddenComment:SetupTestsReport.kt$// TODO: Support Gradle before 8.0 (set service parameter and usesService) ?</ID>
     <ID>ForbiddenComment:SetupValidatePluginTasks.kt$// TODO: Multiset configuration</ID>
+    <ID>ForbiddenComment:SetupVanniktechPublication.kt$// TODO: Distinguish between common and platform-specific publications</ID>
+    <ID>ForbiddenComment:SetupVanniktechPublication.kt$// TODO: https://github.com/gmazzo/gradle-report-publications-plugin</ID>
     <ID>ForbiddenComment:SetupVerification.kt$// FIXME: Setup Android Lint for non-Android targets in KMP</ID>
     <ID>ForbiddenComment:SetupVerification.kt$// TODO: Test separate ktlint setup with gradle plugin</ID>
     <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// FIXME: Warn on data classes in public API!</ID>
@@ -176,15 +176,10 @@
     <ID>ForbiddenPublicDataClass:FluxoPublicationConfig.kt$FluxoPublicationConfig</ID>
     <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
-    <ID>LongMethod:SetupPublication.kt$private fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning( p: Project, config: FluxoPublicationConfig, publishing: PublishingExtension, mavenRepo: Boolean = true, )</ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>MaxLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$logger.w("$shrinker could not be loaded in-memory as $callType (class=$className)!")</ID>
-    <ID>MaximumLineLength:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$ </ID>
     <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String></ID>
-    <ID>NestedBlockDepth:ShrinkerReflectiveCaller.kt$ShrinkerReflectiveCaller$@Suppress("ReturnCount") fun execute( callType: ProcessorCallType, ignoreMemoryLimit: Boolean = false, ): Boolean</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>NoNotNullOperator:AbstractShrinkerTask.kt$AbstractShrinkerTask$callFallbackOrder.last()!!</ID>
-    <ID>ReturnCount:SetupArtifactsProcessing.kt$@Suppress("CyclomaticComplexMethod", "LongMethod") internal fun setupArtifactsProcessing( conf: FluxoConfigurationExtensionImpl, )</ID>
     <ID>SpacingAroundComma:SetupAndroid.kt$,</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
     <ID>TooManyFunctions:SetupJvmCompatibility.kt$fluxo.conf.impl.kotlin.SetupJvmCompatibility.kt</ID>

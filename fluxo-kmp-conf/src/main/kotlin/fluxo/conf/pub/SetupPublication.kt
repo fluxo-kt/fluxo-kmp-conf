@@ -1,23 +1,23 @@
 @file:Suppress("TooManyFunctions")
 
-package fluxo.conf.feat
+package fluxo.conf.pub
 
 import MAIN_SOURCE_SET_NAME
 import com.android.build.gradle.LibraryExtension
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.data.BuildConstants
-import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
+import fluxo.conf.deps.loadPluginStaticallyError
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.feat.markAsMustRunAfterBuildConfigTasks
 import fluxo.conf.impl.android.DEBUG
 import fluxo.conf.impl.android.RELEASE
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.create
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getByName
-import fluxo.conf.impl.has
 import fluxo.conf.impl.hasExtension
 import fluxo.conf.impl.kotlin.mppExt
 import fluxo.conf.impl.namedCompat
@@ -36,10 +36,10 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublicationContainer
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
@@ -76,24 +76,22 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 // TODO: Protect publication tasks from invalid GIT state (dirty, untracked files, etc.)
 //  https://github.com/tbroyer/gradle-errorprone-plugin/blob/5d83185/build.gradle.kts#L24
 
-// TODO: Replace Gradle Plugin publishing with something less broken (official is just a mess)?
-//  https://github.com/vanniktech/gradle-maven-publish-plugin
-//  https://github.com/adamko-dev/dokkatoo/issues/61#issuecomment-1701156702
-//  https://github.com/adamko-dev/dokkatoo/blob/b1ca20c/buildSrc/src/main/kotlin/buildsrc/conventions/maven-publishing.gradle.kts
-
 // TODO: Decorate the build logs with maven coordinates of published artifacts
 //  https://github.com/gmazzo/gradle-report-publications-plugin
 
+// https://github.com/GradleUp/shadow/blob/8aad9ad/build-logic/src/main/kotlin/shadow.convention.publish.gradle.kts
+
 private val CALL_TASK_PREFIXES = arrayOf(
-    "publish", "upload", "deploy", "release", "ship", "distribute", "check", "verify", "install",
+    "publish", "upload", "deploy", "release", "ship",
+    "distribute", "check", "verify", "install",
 )
 
-internal fun setupGradleProjectPublication(
+internal fun setupPublication(
     conf: FluxoConfigurationExtensionImpl,
 ) {
     // TODO: Avoid publication setup when possible
     val config = conf.publicationConfig
-    if (conf.enablePublication == false || config == null) {
+    if (config == null || conf.enablePublication != true) {
         return
     }
     val ctx = conf.ctx
@@ -110,28 +108,47 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
     config: FluxoPublicationConfig,
     conf: FluxoConfigurationExtensionImpl,
 ) {
-    val useDokka = conf.useDokka == false
-    when (val type = conf.mode) {
-        ConfigurationType.KOTLIN_MULTIPLATFORM ->
-            setupPublicationMultiplatform(p, config, useDokka)
+    val useDokka = conf.useDokka
 
-        ConfigurationType.ANDROID_LIB ->
-            setupPublicationAndroidLibrary(p, config, useDokka)
-
-        ConfigurationType.GRADLE_PLUGIN ->
-            setupPublicationGradlePlugin(p, config, useDokka)
-
-        ConfigurationType.KOTLIN_JVM ->
-            setupPublicationKotlinJvm(p, config, useDokka)
-
-        else -> {
-            p.logger.e("Unsupported project type for publication: $type")
-
-            // Java-only project support is experimental
-            if (!SHOW_DEBUG_LOGS || !p.hasExtension { JavaPluginExtension::class }) {
-                return
+    // Use Vanniktech's maven-publish plugin for publication configuration and management.
+    // It's much better than default publishing configuration of most plugins.
+    // E.g., official Gradle Plugin publishing is just a broken mess.
+    //  https://github.com/adamko-dev/dokkatoo/issues/61#issuecomment-1701156702
+    //  https://github.com/adamko-dev/dokkatoo/blob/b1ca20c/buildSrc/src/main/kotlin/buildsrc/conventions/maven-publishing.gradle.kts
+    val useVanniktech = conf.useVanniktechPublish != false
+    if (useVanniktech) {
+        if (p.pluginManager.hasPlugin(VANNIKTECH_MAVEN_PUBLISH_PLUGIN_ID) ||
+            p.pluginManager.hasPlugin(VANNIKTECH_MAVEN_PUBLISH_BASE_PLUGIN_ID)
+        ) {
+            p.configureExtension<MavenPublishBaseExtension>("mavenPublishing") {
+                setupVanniktechPublication(p, config, conf)
             }
-            setupPublicationJava(p, config)
+        } else {
+            p.loadPluginStaticallyError(VANNIKTECH_MAVEN_PUBLISH_PLUGIN_ID)
+        }
+    } else {
+        when (val mode = conf.mode) {
+            ConfigurationType.KOTLIN_MULTIPLATFORM ->
+                setupPublicationMultiplatform(p, config, useDokka)
+
+            ConfigurationType.ANDROID_LIB ->
+                setupPublicationAndroidLibrary(p, config, useDokka)
+
+            ConfigurationType.GRADLE_PLUGIN ->
+                setupPublicationGradlePlugin(p, config, useDokka)
+
+            ConfigurationType.KOTLIN_JVM ->
+                setupPublicationKotlinJvm(p, config, useDokka)
+
+            else -> {
+                p.logger.e("Unsupported project type for publication: $mode")
+
+                // Java-only project support is experimental
+                if (!SHOW_DEBUG_LOGS || !p.hasExtension { JavaPluginExtension::class }) {
+                    return
+                }
+                setupPublicationJava(p, config)
+            }
         }
     }
 
@@ -143,6 +160,7 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
         p.tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
+            @Suppress("DEPRECATION")
             try {
                 // Deprecated in Gradle 8.8
                 dirMode = "0755".toInt(radix = 8)
@@ -260,7 +278,7 @@ private fun FluxoKmpConfContext.setupPublicationGradlePlugin(
         type = ConfigurationType.GRADLE_PLUGIN,
     )
 
-    setupPublicationRepositoryAndSigning(p, config, publishing, mavenRepo = false)
+    setupPublicationRepositoryAndSigning(p, config, publishing, mavenRemoteRepo = false)
 }
 
 private fun FluxoKmpConfContext.setupPublicationKotlinJvm(
@@ -301,44 +319,57 @@ private fun FluxoKmpConfContext.setupPublicationJava(p: Project, config: FluxoPu
 private fun MavenPublication.setupPublicationPom(
     project: Project,
     config: FluxoPublicationConfig,
+) = pom { setupPublicationPom(project, config) }
+
+/** @see com.vanniktech.maven.publish.MavenPublishBaseExtension.pomFromGradleProperties */
+@Suppress("CyclomaticComplexMethod")
+internal fun MavenPom.setupPublicationPom(
+    project: Project,
+    config: FluxoPublicationConfig,
 ) {
     project.logger.l("setup maven POM for '$name': '${config.projectName}'")
-    pom {
-        name.set(config.projectName)
-        description.set(config.projectDescription)
-        url.set(config.publicationUrl)
 
-        if (!config.licenseName.isNullOrEmpty()) {
-            // TODO: Add support for multiple licenses
-            licenses {
-                license {
-                    name.set(config.licenseName)
-                    url.set(config.licenseUrl)
+    name.set(config.projectName ?: name.get())
+    description.set(config.projectDescription ?: description.get())
+    url.set(config.publicationUrl ?: url.get() ?: config.projectUrl)
+
+    config.inceptionYear?.let { inceptionYear.set(it) }
+
+    if (!config.licenseName.isNullOrEmpty()) {
+        // TODO: Add support for multiple licenses
+        licenses {
+            license {
+                name.set(config.licenseName)
+                config.licenseUrl?.let {
+                    url.set(it)
+                    if (it.endsWith(".txt")) {
+                        distribution.set(it)
+                    }
                 }
             }
         }
+    }
 
-        developers {
-            // TODO: Add support for multiple developers
-            if (!config.developerId.isNullOrEmpty() ||
-                !config.developerName.isNullOrEmpty() ||
-                !config.developerEmail.isNullOrEmpty()
-            ) {
-                developer {
-                    config.developerId?.let { id.set(it) }
-                    config.developerName?.let { name.set(it) }
-                    config.developerEmail?.let { email.set(it) }
-                }
+    developers {
+        // TODO: Add support for multiple developers
+        if (!config.developerId.isNullOrEmpty() ||
+            !config.developerName.isNullOrEmpty() ||
+            !config.developerEmail.isNullOrEmpty()
+        ) {
+            developer {
+                config.developerId?.let { id.set(it) }
+                config.developerName?.let { name.set(it) }
+                config.developerEmail?.let { email.set(it) }
             }
         }
+    }
 
-        scm {
-            url.set(config.projectUrl)
-            connection.set(config.scmUrl)
-            developerConnection.set(config.scmUrl)
-            config.scmTag.takeIf { !it.isNullOrEmpty() }?.let {
-                tag.set(it)
-            }
+    scm {
+        url.set(config.projectUrl)
+        connection.set(config.scmUrl)
+        developerConnection.set(config.scmUrl)
+        config.scmTag.takeIf { !it.isNullOrEmpty() }?.let {
+            tag.set(it)
         }
     }
 }
@@ -346,26 +377,19 @@ private fun MavenPublication.setupPublicationPom(
 
 private val signingKeyNotificationLogged = AtomicBoolean()
 
-private fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning(
+internal fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning(
     p: Project,
     config: FluxoPublicationConfig,
     publishing: PublishingExtension,
-    mavenRepo: Boolean = true,
+    mavenRemoteRepo: Boolean = true,
 ) {
-    val notify = signingKeyNotificationLogged.compareAndSet(false, true)
-    val isSigningEnabled = config.isSigningEnabled
+    val isSigningEnabled = getIfSigningEnabled(config, p)
     if (isSigningEnabled) {
-        if (notify) p.logger.l("SIGNING_KEY SET, applying signing configuration")
         p.pluginManager.apply(SIGNING_EXT_NAME)
-    } else if (notify) {
-        // TODO: Warn only when assemble and/or publishing is really called.
-        p.logger.w("SIGNING_KEY IS NOT SET! Publications are unsigned")
-    }
-    if (isSigningEnabled) {
         p.configureExtension<SigningExtension>(name = SIGNING_EXT_NAME) {
             p.logger.l("setup publications signing configuration")
-            this.useInMemoryPgpKeys(config.signingKey, config.signingPassword)
-            this.sign(publishing.publications)
+            useInMemoryPgpKeys(config.signingKeyId, config.signingKey, config.signingPassword)
+            sign(publishing.publications)
 
             // Signature is a hard requirement if publishing a non-snapshot
             if (!config.isSnapshot) {
@@ -374,35 +398,7 @@ private fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning(
         }
     }
 
-    if (!testsDisabled) {
-        publishing.repositories {
-            p.logger.l("'$LOCAL_REPO_NAME' maven repository added for tests and local development")
-            maven {
-                name = LOCAL_REPO_NAME
-                url = p.uri(p.rootProject.file(LOCAL_REPO_PATH))
-            }
-
-            if (mavenRepo) {
-                maven {
-                    val url = config.repositoryUrl
-                    setUrl(url)
-                    p.logger.l("setup maven repository: $url")
-
-                    credentials {
-                        username = config.repositoryUserName
-                        password = config.repositoryPassword
-                    }
-                }
-            }
-        }
-
-        // Use the local repository publication as a check.
-        // `publishAllPublicationsToLocalDevRepository`.
-        p.tasks.named(CHECK_TASK_NAME) {
-            val repoName = LOCAL_REPO_NAME.uppercaseFirstChar()
-            dependsOn("publishAllPublicationsTo${repoName}Repository")
-        }
-    }
+    setupPublishingRepositories(p, config, publishing, mavenRemoteRepo)
 
     // Gradle 8+ workaround for https://github.com/gradle/gradle/issues/26091
     // and https://youtrack.jetbrains.com/issue/KT-46466
@@ -437,6 +433,63 @@ private fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning(
             inputs.property("fluxoVersion", version)
         }
     }
+}
+
+internal fun FluxoKmpConfContext.setupPublishingRepositories(
+    p: Project,
+    config: FluxoPublicationConfig,
+    publishing: PublishingExtension,
+    mavenRemoteRepo: Boolean,
+) {
+    val testLocalRepo = !testsDisabled
+    if (!testLocalRepo && !mavenRemoteRepo) {
+        return
+    }
+
+    publishing.repositories {
+        if (testLocalRepo) {
+            p.logger.l("'$LOCAL_REPO_NAME' maven repository added for tests and local development")
+            maven {
+                name = LOCAL_REPO_NAME
+                url = p.uri(p.rootProject.file(LOCAL_REPO_PATH))
+            }
+        }
+        if (mavenRemoteRepo) {
+            maven {
+                val url = config.repositoryUrl
+                setUrl(url)
+                p.logger.l("setup maven repository: $url")
+
+                credentials {
+                    username = config.repositoryUserName
+                    password = config.repositoryPassword
+                }
+            }
+        }
+    }
+
+    // Use the local repository publication as a check.
+    // `publishAllPublicationsToLocalDevRepository`.
+    if (testLocalRepo) {
+        p.tasks.named(CHECK_TASK_NAME) {
+            val repoName = LOCAL_REPO_NAME.uppercaseFirstChar()
+            dependsOn("publishAllPublicationsTo${repoName}Repository")
+        }
+    }
+}
+
+internal fun getIfSigningEnabled(config: FluxoPublicationConfig, p: Project): Boolean {
+    val notify = signingKeyNotificationLogged.compareAndSet(false, true)
+    val isSigningEnabled = config.isSigningEnabled
+    if (notify) {
+        when {
+            isSigningEnabled -> p.logger.l("SIGNING_KEY SET, applying signing configuration")
+
+            // TODO: Warn only when assemble and/or publishing is really called.
+            else -> p.logger.w("SIGNING_KEY IS NOT SET! Publications are unsigned")
+        }
+    }
+    return isSigningEnabled
 }
 
 
@@ -477,101 +530,42 @@ private fun FluxoKmpConfContext.setupPublicationExtension(
 }
 
 
-// TODO: Make configurable (sanitize/verify)
+// TODO: Make configurable (+ sanitize/verify)
 private const val LOCAL_REPO_PATH = "_/local-repo"
 private const val LOCAL_REPO_NAME = "localDev"
 
 /** Also a plugin name! */
 private const val SIGNING_EXT_NAME = "signing"
 
-private const val PUBLISHING_EXT_NAME = "publishing"
+internal const val PUBLISHING_EXT_NAME = "publishing"
 
 private const val GRADLE_PLUGIN_EXT_NAME = "gradlePlugin"
 
 private fun Project.applyMavenPublishPlugin(config: FluxoPublicationConfig): PublishingExtension {
-    if (config.group.isBlank()) {
-        throw GradleException("Publication artifact group is not set!")
-    }
-
-    val v = config.version
-    if (v.contains("unspecified", ignoreCase = true)) {
-        throw GradleException("Publication artifact version is not set!")
-    }
-
-    group = config.group
-    version = v
-    description = config.projectDescription
-
-    logger.lifecycle(formatSummary("Publication setup: v$v"))
-
+    setProjectPublicationProps(config)
     pluginManager.apply("maven-publish")
     return extensions.getByName<PublishingExtension>(PUBLISHING_EXT_NAME)
 }
 
+internal fun Project.setProjectPublicationProps(config: FluxoPublicationConfig) {
+    val v = config.version
+    if (v.contains("unspecified", ignoreCase = true) || v.isBlank()) {
+        throw GradleException("Publication artifact version is not set!")
+    }
+
+    if (config.group.isBlank()) {
+        throw GradleException("Publication artifact group is not set!")
+    }
+
+    group = config.group
+    version = v
+    config.projectDescription?.let { description = it }
+
+    logger.lifecycle(formatSummary("Publication setup: v$v"))
+}
+
 internal val Project.gradlePluginExt: GradlePluginDevelopmentExtension
     get() = extensions.getByName<GradlePluginDevelopmentExtension>(GRADLE_PLUGIN_EXT_NAME)
-
-
-private fun FluxoKmpConfContext.setupJavadocTask(
-    p: Project,
-    config: FluxoPublicationConfig,
-    useDokka: Boolean,
-    type: ConfigurationType? = null,
-): NamedDomainObjectProvider<out Task> {
-    // Publish docs with each artifact.
-    // Dokka artifacts are pretty big, so use them only for release builds, not for snapshots.
-    if (useDokka && !config.isSnapshot) {
-        try {
-            // Apply Dokka plugin first
-            val result = loadAndApplyPluginIfNotApplied(
-                id = BuildConstants.DOKKA_PLUGIN_ID,
-                version = BuildConstants.DOKKA_PLUGIN_VERSION,
-                catalogPluginId = BuildConstants.DOKKA_PLUGIN_ALIAS,
-                project = p,
-            )
-            if (result.applied) {
-                p.logger.l("setup Dokka publication")
-                return p.getOrCreateDokkaTask(type)
-            }
-        } catch (e: Throwable) {
-            p.logger.w("Fallback to Javadoc due to Dokka setup error: $e", e)
-        }
-    }
-    p.logger.l("regular Javadoc publication fallback set up instead of Dokka")
-    return p.getOrCreateJavadocTask()
-}
-
-private fun Project.getOrCreateDokkaTask(
-    type: ConfigurationType?,
-): NamedDomainObjectProvider<out Task> {
-    val tasks = tasks
-    val taskName = if (tasks.has(JAVADOC_TASK_NAME)) "dokkaHtmlJar" else JAVADOC_TASK_NAME
-    return tasks.namedOrNull(JAVADOC_TASK_NAME)
-        ?: tasks.register<Jar>(taskName) {
-            configureJavadocTask()
-            description = "Assembles Kotlin docs with Dokka into a Javadoc jar"
-            // Collect Dokka output
-            val dokkaTaskName = when (type) {
-                ConfigurationType.KOTLIN_MULTIPLATFORM -> "dokkaHtml"
-                // Use a Javadoc-like format for all non-KMP projects.
-                else -> "dokkaJavadoc"
-            }
-            from(project.tasks.named(dokkaTaskName))
-        }
-}
-
-private fun Project.getOrCreateJavadocTask(): NamedDomainObjectProvider<out Task> {
-    return tasks.namedOrNull(JAVADOC_TASK_NAME)
-        ?: tasks.register<Jar>(JAVADOC_TASK_NAME, Jar::configureJavadocTask)
-}
-
-private fun Jar.configureJavadocTask() {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    description = "Assembles a Javadoc jar."
-    archiveClassifier.set("javadoc")
-}
-
-private const val JAVADOC_TASK_NAME = "javadocJar"
 
 
 private fun Project.registerSourceJarTask(sourcePaths: Any): NamedDomainObjectProvider<out Task> {

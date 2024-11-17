@@ -49,6 +49,8 @@ com.squareup.okio:okio-jvm:3.9.1
 com.squareup.okio:okio:3.9.1
 com.squareup.retrofit2:retrofit:2.11.0
 com.squareup:javawriter:2.5.0
+com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.30.0
+com.vanniktech:gradle-maven-publish-plugin:0.30.0
 dev.zacsweers.moshix:moshi-sealed-runtime:0.25.1
 io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:1.0.0
 io.github.fluxo-kt:fluxo-bcv-ts:1.0.0

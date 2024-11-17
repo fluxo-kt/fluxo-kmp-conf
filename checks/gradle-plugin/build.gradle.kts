@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.gradle.plugin.publish) apply false
     alias(libs.plugins.kotlinx.binCompatValidator) apply false
     alias(libs.plugins.gradle.doctor) apply false
+    alias(libs.plugins.vanniktech.mvn.publish)
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
 
@@ -18,6 +19,7 @@ fkcSetupGradlePlugin {
     latestSettingsForTests = true
     allWarningsAsErrors = true
     enableGradleDoctor = true
+    enablePublication = true
 
     // Two separate processing chains.
     // First provides the output jar for the module.

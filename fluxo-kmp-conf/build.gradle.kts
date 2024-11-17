@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.build.config)
+    alias(libs.plugins.vanniktech.mvn.publish)
 }
 
 group = "io.github.fluxo-kt"
@@ -44,6 +45,7 @@ fkcSetupGradlePlugin(
     },
 ) {
     githubProject = "fluxo-kt/fluxo-kmp-conf"
+    enablePublication = true
     enableGradleDoctor = true
 //    enableSpotless = true
     setupVerification = true
@@ -104,6 +106,7 @@ dependencies {
     compileOnly(libs.plugins.develocity.toModuleDependency())
     compileOnly(libs.plugins.kotlin.sam.receiver.toModuleDependency())
     compileOnly(libs.plugins.kotlinx.binCompatValidator.toModuleDependency())
+    compileOnly(libs.plugins.vanniktech.mvn.publish.toModuleDependency())
     compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
 
     testCompileOnly(libs.jetbrains.annotation)

@@ -267,6 +267,15 @@ private fun Project.hasPluginAvailable(pluginId: String): Boolean {
 
 private const val CLASS_NAME_AUTO_DETECTED = " (class name is not provided and auto detected!)"
 
+internal fun Project.loadPluginStaticallyError(
+    pluginId: String,
+    catalogPluginAlias: String? = null,
+) {
+    val example = loadingWarnExample(pluginId, catalogPluginAlias)
+    val error = "Can't load plugin '$pluginId' dynamically in '$path'!"
+    logger.e(loadingErrorMessage(error, example))
+}
+
 private fun loadingErrorMessage(err: String, example: String) = "$err\n " +
     "Please, add it to the classpath in the root or module build.gradle.kts! $example"
 

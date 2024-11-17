@@ -25,9 +25,19 @@ public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChai
      * Flag to enable publication of this project.
      * Inherited from the parent project if not set.
      *
-     * Defaults to `true` if [publicationConfig] is set.
+     * Defaults to `false` if [publicationConfig] is set.
      */
     public var enablePublication: Boolean?
+
+    /**
+     * Flag to use Vanniktech's publication plugin
+     * for publication configuration and management (recommended).
+     *
+     * Defaults to `true`.
+     *
+     * [Vanniktech's maven-publish plugin](https://github.com/vanniktech/gradle-maven-publish-plugin)
+     */
+    public var useVanniktechPublish: Boolean?
 
 
     /**

@@ -11,6 +11,7 @@
 <details>
   <summary>Show</summary>
 
+* Allow not set up containers and use the default KMP hierarchy instead + make this the default.
 * Interesting KMP architecture sample
   * https://github.com/VasilyRylov/architecture-samples/tree/main
 * Compose Multiplatform lib that prints the reason for recomposition in Logcat

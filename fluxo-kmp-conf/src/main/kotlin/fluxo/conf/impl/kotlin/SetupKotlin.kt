@@ -19,7 +19,6 @@ import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.builderMethod
-import fluxo.conf.feat.setupGradlePublishPlugin
 import fluxo.conf.feat.setupVerification
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
@@ -32,6 +31,7 @@ import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.uncheckedCast
+import fluxo.conf.pub.setupGradlePublishPlugin
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.e
 import fluxo.log.l

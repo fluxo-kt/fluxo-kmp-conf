@@ -1,6 +1,7 @@
 package fluxo.conf.impl.android
 
 import fluxo.conf.data.BuildConstants
+import fluxo.conf.impl.kotlin.KOTLIN_MPP_PLUGIN_ID
 import org.gradle.api.plugins.PluginAware
 
 internal const val DEFAULT_ANDROID_MIN_SDK: Int = 21
@@ -50,8 +51,8 @@ internal val ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR = """
     Please apply AGP in the root Gradle module (in `build.gradle.kts`) like this:
     ```
     plugins {
-        id("com.android.library") apply false
-        id("org.jetbrains.kotlin.multiplatform") apply false
+        id("$ANDROID_LIB_PLUGIN_ID") apply false
+        id("$KOTLIN_MPP_PLUGIN_ID") apply false
         id("${BuildConstants.PLUGIN_ID}")
     }
     ```

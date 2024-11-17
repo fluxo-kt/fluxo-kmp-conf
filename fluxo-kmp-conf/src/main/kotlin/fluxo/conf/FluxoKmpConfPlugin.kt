@@ -23,7 +23,6 @@ import fluxo.conf.feat.prepareTaskInfoPlugin
 import fluxo.conf.feat.prepareTaskTreePlugin
 import fluxo.conf.feat.setupBinaryCompatibilityValidator
 import fluxo.conf.feat.setupGradleDoctorPlugin
-import fluxo.conf.feat.setupGradleProjectPublication
 import fluxo.conf.feat.setupSpotless
 import fluxo.conf.feat.setupTestsReport
 import fluxo.conf.feat.setupVerificationRoot
@@ -34,6 +33,7 @@ import fluxo.conf.impl.kotlin.KOTLIN_EXT
 import fluxo.conf.impl.kotlin.configureKotlinJvm
 import fluxo.conf.impl.kotlin.configureKotlinMultiplatform
 import fluxo.conf.impl.kotlin.setupKmpYarnPlugin
+import fluxo.conf.pub.setupPublication
 import isShrinkerDisabled
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -128,7 +128,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         }
 
         // Gradle project atifacts publication
-        setupGradleProjectPublication(conf)
+        setupPublication(conf)
 
         // Artifacts processing: minification/shrinking, shadowing, etc.
         val project = conf.project

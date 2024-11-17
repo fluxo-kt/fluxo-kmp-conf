@@ -136,7 +136,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Inherited from the parent project if not set.
      * Default value: `false`.
      */
-    public var useDokka: Boolean?
+    public var useDokka: Boolean
 
 
     // FIXME: koverReport settings

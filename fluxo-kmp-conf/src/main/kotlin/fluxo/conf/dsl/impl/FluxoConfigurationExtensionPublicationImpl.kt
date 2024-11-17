@@ -30,6 +30,12 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         get() = enablePublicationProp.orNull ?: parent?.enablePublication
         set(value) = enablePublicationProp.set(value)
 
+    @get:Input
+    val useVanniktechPublishProp: Property<Boolean?>
+    override var useVanniktechPublish: Boolean?
+        get() = useVanniktechPublishProp.orNull ?: parent?.useVanniktechPublish
+        set(value) = useVanniktechPublishProp.set(value)
+
 
     @get:Input
     val versionProp: Property<String?>
@@ -212,7 +218,10 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
                     scmUrl = scmUrl,
                     scmTag = scmTag,
                     signingKey = project.signingKey(),
-                    signingPassword = project.envOrPropValue("SIGNING_PASSWORD"),
+                    signingKeyId = project.envOrPropValue("SIGNING_KEY_ID")
+                        ?: project.envOrPropValue("signingInMemoryKeyId"),
+                    signingPassword = project.envOrPropValue("SIGNING_PASSWORD")
+                        ?: project.envOrPropValue("signingInMemoryKeyPassword"),
                     repositoryUserName = project.envOrPropValue("OSSRH_USER"),
                     repositoryPassword = project.envOrPropValue("OSSRH_PASSWORD"),
                 ).apply(configure)

@@ -74,6 +74,7 @@ dependencies {
     compileOnly(libs.plugins.develocity.toModuleDependency())
     compileOnly(libs.plugins.kotlin.sam.receiver.toModuleDependency())
     compileOnly(libs.plugins.kotlinx.binCompatValidator.toModuleDependency())
+    compileOnly(libs.plugins.vanniktech.mvn.publish.toModuleDependency())
     compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
 }
 

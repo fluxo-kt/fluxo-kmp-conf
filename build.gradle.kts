@@ -7,5 +7,6 @@ plugins {
     alias(libs.plugins.gradle.doctor) apply false
     alias(libs.plugins.gradle.plugin.publish) apply false
     alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.vanniktech.mvn.publish) apply false
     alias(libs.plugins.fluxo.conf)
 }

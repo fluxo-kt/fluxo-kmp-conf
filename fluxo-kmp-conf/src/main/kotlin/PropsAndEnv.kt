@@ -84,8 +84,12 @@ internal fun Project.loadKmmCodeCompletion(): Boolean =
     envOrPropFlagValue(LOAD_KMM_CODE_COMPLETION_FLAG)
 
 
-public fun Project.signingKey(): String? =
-    envOrPropValue("SIGNING_KEY")?.replace("\\n", "\n")
+public fun Project.signingKey(): String? {
+    // signingInMemoryKey is used by Vanniktech's publishing plugin.
+    val key = envOrPropValue("SIGNING_KEY")
+        ?: envOrPropValue("signingInMemoryKey")
+    return key?.replace("\\n", "\n")
+}
 
 public fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): String {
     val n = buildNumber()

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.gradle.doctor) apply false
+    alias(libs.plugins.vanniktech.mvn.publish)
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
 
@@ -16,6 +17,7 @@ fkcSetupMultiplatform(
         setupVerification = true
         enableGenericAndroidLint = true
         enableGradleDoctor = true
+        enablePublication = true
     },
     kmp = { allDefaultTargets() },
 )

@@ -324,8 +324,8 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
     @get:Input
     val useDokkaProp: Property<Boolean?>
-    override var useDokka: Boolean?
-        get() = useDokkaProp.orNull ?: parent?.useDokka
+    override var useDokka: Boolean
+        get() = useDokkaProp.orNull ?: parent?.useDokka ?: false
         set(value) = useDokkaProp.set(value)
 
 
