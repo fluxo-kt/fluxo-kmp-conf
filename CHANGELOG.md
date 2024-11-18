@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Added
+- allow not setting up `fluxo-kmp-conf` containers and use the default KMP hierarchy instead.
+
 ### Fixed
 - return support for Kotlin's `-Xjdk-release=18+` in JDK 23+.
 - fix bundled shrinker loading.

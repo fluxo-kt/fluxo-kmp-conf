@@ -31,7 +31,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     if (api != null && lang != null && api > lang) {
         project.logger.w(
             "Kotlin API version is downgraded from $api to $lang" +
-                ", as it can't be greater than the language version!"
+                ", as it can't be greater than the language version!",
         )
         api = null
     }
@@ -96,7 +96,8 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     // As of Kotlin 1.9.20,
     // none of the source sets can depend on the compilation default source sets.
     val allowManualHierarchy = pluginVersion < KOTLIN_1_9_20 &&
-        !project.noManualHierarchy()
+        !project.noManualHierarchy() &&
+        setupLegacyKotlinHierarchy
 
     // Experimental test compilation with the latest Kotlin settings.
     // Don't try it for sources with old compatibility settings.
@@ -218,7 +219,7 @@ private fun Logger.logKotlinProjectCompatibility(
                 "without significant advantages for the most JVM projects. \n" +
                 "Atm, in Fluxo Conf it also disables granular JVM target configuration" +
                 "for different project targets, sources, compilations and tasks! \n" +
-                "See https://jakewharton.com/gradle-toolchains-are-rarely-a-good-idea/"
+                "See https://jakewharton.com/gradle-toolchains-are-rarely-a-good-idea/",
         )
     }
 }

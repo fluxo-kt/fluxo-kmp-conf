@@ -198,9 +198,11 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
 
     /**
      * Flag that allows to disable kotlin plugin configuration completely.
+     * **Feature is disabled at the moment!**
      *
      * Inherited from the parent project if not set. Default value: `true`.
      */
+    @Deprecated("Feature is disabled at the moment!")
     public var setupKotlin: Boolean
 
 

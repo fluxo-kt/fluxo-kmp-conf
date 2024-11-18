@@ -56,7 +56,8 @@ internal fun configureKotlinJvm(
 ): Boolean {
     val type = conf.mode
     require(type != KOTLIN_MULTIPLATFORM) { "Unexpected Kotlin Multiplatform configuration" }
-    if (!checkIfNeedToConfigure(type, conf, containers)) {
+    val hasAnyTarget = containers.any { it is KmpTargetContainer<*> }
+    if (!checkIfNeedToConfigure(type, conf, hasAnyTarget)) {
         return false
     }
 
@@ -106,30 +107,22 @@ internal fun configureKotlinJvm(
         setupKotlinExtensionAndProject(conf)
 
         if (conf.setupDependencies) {
-            val deps = project.dependencies
-            with(project) {
-                setupKotlinDependencies(
-                    deps,
-                    ctx.libs,
-                    conf.kotlinConfig,
-                    isApplication = isApp,
-                )
-            }
+            project.setupKotlinDependencies(ctx.libs, conf.kotlinConfig, isApplication = isApp)
         } else {
-            project.logger.v("Configuring Kotlin dependencies disabled")
+            project.logger.v("NOT Configuring Kotlin dependencies (setupDependencies=false)")
         }
 
-        var androidSetUp = false
+        var androidWasSetUp = false
         for (container in containers) {
             when (container) {
                 is ContainerKotlinMultiplatformAware -> when (type) {
                     ANDROID_APP -> if (container is TargetAndroidContainer.App) {
-                        androidSetUp = true
+                        androidWasSetUp = true
                         applyKmpContainer(container, project)
                     }
 
                     ANDROID_LIB -> if (container is TargetAndroidContainer.Library) {
-                        androidSetUp = true
+                        androidWasSetUp = true
                         applyKmpContainer(container, project)
                     }
 
@@ -142,7 +135,7 @@ internal fun configureKotlinJvm(
             }
         }
 
-        if (!androidSetUp) {
+        if (!androidWasSetUp) {
             project.configureExtensionIfAvailable<TestedExtension>(ANDROID_EXT_NAME) {
                 setupAndroidCommon(conf)
             }
@@ -161,12 +154,13 @@ private fun KotlinProjectExtension.applyKmpContainer(
 }
 
 
-@Suppress("NestedBlockDepth", "CyclomaticComplexMethod")
+@Suppress("NestedBlockDepth", "CyclomaticComplexMethod", "LongMethod")
 internal fun configureKotlinMultiplatform(
     conf: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
 ): Boolean {
-    if (!checkIfNeedToConfigure(KOTLIN_MULTIPLATFORM, conf, containers)) {
+    val hasAnyTarget = containers.any { it is KmpTargetContainer<*> }
+    if (!checkIfNeedToConfigure(KOTLIN_MULTIPLATFORM, conf, hasAnyTarget)) {
         return false
     }
 
@@ -175,10 +169,11 @@ internal fun configureKotlinMultiplatform(
     ctx.loadAndApplyPluginIfNotApplied(id = KOTLIN_MPP_PLUGIN_ID, project = project)
 
     // Add all plugins first, for configuring in next steps.
+    // Remove containers that failed to apply plugins.
     val pluginManager = project.pluginManager
     val containerList = containers.toMutableList()
     containerList.iterator().let { iter ->
-        for (container in iter) {
+        for (container in containerList.iterator()) {
             val c = container as? ContainerImpl ?: continue
             try {
                 c.applyPluginsWith(pluginManager)
@@ -217,18 +212,28 @@ internal fun configureKotlinMultiplatform(
             project.logger.v("Configuring Kotlin dependencies disabled")
         }
 
+        var androidWasSetUp = false
         for (container in containerList) {
             if (SHOW_DEBUG_LOGS && container is Named) {
                 project.logger.v("-> container: '${container.name}'")
             }
 
             when (container) {
-                is ContainerKotlinMultiplatformAware ->
+                is ContainerKotlinMultiplatformAware -> {
+                    if (container is TargetAndroidContainer<*>) {
+                        androidWasSetUp = true
+                    }
                     container.setup(this)
+                }
 
                 is ContainerKotlinAware<*> ->
                     uncheckedCast<ContainerKotlinAware<KotlinProjectExtension>>(container)
                         .setup(this)
+            }
+        }
+        if (!androidWasSetUp) {
+            project.configureExtensionIfAvailable<TestedExtension>(ANDROID_EXT_NAME) {
+                setupAndroidCommon(conf)
             }
         }
     }
@@ -239,14 +244,11 @@ internal fun configureKotlinMultiplatform(
 private fun checkIfNeedToConfigure(
     type: ConfigurationType,
     conf: FluxoConfigurationExtensionImpl,
-    containers: Array<Container>,
+    hasAnyTarget: Boolean,
 ): Boolean {
-    // TODO: Detect if KMP is already applied and what targets are already configured.
-
     val logger = conf.project.logger
-    val hasAnyTarget = containers.any { it is KmpTargetContainer<*> }
     val label = ':' + type.builderMethod
-    if (!hasAnyTarget) {
+    if (!hasAnyTarget && conf.setupLegacyKotlinHierarchy) {
         logger.w("$label - no applicable Kotlin targets found, skipping module configuration")
         return false
     }
@@ -265,8 +267,9 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     val kc = conf.KotlinConfig(project, k = this)
     conf.kotlinConfig = kc
 
+    @Suppress("DEPRECATION")
     if (!conf.setupKotlin) {
-        project.logger.l("Finishing Kotlin extension configuration early (disabled)")
+        project.logger.w("NOT Finishing Kotlin extension configuration early (feature disabled)")
     }
 
     project.group = conf.group

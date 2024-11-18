@@ -67,12 +67,12 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
         }
 
         override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
+            if (!allowManualHierarchy) return
             val bundle = k.commonJvm
 
             // Fix the broken test-main dependencies in the intermediate KMP source sets.
             bundle.test.dependsOn(bundle.main)
 
-            if (!allowManualHierarchy) return
             @Suppress("DEPRECATION")
             child dependsOn bundle
             super.setupParentSourceSet(k, bundle)

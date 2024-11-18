@@ -50,14 +50,31 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
 
     /**
-     * Flag to set up the KSP plugin.
+     * Flag to set up the KSP plugin,
+     * Auto-detected by the presence of the `kotlin-ksp` plugin.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `false`.
      */
     public var setupKsp: Boolean?
 
     /**
      * Flag to set up the Kapt plugin.
+     * Auto-detected by the presence of the `kotlin-kapt` plugin.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `false`.
      */
     public var setupKapt: Boolean?
+
+    /**
+     * Flag to set up the Kotlin source sets additionally with the sophisticated,
+     * but now legacy hierarchy.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `false`.
+     */
+    public var setupLegacyKotlinHierarchy: Boolean
 
 
     // region Compose

@@ -128,7 +128,6 @@
     <ID>ForbiddenComment:SetupDetekt.kt$DetectedTaskPlatform$// TODO: Detect common/metadata tasks?</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions</ID>
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Check KSP setup for KMP modules</ID>
-    <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Detect if KMP is already applied and what targets are already configured.</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: With coil-bom:2.2.2 doesn't work as enforcedPlatform for Android and/or KMP</ID>
     <ID>ForbiddenComment:SetupKotlinExperimentalTestCompilation.kt$// TODO: Find a solution for KMP 2.0</ID>
@@ -137,7 +136,6 @@
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Guard conditions for when-with-subject (Kotlin 2.0.20)</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Support for -Xemit-jvm-type-annotations</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Verify ct.sym fix later.</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// FIXME: provide sources for KMP publications</ID>
     <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple developers</ID>

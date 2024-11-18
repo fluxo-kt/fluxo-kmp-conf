@@ -143,7 +143,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
     }
 
     /**
-     * Make sure there's a `clean`, and a `check` tasks in root project.
+     * Make sure there's a `clean`, and a `check` tasks in a root project.
      *
      * @see org.gradle.api.plugins.BasePlugin ('base')
      * @see org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -171,7 +171,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
     }
 
     /**
-     * Make sure there's a Kotlin plugin in the classpath.
+     * Make sure there is a Kotlin plugin in the classpath.
      *
      * @see org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
      * @see org.jetbrains.kotlin.gradle.plugin.AbstractKotlinPlugin

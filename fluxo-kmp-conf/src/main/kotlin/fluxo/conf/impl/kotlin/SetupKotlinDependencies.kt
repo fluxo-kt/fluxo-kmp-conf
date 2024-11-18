@@ -23,17 +23,16 @@ import fluxo.vc.onBundle
 import fluxo.vc.onLibrary
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 internal fun Project.setupKotlinDependencies(
-    dh: DependencyHandler,
     libs: FluxoVersionCatalog?,
     kc: KotlinConfig,
     isApplication: Boolean = false,
 ) {
+    val dh = dependencies
     compileOnlyWithConstraint(dh, JSR305_DEPENDENCY)
 
     if (kc.setupKnownBoms) {

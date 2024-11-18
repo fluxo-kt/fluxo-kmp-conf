@@ -30,7 +30,7 @@ internal fun FluxoKmpConfContext.prepareBuildConfigKmpPlugin(project: Project) {
             }
 
             // Since 5.3.0 it generates build config class at Gradle Sync (IDEA) itself.
-            // But only `prepareKotlinIdeaImport` task is used.
+            // But only the ` prepareKotlinIdeaImport ` task is used.
             // https://github.com/gmazzo/gradle-buildconfig-plugin/pull/113/files
             // https://github.com/gmazzo/gradle-buildconfig-plugin/pull/114/files
 //            tasks.maybeRegister(KOTLIN_IDEA_IMPORT_TASK, configureSyncTasks)

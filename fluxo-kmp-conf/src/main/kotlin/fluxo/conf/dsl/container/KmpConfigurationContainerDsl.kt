@@ -32,6 +32,11 @@ public interface KmpConfigurationContainerDsl :
 
     /**
      *
+     * Also you can just use `KotlinHierarchyTemplate.fluxoKmpConf`
+     * instead of Kotlin's `defaultKotlinHierarchyTemplate` directly.
+     *
+     * @see org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate.Templates.default
+     * @see org.jetbrains.kotlin.gradle.plugin.defaultKotlinHierarchyTemplate
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension.targetHierarchy
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetHierarchyDsl.default
      */

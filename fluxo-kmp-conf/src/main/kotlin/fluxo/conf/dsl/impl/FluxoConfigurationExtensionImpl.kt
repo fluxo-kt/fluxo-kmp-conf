@@ -131,8 +131,10 @@ internal abstract class FluxoConfigurationExtensionImpl
         // User configuration
         action(dsl)
 
+        val containers = holder.containers.sorted()
+
         /** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */
-        configureContainers(this, holder.containers.sorted())
+        configureContainers(this, containers)
 
         val elapsed = currentTimeMillis() - start
         project.logger.i(":${type.builderMethod} configuration took $elapsed ms")
@@ -183,7 +185,8 @@ internal abstract class FluxoConfigurationExtensionImpl
         // Apply defaults
         defaults.asReversed().forEach {
             (it as? FluxoConfigurationExtensionImpl)
-                ?.defaultConfiguration?.orNull?.invoke(dsl)
+                ?.defaultConfiguration?.orNull
+                ?.invoke(dsl)
         }
     }
 }

@@ -27,6 +27,7 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
     checkIsRootProject("setupKmpYarnPlugin")
     plugins.withType<YarnPlugin> configuration@{
         val conf = fluxoConfiguration
+        @Suppress("DEPRECATION")
         if (conf?.setupKotlin != true) {
             logger.l("YarnPlugin configuration disabled!")
             return@configuration

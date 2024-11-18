@@ -110,6 +110,8 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
     @get:Input
     val setupKotlinProp: Property<Boolean>
+
+    @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
     override var setupKotlin: Boolean
         get() = setupKotlinProp.orNull ?: parent?.setupKotlin ?: true
         set(value) = setupKotlinProp.set(value)
@@ -127,6 +129,13 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     override var setupKapt: Boolean?
         get() = setupKaptProp.orNull ?: parent?.setupKapt
         set(value) = setupKaptProp.set(value)
+
+
+    @get:Input
+    val setupLegacyKotlinHierarchyProp: Property<Boolean?>
+    override var setupLegacyKotlinHierarchy: Boolean
+        get() = setupLegacyKotlinHierarchyProp.orNull ?: parent?.setupLegacyKotlinHierarchy ?: false
+        set(value) = setupLegacyKotlinHierarchyProp.set(value)
 
 
     @get:Input

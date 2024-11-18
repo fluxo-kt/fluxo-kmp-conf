@@ -260,6 +260,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun getSetupKapt ()Ljava/lang/Boolean;
 	public abstract fun getSetupKotlinXSerialization ()Z
 	public abstract fun getSetupKsp ()Ljava/lang/Boolean;
+	public abstract fun getSetupLegacyKotlinHierarchy ()Z
 	public abstract fun getSuppressKotlinComposeCompatibilityCheck ()Ljava/lang/Boolean;
 	public abstract fun getUseDokka ()Z
 	public fun onConfiguration (Lkotlin/jvm/functions/Function1;)V
@@ -272,6 +273,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public abstract fun setSetupKapt (Ljava/lang/Boolean;)V
 	public abstract fun setSetupKotlinXSerialization (Z)V
 	public abstract fun setSetupKsp (Ljava/lang/Boolean;)V
+	public abstract fun setSetupLegacyKotlinHierarchy (Z)V
 	public abstract fun setSuppressKotlinComposeCompatibilityCheck (Ljava/lang/Boolean;)V
 	public abstract fun setUseDokka (Z)V
 }

@@ -79,6 +79,8 @@ internal class KmpConfigurationContainerDslImpl(
 
     /**
      *
+     * @see org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate.Templates.default
+     * @see org.jetbrains.kotlin.gradle.plugin.defaultKotlinHierarchyTemplate
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension.targetHierarchy
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTargetHierarchyDsl.default
      */
