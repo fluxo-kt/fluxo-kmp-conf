@@ -119,6 +119,8 @@ internal const val JRE_17 = 11
 
 internal const val JRE_21 = 21
 
+internal const val JRE_23 = 23
+
 // https://www.oracle.com/java/technologies/downloads/
 private const val LTS_JDK_VERSION = JRE_21
 

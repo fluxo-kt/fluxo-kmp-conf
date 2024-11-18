@@ -6,6 +6,7 @@
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
 ### Fixed
+- return support for Kotlin's `-Xjdk-release=18+` in JDK 23+.
 - fix bundled shrinker loading.
 
 ### Changed

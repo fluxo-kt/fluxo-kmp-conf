@@ -83,27 +83,30 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
                     // Only apply jdk-release in JVM (non-Android) builds.
                     // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda.
                     !isAndroid &&
-                    // Do not use when compiled against the current JDK version (useless).
+                    // Don't use when compiled against the current JDK version (useless).
                     jvmTargetInt != JRE_VERSION &&
-                    // Somehow, jdk-release fails with kotlin lang 2.0 and Kotlin 1.9.
-                    (!kotlin20orUpper || kotlinPluginVersion >= KOTLIN_2_0)
+                    ( // Somehow, jdk-release fails with kotlin lang 2.0 and Kotlin 1.9.
+                        !kotlin20orUpper ||
+                            kotlinPluginVersion >= KOTLIN_2_0 && kotlinPluginVersion < KOTLIN_2_0_20
+                        )
 
-                // ct.sym is broken for -Xjdk-release=18+
+                // ct.sym is broken for -Xjdk-release=18+ with JDK 18..22.
                 // https://bugs.openjdk.org/browse/JDK-8331027
                 // https://youtrack.jetbrains.com/issue/KT-67668
-                // TODO: Verify ct.sym fix later.
-                val broken = jvmTargetInt > JRE_17
-                if (useJdkRelease && broken && !BROKEN_JDK_RELEASE_LOGGED) {
+                val jdkReleaseIsBroken = jvmTargetInt in (JRE_17 + 1) until JRE_23 &&
+                    JRE_VERSION < JRE_23
+                if (useJdkRelease && jdkReleaseIsBroken && !BROKEN_JDK_RELEASE_LOGGED) {
                     BROKEN_JDK_RELEASE_LOGGED = true
                     conf.project.logger.e(
-                        "-Xjdk-release is broken for JRE 18..21, so it is disabled! \n",
+                        "-Xjdk-release is broken for JRE 18..21 with JDK 18..22" +
+                            ", so it is disabled! \n",
                         "https://bugs.openjdk.org/browse/JDK-8331027 \n",
                         "https://youtrack.jetbrains.com/issue/KT-67668",
                     )
                 }
 
                 // Compile against the specified JDK API version, similarly to javac's `-release`.
-                if (useJdkRelease && !broken) {
+                if (useJdkRelease && !jdkReleaseIsBroken) {
                     compilerArgs.add("-Xjdk-release=$jvmTarget")
 
                     // TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+

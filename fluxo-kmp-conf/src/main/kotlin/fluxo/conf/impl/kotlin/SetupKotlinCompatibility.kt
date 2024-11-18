@@ -79,6 +79,8 @@ internal val KOTLIN_1_9_20 = KotlinVersion(1, 9, 20)
 
 internal val KOTLIN_2_0 = KotlinVersion(2, 0, 0)
 
+internal val KOTLIN_2_0_20 = KotlinVersion(2, 0, 20)
+
 
 @Volatile
 internal var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT
