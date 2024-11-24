@@ -198,11 +198,9 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
 
     /**
      * Flag that allows to disable kotlin plugin configuration completely.
-     * **Feature is disabled at the moment!**
      *
      * Inherited from the parent project if not set. Default value: `true`.
      */
-    @Deprecated("Feature is disabled at the moment!")
     public var setupKotlin: Boolean
 
 
@@ -358,6 +356,22 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * [2](https://www.guardsquare.com/blog/eliminating-data-leaks-caused-by-kotlin-assertions)
      */
     public var removeAssertionsInRelease: Boolean?
+
+    /**
+     * Flag to enable autoconfiguring JVM compatibility options.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `true`.
+     */
+    public var setupJvmCompatibility: Boolean
+
+    /**
+     * Flag to enable autoconfiguring Kotlin options.
+     *
+     * Inherited from the parent project if not set.
+     * Default value: `true`.
+     */
+    public var setupKotlinOptions: Boolean
 
 
     /**

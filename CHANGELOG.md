@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Added
+- add JVM compatibility and Kotlin options flags to disable a corresponding autoconfiguration.
+
 
 ## [0.13.0] - 2024-11-18
 

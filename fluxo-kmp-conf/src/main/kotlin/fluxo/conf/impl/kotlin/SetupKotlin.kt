@@ -3,6 +3,7 @@ package fluxo.conf.impl.kotlin
 import MAIN_SOURCE_SET_NAME
 import TEST_SOURCE_SET_NAME
 import com.android.build.gradle.TestedExtension
+import fkcSetupMultiplatform
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.container.impl.ContainerImpl
@@ -99,7 +100,7 @@ internal fun configureKotlinJvm(
 
     project.configureExtension<KotlinProjectExtension>(name = KOTLIN_EXT) {
         require(this is KotlinJvmProjectExtension || this is KotlinAndroidProjectExtension) {
-            "use `setupMultiplatform` for KMP module or Kotlin/JS usage. \n" +
+            "use `${Project::fkcSetupMultiplatform.name}` for KMP module or Kotlin/JS usage. \n" +
                 "Unexpected KotlinProjectExtension: ${javaClass.name}"
         }
 
@@ -261,42 +262,42 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     conf: FluxoConfigurationExtensionImpl,
 ) {
     val project = conf.project
+    project.group = conf.group
+    project.version = conf.version
+    project.description = conf.description
+
+    if (!conf.setupKotlin) {
+        project.logger.w("NOT Configuring Kotlin extension (setupKotlin=false)")
+        return
+    }
     project.logger.v("Configuring Kotlin extension")
 
     val ctx = conf.ctx
     val kc = conf.KotlinConfig(project, k = this)
     conf.kotlinConfig = kc
 
-    @Suppress("DEPRECATION")
-    if (!conf.setupKotlin) {
-        project.logger.w("NOT Finishing Kotlin extension configuration early (feature disabled)")
-    }
-
-    project.group = conf.group
-    project.version = conf.version
-    project.description = conf.description
-
-    conf.explicitApi?.let { explicitApi = it }
-
     if (kc.setupKsp) ctx.loadAndApplyPluginIfNotApplied(id = KSP_PLUGIN_ID, project = project)
     if (kc.setupKapt) ctx.loadAndApplyPluginIfNotApplied(id = KAPT_PLUGIN_ID, project = project)
 
-    setupJvmCompatibility(project, kc)
+    if (conf.setupJvmCompatibility) {
+        setupJvmCompatibility(project, kc)
+    }
+    if (conf.setupKotlinOptions) {
+        conf.explicitApi?.let { explicitApi = it }
+        coreLibrariesVersion = kc.coreLibs
 
-    coreLibrariesVersion = kc.coreLibs
+        val composeConfig = conf.setupCompose()
+        setupTargets(conf, composeConfig)
+        setupSourceSetsKotlinCompatibility(kc)
 
-    val composeConfig = conf.setupCompose()
-
-    setupTargets(conf, composeConfig)
-    setupSourceSetsKotlinCompatibility(kc)
-
-    // TODO: Check KSP setup for KMP modules
-    if (kc.setupKsp && this is KotlinJvmProjectExtension) {
-        sourceSets[MAIN_SOURCE_SET_NAME].apply {
-            kotlin.srcDir("build/generated/ksp/main/kotlin")
-            resources.srcDir("build/generated/ksp/main/resources")
+        // TODO: Check KSP setup for KMP modules
+        if (kc.setupKsp && this is KotlinJvmProjectExtension) {
+            sourceSets[MAIN_SOURCE_SET_NAME].apply {
+                kotlin.srcDir("build/generated/ksp/main/kotlin")
+                resources.srcDir("build/generated/ksp/main/resources")
+            }
+            sourceSets[TEST_SOURCE_SET_NAME].kotlin.srcDir("build/generated/ksp/test/kotlin")
         }
-        sourceSets[TEST_SOURCE_SET_NAME].kotlin.srcDir("build/generated/ksp/test/kotlin")
     }
 
     project.setupVerification(conf)

@@ -111,7 +111,6 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     @get:Input
     val setupKotlinProp: Property<Boolean>
 
-    @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
     override var setupKotlin: Boolean
         get() = setupKotlinProp.orNull ?: parent?.setupKotlin ?: true
         set(value) = setupKotlinProp.set(value)
@@ -199,6 +198,18 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     override var removeAssertionsInRelease: Boolean?
         get() = removeAssertionsInReleaseProp.orNull ?: parent?.removeAssertionsInRelease
         set(value) = removeAssertionsInReleaseProp.set(value)
+
+    @get:Input
+    val setupJvmCompatibilityProp: Property<Boolean>
+    override var setupJvmCompatibility: Boolean
+        get() = setupJvmCompatibilityProp.orNull ?: parent?.setupJvmCompatibility ?: true
+        set(value) = setupJvmCompatibilityProp.set(value)
+
+    @get:Input
+    val setupKotlinOptionsProp: Property<Boolean>
+    override var setupKotlinOptions: Boolean
+        get() = setupKotlinOptionsProp.orNull ?: parent?.setupKotlinOptions ?: true
+        set(value) = setupKotlinOptionsProp.set(value)
 
 
     @get:Input

@@ -61,7 +61,7 @@ private const val DISABLE_COMPILATIONS_FROM_SOURCE_SETS = false
 
 // region Kotlin versions and compatibility
 
-private val KOTLIN_1_3_30 = KotlinVersion(1, 4, 30)
+private val KOTLIN_1_3_30 = KotlinVersion(1, 3, 30)
 
 internal val KOTLIN_1_4 = KotlinVersion(1, 4)
 
@@ -152,6 +152,9 @@ internal fun Int.toKotlinSupportedJvmMajorVersion(): Int {
     if (this > 8) {
         val pluginVersion = KOTLIN_PLUGIN_VERSION
         val maxSupportedTarget = when {
+            // 2.0.0 added support for 22
+            // https://kotlinlang.org/docs/whatsnew20.html#kotlin-jvm
+            pluginVersion >= KOTLIN_2_0 -> 22
             // 1.9.20 added support for 21
             // https://kotlinlang.org/docs/whatsnew1920.html#kotlin-jvm
             pluginVersion >= KOTLIN_1_9_20 -> 21
