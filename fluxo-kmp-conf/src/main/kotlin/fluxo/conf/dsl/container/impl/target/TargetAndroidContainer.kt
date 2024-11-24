@@ -17,7 +17,6 @@ import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.container
 import fluxo.conf.impl.isTestRelated
-import fluxo.conf.impl.kotlin.KOTLIN_1_9
 import fluxo.conf.impl.kotlin.KOTLIN_2_0
 import fluxo.conf.impl.set
 import fluxo.conf.kmp.SourceSetBundle
@@ -60,15 +59,10 @@ internal abstract class TargetAndroidContainer<T>(
     }
 
 
-    override fun KotlinMultiplatformExtension.createTarget() = when {
+    override fun KotlinMultiplatformExtension.createTarget(): KotlinAndroidTarget {
         /** `androidTarget` should be used since Kotlin 1.9.0 instead of `android`. */
         // https://kotl.in/android-target-dsl.
-        context.kotlinPluginVersion >= KOTLIN_1_9 ->
-            createTarget(::androidTarget)
-
-        else ->
-            @Suppress("DEPRECATION")
-            createTarget(::android)
+        return createTarget(::androidTarget)
     }
 
     final override fun setup(k: KotlinMultiplatformExtension) {

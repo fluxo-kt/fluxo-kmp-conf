@@ -196,9 +196,7 @@ private fun FluxoKmpConfContext.setupPublicationMultiplatform(
     p.mppExt.apply {
         if (targets.any { it.platformType == KotlinPlatformType.androidJvm }) {
             try {
-                // Kotlin before 1.9
-                @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
-                android().publishLibraryVariants(RELEASE, DEBUG)
+                androidTarget().publishLibraryVariants(RELEASE, DEBUG)
             } catch (e: Throwable) {
                 p.logger.e("android.publishLibraryVariants error: $e", e)
             }

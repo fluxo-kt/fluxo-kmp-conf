@@ -41,7 +41,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         lang != null -> lang <= KotlinLangVersion.KOTLIN_1_9
         else -> kotlinPluginVersion < KOTLIN_2_0
     }
-    val kotlin20orUpper = when {
+    val k2Used = when {
         lang != null -> lang > KotlinLangVersion.KOTLIN_1_9
         else -> kotlinPluginVersion >= KOTLIN_2_0
     }
@@ -68,11 +68,9 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     }
 
     val isJvm: Boolean
-    val isJs: Boolean
     when (this) {
         is KotlinJvmOptions -> {
             isJvm = true
-            isJs = false
 
             // FIXME: Move to JvmCompatibility?
             jvmTargetVersion?.let { jvmTarget ->
@@ -86,7 +84,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
                     // Don't use when compiled against the current JDK version (useless).
                     jvmTargetInt != JRE_VERSION &&
                     ( // Somehow, jdk-release fails with kotlin lang 2.0 and Kotlin 1.9.
-                        !kotlin20orUpper ||
+                        !k2Used ||
                             kotlinPluginVersion >= KOTLIN_2_0 && kotlinPluginVersion < KOTLIN_2_0_20
                         )
 
@@ -155,14 +153,12 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         }
 
         is KotlinJsOptions -> {
-            isJs = true
             isJvm = false
             compilerArgs.addAll(JS_OPTS)
         }
 
         else -> {
             isJvm = false
-            isJs = false
         }
     }
 
@@ -172,22 +168,12 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     }
 
     if (useLatestSettings) {
-        val k2Used = when {
-            kotlin20orUpper -> true
-            else -> {
-                @Suppress("DEPRECATION")
-                kotlinPluginVersion >= KOTLIN_1_9 &&
-                    kotlinPluginVersion < KOTLIN_2_0 &&
-                    (isJvm || isJs) && useK2
-            }
-        }
-
         // Lang features
         /** @see org.jetbrains.kotlin.config.LanguageFeature */
         // https://github.com/JetBrains/kotlin/blob/ca0b061/compiler/util/src/org/jetbrains/kotlin/config/LanguageVersionSettings.kt
 
         // Non-local break and continue are in preview since 2.0.
-        // Unfortunately, in K2, the feature works only in JVM.
+        // Unfortunately, in K2, the feature works only on JVM.
         // https://youtrack.jetbrains.com/issue/KT-1436/Support-non-local-break-and-continue
         if (if (k2Used) isJvm else kotlin19orLower) {
             compilerArgs.add(langFeature("BreakContinueInInlineLambdas"))
@@ -199,6 +185,8 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         if (k2Used && kotlinPluginVersion >= KOTLIN_1_7) {
             compilerArgs.add(langFeature("ExplicitBackingFields"))
         }
+
+
 
         // TODO: Guard conditions for when-with-subject (Kotlin 2.0.20)
         //  https://youtrack.jetbrains.com/issue/KT-67787

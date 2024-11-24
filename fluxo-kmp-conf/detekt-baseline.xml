@@ -7,7 +7,6 @@
     <ID>AvoidFirstOrLastOnList:SetupJvmCompatibility.kt$first</ID>
     <ID>CompilerWarning:DependencyAnalysisPlugin.kt$configureExtension</ID>
     <ID>CompilerWarning:KmpConfigurationContainerDslImpl.kt$KmpConfigurationContainerDslImpl$ExperimentalWasmDsl</ID>
-    <ID>CompilerWarning:KotlinJsUtils.kt$compilerOptions</ID>
     <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$targets</ID>
     <ID>CompilerWarning:SetupAndroid.kt$exec</ID>
     <ID>CompilerWarning:SetupArtifactsProcessing.kt$API_DIR</ID>
@@ -17,6 +16,7 @@
     <ID>CompilerWarning:SetupCompose.kt$enableNonSkippingGroupOptimization</ID>
     <ID>CompilerWarning:SetupCompose.kt$enableStrongSkippingMode</ID>
     <ID>CompilerWarning:SetupCompose.kt$kotlinOptions</ID>
+    <ID>CompilerWarning:SetupCompose.kt$stabilityConfigurationFile</ID>
     <ID>CompilerWarning:SetupJvmCompatibility.kt$KCompilation</ID>
     <ID>CompilerWarning:SetupJvmCompatibility.kt$KotlinJvmOptions</ID>
     <ID>CompilerWarning:SetupKotlinCompatibility.kt$KotlinCommonOptions</ID>

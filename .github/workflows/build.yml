@@ -98,7 +98,7 @@ jobs:
             ~/.gradle/yarn
             ~/.gradle/nodejs
             ~/.gradle/binaryen
-          key: "${{ runner.os }}-kmp-2.0.0"
+          key: "${{ runner.os }}-kmp-2.1.0"
           restore-keys: |
             ${{ runner.os }}-kmp-
 

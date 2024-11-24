@@ -26,10 +26,10 @@ kotlinCoreLibraries = "1.9.24"
 # https://github.com/JetBrains/kotlin/releases
 # WARNING: Remember to update the version badge and examples in `README.md`!
 #  And the version in the KMP cache key in the `.github/workflows/build.yml`!
-kotlin = "2.0.21"
+kotlin = "2.1.0-RC2"
 
 # https://github.com/google/ksp/releases
-ksp = "2.0.21-1.0.28"
+ksp = "2.1.0-RC2-1.0.28"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases

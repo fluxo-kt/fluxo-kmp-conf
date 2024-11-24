@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.gradle.plugin.publish)
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.build.config)
     alias(libs.plugins.vanniktech.mvn.publish)
