@@ -60,7 +60,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '22' ]
+        java: [ '23' ]
         os: [ 'macos', 'windows', 'ubuntu' ]
         # CodeQL supports ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift']
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support.
