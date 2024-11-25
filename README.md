@@ -10,11 +10,11 @@ Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects
 - Completely lazy on-demand project configuration framework with many nice-to-have things out-of-the-box.
 - Automatically configures hierarchical source sets, proveds convenience DSL for them.
 - You can control, which targets are enabled by passing properties at build time. With no errors in modules with all targets disabled!
-- Ready for Android, JS, KMP, KMM, JVM or IDEA plugin modules.
+- Ready for Android, JS, KMP, KMM, JVM, or IDEA plugin modules.
 - Allows configuring verification tasks (Detekt, Lint, BinaryCompatibilityValidator with JS support!).
   - Provides merged Sarif reports for the whole project.
   - Provides baseline configuration tasks.
-- Convenience console tests report at the end of the build along with merged XML report for the whole project.
+- Convenience console tests report at the end of the build along with a merged XML report for the whole project.
 - Allows using ProGuard and/or R8 as an optimizer for JVM targets.
 - Enables passing of build targets via command line to control what gets configured (great for CI).
 
@@ -30,7 +30,7 @@ Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
 [![Gradle Plugin Portal][badge-plugin]][plugin]
 
 ```kotlin
-// in the `build.gradle.kts` of the target module
+// in the `build.gradle.kts` of the target module.
 plugins {
   kotlin("multiplatform") version "2.0.21"
   id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.13.1" // <-- add here
@@ -43,10 +43,10 @@ plugins {
 [![JitPack][badge-jitpack]][jitpack]
 
 ```kotlin
-// in the `build.gradle.kts` of the target module
+// in the `build.gradle.kts` of the target module.
 plugins {
   kotlin("multiplatform") version "2.0.21"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") // <-- add here, no version needed for jitpack usage
+  id("io.github.fluxo-kt.fluxo-kmp-conf") // ← add here, no version needed for jitpack usage
 }
 ```
 
@@ -59,12 +59,40 @@ pluginManagement {
   }
   resolutionStrategy.eachPlugin {
     if (requested.id.toString() == "io.github.fluxo-kt.fluxo-kmp-conf")
-      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:9ea3726500") // <-- specify version or commit
+      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:f805fa1704") // ← specify a version or commit
   }
 }
 ```
 
 </details>
+
+### Configuration
+
+You can start by calling the corresponding DSL functions in the `build.gradle.kts` file of the target module:
+
+- [`fkcSetupAndroidLibrary()`](fluxo-kmp-conf/src/main/kotlin/FkcSetupAndroid.kt#L36) for the Android library setup.
+- [`fkcSetupGradlePlugin()`](fluxo-kmp-conf/src/main/kotlin/FkcSetupGradlePlugin.kt#L34) for the Gradle plugin setup.
+- [`fkcSetupKotlin()`](fluxo-kmp-conf/src/main/kotlin/FkcSetupKotlin.kt#L29) for the regular Kotlin JVM setup of any kind.
+  - or [`fkcSetupKotlinApp()`](fluxo-kmp-conf/src/main/kotlin/FkcSetupKotlinApp.kt#L28) - same but a bit tailored the JVM applications.
+- [`fkcSetupMultiplatform()`](fluxo-kmp-conf/src/main/kotlin/FkcSetupMultiplatform.kt#L40) for the Kotlin Multiplatform setup.
+
+See the corresponding KDocs for more details.
+
+`Fluxo-KMP-Conf` will automatically configure the project based on the module configuration, plugins, and the targets enabled. But it's possible to tune literally tens of settings via the DSL. Here are the full listings of these settings:
+- [`FluxoConfigurationExtensionCommon`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/FluxoConfigurationExtensionCommon.kt)
+- [`FluxoConfigurationExtensionKotlinOptions`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/FluxoConfigurationExtensionKotlinOptions.kt)
+- [`FluxoConfigurationExtensionKotlin`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/FluxoConfigurationExtensionKotlin.kt)
+- [`FluxoConfigurationExtensionAndroid`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/FluxoConfigurationExtensionAndroid.kt)
+- [`FluxoConfigurationExtensionPublication`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/FluxoConfigurationExtensionPublication.kt)
+
+Only the most safe, universal, and useful settings are enabled by default,
+so you can start using the plugin without any additional configuration.
+
+A few examples of configuration:
+- [Compose desktop application](checks/compose-desktop/build.gradle.kts#L33)
+- [Gradle plugin](checks/gradle-plugin/build.gradle.kts#L14)
+- [Kotlin Multiplatform library](checks/kmp/build.gradle.kts#L15)
+
 
 ## Hierarchical KMP project structure
 
@@ -122,7 +150,8 @@ pluginManagement {
 ### Build and development notes
 
 - **REQUIRES ENABLED GIT SYMLINKS** for the project to work correctly **during plugin development**!
-  - Usually it's already enabled on Linux or macOS.
+  - *not needed for the plugin usage!*
+  - Usually it’s already enabled on Linux or macOS.
   - On Windows, see [this doc](https://github.com/git-for-windows/git/wiki/Symbolic-Links) for more info.
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for more info on how to contribute.
 
