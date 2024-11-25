@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Updated
+- bump dependency-analysis to _2.5.0_.
+
 
 ## [0.13.1] - 2024-11-25
 
