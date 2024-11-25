@@ -73,7 +73,7 @@ org.jetbrains.intellij.platform:intellij-platform-gradle-plugin:2.1.0
 org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.0.21
 org.jetbrains.kotlin.plugin.sam.with.receiver:org.jetbrains.kotlin.plugin.sam.with.receiver.gradle.plugin:2.0.21
 org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.0.21
-org.jetbrains.kotlin:kotlin-compiler-embeddable:2.0.10
+org.jetbrains.kotlin:kotlin-compiler-embeddable:2.0.21
 org.jetbrains.kotlin:kotlin-gradle-plugin-annotations:2.0.21
 org.jetbrains.kotlin:kotlin-gradle-plugin-api:2.0.21
 org.jetbrains.kotlin:kotlin-gradle-plugin-model:2.0.21

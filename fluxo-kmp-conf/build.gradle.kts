@@ -89,6 +89,7 @@ dependencies {
     // Detekt ReportMergeTask is used internally
     implementation(libs.plugin.detekt)
     implementation(libs.detekt.core)
+    implementation(libs.kotlin.compiler.embeddable)
     // ASM for bytecode verification.
     implementation(libs.asm)
 

@@ -8,6 +8,9 @@
 ### Added
 - add JVM compatibility and Kotlin options flags to disable a corresponding autoconfiguration.
 
+### Fixed
+-  pin `kotlin-compiler-embeddable` dependency in support for Kotlin 2.1 ([more details](https://kotlinlang.slack.com/archives/C0KLZSCHF/p1729256644747559?thread_ts=1729151089.194689&cid=C0KLZSCHF))
+
 
 ## [0.13.0] - 2024-11-18
 
