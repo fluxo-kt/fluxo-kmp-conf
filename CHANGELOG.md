@@ -8,6 +8,7 @@
 ### Updated
 - bump dependency-analysis to _2.5.0_.
 - bump mrmans0n's Detekt Compose Rules to [_0.4.19_](https://github.com/mrmans0n/compose-rules/releases/tag/v0.4.19).
+- bump BuildConfig plugin from to _5.5.1_.
 
 
 ## [0.13.1] - 2024-11-25
