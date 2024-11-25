@@ -10,7 +10,7 @@
 [versions]
 
 # WARNING: Remember to update the version in `README.md` examples!
-version = "0.13.1-SNAPSHOT"
+version = "0.13.1"
 
 # Java/Kotlin compatibility
 # WARNING: kotlinApiVersion can't be greater than kotlinLangVersion!

@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.13.1] - 2024-11-25
+
 ### Added
 - add JVM compatibility and Kotlin options flags to disable a corresponding autoconfiguration.
 
@@ -392,6 +395,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.13.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.1
 [0.13.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.0
 [0.12.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.12.1
 [0.12.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.12.0
