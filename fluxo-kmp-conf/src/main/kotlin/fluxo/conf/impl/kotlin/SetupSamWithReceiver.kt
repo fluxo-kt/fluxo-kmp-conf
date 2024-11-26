@@ -11,7 +11,7 @@ internal fun Project.setupSamWithReceiver(ctx: FluxoKmpConfContext) {
     val result = ctx.loadAndApplyPluginIfNotApplied(
         id = KT_SAM_RECEIVER_PLUGIN_ID,
         className = KT_SAM_RECEIVER_PLUGIN_CLASS,
-        version = runCatching { KOTLIN_PLUGIN_VERSION_RAW }.getOrNull(),
+        version = KOTLIN_PLUGIN_VERSION_STRING,
         catalogPluginId = KT_SAM_RECEIVER_PLUGIN_ALIAS,
         catalogVersionIds = arrayOf("kotlin", KT_SAM_RECEIVER_PLUGIN_ALIAS),
         project = this,

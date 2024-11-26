@@ -7,6 +7,7 @@
 
 ### Fixed
 - fix publication config by handling SonatypeHost in the FluxoPublicationConfig dynamically.
+- don't try to setup browser target for Wasm WASI.
 
 ### Added
 - update README with configuration steps and examples.

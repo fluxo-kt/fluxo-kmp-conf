@@ -88,7 +88,9 @@ internal val KOTLIN_2_1 = KotlinVersion(2, 1, 0)
 internal var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT
     private set
 
-internal lateinit var KOTLIN_PLUGIN_VERSION_RAW: String
+@Volatile
+internal var KOTLIN_PLUGIN_VERSION_STRING: String = KOTLIN_PLUGIN_VERSION.toString()
+    private set
 
 /**
  * Gets the current Kotlin plugin version.
@@ -102,7 +104,7 @@ internal fun Logger.kotlinPluginVersion(): KotlinVersion {
     val logger = this
     try {
         getKotlinPluginVersion(logger).let { versionString ->
-            KOTLIN_PLUGIN_VERSION_RAW = versionString
+            KOTLIN_PLUGIN_VERSION_STRING = versionString
 
             val baseVersion = versionString.split("-", limit = 2)[0]
             val parts = baseVersion.split(".")
@@ -145,7 +147,7 @@ internal val LATEST_KOTLIN_LANG_VERSION = KotlinLangVersion.values().last()
 private val KOTLIN_LANG_VERSION = try {
     KotlinLangVersion.DEFAULT
 } catch (_: NoSuchMethodError) {
-    val v = KotlinVersion.CURRENT
+    val v = KOTLIN_PLUGIN_VERSION
     KotlinLangVersion.fromVersion("${v.major}.${v.minor}")
 }
 

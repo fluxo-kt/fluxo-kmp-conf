@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinTargetWithNodeJsDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
 
 
 internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget>.() -> Unit =
@@ -24,10 +25,21 @@ internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget
     }
 
 public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
+    val isWasi = try {
+        KOTLIN_PLUGIN_VERSION > KOTLIN_2_0 && this is KotlinWasmWasiTargetDsl
+    } catch (_: Throwable) {
+        false
+    }
+
     // set up browser & nodejs environment + test timeouts
     if (this is KotlinJsTargetDsl) {
-        browser {
-            testTimeout()
+        try {
+            if (!isWasi) {
+                browser {
+                    testTimeout()
+                }
+            }
+        } catch (_: Throwable) {
         }
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -91,7 +103,7 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
             }
         }
         // Apply Binaryen optimizer to the WASM target.
-        if (KotlinVersion.CURRENT < KOTLIN_2_0) {
+        if (KOTLIN_PLUGIN_VERSION < KOTLIN_2_0) {
             // Binaryen is enabled by default in Kotlin 2.0.
             @Suppress("DEPRECATION")
             applyBinaryen()
