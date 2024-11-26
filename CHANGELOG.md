@@ -5,8 +5,11 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+### Fixed
+- fix publication config by handling SonatypeHost in the FluxoPublicationConfig dynamically.
+
 ### Added
-- update README with configuration steps and examples
+- update README with configuration steps and examples.
 
 ### Updated
 - bump dependency-analysis to _2.5.0_.

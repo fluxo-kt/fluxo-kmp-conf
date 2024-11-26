@@ -1,6 +1,5 @@
 package fluxo.conf.dsl
 
-import com.vanniktech.maven.publish.SonatypeHost
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 
 // TODO: Make an immutable resulting class
@@ -45,8 +44,17 @@ public data class FluxoPublicationConfig(
 
     /**
      * Use instead of [repositoryUrl] for the Vanniktech's Maven Publish plugin.
+     *
+     * Use only [com.vanniktech.maven.publish.SonatypeHost] instances!
+     * The default is [com.vanniktech.maven.publish.SonatypeHost.DEFAULT].
+     *
+     * Type is `Any` to avoid compilation errors for the projects
+     * that don't use the Vanniktech's Maven Publish plugin.
+     *
+     * @see com.vanniktech.maven.publish.SonatypeHost
      */
-    public var sonatypeHost: SonatypeHost = SonatypeHost.DEFAULT,
+    public var sonatypeHost: Any? = null,
+
     public var repositoryUrl: String = when {
         isSnapshot -> "https://s01.oss.sonatype.org/content/repositories/snapshots/"
         else -> "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"

@@ -1,4 +1,4 @@
-@file:Suppress("StructuralWrap")
+@file:Suppress("UnstableApiUsage")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -18,7 +18,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 
-    // region Self-apply the plugin to itself immediately with included build.
+    // region Self-apply the plugin to itself immediately with the included build.
     // `buildSrc` is not used to avoid caching and configuration issues.
     // References:
     // - https://github.com/hakanai/self-applying-gradle-plugin
