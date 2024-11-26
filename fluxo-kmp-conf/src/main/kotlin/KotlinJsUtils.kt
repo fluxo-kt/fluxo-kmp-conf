@@ -39,13 +39,21 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
                     testTimeout()
                 }
             }
-        } catch (_: Throwable) {
+        } catch (e: Throwable) {
+            try {
+                project.logger.w("Failed to set up browser for target '$name': $e", e)
+            } catch (_: Throwable) {
+            }
         }
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         try {
             compilerOptions(JsConfAction)
-        } catch (_: Throwable) {
+        } catch (e: Throwable) {
+            try {
+                project.logger.w("Failed to set up compilerOptions for target '$name': $e", e)
+            } catch (_: Throwable) {
+            }
         }
 
         compilations.configureEach {
@@ -98,8 +106,15 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
 
     if (this is KotlinWasmJsTargetDsl) {
         if (ENABLE_D8) {
-            d8 {
-                testTimeout()
+            try {
+                d8 {
+                    testTimeout()
+                }
+            } catch (e: Throwable) {
+                try {
+                    project.logger.w("Failed to set up d8 for target '$name': $e", e)
+                } catch (_: Throwable) {
+                }
             }
         }
         // Apply Binaryen optimizer to the WASM target.
