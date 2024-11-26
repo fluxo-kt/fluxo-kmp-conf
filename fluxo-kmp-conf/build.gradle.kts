@@ -64,7 +64,7 @@ fkcSetupGradlePlugin(
 
     publicationConfig {
         developerId = "amal"
-        developerName = "Artyom Shendrik"
+        developerName = "Art Shendrik"
         developerEmail = "artyom.shendrik@gmail.com"
     }
 

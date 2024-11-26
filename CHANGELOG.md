@@ -5,6 +5,9 @@
 
 [//]: # (Removed, Added, Changed, Fixed, Updated)
 
+
+## [0.13.2] - 2024-11-26
+
 ### Fixed
 - fix publication config by handling SonatypeHost in the FluxoPublicationConfig dynamically.
 - don't try to setup browser target for Wasm WASI.
@@ -407,6 +410,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.13.2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.2
 [0.13.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.1
 [0.13.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.0
 [0.12.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.12.1
