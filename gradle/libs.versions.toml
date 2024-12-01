@@ -251,7 +251,7 @@ asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 # Testing Kotlin and Java annotation processors, compiler plugins, and code generation.
 # https://github.com/ZacSweers/kotlin-compile-testing/releases
 # https://github.com/tschuchortdev/kotlin-compile-testing/releases.
-kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.6.0" }
+kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.7.0" }
 
 # Starting from Kotlin 2.1.0, KGP doesn't depend on the `kotlin-compiler-embeddable` dependency.
 # Other plugins can bring incompatible versions of the compiler.

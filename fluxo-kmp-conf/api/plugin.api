@@ -374,8 +374,8 @@ public abstract interface annotation class fluxo/conf/dsl/FluxoKmpConfDsl : java
 }
 
 public final class fluxo/conf/dsl/FluxoPublicationConfig {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Lcom/vanniktech/maven/publish/SonatypeHost;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Lcom/vanniktech/maven/publish/SonatypeHost;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()Ljava/lang/String;
@@ -386,7 +386,7 @@ public final class fluxo/conf/dsl/FluxoPublicationConfig {
 	public final fun component16 ()Ljava/lang/String;
 	public final fun component17 ()Z
 	public final fun component18 ()Ljava/lang/String;
-	public final fun component19 ()Lcom/vanniktech/maven/publish/SonatypeHost;
+	public final fun component19 ()Ljava/lang/Object;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component20 ()Ljava/lang/String;
 	public final fun component21 ()Ljava/lang/String;
@@ -398,8 +398,8 @@ public final class fluxo/conf/dsl/FluxoPublicationConfig {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Lcom/vanniktech/maven/publish/SonatypeHost;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lfluxo/conf/dsl/FluxoPublicationConfig;
-	public static synthetic fun copy$default (Lfluxo/conf/dsl/FluxoPublicationConfig;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Lcom/vanniktech/maven/publish/SonatypeHost;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lfluxo/conf/dsl/FluxoPublicationConfig;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lfluxo/conf/dsl/FluxoPublicationConfig;
+	public static synthetic fun copy$default (Lfluxo/conf/dsl/FluxoPublicationConfig;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lfluxo/conf/dsl/FluxoPublicationConfig;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDeveloperEmail ()Ljava/lang/String;
 	public final fun getDeveloperId ()Ljava/lang/String;
@@ -420,7 +420,7 @@ public final class fluxo/conf/dsl/FluxoPublicationConfig {
 	public final fun getSigningKey ()Ljava/lang/String;
 	public final fun getSigningKeyId ()Ljava/lang/String;
 	public final fun getSigningPassword ()Ljava/lang/String;
-	public final fun getSonatypeHost ()Lcom/vanniktech/maven/publish/SonatypeHost;
+	public final fun getSonatypeHost ()Ljava/lang/Object;
 	public final fun getVersion ()Ljava/lang/String;
 	public fun hashCode ()I
 	public final fun isSigningEnabled ()Z
@@ -445,7 +445,7 @@ public final class fluxo/conf/dsl/FluxoPublicationConfig {
 	public final fun setSigningKeyId (Ljava/lang/String;)V
 	public final fun setSigningPassword (Ljava/lang/String;)V
 	public final fun setSnapshot (Z)V
-	public final fun setSonatypeHost (Lcom/vanniktech/maven/publish/SonatypeHost;)V
+	public final fun setSonatypeHost (Ljava/lang/Object;)V
 	public final fun setVersion (Ljava/lang/String;)V
 	public fun toString ()Ljava/lang/String;
 }
