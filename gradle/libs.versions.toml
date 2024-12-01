@@ -153,7 +153,7 @@ proguard-core = "9.1.6"
 # Used by ProGuardCORE.
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-metadata-jvm
 #noinspection GradleDependency.
-kotlin-metadata-jvm = "2.0.21"
+kotlin-metadata-jvm = "2.1.0"
 
 # R8 is a Google's code shrinker, obfuscator, and optimizer. Targeted for Android.
 # https://mvnrepository.com/artifact/com.android.tools/r8?repo=google
