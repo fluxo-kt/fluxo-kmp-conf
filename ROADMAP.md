@@ -41,7 +41,9 @@
   * https://docs.gradle.org/nightly/userguide/isolated_projects.html
   * https://docs.gradle.org/8.8/release-notes.html#isolated-project-views
 * `-Xconsistent-data-class-copy-visibility` for Kotlin 2.0.20
-  * https://kotlinlang.org/docs/whatsnew-eap.html#language-data-class-copy-function-to-have-the-same-visibility-as-constructor
+  * https://kotlinlang.org/docs/whatsnew2020.html#data-class-copy-function-to-have-the-same-visibility-as-constructor
+* `-Xwhen-expressions=indy` for Kotlin 2.2.20
+  * https://kotlinlang.org/docs/whatsnew-eap.html#kotlin-jvm-support-invokedynamic-with-when-expressions
 * Streamline kotlin configuration and JDK setup
   * https://github.com/slackhq/slack-gradle-plugin/releases/tag/0.17.2
   * https://github.com/slackhq/slack-gradle-plugin/pull/883/files
@@ -88,6 +90,7 @@
   * Detekt
   * KtLint
 * GraalVM native build + UPX compression
+* JReleaser - https://github.com/jreleaser/jreleaser
 * IDEA Ext plugin (declare IDEA settings via gradle)
   * https://github.com/JetBrains/gradle-idea-ext-plugin/wiki
 * Louvain algorithm to analyze class dependencies and rank deduced modules based on their conductance score. Lobzik is a Gradle plugin for helping to modularise large Android codebases.
