@@ -102,6 +102,7 @@
 * Check BuildConfig tasks (not called on IDE sync?!)
 * CI improvements
   * https://github.com/adevinta/spark-android/tree/main/.github
+  * https://github.com/strapi/strapi/tree/develop/.github/actions
 * Repo/build/CI examples.
   * https://github.com/gciatto/kt-math
 * Build Variants setup
