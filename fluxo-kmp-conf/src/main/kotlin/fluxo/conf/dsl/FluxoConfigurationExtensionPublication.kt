@@ -73,6 +73,12 @@ public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChai
      */
     public var description: String?
 
+    /**
+     * The name of the project.
+     *
+     * @FIXME: Should be a valid Maven identifier ([A-Za-z0-9_\-.]+).
+     * @see org.gradle.api.Project.getName
+     */
     public var projectName: String?
 
 
