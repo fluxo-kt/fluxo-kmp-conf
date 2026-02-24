@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
         with:
           disable-sudo: true
           egress-policy: block
@@ -35,14 +35,14 @@ jobs:
             github.com:443
 
       - name: React to the comment right away
-        uses: dkershner6/reaction-action@v2
+        uses: dkershner6/reaction-action@97ede302a1b145b3739dec3ca84a489a34ef48b5 # v2.2.1
         continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           reaction: "rocket"
 
       - name: Fast-forward and push
-        uses: sequoia-pgp/fast-forward@v1
+        uses: sequoia-pgp/fast-forward@ea7628bedcb0b0b96e94383ada458d812fca4979 # v1.0.0
         with:
           merge: true
           # To reduce the workflow's verbosity, use 'on-error'

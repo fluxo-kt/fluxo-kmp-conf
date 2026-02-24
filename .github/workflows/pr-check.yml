@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
         with:
           disable-sudo: true
           egress-policy: block
@@ -28,7 +28,7 @@ jobs:
             github.com:443
 
       - name: Check if fast forwarding is possible
-        uses: sequoia-pgp/fast-forward@v1
+        uses: sequoia-pgp/fast-forward@ea7628bedcb0b0b96e94383ada458d812fca4979 # v1.0.0
         with:
           merge: false
           # To reduce the workflow's verbosity, use 'on-error'
