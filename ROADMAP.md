@@ -13,8 +13,25 @@
 
 * Interesting KMP architecture sample
   * https://github.com/VasilyRylov/architecture-samples/tree/main
+* Setup `-Xdebug` for Kotlin when and only `System.getProperty("idea.active") == "true"`
+  * https://t.me/kotlin_broadcast/1601
+  * https://tomsabel.com/debugging-kotlin-coroutines-making-optimised-out-variables-visible-de1cecc0d59e
 * Compose Multiplatform lib that prints the reason for recomposition in Logcat
   * https://github.com/theapache64/rebugger
+* RedMadRobot Gradle convenience infrastructure plugin
+  * https://github.com/RedMadRobot/gradle-infrastructure
+* LCE alternative - gears-android/resultflow
+  * https://github.com/RedMadRobot/gears-android/tree/main/resultflow
+*
+  * https://github.com/gmazzo/gradle-embedded-dependencies-plugin
+  * https://github.com/gmazzo/gradle-android-manifest-lock-plugin
+  * https://github.com/gmazzo/gradle-buildconfig-plugin
+  * https://github.com/gmazzo/publish-report-annotations
+  * https://github.com/gmazzo/gradle-aar2jar-plugin
+* KMP Auto labels for GitHub CI
+  * https://akjaw.com/kotlin-multiplatform-gha-automated-labels
+* GH setup for -ff-only merges
+  * https://github.com/orgs/community/discussions/4618#discussioncomment-11652479
 * GitHub signed commits
   * https://github.com/qoomon/actions--create-commit
 * https://kotlinlang.org/docs/whatsnew-eap.html#data-class-copy-function-to-have-the-same-visibility-as-constructor
@@ -306,9 +323,13 @@
     * https://github.com/open-obfuscator/dProtect
   * Optimize app images
     * https://tinypng.com/
+  * DEX optimization with Redex
+    * https://fbredex.com/docs/examples/proguard/
 * Control licenses
   * https://github.com/JetBrains/intellij-community/blob/8b5ce28/platform/build-scripts/src/org/jetbrains/intellij/build/CommunityLibraryLicenses.kt
-  * https://github.com/mikepenz/AboutLibraries
+  * https://github.com/mikepenz/
+  * SPDX standard
+    * https://github.com/Kotlin/kotlinx-io/pull/435/files (Use SPDX identifier in POMs)
 * GitHub CI/CD, workflows and repo organization.
   * Add automatic adding PR comment with Gradle Job Summary
     * https://github.com/gradle/gradle-build-action/pull/1021/files
