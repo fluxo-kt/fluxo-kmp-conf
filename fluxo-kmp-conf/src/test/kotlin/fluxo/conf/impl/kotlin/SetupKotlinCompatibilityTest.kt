@@ -96,4 +96,38 @@ internal class SetupKotlinCompatibilityTest {
     }
 
     // endregion
+
+    // region table-staleness warning predicate
+
+    @Test
+    fun `warning predicate fires only when Kotlin minor outruns the tabulated bracket`() {
+        // The point of this seed: previous predicate was `v > LATEST_TABULATED_KOTLIN`
+        // where `LATEST_TABULATED_KOTLIN = KOTLIN_2_0 = (2, 0, 0)`. KotlinVersion's
+        // compareTo includes patch — so `2.0.21 > 2.0.0` was TRUE and the warning
+        // false-fired on every consumer build with Kotlin 2.0.x patch ≥ 1. The
+        // current `Int.toKotlinSupportedJvmMajorVersion` table has a `>= KOTLIN_2_0`
+        // bracket that COVERS all 2.0.x patches; only a NEW minor (2.1.x onward)
+        // needs the maintainer to extend the table.
+        //
+        // Assertion shape: `v >= FIRST_UNTABULATED_KOTLIN`. Tested boundary cases
+        // falsify both the off-by-one (2.0.21 must NOT warn) and the strict-vs-
+        // non-strict comparison (2.1.0 MUST warn — it's the first untabulated minor).
+        check(KotlinVersion(2, 0, 0) < FIRST_UNTABULATED_KOTLIN) {
+            "Kotlin 2.0.0 must not trigger the table-staleness warning — it's the bracket start"
+        }
+        check(KotlinVersion(2, 0, 21) < FIRST_UNTABULATED_KOTLIN) {
+            "Kotlin 2.0.21 must not trigger the warning — patches live inside the 2.0 bracket"
+        }
+        check(KotlinVersion(2, 0, KotlinVersion.MAX_COMPONENT_VALUE) < FIRST_UNTABULATED_KOTLIN) {
+            "Even the highest 2.0.x patch must not warn — bracket covers all patches"
+        }
+        check(KotlinVersion(2, 1, 0) >= FIRST_UNTABULATED_KOTLIN) {
+            "Kotlin 2.1.0 MUST trigger the warning — first untabulated minor"
+        }
+        check(KotlinVersion(3, 0, 0) >= FIRST_UNTABULATED_KOTLIN) {
+            "Kotlin 3.0.0 MUST trigger the warning — far beyond the table"
+        }
+    }
+
+    // endregion
 }

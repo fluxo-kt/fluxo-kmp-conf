@@ -37,11 +37,16 @@ internal val KOTLIN_2_0_20 = KotlinVersion(2, 0, 20)
 
 internal val KOTLIN_2_1 = KotlinVersion(2, 1, 0)
 
-// Highest Kotlin version represented in the JVM-target compatibility table at
-// `Int.toKotlinSupportedJvmMajorVersion` below. Bump this in lockstep with the
-// table entries — it drives a one-shot warning telling the maintainer the
-// table is stale, replacing the pre-existing silent capping behaviour.
-internal val LATEST_TABULATED_KOTLIN = KOTLIN_2_0
+// First Kotlin minor that is NOT yet represented in the JVM-target compatibility
+// table at `Int.toKotlinSupportedJvmMajorVersion` below. Bump in lockstep with
+// the table entries — drives a one-shot warning so the maintainer notices an
+// upstream Kotlin runtime overrunning the table (silent JVM-target capping was
+// the pre-existing failure mode).
+//
+// Compared with `>=`, NOT `KotlinVersion`'s lexicographic `compareTo` against
+// `KOTLIN_2_0` (which would treat any 2.0.x patch ≥ 1 as "beyond" because patch
+// is part of the comparison key — false-positive on every consumer build).
+internal val FIRST_UNTABULATED_KOTLIN = KOTLIN_2_1
 
 @Volatile
 internal var WARNED_KOTLIN_BEYOND_TABLE = false
