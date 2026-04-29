@@ -4,11 +4,8 @@ package fluxo.shrink
 
 import java.lang.reflect.Member
 import java.lang.reflect.Modifier
-import java.util.Collections.emptyList
 import kotlin.contracts.contract
 import org.gradle.api.GradleException
-import org.gradle.api.internal.tasks.testing.DefaultTestFailure
-import org.gradle.api.internal.tasks.testing.DefaultTestFailureDetails
 import org.gradle.api.internal.tasks.testing.TestDescriptorInternal
 import org.gradle.api.internal.tasks.testing.TestResultProcessor
 import org.gradle.api.tasks.testing.TestFailure
@@ -91,7 +88,6 @@ internal fun ApiVerifier.require(
         val th = throwable ?: IllegalStateException(message)
         val isAssertion = throwable == null || throwable is AssertionError || expected != null
         val failure = testFailure(
-            message,
             th,
             isAssertionFailure = isAssertion,
             expected = expected?.toString(),
@@ -111,34 +107,28 @@ internal fun ApiVerifier.require(
     return true
 }
 
+// Uses Gradle's PUBLIC `TestFailure` factory — the previous implementation
+// reached into `org.gradle.api.internal.tasks.testing.{DefaultTestFailure,
+// DefaultTestFailureDetails}` which is internal API whose constructor signature
+// shrank between Gradle 8.11 and 8.14. The injected synthetic
+// `StackTraceElement` carries className/method/file from the active test, which
+// the throwable's message already covers; `expected`/`actual` flow into the
+// public assertion-failure factory for IDE diff rendering.
 private fun ApiVerifier.testFailure(
-    message: String,
     th: Throwable,
     isAssertionFailure: Boolean = false,
     expected: String? = null,
     actual: String? = null,
 ): TestFailure {
-    val className = currentTestClass
-
     th.stackTrace = th.stackTrace.toMutableList().also {
         val file = currentTestFile?.substringAfterLast('/')
-        val newElement = StackTraceElement(className, currentTestMethod, file, -1)
+        val newElement = StackTraceElement(currentTestClass, currentTestMethod, file, -1)
         it.add(0, newElement)
     }.toTypedArray()
 
-    return DefaultTestFailure(
-        th,
-        DefaultTestFailureDetails(
-            message,
-            className,
-            th.stackTraceToString(),
-            isAssertionFailure,
-            false,
-            expected,
-            actual,
-            null,
-            null,
-        ),
-        emptyList(),
-    )
+    return if (isAssertionFailure) {
+        TestFailure.fromTestAssertionFailure(th, expected, actual)
+    } else {
+        TestFailure.fromTestFrameworkFailure(th)
+    }
 }
