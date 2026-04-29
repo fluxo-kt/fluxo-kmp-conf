@@ -5,6 +5,7 @@
 
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
+[//]: # (Next release: 0.14.0.)
 
 ### Added
 - self-warn (one-shot per JVM) at configuration time when the consumer's Kotlin plugin version is at or beyond the first untabulated minor in the Kotlin → max-JVM-target compatibility table. Surfaces silent JVM-target capping, which previously required maintainer attention to discover.
@@ -15,15 +16,17 @@
 
 ### Changed
 - migrate publication archive permissions from the Gradle-9.0-removed `dirMode` / `fileMode` setters to `dirPermissions { unix("0755") }` / `filePermissions { unix("0644") }` (added in Gradle 8.3); retain a `NoSuchMethodError` fallback for Gradle 8.0–8.2. Without this, consumers on Gradle 9 would hit `NoSuchMethodError` during publication archive setup.
+- `FluxoPublicationConfig.sonatypeHost` is now a `@Deprecated` no-op (warning level). Vanniktech 0.34.0 removed `SonatypeHost` and all OSSRH support — Sonatype Central Portal is the sole publish target since OSSRH retired 2025-06-30. The field is retained for one release so existing build scripts continue to compile; remove it and migrate your publish credentials to a Central Portal user-token.
 
 ### Fixed
 - the Detekt `languageVersion` clamp parsed Kotlin language versions as `Float`, which silently misranks any future two-digit minor: `"1.10".toFloat() == 1.1f` (would rank below `1.9`), `"2.10".toFloat() == 2.1f` (would not trigger the clamp at all). Replaced with `kotlin.KotlinVersion`-based comparison. Latent today (no Kotlin 1.10/2.10 yet) but a correctness landmine for future minors.
 
 ### Updated
 - bump bundled Dokka 2.0.0-Beta → [_2.2.0_](https://github.com/Kotlin/dokka/releases/tag/v2.2.0) (stable line) and migrate the wrapped publication path to DGPv2 task names (`dokkaGeneratePublicationHtml` / `dokkaGeneratePublicationJavadoc`). Dokka 2.1+ deprecated and 2.2 removes the v1 task graph (`dokkaHtml` / `dokkaJavadoc`); without the migration, consumers' `javadocJar` would fail at task graph construction.
-- bump Gradle wrapper from _8.11_ to [_8.14.4_](https://docs.gradle.org/8.14.4/release-notes.html) — last 8.x patch line; consumer-compat floor (Gradle 8+) preserved. Canary against new CC violations ahead of the Gradle 9 leap planned in 0.15.0.
+- bump Gradle wrapper from _8.11_ to [_8.14.4_](https://docs.gradle.org/8.14.4/release-notes.html) — last 8.x patch line; consumer-compat floor (Gradle 8+) preserved. Canary against new CC violations ahead of the Gradle 9 leap planned in a future release.
 - bump `com.gradle.plugin-publish` 1.3.0 → _1.3.1_ — release notes: "addresses and eliminates all deprecation warnings from Gradle versions up to 8.12.1". Removes 1.3.0's call to `org.gradle.util.VersionNumber.parse` (REMOVED in Gradle 9.0); without this bump, consumers running Gradle 9 against a plugin published with 1.3.0 would hit a hard `NoSuchMethodError` from inside the publish plugin's vulnerability checker.
 - bump pinned-bundle and internal dependencies to current stable: `org.bouncycastle:bcprov-jdk18on` _1.79 → 1.84_ (security), `com.squareup.okio:okio` _3.9.1 → 3.17.0_, `org.json:json` _20240303 → 20251224_ (security), `com.google.guava:guava` _33.3.1-jre → 33.6.0-jre_, `org.apache.commons:commons-compress` _1.27.1 → 1.28.0_, `org.jetbrains:annotations` _26.0.1 → 26.1.0_, `org.ow2.asm:asm` _9.7.1 → 9.9.1_. Pinned-bundle members propagate to consumers that opt in via the `pinned` bundle alias.
+- bump `com.vanniktech.maven.publish` [_0.30.0 → 0.36.0_](https://github.com/vanniktech/gradle-maven-publish-plugin/releases). The upstream `publishToMavenCentral(host, automaticRelease)` overload was removed in 0.34.0 along with the `SonatypeHost` enum; without this bump the plugin would not compile against Vanniktech 0.34+, and consumers running publish flows would still target the dead OSSRH endpoint. See the `sonatypeHost` deprecation in **Changed**.
 
 
 ## [0.13.2] - 2024-11-26
