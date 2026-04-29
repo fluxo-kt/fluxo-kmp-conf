@@ -9,7 +9,6 @@ import com.vanniktech.maven.publish.JavaPlatform
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost
 import com.vanniktech.maven.publish.VersionCatalog
 import envOrPropValue
 import fluxo.conf.data.BuildConstants.GRADLE_PLUGIN_PUBLISH_PLUGIN_ID
@@ -129,10 +128,10 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
 
         ConfigurationType.IDEA_PLUGIN -> {}
 
-        else -> publishToMavenCentral(
-            host = config.sonatypeHost?.let { it as SonatypeHost } ?: SonatypeHost.DEFAULT,
-            automaticRelease = true,
-        )
+        // Vanniktech 0.34+ dropped the `host` parameter (OSSRH retired 2025-06-30);
+        // Central Portal is the sole publish target. `config.sonatypeHost` is a
+        // deprecated no-op kept for one release to avoid breaking consumer build scripts.
+        else -> publishToMavenCentral(automaticRelease = true)
     }
 
     // Log publications

@@ -43,16 +43,19 @@ public data class FluxoPublicationConfig(
     public var scmTag: String? = if (isSnapshot) DEFAULT_BRANCH_NAME else "v$version",
 
     /**
-     * Use instead of [repositoryUrl] for the Vanniktech's Maven Publish plugin.
+     * No longer consulted: Vanniktech's Maven Publish plugin removed `SonatypeHost`
+     * (and all OSSRH support) in 0.34.0 — Sonatype Central Portal is the only target now.
+     * The field is retained for one release as a no-op so consumers see a deprecation
+     * warning instead of an unresolved-reference compile error; remove it from your
+     * build script and migrate publish credentials to a Central Portal user-token.
      *
-     * Use only [com.vanniktech.maven.publish.SonatypeHost] instances!
-     * The default is [com.vanniktech.maven.publish.SonatypeHost.DEFAULT].
-     *
-     * Type is `Any` to avoid compilation errors for the projects
-     * that don't use the Vanniktech's Maven Publish plugin.
-     *
-     * @see com.vanniktech.maven.publish.SonatypeHost
+     * @see <a href="https://central.sonatype.org/publish/publish-portal-gradle/">Central Portal Gradle guide</a>
      */
+    @Deprecated(
+        "Vanniktech 0.34+ removed SonatypeHost; Central Portal is the only target. " +
+            "This field is now ignored — remove it from your build script.",
+        level = DeprecationLevel.WARNING,
+    )
     public var sonatypeHost: Any? = null,
 
     public var repositoryUrl: String = when {
