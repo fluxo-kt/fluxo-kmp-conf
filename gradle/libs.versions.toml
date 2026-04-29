@@ -229,6 +229,9 @@ detekt-explicit = { module = "com.github.Ivy-Apps:detekt-explicit", version = "0
 detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
+# `detekt-ruleauthors` is a rule pack for projects authoring Detekt rules — not us.
+# Consumer-opt-in path: consumers that DO author Detekt rules can add this alias in
+# their own catalog and `SetupDetekt.kt` will plumb it in via `onLibrary(...)`.
 #detekt-ruleauthors = { module = "io.gitlab.arturbosch.detekt:detekt-rules-ruleauthors", version.ref = "detekt" }
 
 # endregion
