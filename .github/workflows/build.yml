@@ -60,7 +60,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '23' ]
+        # JDK 21 needed by IntelliJ Platform 2026.* targets (S12) and unblocks the
+        # CodeQL job whose `matrix.java != '23'` gate (lines below) was dead code
+        # while the matrix had only a single JDK. Multi-JDK shake-out is a free win.
+        java: [ '21', '23' ]
         os: [ 'macos', 'windows', 'ubuntu' ]
         # CodeQL supports ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift']
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support.
