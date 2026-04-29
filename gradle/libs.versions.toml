@@ -252,9 +252,17 @@ r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 
 # Testing Kotlin and Java annotation processors, compiler plugins, and code generation.
+# Each kctfork release is tightly paired with a specific `kotlin-compiler-embeddable`
+# version: bumping past the Kotlin minor we build with triggers a binary-metadata
+# mismatch on `compileTestKotlin` ("Module was compiled with an incompatible version
+# of Kotlin"). Track the kctfork release whose bundled Kotlin equals our build Kotlin.
+# Pairings (verified against upstream release notes):
+#   0.6.x → Kotlin 2.0.x · 0.7.x → 2.1.0 · 0.8.x → 2.2.0 · 0.9.x → 2.2.20
+#   0.10.x+ → drops K1+KSP1 · 0.12.x → 2.3.x
+# Bump only in lockstep with the build-Kotlin bump.
 # https://github.com/ZacSweers/kotlin-compile-testing/releases
 # https://github.com/tschuchortdev/kotlin-compile-testing/releases.
-kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.12.1" }
+kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.6.0" }
 
 # Starting from Kotlin 2.1.0, KGP doesn't depend on the `kotlin-compiler-embeddable` dependency.
 # Other plugins can bring incompatible versions of the compiler.
