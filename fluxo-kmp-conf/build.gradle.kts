@@ -81,8 +81,10 @@ configurations.implementation {
 }
 
 dependencies {
-    // ALWAYS ADD SAME DEPS TO THE 'self' MODULE!
-
+    // Mirrored with `self/build.gradle.kts` — the region between the
+    // MIRROR-START / MIRROR-END markers must stay byte-identical in both files.
+    // Verified by the `verifyBuildScriptMirror` task (runs as part of `check`).
+    // MIRROR-START
     implementation(libs.tomlj)
     // Spotless util classes are used internally
     implementation(libs.plugin.spotless)
@@ -109,6 +111,7 @@ dependencies {
     compileOnly(libs.plugins.kotlinx.binCompatValidator.toModuleDependency())
     compileOnly(libs.plugins.vanniktech.mvn.publish.toModuleDependency())
     compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
+    // MIRROR-END
 
     testCompileOnly(libs.jetbrains.annotation)
     testImplementation(libs.kotlin.compile.testing)
@@ -123,6 +126,7 @@ tasks.test {
 }
 
 buildConfig {
+    // MIRROR-START
     className("BuildConstants")
     packageName("fluxo.conf.data")
     buildConfigField("String", "PLUGIN_ID", "\"$pluginId\"")
@@ -187,4 +191,57 @@ buildConfig {
     buildConfigField("PROGUARD_CORE", libs.proguard.core)
     buildConfigField("KOTLINX_METADATA_JVM", libs.kotlin.metadata.jvm)
     buildConfigField("R8", libs.r8)
+    // MIRROR-END
 }
+
+// `fluxo-kmp-conf` and `self` share most of their build configuration via mirrored
+// `dependencies {}` and `buildConfig {}` blocks (the `self` module uses the plugin's
+// own sources via `kotlin.srcDir(...)` so it must declare the same classpath).
+// `kotlin.srcDir` can't carry build-script-level config; mirroring is the
+// least invasive option, and this task structurally replaces "discipline only"
+// with a CI-enforced byte-identity invariant on the marked regions.
+val verifyBuildScriptMirror = tasks.register("verifyBuildScriptMirror") {
+    group = "verification"
+    description =
+        "Verify that `// MIRROR-START` / `// MIRROR-END` regions in " +
+        "`fluxo-kmp-conf/build.gradle.kts` and `self/build.gradle.kts` are byte-identical."
+    val pluginScript = layout.projectDirectory.file("build.gradle.kts").asFile
+    val selfScript = layout.projectDirectory.file("../self/build.gradle.kts").asFile
+    inputs.files(pluginScript, selfScript)
+    doLast {
+        val markerRegex = Regex(
+            """// MIRROR-START\s*\n(.*?)\s*// MIRROR-END""",
+            RegexOption.DOT_MATCHES_ALL,
+        )
+        fun regionsOf(file: java.io.File): List<String> {
+            val regions = markerRegex.findAll(file.readText())
+                .map { it.groupValues[1] }
+                .toList()
+            check(regions.isNotEmpty()) {
+                "No `// MIRROR-START` / `// MIRROR-END` marker pair found in ${file.name}"
+            }
+            return regions
+        }
+        val pluginRegions = regionsOf(pluginScript)
+        val selfRegions = regionsOf(selfScript)
+        check(pluginRegions.size == selfRegions.size) {
+            "Mirror region count mismatch: " +
+                "fluxo-kmp-conf=${pluginRegions.size}, self=${selfRegions.size}"
+        }
+        pluginRegions.zip(selfRegions).forEachIndexed { i, (a, b) ->
+            check(a == b) {
+                buildString {
+                    appendLine("Mirror drift detected in region #${i + 1}.")
+                    appendLine("Update both blocks in lockstep — they must remain byte-identical.")
+                    appendLine()
+                    appendLine("--- fluxo-kmp-conf/build.gradle.kts ---")
+                    appendLine(a)
+                    appendLine("--- self/build.gradle.kts ---")
+                    appendLine(b)
+                }
+            }
+        }
+    }
+}
+
+tasks.named("check") { dependsOn(verifyBuildScriptMirror) }

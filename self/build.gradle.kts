@@ -51,8 +51,12 @@ gradlePlugin {
 }
 
 dependencies {
+    // Mirrored with `fluxo-kmp-conf/build.gradle.kts` — the region between the
+    // MIRROR-START / MIRROR-END markers must stay byte-identical in both files.
+    // Verified by the `verifyBuildScriptMirror` task (runs as part of `check`).
+    // MIRROR-START
     implementation(libs.tomlj)
-    // Spotless util classes required, used internally
+    // Spotless util classes are used internally
     implementation(libs.plugin.spotless)
     // Detekt ReportMergeTask is used internally
     implementation(libs.plugin.detekt)
@@ -77,9 +81,11 @@ dependencies {
     compileOnly(libs.plugins.kotlinx.binCompatValidator.toModuleDependency())
     compileOnly(libs.plugins.vanniktech.mvn.publish.toModuleDependency())
     compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
+    // MIRROR-END
 }
 
 buildConfig {
+    // MIRROR-START
     className("BuildConstants")
     packageName("fluxo.conf.data")
     buildConfigField("String", "PLUGIN_ID", "\"$pluginId\"")
@@ -125,6 +131,9 @@ buildConfig {
     buildConfigField("MODULE_DEPENDENCY_GRAPH", libs.plugins.module.dependency.graph)
     buildConfigField("BUILD_CONFIG", libs.plugins.build.config)
 
+    // FIXME: Add support for plugin:
+    buildConfigField("ABOUT_LIBRARIES", libs.plugins.about.libraries)
+
     fun buildConfigField(
         fieldName: String,
         p: Provider<MinimalExternalModuleDependency>,
@@ -141,6 +150,7 @@ buildConfig {
     buildConfigField("PROGUARD_CORE", libs.proguard.core)
     buildConfigField("KOTLINX_METADATA_JVM", libs.kotlin.metadata.jvm)
     buildConfigField("R8", libs.r8)
+    // MIRROR-END
 }
 
 develocity {
