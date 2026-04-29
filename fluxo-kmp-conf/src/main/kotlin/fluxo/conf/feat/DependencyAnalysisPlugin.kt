@@ -34,7 +34,7 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
         return
     }
 
-    rootProject.configureExtension<DependencyAnalysisExtension> {
+    rootProject.configureExtension<DependencyAnalysisExtension>(name = "dependencyAnalysis") {
         // https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/wiki/Customizing-plugin-behavior
         structure {
             bundle("kotlin-stdlib") {
