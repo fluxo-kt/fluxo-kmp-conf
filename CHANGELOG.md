@@ -3,12 +3,14 @@
 
 ## Unreleased
 
-[//]: # (Removed, Added, Changed, Fixed, Updated)
+[//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
+[//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
 ### Added
 - self-warn (one-shot per JVM) at configuration time when the consumer's Kotlin plugin version is at or beyond the first untabulated minor in the Kotlin → max-JVM-target compatibility table. Surfaces silent JVM-target capping, which previously required maintainer attention to discover.
 - self-warn (one-shot per JVM) at configuration time when the consumer's `kotlinLangVersion` exceeds Detekt's supported maximum, instead of silently clamping.
 - KDoc for `FluxoPublicationConfig.projectName` explaining the Maven-artifact-ID character restriction.
+- KDoc on `enableGradleDoctor` documents the consumer-side escape hatch: override Gradle Doctor defaults via the standard `doctor { ... }` extension on the root project (no wrapper API was added — the existing extension already covers it).
 - README documents the four recognised version-catalog aliases (`androidx.compose.ui.tooling`, `square.leakcanary`, `square.plumber`, `pinned`) — previously a hidden consumer contract.
 
 ### Changed

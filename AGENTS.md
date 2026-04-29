@@ -58,6 +58,7 @@ Tests are integration-style: `fluxo-kmp-conf/src/test/` is sparse (mostly shrink
 ## Conventions
 - **Conventional Commits** required (`feat(scope): …`); types and rules in `CONTRIBUTING.md`. PR titles follow the same. Merges are **`--ff-only`** (enforced by `pr-fast-forward.yml`); avoid merge commits except on hotfix branches.
 - Public API: anything new needs `./gradlew apiDump` + CHANGELOG entry. Internal-only: annotate `@fluxo.annotation.InternalFluxoApi` (wired into BCV `nonPublicMarkers`).
+- **CHANGELOG.md is strictly consumer-facing.** Each entry must answer *"what changes in the consumer's build?"*: new/changed/removed public DSL or ABI; new behaviours/warnings the plugin emits; consumer-compat-floor bumps; wrapped-plugin bumps consumers can observe; bug fixes consumers hit; doc that teaches a previously-undocumented consumer contract. **NOT**: CI, baselines, `verifyBuildScriptMirror`, internal refactors/renames/file-splits, test seeds, AGENTS/ROADMAP edits, regenerated `api/*.api`, SHA-pin / Dependabot grouping, internal-package decoupling that doesn't ship today. Failing the test → commit message, not CHANGELOG.
 - Editorconfig: 4-space Kotlin / `.kts`, 100-col line length. ktlint-official enabled; `trailing-comma` and `no-consecutive-blank-lines` rules disabled.
 - Diffs stay surgical: don't reformat untouched files, don't refactor during bug fixes.
 - **Bumping the plugin's own version**: update `gradle/libs.versions.toml` (`version`), `README.md` badge + example, `.github/workflows/build.yml` KMP cache key.
