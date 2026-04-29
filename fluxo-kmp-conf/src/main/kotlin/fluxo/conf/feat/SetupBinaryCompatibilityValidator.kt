@@ -185,11 +185,16 @@ private val API_CHECK_SPEC = Spec<String> {
 
 
 /**
+ * Fallback name of the directory holding BCV's API dumps.
  *
- * @fixme This is a copy of [kotlinx.validation.API_DIR] before 0.14.0
- *   After 0.14.0 it can be customized and requires special support.
+ * BCV ≥ 0.14.0 exposes per-project customisation via
+ * [kotlinx.validation.ApiValidationExtension.apiDumpDirectory], but does NOT
+ * publish a top-level `API_DIR` constant — so this stays as the fallback used
+ * when consumers haven't customised the directory.
  *
- * @see kotlinx.validation.API_DIR
+ * Wiring the customised value through to [fluxo.shrink.ShrinkerKeepRulesFromApiTask]
+ * and [fluxo.artifact.proc.SetupArtifactsProcessing] requires capturing the
+ * extension value at configuration time and routing it as a CC-safe task input
+ * — a deliberate refactor scheduled with the next BCV bump, not a drop-in swap.
  */
-@Deprecated("Should be replaced with dynamic value from kotlinx.validation")
 internal const val API_DIR = "api"
