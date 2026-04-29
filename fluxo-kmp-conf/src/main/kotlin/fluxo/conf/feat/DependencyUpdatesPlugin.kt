@@ -49,7 +49,7 @@ private fun Project.setupGradleVersionsProject() {
         pluginManager.apply(DEPS_VERSIONS_PLUGIN_ID)
     }
     tasks.withType<DependencyUpdatesTask> {
-         if (REJECT_CANDIDATE_RELEASES) {
+        if (REJECT_CANDIDATE_RELEASES) {
             rejectVersionIf {
                 !isNonStable(currentVersion) && isNonStable(candidate.version)
             }

@@ -9,8 +9,9 @@ import org.junit.jupiter.api.Test
  *
  * Production code path is:
  *   1. Try `BaselineProvider.load()` — Detekt's stable API.
- *   2. On failure, reflectively `Class.forName(...).getDeclaredConstructor().newInstance() as BaselineProvider`
- *      against `io.gitlab.arturbosch.detekt.core.baseline.BaselineFormat`.
+ *   2. On failure, reflectively `Class.forName(...).getDeclaredConstructor()`
+ *      `.newInstance() as BaselineProvider` against
+ *      `io.gitlab.arturbosch.detekt.core.baseline.BaselineFormat`.
  *
  * If a Detekt bump renames or removes either side, the consumer-side merge
  * task fails at runtime with a cryptic `ClassNotFoundException` /
@@ -33,13 +34,10 @@ internal class MergeDetektBaselinesReflectiveTest {
         // signature is `Companion.load(ClassLoader = ...)` with a default).
         // Calling it directly mirrors the production path and falsifies the
         // entire chain — companion existence + load method + default arg + the
-        // ServiceLoader plumbing detekt uses internally.
-        val provider = BaselineProvider.load()
-        check(provider != null) {
-            "BaselineProvider.load() returned null — ServiceLoader chain broken; " +
-                "fallback at MergeDetektBaselinesTask.kt:80 will be hit on every " +
-                "consumer build (incurring reflection cost) instead of the cheap path."
-        }
+        // ServiceLoader plumbing detekt uses internally. The return type is
+        // declared non-nullable, so the failure mode is a throw (caught by
+        // JUnit as test failure) — no explicit null check needed.
+        BaselineProvider.load()
     }
 
     @Test

@@ -52,7 +52,7 @@ internal class ShrinkerReflectiveCallerTest {
     }
 
     @Test
-    fun `proguard ConfigurationParser has the constructor and parse method reflective caller invokes`() {
+    fun `proguard ConfigurationParser has the ctor and parse method reflective caller invokes`() {
         // ShrinkerReflectiveCaller.kt:125-129, 133
         val parserClass = Class.forName("proguard.ConfigurationParser", true, cl)
         val confClass = Class.forName("proguard.Configuration", true, cl)

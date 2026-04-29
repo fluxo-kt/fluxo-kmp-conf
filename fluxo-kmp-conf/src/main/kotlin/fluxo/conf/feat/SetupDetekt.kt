@@ -35,34 +35,6 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 private const val DEBUG_DETEKT_LOGS = false
 
-private const val DETEKT_MAX_SUPPORTED_KOTLIN_VERSION = "2.1"
-
-@Volatile
-private var WARNED_DETEKT_KOTLIN_CLAMP = false
-
-// Wrap the silent-clamp logic that was inlined at both Detekt task config sites.
-// Detekt 1.23.x's analyser doesn't recognise Kotlin language versions above
-// `DETEKT_MAX_SUPPORTED_KOTLIN_VERSION`; without this warning a consumer who
-// bumps `kotlinLangVersion` past that point gets reduced analysis silently.
-private fun clampKotlinLangVersionForDetekt(
-    requested: String,
-    logger: org.gradle.api.logging.Logger,
-): String {
-    val max = DETEKT_MAX_SUPPORTED_KOTLIN_VERSION
-    if (requested.toFloat() <= max.toFloat()) return requested
-    if (!WARNED_DETEKT_KOTLIN_CLAMP) {
-        WARNED_DETEKT_KOTLIN_CLAMP = true
-        logger.warn(
-            "[fluxo-kmp-conf] Detekt's max-supported Kotlin language version " +
-                "($max) is older than the requested $requested. Detekt will " +
-                "analyse with --language-version=$max. Bump Detekt to a release " +
-                "that supports Kotlin $requested or update " +
-                "DETEKT_MAX_SUPPORTED_KOTLIN_VERSION in SetupDetekt.kt.",
-        )
-    }
-    return max
-}
-
 private const val MERGE_DETEKT_TASK_NAME = "mergeDetektSarif"
 
 internal const val CONFIG_DIR_NAME = "config"

@@ -160,24 +160,31 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
         p.tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
-            // Gradle 8.3+ exposes dirPermissions/filePermissions (Action-based);
-            // Gradle 9.0 removes the dirMode/fileMode integer setters entirely.
-            // Prefer the modern API; fall back only on Gradle 8.0–8.2.
-            try {
-                dirPermissions { unix("0755") }
-                filePermissions { unix("0644") }
-            } catch (_: NoSuchMethodError) {
-                @Suppress("DEPRECATION")
-                try {
-                    dirMode = "0755".toInt(radix = 8)
-                    fileMode = "0644".toInt(radix = 8)
-                } catch (e: Throwable) {
-                    logger.e("dirMode/fileMode reproducibleArtifacts setup error: $e", e)
-                }
-            } catch (e: Throwable) {
-                logger.e("dirPermissions/filePermissions reproducibleArtifacts setup error: $e", e)
-            }
+            applyReproducibleArchivePermissions()
         }
+    }
+}
+
+// Gradle 8.3+ exposes dirPermissions/filePermissions (Action-based); Gradle 9.0
+// removes the dirMode/fileMode integer setters entirely. Prefer the modern API;
+// fall back to the deprecated setters on Gradle 8.0–8.2.
+private fun AbstractArchiveTask.applyReproducibleArchivePermissions() {
+    try {
+        dirPermissions { unix("0755") }
+        filePermissions { unix("0644") }
+        return
+    } catch (_: NoSuchMethodError) {
+        // Pre-8.3 fallback below.
+    } catch (e: Throwable) {
+        logger.e("dirPermissions/filePermissions reproducibleArtifacts setup error: $e", e)
+        return
+    }
+    @Suppress("DEPRECATION")
+    try {
+        dirMode = "0755".toInt(radix = 8)
+        fileMode = "0644".toInt(radix = 8)
+    } catch (e: Throwable) {
+        logger.e("dirMode/fileMode reproducibleArtifacts setup error: $e", e)
     }
 }
 

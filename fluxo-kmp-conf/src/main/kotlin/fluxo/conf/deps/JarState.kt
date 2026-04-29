@@ -58,7 +58,7 @@ private constructor(
 // break our jar-bundle classloader.
 internal class FileSignature private constructor(
     val files: List<File>,
-    @Suppress("unused")  // serialised; field's identity drives equality.
+    @Suppress("unused") // serialised; field's identity drives equality.
     private val fingerprints: List<Long>,
 ) : Serializable {
 
