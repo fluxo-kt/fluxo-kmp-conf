@@ -160,13 +160,22 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
         p.tasks.withType<AbstractArchiveTask> {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
-            @Suppress("DEPRECATION")
+            // Gradle 8.3+ exposes dirPermissions/filePermissions (Action-based);
+            // Gradle 9.0 removes the dirMode/fileMode integer setters entirely.
+            // Prefer the modern API; fall back only on Gradle 8.0–8.2.
             try {
-                // Deprecated in Gradle 8.8
-                dirMode = "0755".toInt(radix = 8)
-                fileMode = "0644".toInt(radix = 8)
+                dirPermissions { unix("0755") }
+                filePermissions { unix("0644") }
+            } catch (_: NoSuchMethodError) {
+                @Suppress("DEPRECATION")
+                try {
+                    dirMode = "0755".toInt(radix = 8)
+                    fileMode = "0644".toInt(radix = 8)
+                } catch (e: Throwable) {
+                    logger.e("dirMode/fileMode reproducibleArtifacts setup error: $e", e)
+                }
             } catch (e: Throwable) {
-                logger.e("dirMode/fileMode reproducibleArtifacts setup error: $e", e)
+                logger.e("dirPermissions/filePermissions reproducibleArtifacts setup error: $e", e)
             }
         }
     }
