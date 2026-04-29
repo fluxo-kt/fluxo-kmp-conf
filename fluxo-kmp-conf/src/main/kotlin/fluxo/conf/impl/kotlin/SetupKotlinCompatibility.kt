@@ -83,6 +83,14 @@ internal val KOTLIN_2_0_20 = KotlinVersion(2, 0, 20)
 
 internal val KOTLIN_2_1 = KotlinVersion(2, 1, 0)
 
+// Highest Kotlin version represented in the JVM-target compatibility table at
+// `Int.toKotlinSupportedJvmMajorVersion` below. Bump this in lockstep with the
+// table entries — it drives a one-shot warning telling the maintainer the
+// table is stale, replacing the pre-existing silent capping behaviour.
+private val LATEST_TABULATED_KOTLIN = KOTLIN_2_0
+
+@Volatile
+private var WARNED_KOTLIN_BEYOND_TABLE = false
 
 @Volatile
 internal var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT
@@ -112,7 +120,20 @@ internal fun Logger.kotlinPluginVersion(): KotlinVersion {
                 major = parts[0].toInt(),
                 minor = parts[1].toInt(),
                 patch = parts.getOrNull(2)?.toInt() ?: 0,
-            ).also { KOTLIN_PLUGIN_VERSION = it }
+            ).also { v ->
+                KOTLIN_PLUGIN_VERSION = v
+                if (v > LATEST_TABULATED_KOTLIN && !WARNED_KOTLIN_BEYOND_TABLE) {
+                    WARNED_KOTLIN_BEYOND_TABLE = true
+                    logger.warn(
+                        "[fluxo-kmp-conf] Kotlin plugin $v is newer than the " +
+                            "highest entry ($LATEST_TABULATED_KOTLIN) in the " +
+                            "JVM-target compatibility table at " +
+                            "SetupKotlinCompatibility.kt#toKotlinSupportedJvmMajorVersion. " +
+                            "JVM target may be silently capped at the last " +
+                            "tabulated value — extend the table.",
+                    )
+                }
+            }
         }
     } catch (e: Throwable) {
         logger.e("Failed to get Kotlin plugin version: $e", e)
