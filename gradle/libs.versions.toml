@@ -162,7 +162,7 @@ r8 = "8.5.35"
 
 # ASM is a Java bytecode analysis and manipulation framework.
 # https://mvnrepository.com/artifact/org.ow2.asm/asm
-asm = "9.7.1"
+asm = "9.9.1"
 
 
 # region Pinned dependencies
@@ -174,13 +174,13 @@ okhttp = "4.12.0"
 
 # KMP I/O library.
 # https://square.github.io/okio/changelog/
-okio = "3.9.1"
+okio = "3.17.0"
 
 # Bouncy Castle cryptographic libraries.
 # https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on
 # https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
 # https://mvnrepository.com/artifact/org.bouncycastle/bcutil-jdk18on
-bouncycastle = "1.79"
+bouncycastle = "1.84"
 
 # endregion
 
@@ -264,7 +264,7 @@ kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-em
 # Annotations for JVM-based languages
 # https://mvnrepository.com/artifact/org.jetbrains/annotations
 # https://repo1.maven.org/maven2/org/jetbrains/annotations/
-jetbrains-annotation = { module = "org.jetbrains:annotations", version = "26.0.1" }
+jetbrains-annotation = { module = "org.jetbrains:annotations", version = "26.1.0" }
 
 # https://github.com/tomlj/tomlj/releases
 tomlj = { module = "org.tomlj:tomlj", version = "1.1.1" }
@@ -275,7 +275,7 @@ tomlj = { module = "org.tomlj:tomlj", version = "1.1.1" }
 
 # API for working with compression and archive formats.
 # https://mvnrepository.com/artifact/org.apache.commons/commons-compress
-apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.27.1" }
+apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.28.0" }
 
 bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
 bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
@@ -283,11 +283,11 @@ bcutil = { module = "org.bouncycastle:bcutil-jdk18on", version.ref = "bouncycast
 
 # Google core libraries for Java.
 # https://github.com/google/guava/releases
-guava = { module = "com.google.guava:guava", version = "33.3.1-jre" }
+guava = { module = "com.google.guava:guava", version = "33.6.0-jre" }
 
 # Douglas Crockford's reference implementation of a JSON.
 # https://github.com/stleary/JSON-java/releases
-json = { module = "org.json:json", version = "20240303" }
+json = { module = "org.json:json", version = "20251224" }
 
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }

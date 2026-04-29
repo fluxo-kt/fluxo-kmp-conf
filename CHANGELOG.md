@@ -23,6 +23,7 @@
 - bump bundled Dokka 2.0.0-Beta → [_2.0.0_](https://github.com/Kotlin/dokka/releases/tag/v2.0.0) (stable line). v1→v2 task-model migration (Dokka 2.1+ deprecated v1 tasks; 2.2 renders them non-functional) is deferred to the next minor release where it gets proper test coverage.
 - bump Gradle wrapper from _8.11_ to [_8.14.4_](https://docs.gradle.org/8.14.4/release-notes.html) — last 8.x patch line; consumer-compat floor (Gradle 8+) preserved. Canary against new CC violations ahead of the Gradle 9 leap planned in 0.15.0.
 - bump `com.gradle.plugin-publish` 1.3.0 → _1.3.1_ — release notes: "addresses and eliminates all deprecation warnings from Gradle versions up to 8.12.1". Removes 1.3.0's call to `org.gradle.util.VersionNumber.parse` (REMOVED in Gradle 9.0); without this bump, consumers running Gradle 9 against a plugin published with 1.3.0 would hit a hard `NoSuchMethodError` from inside the publish plugin's vulnerability checker.
+- bump pinned-bundle and internal dependencies to current stable: `org.bouncycastle:bcprov-jdk18on` _1.79 → 1.84_ (security), `com.squareup.okio:okio` _3.9.1 → 3.17.0_, `org.json:json` _20240303 → 20251224_ (security), `com.google.guava:guava` _33.3.1-jre → 33.6.0-jre_, `org.apache.commons:commons-compress` _1.27.1 → 1.28.0_, `org.jetbrains:annotations` _26.0.1 → 26.1.0_, `org.ow2.asm:asm` _9.7.1 → 9.9.1_. Pinned-bundle members propagate to consumers that opt in via the `pinned` bundle alias.
 
 
 ## [0.13.2] - 2024-11-26
