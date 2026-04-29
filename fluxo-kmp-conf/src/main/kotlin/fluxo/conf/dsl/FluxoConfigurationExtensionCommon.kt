@@ -134,6 +134,24 @@ public interface FluxoConfigurationExtensionCommon {
      * Only applicable for the root module.
      * Default value: `false`.
      *
+     * Tuning Doctor's checks: when this is `true` we apply
+     * [`com.osacky.doctor`](https://runningcode.github.io/gradle-doctor/)
+     * to the root project. Configure it via the standard
+     * `doctor { … }` extension on the root project — e.g.:
+     *
+     * ```kotlin
+     * // root build.gradle.kts
+     * plugins { id("io.github.fluxo-kt.fluxo-kmp-conf") }
+     * fluxoKmpConf { enableGradleDoctor = true }
+     * doctor {
+     *     javaHome { ensureJavaHomeMatches.set(false) }
+     * }
+     * ```
+     *
+     * No fluxo-side wrapper API is provided — Doctor's own DSL is
+     * type-safe, IDE-completable, and stable; wrapping it would just
+     * mirror its surface.
+     *
      * @see setupVerification
      */
     public var enableGradleDoctor: Boolean
