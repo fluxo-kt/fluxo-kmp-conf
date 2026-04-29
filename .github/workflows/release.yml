@@ -52,7 +52,10 @@ jobs:
 
       - name: GitHub Release
         # https://github.com/anton-yurchenko/git-release#readme
-        uses: docker://antonyurchenko/git-release:latest
+        # Pinned to v6.0.0 (manifest-list digest, multi-arch). Bump by
+        # resolving the new digest with:
+        #   curl -sL "https://hub.docker.com/v2/repositories/antonyurchenko/git-release/tags/<tag>" | jq .digest
+        uses: docker://antonyurchenko/git-release@sha256:b3a7d6a87981f8ed455e6b44c702e55afd95b3e628c324d7fd4f6f85728f792b
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRAFT_RELEASE: "true"

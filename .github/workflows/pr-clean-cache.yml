@@ -24,7 +24,12 @@ jobs:
           REPO: ${{ github.repository }}
           BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge
         run: |
-          gh extension install actions/gh-actions-cache
+          # `--pin <SHA>` requires gh 2.41.0+ (GitHub-hosted runners ship newer).
+          # SHA = actions/gh-actions-cache@v1.0.4 (latest stable as of 2024-04).
+          # Bump by resolving the new tag's commit:
+          #   gh api repos/actions/gh-actions-cache/git/refs/tags/<tag> --jq .object.sha
+          gh extension install actions/gh-actions-cache \
+            --pin d88f49218fd18a37f6f63ee4f8716764316a7f7d
 
           echo "Fetching list of cache key"
           cacheKeysForPR=$(gh actions-cache list -R "$REPO" -B "$BRANCH" -L 100 | cut -f 1 )
