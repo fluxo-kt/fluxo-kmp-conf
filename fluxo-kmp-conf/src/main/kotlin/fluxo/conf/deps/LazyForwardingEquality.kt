@@ -2,14 +2,18 @@
 
 package fluxo.conf.deps
 
-import com.diffplug.spotless.NoLambda
 import fluxo.conf.impl.uncheckedCast
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.io.Serializable
 
-internal abstract class LazyForwardingEquality<T : Serializable> : Serializable, NoLambda {
+// Was: `: Serializable, NoLambda` (com.diffplug.spotless.NoLambda).
+// Spotless's marker interface only required `toBytes(): ByteArray`, which we
+// already declare here. Decoupling lets us bump Spotless across major versions
+// without depending on its internal-package layout (Spotless 7 reorganises
+// the internal classes — see CHANGELOG entry "POSSIBLY BREAKING").
+internal abstract class LazyForwardingEquality<T : Serializable> : Serializable {
     @Volatile
     @Transient
     private var state: T? = null
@@ -37,7 +41,7 @@ internal abstract class LazyForwardingEquality<T : Serializable> : Serializable,
 
     private fun readObjectNoData(): Unit = throw UnsupportedOperationException()
 
-    override fun toBytes(): ByteArray = toBytes(state())
+    open fun toBytes(): ByteArray = toBytes(state())
 
     override fun equals(other: Any?): Boolean = when {
         other == null -> false
