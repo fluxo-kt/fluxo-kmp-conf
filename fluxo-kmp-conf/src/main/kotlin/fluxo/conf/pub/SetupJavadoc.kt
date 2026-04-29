@@ -23,7 +23,6 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
-import org.jetbrains.dokka.gradle.DokkaTask
 
 
 /**
@@ -48,19 +47,12 @@ internal fun vanniktechJavaDocOption(
     if (dokkaSupported && !config.isSnapshot) {
         var canApplyDokka = applyDokka
         while (true) {
+            // Dokka v2 (DGPv2) only — v1 task model is non-functional in 2.2+.
+            // The two distinct plugin ids select output format: javadoc vs HTML.
             if (p.plugins.hasPlugin("org.jetbrains.dokka-javadoc")) {
                 return JavadocJar.Dokka("dokkaGeneratePublicationJavadoc")
             } else if (p.plugins.hasPlugin("org.jetbrains.dokka")) {
-                // only dokka v2 has an extension
-                return if (p.extensions.findByName("dokka") != null) {
-                    JavadocJar.Dokka("dokkaGeneratePublicationHtml")
-                } else {
-                    val dokkaTask = p.provider {
-                        val tasks = p.tasks.withType(DokkaTask::class.java)
-                        tasks.singleOrNull()?.name ?: "dokkaHtml"
-                    }
-                    JavadocJar.Dokka(dokkaTask)
-                }
+                return JavadocJar.Dokka("dokkaGeneratePublicationHtml")
             }
             if (!canApplyDokka || !conf.ctx.loadAndApplyDokkaIfNotApplied(p)) {
                 break
@@ -142,11 +134,17 @@ private fun Project.getOrCreateDokkaTask(
         ?: tasks.register<Jar>(taskName) {
             configureJavadocTask()
             description = "Assembles Kotlin docs with Dokka into a Javadoc jar"
-            // Collect Dokka output
-            val dokkaTaskName = when (type) {
-                ConfigurationType.KOTLIN_MULTIPLATFORM -> "dokkaHtml"
-                // Use a Javadoc-like format for all non-KMP projects.
-                else -> "dokkaJavadoc"
+            // Dokka v2 (DGPv2) splits formats by plugin id: `org.jetbrains.dokka`
+            // generates `dokkaGeneratePublicationHtml`; `org.jetbrains.dokka-javadoc`
+            // generates `dokkaGeneratePublicationJavadoc`. The Javadoc-like format does
+            // not cover KMP source-set hierarchies, so KMP always keeps HTML. For
+            // non-KMP, honour the consumer-applied javadoc plugin when present.
+            val dokkaJavadoc = type != ConfigurationType.KOTLIN_MULTIPLATFORM &&
+                project.plugins.hasPlugin("org.jetbrains.dokka-javadoc")
+            val dokkaTaskName = if (dokkaJavadoc) {
+                "dokkaGeneratePublicationJavadoc"
+            } else {
+                "dokkaGeneratePublicationHtml"
             }
             from(project.tasks.named(dokkaTaskName))
         }
