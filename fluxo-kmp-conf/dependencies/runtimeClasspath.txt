@@ -15,8 +15,8 @@ com.squareup.moshi:moshi-kotlin:1.12.0
 com.squareup.moshi:moshi:1.12.0
 com.squareup.okhttp3:okhttp-bom:4.12.0
 com.squareup.okhttp3:okhttp:4.12.0
-com.squareup.okio:okio-jvm:3.9.1
-com.squareup.okio:okio:3.9.1
+com.squareup.okio:okio-jvm:3.17.0
+com.squareup.okio:okio:3.17.0
 commons-codec:commons-codec:1.16.0
 dev.drewhamilton.poko:poko-annotations-jvm:0.16.0
 dev.drewhamilton.poko:poko-annotations:0.16.0
@@ -52,7 +52,7 @@ org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.4.1
 org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1
 org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.4.1
 org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1
-org.ow2.asm:asm:9.7.1
+org.ow2.asm:asm:9.9.1
 org.slf4j:slf4j-api:1.7.36
 org.snakeyaml:snakeyaml-engine:2.7
 org.tomlj:tomlj:1.1.1
