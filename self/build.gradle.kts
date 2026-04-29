@@ -131,9 +131,6 @@ buildConfig {
     buildConfigField("MODULE_DEPENDENCY_GRAPH", libs.plugins.module.dependency.graph)
     buildConfigField("BUILD_CONFIG", libs.plugins.build.config)
 
-    // FIXME: Add support for plugin:
-    buildConfigField("ABOUT_LIBRARIES", libs.plugins.about.libraries)
-
     fun buildConfigField(
         fieldName: String,
         p: Provider<MinimalExternalModuleDependency>,
