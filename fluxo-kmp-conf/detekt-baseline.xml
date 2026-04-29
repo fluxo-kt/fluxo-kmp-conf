@@ -5,12 +5,10 @@
     <ID>AvoidFirstOrLastOnList:AbstractShrinkerTask.kt$AbstractShrinkerTask$first</ID>
     <ID>AvoidFirstOrLastOnList:ParseJvmApiDump.kt$last</ID>
     <ID>AvoidFirstOrLastOnList:SetupJvmCompatibility.kt$first</ID>
-    <ID>CompilerWarning:DependencyAnalysisPlugin.kt$configureExtension</ID>
     <ID>CompilerWarning:KmpConfigurationContainerDslImpl.kt$KmpConfigurationContainerDslImpl$ExperimentalWasmDsl</ID>
     <ID>CompilerWarning:KotlinJsUtils.kt$compilerOptions</ID>
     <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$targets</ID>
     <ID>CompilerWarning:SetupAndroid.kt$exec</ID>
-    <ID>CompilerWarning:SetupArtifactsProcessing.kt$API_DIR</ID>
     <ID>CompilerWarning:SetupArtifactsProcessing.kt$inputFiles</ID>
     <ID>CompilerWarning:SetupCompose.kt$KotlinCommonOptions</ID>
     <ID>CompilerWarning:SetupCompose.kt$enableIntrinsicRemember</ID>
@@ -28,7 +26,6 @@
     <ID>CompilerWarning:SetupPublication.kt$config: FluxoPublicationConfig</ID>
     <ID>CompilerWarning:SetupPublication.kt$project: Project</ID>
     <ID>CompilerWarning:SetupTestsReport.kt$this is Test</ID>
-    <ID>CompilerWarning:ShrinkerKeepRulesFromApiTask.kt$API_DIR</ID>
     <ID>CompilerWarning:TargetWasmContainer.kt$ExperimentalWasmDsl</ID>
     <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.Configure$ExperimentalWasmDsl</ID>
     <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmJs$ExperimentalWasmDsl</ID>
@@ -172,7 +169,6 @@
     <ID>ForbiddenComment:TomlResultCatalog.kt$TomlResultCatalog$// TODO: Parse bundles</ID>
     <ID>ForbiddenComment:VerifyApiWithReflection.kt$// TODO: Check parent classes and interfaces.</ID>
     <ID>ForbiddenPublicDataClass:FluxoPublicationConfig.kt$FluxoPublicationConfig</ID>
-    <ID>Indentation:DependencyUpdatesPlugin.kt.kt$ </ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String></ID>

@@ -10,4 +10,40 @@
             column="33"/>
     </issue>
 
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.library than 8.7.2 is available: 9.2.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.2.0 is difficult: 8.7.3)">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.library than 8.7.2 is available: 9.2.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.2.0 is difficult: 8.7.3)">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.tools.build:gradle than 8.7.2 is available: 9.2.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.2.0 is difficult: 8.7.3)">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.tools.build:gradle than 8.7.2 is available: 9.2.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.2.0 is difficult: 8.7.3)">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
+    </issue>
+
 </issues>
