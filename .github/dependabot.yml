@@ -1,30 +1,99 @@
-# To get started with Dependabot version updates, you'll need to specify, which
-# package ecosystems to update and where the package manifests are located.
-# Documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# Dependabot configuration. See:
+# https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+#
+# Why grouping + cooldown matters here: this plugin wraps Kotlin / KSP / AGP /
+# Compose / Detekt — coupled releases that must move in lockstep (e.g. Compose
+# 1.10 needs Kotlin 2.1+, KSP 2.3.x needs Kotlin 2.2+, AGP 9 needs Gradle 9).
+# Without `groups`, those fan out into 4+ separate PRs that cannot merge
+# atomically and the catalog drifts behind upstream — the same drift that
+# produced the 0.13.x catch-up plan. Cooldown gives upstream a few days to
+# publish hotfixes before opening a PR.
+#
+# The Gradle ecosystem entry covers `self/` and every `checks/*` build via the
+# single root `gradle/libs.versions.toml` (symlinked into each check). Plugin
+# versions declared inline in `*/settings.gradle.kts` (`com.gradle.develocity`,
+# etc.) are NOT tracked from a root entry — bump them by hand or add per-dir
+# entries if/when drift becomes painful.
 
 version: 2
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
-    commit-message:
-      prefix: "build(deps)"
     schedule:
       interval: "monthly"
+    commit-message:
+      prefix: "build(deps)"
     reviewers:
       - "amal"
     labels:
       - "gradle"
       - "dependencies"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+    groups:
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin:*"
+          - "org.jetbrains.kotlin.*"
+          - "com.google.devtools.ksp"
+          - "com.google.devtools.ksp:*"
+      agp:
+        patterns:
+          - "com.android.tools.build:*"
+          - "com.android.tools:r8"
+          - "com.android.lint"
+          - "com.android.lint.*"
+      compose:
+        patterns:
+          - "org.jetbrains.compose"
+          - "org.jetbrains.compose:*"
+          - "org.jetbrains.compose.*"
+      detekt:
+        patterns:
+          - "io.gitlab.arturbosch.detekt"
+          - "io.gitlab.arturbosch.detekt:*"
+          - "*detekt*"
+      vanniktech:
+        patterns:
+          - "com.vanniktech*"
+          - "com.vanniktech.maven.publish*"
+      dokka:
+        patterns:
+          - "org.jetbrains.dokka"
+          - "org.jetbrains.dokka*"
+      proguard-r8:
+        patterns:
+          - "com.guardsquare:*"
+      build-tooling:
+        patterns:
+          - "com.gradle.develocity"
+          - "com.gradle.plugin-publish"
+          - "com.github.gmazzo.buildconfig"
+          - "com.github.ben-manes.versions"
+          - "com.autonomousapps.dependency-analysis"
+          - "com.dropbox.dependency-guard"
+          - "com.osacky.doctor"
+          - "com.dorongold.task-tree"
+          - "org.barfuin.gradle.taskinfo"
+          - "com.savvasdalkitsis.module-dependency-graph"
+          - "com.louiscad.complete-kotlin"
 
   - package-ecosystem: "github-actions"
     directory: "/"
-    commit-message:
-      prefix: "ci(GitHub)"
     schedule:
       interval: "monthly"
+    commit-message:
+      prefix: "ci(GitHub)"
     reviewers:
       - "amal"
     labels:
       - "gh-action"
       - "dependencies"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+    groups:
+      gh-actions:
+        patterns:
+          - "*"
