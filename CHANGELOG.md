@@ -19,6 +19,9 @@
 ### Fixed
 - the Detekt `languageVersion` clamp parsed Kotlin language versions as `Float`, which silently misranks any future two-digit minor: `"1.10".toFloat() == 1.1f` (would rank below `1.9`), `"2.10".toFloat() == 2.1f` (would not trigger the clamp at all). Replaced with `kotlin.KotlinVersion`-based comparison. Latent today (no Kotlin 1.10/2.10 yet) but a correctness landmine for future minors.
 
+### Updated
+- bump bundled Dokka 2.0.0-Beta → [_2.0.0_](https://github.com/Kotlin/dokka/releases/tag/v2.0.0) (stable line). v1→v2 task-model migration (Dokka 2.1+ deprecated v1 tasks; 2.2 renders them non-functional) is deferred to the next minor release where it gets proper test coverage.
+
 
 ## [0.13.2] - 2024-11-26
 
