@@ -37,6 +37,10 @@ The plugin lazily, target-aware, configures Kotlin/JVM, Android, KMP, Compose, I
 - Shrinker `replaceOutgoingJar = false` in the plugin's own build is intentional — chained R8/ProGuard tasks are *verification-only*, they don't replace the published jar.
 - `afterEvaluate` is used sparingly and always carries a FIXME — prefer lazy `Provider` / `NamedDomainObjectContainer` APIs in new code.
 - Conventional Commits are **convention only** — not CI-enforced. PR titles + commit messages rely on reviewer discipline.
+- **Detekt's `CyclomaticComplexMethod` counts local-function complexity into the enclosing method's score.** Extracting a helper into a local `fun` does NOT reduce the host's CC. To shrink it, hoist the helper to a top-level extension (see the `applyReproducibleArchivePermissions` extraction).
+- **Pure-Kotlin symbols that need unit tests must live in a file with zero KGP refs.** The Kotlin file-class `<clinit>` resolves every top-level symbol declared in the file, so a single `org.jetbrains.kotlin.gradle.*` reference (those types are `compileOnly`) explodes the file's tests with `NoClassDefFoundError`. Pattern: split the testable surface to its own file (e.g. `KotlinVersionTable.kt`, `DetektKotlinClamp.kt`); the file-level docstring documents the discipline.
+- **`kotlin.KotlinVersion`'s `compareTo` is patch-inclusive.** `KotlinVersion(2, 0, 1) > KotlinVersion(2, 0, 0)` is `true` — be deliberate about whether you mean "later patch of the same minor" or "later minor". For minor-bracket membership use a `FIRST_UNTABULATED_<...>` constant compared with `>=`, not a `LATEST_TABULATED_<...>` compared with `>` (the latter false-fires on every patch above 0).
+- **Never use `String.toFloat()` for version comparison.** `"1.10".toFloat() == 1.1f` ranks falsely below `1.9`; `"2.10".toFloat() == 2.1f` ranks falsely equal to `2.1`. Parse to `kotlin.KotlinVersion` (no KGP coupling) and compare lexicographically — see `parseDetektLangVersion`.
 
 ## Common tasks
 | Task | Command |
