@@ -61,45 +61,6 @@ private const val DISABLE_COMPILATIONS_FROM_SOURCE_SETS = false
 
 // region Kotlin versions and compatibility
 
-private val KOTLIN_1_3_30 = KotlinVersion(1, 3, 30)
-
-internal val KOTLIN_1_4 = KotlinVersion(1, 4)
-
-private val KOTLIN_1_6 = KotlinVersion(1, 6)
-
-internal val KOTLIN_1_7 = KotlinVersion(1, 7)
-
-internal val KOTLIN_1_8 = KotlinVersion(1, 8)
-
-internal val KOTLIN_1_8_20 = KotlinVersion(1, 8, 20)
-
-internal val KOTLIN_1_9 = KotlinVersion(1, 9)
-
-internal val KOTLIN_1_9_20 = KotlinVersion(1, 9, 20)
-
-internal val KOTLIN_2_0 = KotlinVersion(2, 0, 0)
-
-internal val KOTLIN_2_0_20 = KotlinVersion(2, 0, 20)
-
-internal val KOTLIN_2_1 = KotlinVersion(2, 1, 0)
-
-// Highest Kotlin version represented in the JVM-target compatibility table at
-// `Int.toKotlinSupportedJvmMajorVersion` below. Bump this in lockstep with the
-// table entries — it drives a one-shot warning telling the maintainer the
-// table is stale, replacing the pre-existing silent capping behaviour.
-private val LATEST_TABULATED_KOTLIN = KOTLIN_2_0
-
-@Volatile
-private var WARNED_KOTLIN_BEYOND_TABLE = false
-
-@Volatile
-internal var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT
-    private set
-
-@Volatile
-internal var KOTLIN_PLUGIN_VERSION_STRING: String = KOTLIN_PLUGIN_VERSION.toString()
-    private set
-
 /**
  * Gets the current Kotlin plugin version.
  *
@@ -113,14 +74,7 @@ internal fun Logger.kotlinPluginVersion(): KotlinVersion {
     try {
         getKotlinPluginVersion(logger).let { versionString ->
             KOTLIN_PLUGIN_VERSION_STRING = versionString
-
-            val baseVersion = versionString.split("-", limit = 2)[0]
-            val parts = baseVersion.split(".")
-            return KotlinVersion(
-                major = parts[0].toInt(),
-                minor = parts[1].toInt(),
-                patch = parts.getOrNull(2)?.toInt() ?: 0,
-            ).also { v ->
+            return parseKotlinPluginVersion(versionString).also { v ->
                 KOTLIN_PLUGIN_VERSION = v
                 if (v > LATEST_TABULATED_KOTLIN && !WARNED_KOTLIN_BEYOND_TABLE) {
                     WARNED_KOTLIN_BEYOND_TABLE = true
@@ -128,7 +82,7 @@ internal fun Logger.kotlinPluginVersion(): KotlinVersion {
                         "[fluxo-kmp-conf] Kotlin plugin $v is newer than the " +
                             "highest entry ($LATEST_TABULATED_KOTLIN) in the " +
                             "JVM-target compatibility table at " +
-                            "SetupKotlinCompatibility.kt#toKotlinSupportedJvmMajorVersion. " +
+                            "KotlinVersionTable.kt#toKotlinSupportedJvmMajorVersion. " +
                             "JVM target may be silently capped at the last " +
                             "tabulated value — extend the table.",
                     )
@@ -170,41 +124,6 @@ private val KOTLIN_LANG_VERSION = try {
 } catch (_: NoSuchMethodError) {
     val v = KOTLIN_PLUGIN_VERSION
     KotlinLangVersion.fromVersion("${v.major}.${v.minor}")
-}
-
-internal fun Int.toKotlinSupportedJvmMajorVersion(): Int {
-    // Align with the current Kotlin plugin supported JVM targets
-    if (this > 8) {
-        val pluginVersion = KOTLIN_PLUGIN_VERSION
-        val maxSupportedTarget = when {
-            // 2.0.0 added support for 22
-            // https://kotlinlang.org/docs/whatsnew20.html#kotlin-jvm
-            pluginVersion >= KOTLIN_2_0 -> 22
-            // 1.9.20 added support for 21
-            // https://kotlinlang.org/docs/whatsnew1920.html#kotlin-jvm
-            pluginVersion >= KOTLIN_1_9_20 -> 21
-            // 1.9.0 added support for 20
-            // https://kotlinlang.org/docs/whatsnew19.html#kotlin-jvm
-            pluginVersion >= KOTLIN_1_9 -> 20
-            // 1.8.0 added support for 19
-            // https://kotlinlang.org/docs/whatsnew18.html#kotlin-jvm
-            pluginVersion >= KOTLIN_1_8 -> 19
-            // 1.6.0 added support for 17
-            // https://kotlinlang.org/docs/whatsnew16.html#kotlin-jvm
-            pluginVersion >= KOTLIN_1_6 -> 17
-            // 1.4.0 supports also 13..14
-            // https://stackoverflow.com/a/64331184/1816338
-            pluginVersion >= KOTLIN_1_4 -> 14
-            // 1.3.30 added support for 9..12.
-            // https://blog.jetbrains.com/kotlin/2019/04/kotlin-1-3-30-released/#SpecifyingJVMbytecodetargets9%E2%80%9312
-            pluginVersion >= KOTLIN_1_3_30 -> 12
-            else -> 8
-        }
-        if (this > maxSupportedTarget) {
-            return maxSupportedTarget
-        }
-    }
-    return this
 }
 
 // endregion

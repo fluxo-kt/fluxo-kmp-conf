@@ -72,10 +72,10 @@ internal class ShrinkerReflectiveCallerTest {
     // region R8
 
     @Test
-    fun `r8 R8 has the main(String[]) entry point reflective caller invokes`() {
+    fun `r8 R8 has the main entrypoint reflective caller invokes`() {
         // ShrinkerReflectiveCaller.kt:147
         val clazz = Class.forName("com.android.tools.r8.R8", true, cl)
-        assertReachable("R8.main(String[])") {
+        assertReachable("R8.main entrypoint") {
             clazz.getDeclaredMethod("main", Array<String>::class.java)
         }
     }
