@@ -93,6 +93,17 @@ A few examples of configuration:
 - [Gradle plugin](checks/gradle-plugin/build.gradle.kts#L14)
 - [Kotlin Multiplatform library](checks/kmp/build.gradle.kts#L15)
 
+#### Recognised version-catalog aliases
+
+The plugin opportunistically wires in the following aliases when defined in your `gradle/libs.versions.toml`. Absence is silent; presence triggers the documented behaviour.
+
+| Alias | Where to define | What it does |
+|---|---|---|
+| `androidx.compose.ui.tooling` | `[libraries]` | Excluded from `dependency-analysis` reports (debug-only dep). |
+| `square.leakcanary` | `[libraries]` | Excluded from `dependency-analysis` reports (debug-only dep). |
+| `square.plumber` | `[libraries]` | Excluded from `dependency-analysis` reports (debug-only dep). |
+| `pinned` | `[bundles]` | List dependencies whose version the plugin should constrain against accidental upstream downgrade. |
+
 
 ## Hierarchical KMP project structure
 
