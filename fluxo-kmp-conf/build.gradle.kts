@@ -205,6 +205,10 @@ val verifyBuildScriptMirror = tasks.register("verifyBuildScriptMirror") {
     val pluginScript = layout.projectDirectory.file("build.gradle.kts").asFile
     val selfScript = layout.projectDirectory.file("../self/build.gradle.kts").asFile
     inputs.files(pluginScript, selfScript)
+    // No real output — declare up-to-date when inputs unchanged so the task
+    // skips on cached `check` runs. Without this, a verification-only task
+    // re-runs every build because Gradle has no outputs to compare against.
+    outputs.upToDateWhen { true }
     doLast {
         val markerRegex = Regex(
             """// MIRROR-START\s*\n(.*?)\s*// MIRROR-END""",
