@@ -22,6 +22,7 @@
 ### Updated
 - bump bundled Dokka 2.0.0-Beta → [_2.0.0_](https://github.com/Kotlin/dokka/releases/tag/v2.0.0) (stable line). v1→v2 task-model migration (Dokka 2.1+ deprecated v1 tasks; 2.2 renders them non-functional) is deferred to the next minor release where it gets proper test coverage.
 - bump Gradle wrapper from _8.11_ to [_8.14.4_](https://docs.gradle.org/8.14.4/release-notes.html) — last 8.x patch line; consumer-compat floor (Gradle 8+) preserved. Canary against new CC violations ahead of the Gradle 9 leap planned in 0.15.0.
+- bump `com.gradle.plugin-publish` 1.3.0 → _1.3.1_ — release notes: "addresses and eliminates all deprecation warnings from Gradle versions up to 8.12.1". Removes 1.3.0's call to `org.gradle.util.VersionNumber.parse` (REMOVED in Gradle 9.0); without this bump, consumers running Gradle 9 against a plugin published with 1.3.0 would hit a hard `NoSuchMethodError` from inside the publish plugin's vulnerability checker.
 
 
 ## [0.13.2] - 2024-11-26
