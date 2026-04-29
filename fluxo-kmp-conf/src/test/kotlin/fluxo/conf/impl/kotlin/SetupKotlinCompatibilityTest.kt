@@ -26,35 +26,52 @@ internal class SetupKotlinCompatibilityTest {
 
     @Test
     fun `JVM target table caps at the documented max per Kotlin minor`() {
-        // Each row is (Kotlin plugin version, requested JVM target, expected effective target).
-        // The 99 case verifies the cap behaviour; the at-cap case verifies passthrough.
+        // (Kotlin plugin version, requested JVM target, expected effective target).
+        //
+        // Two falsification dimensions per branch:
+        //  1. AT-boundary  — proves the `>=` includes the boundary.
+        //  2. JUST-BELOW   — proves the next-lower branch is selected; mutates
+        //                    `>=` to `>` would silently flip these to the higher
+        //                    cap and the test goes RED at the exact branch.
+        // The high-end `99` case proves capping; an impossibly-high
+        // `KotlinVersion(99, 0, 0)` proves the top branch still caps (no
+        // accidental passthrough when a future Kotlin outruns the table).
         val cases = listOf(
+            // top-branch saturation — table doesn't grow itself
+            Triple(KotlinVersion(99, 0, 0), 99, 22),
+            // 2.0 boundary — at + just below
             Triple(KotlinVersion(2, 0, 0), 99, 22),
-            Triple(KotlinVersion(2, 0, 0), 22, 22),
+            Triple(KotlinVersion(1, 9, 21), 99, 21),
+            // 1.9.20 boundary — at + just below
             Triple(KotlinVersion(1, 9, 20), 99, 21),
+            Triple(KotlinVersion(1, 9, 19), 99, 20),
+            // 1.9.0 boundary — at + just below
             Triple(KotlinVersion(1, 9, 0), 99, 20),
+            Triple(KotlinVersion(1, 8, 99), 99, 19),
+            // 1.8.0 boundary — at + just below
             Triple(KotlinVersion(1, 8, 0), 99, 19),
+            Triple(KotlinVersion(1, 7, 99), 99, 17),
+            // 1.6.0 boundary — at + just below
             Triple(KotlinVersion(1, 6, 0), 99, 17),
+            Triple(KotlinVersion(1, 5, 99), 99, 14),
+            // 1.4.0 boundary — at + just below
             Triple(KotlinVersion(1, 4, 0), 99, 14),
+            Triple(KotlinVersion(1, 3, 99), 99, 12),
+            // 1.3.30 boundary — at + just below (falls to else)
             Triple(KotlinVersion(1, 3, 30), 99, 12),
-            Triple(KotlinVersion(1, 3, 0), 99, 8),
+            Triple(KotlinVersion(1, 3, 29), 99, 8),
+            // else branch — pre-1.3.30
+            Triple(KotlinVersion(1, 0, 0), 99, 8),
+            // passthrough at-cap (no over-zealous capping)
+            Triple(KotlinVersion(2, 0, 0), 22, 22),
+            // passthrough below-floor (the >8 guard is the floor, not the table)
+            Triple(KotlinVersion(1, 0, 0), 8, 8),
         )
         for ((kotlin, requested, expected) in cases) {
             assertEquals(
                 expected = expected,
                 actual = requested.toKotlinSupportedJvmMajorVersion(kotlin),
                 message = "Kotlin $kotlin: requested=$requested expected cap=$expected",
-            )
-        }
-    }
-
-    @Test
-    fun `JVM targets at or below 8 pass through unchanged`() {
-        // 8 is the historic floor; below 8 should never be capped.
-        for (target in 1..8) {
-            assertEquals(
-                expected = target,
-                actual = target.toKotlinSupportedJvmMajorVersion(KotlinVersion(1, 3, 0)),
             )
         }
     }
