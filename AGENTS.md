@@ -61,7 +61,7 @@ Tests are integration-style: `fluxo-kmp-conf/src/test/` is sparse (mostly shrink
 - **CHANGELOG.md is strictly consumer-facing.** Each entry must answer *"what changes in the consumer's build?"*: new/changed/removed public DSL or ABI; new behaviours/warnings the plugin emits; consumer-compat-floor bumps; wrapped-plugin bumps consumers can observe; bug fixes consumers hit; doc that teaches a previously-undocumented consumer contract. **NOT**: CI, baselines, `verifyBuildScriptMirror`, internal refactors/renames/file-splits, test seeds, AGENTS/ROADMAP edits, regenerated `api/*.api`, SHA-pin / Dependabot grouping, internal-package decoupling that doesn't ship today. Failing the test → commit message, not CHANGELOG.
 - Editorconfig: 4-space Kotlin / `.kts`, 100-col line length. ktlint-official enabled; `trailing-comma` and `no-consecutive-blank-lines` rules disabled.
 - Diffs stay surgical: don't reformat untouched files, don't refactor during bug fixes.
-- **Bumping the plugin's own version**: update `gradle/libs.versions.toml` (`version`), `README.md` badge + example, `.github/workflows/build.yml` KMP cache key.
+- **Bumping the plugin's own version**: update `gradle/libs.versions.toml` (`version`) and the `README.md` example block (consumer-visible Gradle Plugin Portal version).
 - **Adding a 3rd-party Gradle plugin we wrap**: mirror in `self/build.gradle.kts` *and* `fluxo-kmp-conf/build.gradle.kts` (`compileOnly`/`implementation` + `buildConfigField`). See *Surprises* — no guard.
 - Release: `vanniktech-mvn-publish` + `release.yml`; SCM derived from `SCM_TAG` / `BUILD_NUMBER` env (see `PropsAndEnv.kt`).
 
