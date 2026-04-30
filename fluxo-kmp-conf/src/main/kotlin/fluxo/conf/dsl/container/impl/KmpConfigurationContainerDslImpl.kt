@@ -17,12 +17,8 @@ import fluxo.conf.dsl.container.impl.target.TargetJvmContainer
 import fluxo.conf.dsl.container.impl.target.TargetLinuxContainer
 import fluxo.conf.dsl.container.impl.target.TargetMingwContainer
 import fluxo.conf.dsl.container.impl.target.TargetWasmContainer
-import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
-import fluxo.conf.impl.kotlin.KOTLIN_1_9_20
-import fluxo.conf.impl.kotlin.KOTLIN_2_0
 import fluxoKmpConf
 import org.gradle.api.Action
-import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -117,40 +113,23 @@ internal class KmpConfigurationContainerDslImpl(
         if (linux) linux()
         if (mingw) mingw()
 
-        // WASM target has a problem with Gradle 8+
-        // Reason: One task uses the output of another task
-        //  without declaring an explicit or implicit dependency.
-        // Fixed in Kotlin 2.0.
-        val kpv = holder.kotlinPluginVersion
+        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
         if (wasm) {
-            @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
-            if (kpv >= KOTLIN_1_8_20 &&
-                (kpv >= KOTLIN_2_0 || isGradleNotFailingOnImplicitTaskDependencies())
-            ) {
-                wasmJs()
-
-                // WASI target has been available since Kotlin 1.9.20.
-                // Both WASI and JS can have been used together since Kotlin 2.0.
-                if (wasmWasi && kpv >= KOTLIN_2_0) {
-                    wasmWasi()
-                }
-            }
+            wasmJs()
+            // WASI target has been available since Kotlin 1.9.20.
+            // Both WASI and JS can have been used together since Kotlin 2.0.
+            // Both predicates are unconditionally true under the consumer floor (Kotlin 2.1+).
+            if (wasmWasi) wasmWasi()
         }
 
         kotlinMultiplatform {
-            if (kpv >= KOTLIN_1_9_20) {
-                // Apply the extended default hierarchy explicitly (needed after 1.9.20-RC).
-                // It creates, for example, the iosMain source set.
-                // https://kotlinlang.org/docs/whatsnew1920.html#set-up-the-target-hierarchy.
-                @OptIn(ExperimentalKotlinGradlePluginApi::class)
-                applyDefaultHierarchyTemplate(KotlinHierarchyTemplate.fluxoKmpConf)
-            }
+            // Apply the extended default hierarchy explicitly (needed after 1.9.20-RC).
+            // It creates, for example, the iosMain source set.
+            // https://kotlinlang.org/docs/whatsnew1920.html#set-up-the-target-hierarchy.
+            @OptIn(ExperimentalKotlinGradlePluginApi::class)
+            applyDefaultHierarchyTemplate(KotlinHierarchyTemplate.fluxoKmpConf)
 
             setupBackgroundNativeTests()
         }
     }
 }
-
-// https://docs.gradle.org/current/userguide/validation_problems.html#implicit_dependency
-private fun isGradleNotFailingOnImplicitTaskDependencies() =
-    GradleVersion.current() < GradleVersion.version("8.0")
