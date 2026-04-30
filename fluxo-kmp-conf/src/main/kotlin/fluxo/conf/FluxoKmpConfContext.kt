@@ -14,7 +14,7 @@ import fluxo.conf.impl.TOTAL_OS_MEMORY
 import fluxo.conf.impl.XMX
 import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
-import fluxo.conf.impl.kotlin.mppAndroidSourceSetLayoutVersion
+
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.tryAsBoolean
 import fluxo.log.SHOW_DEBUG_LOGS
@@ -73,14 +73,6 @@ internal abstract class FluxoKmpConfContext
     val libs = FluxoVersionCatalog(rootProject, context = this)
 
     val kotlinPluginVersion: KotlinVersion = rootProject.logger.kotlinPluginVersion()
-
-    /**
-     * [Kotlin 1.8](https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema)
-     * added a new source set layout for Android projects.
-     * It's the default since
-     * [Kotlin 1.9](https://kotlinlang.org/docs/whatsnew19.html#new-android-source-set-layout-enabled-by-default)
-     */
-    val androidLayoutV2: Boolean = rootProject.mppAndroidSourceSetLayoutVersion(kotlinPluginVersion)
 
     val testsDisabled: Boolean
 

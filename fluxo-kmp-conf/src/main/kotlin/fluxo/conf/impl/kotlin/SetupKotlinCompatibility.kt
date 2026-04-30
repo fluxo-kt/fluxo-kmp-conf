@@ -129,33 +129,3 @@ private val KOTLIN_LANG_VERSION = try {
 // endregion
 
 
-// region androidSourceSetLayout v2
-
-/**
- * Detect the Kotlin androidSourceSetLayout v2
- *
- * [Kotlin 1.8](https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema)
- * added a new source set layout for Android projects.
- * It's the default since
- * [Kotlin 1.9](https://kotlinlang.org/docs/whatsnew19.html#new-android-source-set-layout-enabled-by-default)
- *
- * @see org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.PropertyNames.KOTLIN_MPP_ANDROID_SOURCE_SET_LAYOUT_VERSION
- * @see bundle
- */
-@Suppress("MaxLineLength")
-internal fun Project.mppAndroidSourceSetLayoutVersion(version: KotlinVersion): Boolean {
-    // https://kotlinlang.org/docs/whatsnew19.html#new-android-source-set-layout-enabled-by-default
-    // https://kotlinlang.org/docs/whatsnew18.html#kotlinsourceset-naming-schema
-    val layoutVersion = when {
-        version >= KOTLIN_1_9 -> mppAndroidSourceSetLayoutVersionProp ?: 2
-        version >= KOTLIN_1_8 -> mppAndroidSourceSetLayoutVersionProp ?: 1
-        else -> 1
-    }
-    return layoutVersion == 2
-}
-
-private val Project.mppAndroidSourceSetLayoutVersionProp: Int?
-    get() = extensions.extraProperties.properties["kotlin.mpp.androidSourceSetLayoutVersion"]
-        ?.toString()?.toIntOrNull()
-
-// endregion
