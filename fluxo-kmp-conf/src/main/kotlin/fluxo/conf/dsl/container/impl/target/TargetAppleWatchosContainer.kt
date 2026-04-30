@@ -6,8 +6,6 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetCode.WATCHOS_SIMULATOR_ARM64
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.AppleWatchosTarget
-import fluxo.conf.impl.kotlin.KOTLIN_1_8
-import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget as KNT
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests as KNTS
@@ -32,9 +30,9 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
         override fun watchos(configure: AppleWatchosTarget<KNT>.() -> Unit) {
             watchosArm32(configure = configure)
             watchosArm64(configure = configure)
-            if (holder.kotlinPluginVersion >= KOTLIN_1_8) {
-                watchosDeviceArm64(configure = configure)
-            }
+            // watchosDeviceArm64 has been available since KGP 1.8;
+            // unconditional under the layer-2 floor (KGP 2.0+).
+            watchosDeviceArm64(configure = configure)
             watchosX64(configure = configure)
             watchosSimulatorArm64(configure = configure)
         }
@@ -54,13 +52,12 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
             holder.configure(targetName, ::Arm64, KmpTargetCode.WATCHOS_ARM64, configure)
         }
 
+        // watchosDeviceArm64 requires KGP 1.8+; unconditional under the layer-2 floor
+        // (KGP 2.0+); legacy fail-fast was dropped post-floor-bump.
         override fun watchosDeviceArm64(
             targetName: String,
             configure: AppleWatchosTarget<KNT>.() -> Unit,
         ) {
-            if (holder.kotlinPluginVersion < KOTLIN_1_8) {
-                throw GradleException("watchosDeviceArm64 requires Kotlin 1.8 or greater")
-            }
             holder.configure(
                 targetName,
                 ::DeviceArm64,

@@ -5,9 +5,6 @@ import fluxo.conf.dsl.container.impl.ContainerHolderAware
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.WasmTarget
-import fluxo.conf.impl.kotlin.KOTLIN_1_8_20
-import fluxo.conf.impl.kotlin.KOTLIN_1_9_20
-import org.gradle.api.GradleException
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
@@ -23,14 +20,13 @@ internal abstract class TargetWasmContainer<T : KotlinWasmTargetDsl>(
 
     interface Configure : WasmTarget.Configure, ContainerHolderAware {
 
+        // wasmJs (KGP 1.8.20+) and wasmWasi (KGP 1.9.20+) — both unconditional under
+        // the layer-2 floor (KGP 2.0+); legacy fail-fasts were dropped post-floor-bump.
         @ExperimentalWasmDsl
         override fun wasmJs(
             targetName: String,
             configure: WasmTarget<KotlinWasmJsTargetDsl>.() -> Unit,
         ) {
-            if (holder.kotlinPluginVersion < KOTLIN_1_8_20) {
-                throw GradleException("wasmJs requires Kotlin 1.8.20 or greater")
-            }
             holder.configure(targetName, ::WasmJs, KmpTargetCode.WASM_JS, configure)
         }
 
@@ -39,9 +35,6 @@ internal abstract class TargetWasmContainer<T : KotlinWasmTargetDsl>(
             targetName: String,
             configure: WasmTarget<KotlinWasmWasiTargetDsl>.() -> Unit,
         ) {
-            if (holder.kotlinPluginVersion < KOTLIN_1_9_20) {
-                throw GradleException("wasmWasi requires Kotlin 1.9.20 or greater")
-            }
             holder.configure(targetName, ::WasmWasi, KmpTargetCode.WASM_WASI, configure)
         }
     }
