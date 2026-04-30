@@ -347,7 +347,7 @@ internal fun MavenPom.setupPublicationPom(
 
     name.set(config.projectName ?: name.get())
     description.set(config.projectDescription ?: description.get())
-    url.set(config.publicationUrl ?: url.get() ?: config.projectUrl)
+    url.set(config.publicationUrl ?: url.orNull ?: config.projectUrl)
 
     config.inceptionYear?.let { inceptionYear.set(it) }
 
