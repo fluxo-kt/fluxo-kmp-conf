@@ -24,7 +24,7 @@ internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
  * which AGP 9 hard-rejects. The plugin auto-creates a `KotlinMultiplatformAndroidLibraryTarget`
  * via the `kotlin { android { } }` DSL block (no separate `androidTarget()` call needed).
  *
- * @see <a href="https://developer.android.com/kotlin/multiplatform/plugin">Set up the Android Gradle Library Plugin for KMP</a>
+ * @see <a href="https://developer.android.com/kotlin/multiplatform/plugin">AGP KMP Library docs</a>
  */
 internal const val ANDROID_KMP_LIB_PLUGIN_ID = "com.android.kotlin.multiplatform.library"
 

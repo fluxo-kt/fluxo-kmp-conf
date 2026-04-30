@@ -33,11 +33,12 @@ internal fun Project.setupVerification(conf: FluxoConfigurationExtensionImpl) {
     val ignoredFlavors = conf.noVerificationFlavors
     setupDetekt(conf, ignoredBuildTypes, ignoredFlavors, testsDisabled)
 
-    // The AGP-9 KMP+Android plugin (`com.android.kotlin.multiplatform.library`) does NOT register
-    // a top-level `android` Gradle extension — `setupAndroidLint` configures lint via that
-    // extension's `lint` block, so it's only valid for legacy `com.android.{library,application}`.
-    // For the KMP+Android case, lint is exposed via `KotlinMultiplatformAndroidLibraryExtension.lint`
-    // and would need a parallel setup path. Tracked: setupKmpAndroidLint (TODO).
+    // The AGP-9 KMP+Android plugin (`com.android.kotlin.multiplatform.library`) does NOT
+    // register a top-level `android` Gradle extension — `setupAndroidLint` configures lint via
+    // that extension's `lint` block, so it's only valid for legacy `com.android.{library,
+    // application}`. For the KMP+Android case, lint is exposed via
+    // `KotlinMultiplatformAndroidLibraryExtension.lint` and would need a parallel setup path.
+    // Tracked: setupKmpAndroidLint (TODO).
     withAnyPlugin(ANDROID_LIB_PLUGIN_ID, ANDROID_APP_PLUGIN_ID) {
         setupAndroidLint(conf, ignoredBuildTypes, ignoredFlavors, testsDisabled)
     }

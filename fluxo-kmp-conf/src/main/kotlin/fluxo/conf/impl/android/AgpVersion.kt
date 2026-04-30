@@ -26,14 +26,16 @@ internal object AgpVersion {
      *  - Built-in Kotlin (`android.builtInKotlin=true`) is the default.
      *  - Min Gradle is 9.1, min JDK is 17, min build-tools is 36.0.0.
      */
-    val AGP_9_0: KotlinVersion = KotlinVersion(9, 0, 0)
+    @Suppress("MagicNumber")
+    val AGP_9_0: KotlinVersion = KotlinVersion(major = 9, minor = 0, patch = 0)
 
     /**
      * AGP `8.8.0`, the floor where the `com.android.kotlin.multiplatform.library` plugin id and
      * its types (`KotlinMultiplatformAndroidLibraryExtension`,
      * `KotlinMultiplatformAndroidLibraryTarget`) first ship inside the AGP jar — gated, opt-in.
      */
-    val AGP_8_8: KotlinVersion = KotlinVersion(8, 8, 0)
+    @Suppress("MagicNumber")
+    val AGP_8_8: KotlinVersion = KotlinVersion(major = 8, minor = 8, patch = 0)
 
     /**
      * Cached lookup. Keyed by classloader (the `Project` keeps a stable buildscript classloader
@@ -68,7 +70,8 @@ internal object AgpVersion {
      * Probe the classloader for the canonical AGP version source.
      *
      * AGP `>= 7.0` ships [com.android.build.api.AndroidPluginVersion] with a public
-     * `getCurrent()` static helper backed by `CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION`.
+     * `getCurrent()` static helper backed by
+     * `CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION`.
      * The companion-object access (`AndroidPluginVersion.Companion.getCurrent()`) survives the
      * 8.x → 9.x migration unchanged and requires only AGP on the classpath; it does NOT require
      * AGP to be applied as a plugin.

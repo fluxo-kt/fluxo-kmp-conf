@@ -26,7 +26,7 @@ import org.gradle.api.Project
  * AND the consumer hasn't already set them in their build script (we don't override explicit
  * consumer configuration). Idempotent.
  *
- * @see <a href="https://developer.android.com/kotlin/multiplatform/plugin">Set up the Android Gradle Library Plugin for KMP</a>
+ * @see <a href="https://developer.android.com/kotlin/multiplatform/plugin">AGP KMP Library docs</a>
  */
 internal fun Project.setupKmpAndroidExtension(conf: FluxoConfigurationExtensionImpl) {
     pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) {
@@ -59,48 +59,62 @@ internal fun Project.setupKmpAndroidExtension(conf: FluxoConfigurationExtensionI
 private fun KotlinMultiplatformAndroidLibraryExtension.applyFluxoDefaults(
     conf: FluxoConfigurationExtensionImpl,
 ) {
-    val project = conf.project
+    applyNamespace(conf)
+    applyCompileSdk(conf)
+    applyMinSdk(conf)
+    applyBuildToolsVersion(conf)
+}
+
+private fun KotlinMultiplatformAndroidLibraryExtension.applyNamespace(
+    conf: FluxoConfigurationExtensionImpl,
+) {
+    if (!namespace.isNullOrBlank()) return
     val ns = conf.androidNamespace
-    if (namespace.isNullOrBlank() && ns.isNotBlank()) {
+    if (ns.isNotBlank()) {
         namespace = ns
-        project.logger.l("Android namespace '$ns' (KMP+Android)")
-    } else if (namespace.isNullOrBlank()) {
+        conf.project.logger.l("Android namespace '$ns' (KMP+Android)")
+    } else {
         // The new plugin REQUIRES namespace; surface clearly rather than letting AGP fail later
         // with `Namespace not specified` mid-task-graph.
-        project.logger.e(
+        conf.project.logger.e(
             "Required Android namespace IS EMPTY for `$ANDROID_KMP_LIB_PLUGIN_ID` " +
                 "(set `androidNamespace = \"...\"` in `fluxoConfiguration { }` " +
                 "or `kotlin { android { namespace = \"...\" } }` directly).",
         )
     }
+}
 
-    if (compileSdk == null && compileSdkPreview.isNullOrBlank()) {
-        when (val v = conf.androidCompileSdk) {
-            is Int -> compileSdk = v
-            is String -> compileSdkPreview = v
-            null -> Unit
-            else -> project.logger.e(
-                "Unsupported `androidCompileSdk` type ${v::class.simpleName}; " +
-                    "expected Int or String preview. Ignored.",
-            )
-        }
+private fun KotlinMultiplatformAndroidLibraryExtension.applyCompileSdk(
+    conf: FluxoConfigurationExtensionImpl,
+) {
+    if (compileSdk != null || !compileSdkPreview.isNullOrBlank()) return
+    when (val v = conf.androidCompileSdk) {
+        is Int -> compileSdk = v
+        is String -> compileSdkPreview = v
+        else -> conf.project.logger.e(
+            "Unsupported `androidCompileSdk` type ${v::class.simpleName}; " +
+                "expected Int or String preview. Ignored.",
+        )
     }
+}
 
-    if (minSdk == null && minSdkPreview.isNullOrBlank()) {
-        when (val v = conf.androidMinSdk) {
-            is Int -> minSdk = v
-            is String -> minSdkPreview = v
-            null -> Unit
-            else -> project.logger.e(
-                "Unsupported `androidMinSdk` type ${v::class.simpleName}; " +
-                    "expected Int or String preview. Ignored.",
-            )
-        }
+private fun KotlinMultiplatformAndroidLibraryExtension.applyMinSdk(
+    conf: FluxoConfigurationExtensionImpl,
+) {
+    if (minSdk != null || !minSdkPreview.isNullOrBlank()) return
+    when (val v = conf.androidMinSdk) {
+        is Int -> minSdk = v
+        is String -> minSdkPreview = v
+        else -> conf.project.logger.e(
+            "Unsupported `androidMinSdk` type ${v::class.simpleName}; " +
+                "expected Int or String preview. Ignored.",
+        )
     }
+}
 
-    if (buildToolsVersion.isNullOrBlank()) {
-        conf.androidBuildToolsVersion?.takeIf { it.isNotBlank() }?.let {
-            buildToolsVersion = it
-        }
-    }
+private fun KotlinMultiplatformAndroidLibraryExtension.applyBuildToolsVersion(
+    conf: FluxoConfigurationExtensionImpl,
+) {
+    if (!buildToolsVersion.isNullOrBlank()) return
+    conf.androidBuildToolsVersion?.takeIf { it.isNotBlank() }?.let { buildToolsVersion = it }
 }
