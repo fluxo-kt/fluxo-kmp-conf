@@ -68,8 +68,6 @@ public fun Project.isShrinkerDisabled(): Provider<Boolean> = provider {
 
 public fun Project?.buildNumber(): String? = envOrPropValueLenient("BUILD_NUMBER")
 
-internal fun Project.noManualHierarchy(): Boolean = envOrPropFlagValue("NO_MANUAL_HIERARCHY")
-
 internal fun Project.allKmpTargetsEnabled(): Boolean = envOrPropFlagValue(KMP_TARGETS_ALL_PROP)
 
 internal fun Project.isSplitTargetsEnabled(): Boolean =

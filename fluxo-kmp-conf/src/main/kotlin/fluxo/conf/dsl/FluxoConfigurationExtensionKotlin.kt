@@ -67,15 +67,6 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      */
     public var setupKapt: Boolean?
 
-    /**
-     * Flag to set up the Kotlin source sets additionally with the sophisticated,
-     * but now legacy hierarchy.
-     *
-     * Inherited from the parent project if not set.
-     * Default value: `false`.
-     */
-    public var setupLegacyKotlinHierarchy: Boolean
-
 
     // region Compose
 

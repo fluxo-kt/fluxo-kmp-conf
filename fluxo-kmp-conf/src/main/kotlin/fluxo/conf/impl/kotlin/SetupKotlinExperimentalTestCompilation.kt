@@ -29,9 +29,8 @@ internal fun KotlinTarget.setupExperimentalLatestCompilation(
         return
     }
 
-    // Doesn't work with KMP after Kotlin 1.9
-    if (isMultiplatform && !kc.allowManualHierarchy) {
-        // TODO: Find a solution for KMP 2.0
+    // Experimental latest compilation doesn't work with KMP targets (since KGP 2.0+).
+    if (isMultiplatform) {
         return
     }
 

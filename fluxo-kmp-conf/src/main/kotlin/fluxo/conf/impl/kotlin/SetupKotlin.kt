@@ -58,8 +58,7 @@ internal fun configureKotlinJvm(
 ): Boolean {
     val type = conf.mode
     require(type != KOTLIN_MULTIPLATFORM) { "Unexpected Kotlin Multiplatform configuration" }
-    val hasAnyTarget = containers.any { it is KmpTargetContainer<*> }
-    if (!checkIfNeedToConfigure(type, conf, hasAnyTarget)) {
+    if (!checkIfNeedToConfigure(type, conf)) {
         return false
     }
 
@@ -171,8 +170,15 @@ internal fun configureKotlinMultiplatform(
     conf: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
 ): Boolean {
+    if (!checkIfNeedToConfigure(KOTLIN_MULTIPLATFORM, conf)) {
+        return false
+    }
     val hasAnyTarget = containers.any { it is KmpTargetContainer<*> }
-    if (!checkIfNeedToConfigure(KOTLIN_MULTIPLATFORM, conf, hasAnyTarget)) {
+    if (!hasAnyTarget) {
+        conf.project.logger.w(
+            ":${KOTLIN_MULTIPLATFORM.builderMethod}" +
+                " - no applicable Kotlin targets found, skipping module configuration",
+        )
         return false
     }
 
@@ -256,15 +262,8 @@ internal fun configureKotlinMultiplatform(
 private fun checkIfNeedToConfigure(
     type: ConfigurationType,
     conf: FluxoConfigurationExtensionImpl,
-    hasAnyTarget: Boolean,
 ): Boolean {
-    val logger = conf.project.logger
-    val label = ':' + type.builderMethod
-    if (!hasAnyTarget && conf.setupLegacyKotlinHierarchy) {
-        logger.w("$label - no applicable Kotlin targets found, skipping module configuration")
-        return false
-    }
-    logger.l(label)
+    conf.project.logger.l(':' + type.builderMethod)
     return true
 }
 

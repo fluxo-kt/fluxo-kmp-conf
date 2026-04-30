@@ -131,13 +131,6 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
-    val setupLegacyKotlinHierarchyProp: Property<Boolean>
-    override var setupLegacyKotlinHierarchy: Boolean
-        get() = setupLegacyKotlinHierarchyProp.orNull ?: parent?.setupLegacyKotlinHierarchy ?: false
-        set(value) = setupLegacyKotlinHierarchyProp.set(value)
-
-
-    @get:Input
     val optInProp: ListProperty<String>
     override var optIns: List<String>
         get() = optInProp.orNull.orEmpty() + parent?.optIns.orEmpty()

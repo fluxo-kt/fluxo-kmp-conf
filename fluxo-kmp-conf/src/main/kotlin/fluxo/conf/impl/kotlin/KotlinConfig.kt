@@ -44,8 +44,6 @@ internal class KotlinConfig(
     val setupSerialization: Boolean,
     val optIns: Set<String>,
     val optInInternal: Boolean,
-
-    val allowManualHierarchy: Boolean,
 ) {
     fun langAndApiVersions(
         isTest: Boolean,

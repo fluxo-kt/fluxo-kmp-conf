@@ -1,7 +1,6 @@
 package fluxo.conf.dsl.container.impl.target
 
 import AndroidCommonExtension
-import bundleFor
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import fluxo.conf.dsl.container.impl.ContainerContext
@@ -18,9 +17,7 @@ import fluxo.conf.impl.android.AgpVersion
 import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.container
-import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.set
-import fluxo.conf.kmp.SourceSetBundle
 import fluxo.log.e
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -94,7 +91,6 @@ internal abstract class TargetAndroidContainer<T : AndroidCommonExtension>(
         }
         val target = k.createTarget()
         val project = target.project
-        val ctx = context.ctx
 
         // Use a usual test source set tree for Android unit tests.
         // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html#writing-and-running-tests-with-compose-multiplatform
@@ -113,47 +109,6 @@ internal abstract class TargetAndroidContainer<T : AndroidCommonExtension>(
         }
 
         setupAndroid(project)
-
-        val layoutV2 = ctx.androidLayoutV2
-        val bundle = k.sourceSets.bundleFor(target, androidLayoutV2 = layoutV2, isAndroid = true)
-        setupParentSourceSet(k, bundle)
-        if (!allowManualHierarchy) {
-            return
-        }
-
-        /**
-         * Configure Android's variants,
-         * source sets for them are added later.
-         *
-         * @see org.jetbrains.kotlin.gradle.utils.forAllAndroidVariants
-         * @see org.jetbrains.kotlin.gradle.plugin.AndroidProjectHandler
-         */
-        val classifier = target.disambiguationClassifier // android
-        k.sourceSets.configureEach s@{
-            val name = name
-            val isVariantAndroidSourceSet = name.startsWith(classifier) &&
-                "Native" !in name && // exclude `androidNative`
-                this !in bundle
-            if (!isVariantAndroidSourceSet) {
-                return@s
-            }
-
-            // TODO: should androidUnitTestDebug depend on androidUnitTest?
-            // TODO: provide a `setupParentSourceSet` with a single SourceSet arg
-
-            val m: KotlinSourceSet
-            val t: KotlinSourceSet
-            if (isTestRelated()) {
-                m = bundle.main
-                t = this
-            } else {
-                m = this
-                t = bundle.test
-            }
-
-            val variantBundle = SourceSetBundle(main = m, test = t, isAndroid = true)
-            setupParentSourceSet(k, variantBundle)
-        }
     }
 
 

@@ -1,23 +1,6 @@
 package fluxo.conf.dsl.container.impl
 
-import bundleFor
-import commonAndroidNative
-import commonApple
-import commonIos
-import commonJs
-import commonJvm
-import commonLinux
-import commonMacos
-import commonMingw
-import commonNative
-import commonNix
-import commonNonJvm
-import commonTvos
-import commonWasm
-import commonWatchos
-import dependsOn
 import fluxo.conf.impl.set
-import fluxo.conf.kmp.SourceSetBundle
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -31,9 +14,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 ) : ContainerImpl(context), KmpTargetContainer<T> {
 
     final override fun getName(): String = name
-
-    override val allowManualHierarchy: Boolean
-        get() = context.conf.kotlinConfig.allowManualHierarchy
 
     private val lazyTarget = context.objects.set<T.() -> Unit>()
 
@@ -53,8 +33,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
 
 
     override fun setup(k: KotlinMultiplatformExtension) {
-        val target = k.createTarget()
-        setupParentSourceSet(k, k.bundleFor(target))
+        k.createTarget()
     }
 
 
@@ -65,17 +44,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
             const val ANDROID = "android"
         }
 
-        override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
-            if (!allowManualHierarchy) return
-            val bundle = k.commonJvm
-
-            // Fix the broken test-main dependencies in the intermediate KMP source sets.
-            bundle.test.dependsOn(bundle.main)
-
-            @Suppress("DEPRECATION")
-            child dependsOn bundle
-            super.setupParentSourceSet(k, bundle)
-        }
     }
 
 
@@ -85,30 +53,11 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
             const val NON_JVM = "nonJvm"
         }
 
-        override fun setupParentSourceSet(k: KotlinMultiplatformExtension, child: SourceSetBundle) {
-            if (!allowManualHierarchy) return
-            val bundle = k.commonNonJvm
-            @Suppress("DEPRECATION")
-            child dependsOn bundle
-            super.setupParentSourceSet(k, bundle)
-        }
-
 
         interface CommonJs<T : KotlinTarget> : NonJvm<T> {
 
             companion object {
                 const val COMMON_JS = "commonJs"
-            }
-
-            override fun setupParentSourceSet(
-                k: KotlinMultiplatformExtension,
-                child: SourceSetBundle,
-            ) {
-                if (!allowManualHierarchy) return
-                val bundle = k.commonJs
-                @Suppress("DEPRECATION")
-                child dependsOn bundle
-                super.setupParentSourceSet(k, bundle)
             }
 
 
@@ -118,16 +67,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     const val COMMON_WASM = "commonWasm"
                 }
 
-                override fun setupParentSourceSet(
-                    k: KotlinMultiplatformExtension,
-                    child: SourceSetBundle,
-                ) {
-                    if (!allowManualHierarchy) return
-                    val bundle = k.commonWasm
-                    @Suppress("DEPRECATION")
-                    child dependsOn bundle
-                    super.setupParentSourceSet(k, bundle)
-                }
             }
         }
 
@@ -138,35 +77,11 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                 const val NATIVE = "native"
             }
 
-            override fun setupParentSourceSet(
-                k: KotlinMultiplatformExtension,
-                child: SourceSetBundle,
-            ) {
-                if (!allowManualHierarchy) return
-                val bundle = k.commonNative
-                @Suppress("DEPRECATION")
-                child dependsOn bundle
-                super.setupParentSourceSet(k, bundle)
-            }
-
-
             interface Nix<T : KotlinNativeTarget> : Native<T> {
 
                 companion object {
                     const val NIX = "nix"
                 }
-
-                override fun setupParentSourceSet(
-                    k: KotlinMultiplatformExtension,
-                    child: SourceSetBundle,
-                ) {
-                    if (!allowManualHierarchy) return
-                    val bundle = k.commonNix
-                    @Suppress("DEPRECATION")
-                    child dependsOn bundle
-                    super.setupParentSourceSet(k, bundle)
-                }
-
 
                 interface Apple<T : KotlinNativeTarget> : Nix<T> {
 
@@ -174,32 +89,9 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                         const val APPLE = "apple"
                     }
 
-                    override fun setupParentSourceSet(
-                        k: KotlinMultiplatformExtension,
-                        child: SourceSetBundle,
-                    ) {
-                        if (!allowManualHierarchy) return
-                        val bundle = k.commonApple
-                        @Suppress("DEPRECATION")
-                        child dependsOn bundle
-                        super.setupParentSourceSet(k, bundle)
-                    }
-
-
                     interface Ios<T : KotlinNativeTarget> : Apple<T> {
                         companion object {
                             const val IOS = "ios"
-                        }
-
-                        override fun setupParentSourceSet(
-                            k: KotlinMultiplatformExtension,
-                            child: SourceSetBundle,
-                        ) {
-                            if (!allowManualHierarchy) return
-                            val bundle = k.commonIos
-                            @Suppress("DEPRECATION")
-                            child dependsOn bundle
-                            super.setupParentSourceSet(k, bundle)
                         }
                     }
 
@@ -207,50 +99,17 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                         companion object {
                             const val MACOS = "macos"
                         }
-
-                        override fun setupParentSourceSet(
-                            k: KotlinMultiplatformExtension,
-                            child: SourceSetBundle,
-                        ) {
-                            if (!allowManualHierarchy) return
-                            val bundle = k.commonMacos
-                            @Suppress("DEPRECATION")
-                            child dependsOn bundle
-                            super.setupParentSourceSet(k, bundle)
-                        }
                     }
 
                     interface Tvos<T : KotlinNativeTarget> : Apple<T> {
                         companion object {
                             const val TVOS = "tvos"
                         }
-
-                        override fun setupParentSourceSet(
-                            k: KotlinMultiplatformExtension,
-                            child: SourceSetBundle,
-                        ) {
-                            if (!allowManualHierarchy) return
-                            val bundle = k.commonTvos
-                            @Suppress("DEPRECATION")
-                            child dependsOn bundle
-                            super.setupParentSourceSet(k, bundle)
-                        }
                     }
 
                     interface Watchos<T : KotlinNativeTarget> : Apple<T> {
                         companion object {
                             const val WATCHOS = "watchos"
-                        }
-
-                        override fun setupParentSourceSet(
-                            k: KotlinMultiplatformExtension,
-                            child: SourceSetBundle,
-                        ) {
-                            if (!allowManualHierarchy) return
-                            val bundle = k.commonWatchos
-                            @Suppress("DEPRECATION")
-                            child dependsOn bundle
-                            super.setupParentSourceSet(k, bundle)
                         }
                     }
                 }
@@ -259,33 +118,11 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                     companion object {
                         const val LINUX = "linux"
                     }
-
-                    override fun setupParentSourceSet(
-                        k: KotlinMultiplatformExtension,
-                        child: SourceSetBundle,
-                    ) {
-                        if (!allowManualHierarchy) return
-                        val bundle = k.commonLinux
-                        @Suppress("DEPRECATION")
-                        child dependsOn bundle
-                        super.setupParentSourceSet(k, bundle)
-                    }
                 }
 
                 interface AndroidNative : Nix<KotlinNativeTarget> {
                     companion object {
                         const val ANDROID_NATIVE = "androidNative"
-                    }
-
-                    override fun setupParentSourceSet(
-                        k: KotlinMultiplatformExtension,
-                        child: SourceSetBundle,
-                    ) {
-                        if (!allowManualHierarchy) return
-                        val bundle = k.commonAndroidNative
-                        @Suppress("DEPRECATION")
-                        child dependsOn bundle
-                        super.setupParentSourceSet(k, bundle)
                     }
                 }
             }
@@ -293,17 +130,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
             interface Mingw<T : KotlinNativeTarget> : Native<T> {
                 companion object {
                     const val MINGW = "mingw"
-                }
-
-                override fun setupParentSourceSet(
-                    k: KotlinMultiplatformExtension,
-                    child: SourceSetBundle,
-                ) {
-                    if (!allowManualHierarchy) return
-                    val bundle = k.commonMingw
-                    @Suppress("DEPRECATION")
-                    child dependsOn bundle
-                    super.setupParentSourceSet(k, bundle)
                 }
             }
         }

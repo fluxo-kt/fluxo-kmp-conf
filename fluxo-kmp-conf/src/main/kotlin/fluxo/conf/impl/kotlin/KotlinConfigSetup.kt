@@ -4,7 +4,6 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.hasRoomPlugin
 import fluxo.log.l
 import fluxo.log.w
-import noManualHierarchy
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -86,12 +85,6 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         else -> jvmTestsInt.asJvmTargetVersion()
     }
 
-    // As of Kotlin 1.9.20,
-    // none of the source sets can depend on the compilation default source sets.
-    val allowManualHierarchy = pluginVersion < KOTLIN_1_9_20 &&
-        !project.noManualHierarchy() &&
-        setupLegacyKotlinHierarchy
-
     // Experimental test compilation with the latest Kotlin settings.
     // Don't try it for sources with old compatibility settings.
     // TODO: Add env flag for dynamic switch-on when needed
@@ -145,8 +138,6 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         setupSerialization = setupKotlinXSerialization,
         optIns = optIns,
         optInInternal = optInInternal,
-
-        allowManualHierarchy = allowManualHierarchy,
     )
     project.logger.logKotlinProjectCompatibility(kc, pluginVersion)
     return kc
