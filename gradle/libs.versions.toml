@@ -33,7 +33,7 @@ ksp = "2.2.21-2.0.5"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.7.1"
+jetbrains-compose = "1.10.3"
 
 
 # region Android specific
