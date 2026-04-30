@@ -14,6 +14,7 @@
 
 ### Changed
 - **breaking** consumer-compat floor: Kotlin 1.9 → **2.1**, Gradle 8 → **9.0+**. Reasoning: Gradle 8.x daemons embed Kotlin 2.0.x at most; the build matrix in this release (Kotlin 2.2.21 + Gradle 9.3.1 + AGP 9.1.1) cannot guarantee 1.9 source-language compatibility across non-JVM KGP targets. The README badges, the example block in the Quick Start, and the `kotlinLangVersion`/`kotlinApiVersion`/`kotlinCoreLibraries` catalog defaults all advance accordingly.
+- **breaking** `Provider<T?>.getValue(thisRef, property)` property-delegation operator removed. Kotlin 2.2's strict `T:Any` constraint on `Property<T>`/`Provider<T>` collapsed the nullable and non-null overloads to identical signatures; only the non-null variant survives. **Migration**: replace `val x: Foo? by fooProvider` with `val x: Foo? = fooProvider.orNull`.
 - migrate publication archive permissions from the Gradle-9.0-removed `dirMode` / `fileMode` setters to `dirPermissions { unix("0755") }` / `filePermissions { unix("0644") }` (added in Gradle 8.3). Without this, consumers on Gradle 9 would hit `NoSuchMethodError` during publication archive setup.
 - `FluxoPublicationConfig.repositoryUrl` defaults to `null` (was hard-coded to the now-retired Sonatype OSSRH staging/snapshot URLs). When unset, no extra Maven repository is registered — Vanniktech's Central Portal upload path is independent. Set explicitly when publishing to a custom mirror (Artifactory, internal Nexus, etc.).
 
