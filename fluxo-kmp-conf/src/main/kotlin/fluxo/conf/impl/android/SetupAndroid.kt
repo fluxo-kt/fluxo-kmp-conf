@@ -47,9 +47,7 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
     }
     conf.androidBuildToolsVersion?.let { buildToolsVersion = it }
 
-    conf.androidCompileSdk.let {
-        if (it is Int) compileSdk = it else compileSdkPreview = it.toString()
-    }
+    applyAgpSdkProperty(conf.androidCompileSdk, { compileSdk = it }, { compileSdkPreview = it })
 
     val ctx = conf.ctx
     val pseudoLocales = ctx.isMaxDebug && !ctx.isRelease && !ctx.isCI
@@ -59,7 +57,7 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
     // for cross-subtype compatibility; the lambda receiver is the modern `DefaultConfig`
     // (extends `BaseFlavor`) which carries minSdk/testInstrumentationRunner/etc.
     defaultConfig.apply {
-        conf.androidMinSdk.let { if (it is Int) minSdk = it else minSdkPreview = it.toString() }
+        applyAgpSdkProperty(conf.androidMinSdk, { minSdk = it }, { minSdkPreview = it })
 
         // Explicit list of the locales to keep in the final app.
         // Doing this strips out extra locales from libraries like
@@ -227,24 +225,41 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
 }
 
 /**
- * `targetSdk` was removed from `LibraryBaseFlavor` in AGP 9 (target API affects apps,
- * not libraries — libraries inherit the consumer's effective target). Applied only on
- * `ApplicationExtension`, where it's still the source of truth. The `try/catch` is
- * defensive against further AGP restrictions on this property.
+ * `targetSdk` was removed from `LibraryBaseFlavor` in AGP 9 (target API affects apps, not
+ * libraries). The `is ApplicationExtension` smart-cast at the call site fixes the
+ * compile-time half — the property exists on `ApplicationExtension.defaultConfig` in
+ * AGP 9.x. Forward-compat for runtime drift across consumer-applied AGP versions is
+ * delegated to [applyAgpSdkProperty]'s narrow `NoSuchMethodError` catch.
  */
-@Suppress("SwallowedException", "TooGenericExceptionCaught")
 private fun ApplicationExtension.applyApplicationTargetSdk(
     conf: FluxoConfigurationExtensionImpl,
+) = applyAgpSdkProperty(
+    conf.androidTargetSdk,
+    { defaultConfig.targetSdk = it },
+    { defaultConfig.targetSdkPreview = it },
+)
+
+/**
+ * Applies an AGP "Int-or-Preview" SDK property pair. Both setters can disappear or rename
+ * across AGP minor versions (the `*Preview` setters are `@Incubating`; `targetSdk` was
+ * removed from `LibraryBaseFlavor` in AGP 9 — precedent for why this matters); the plugin
+ * supports a range of AGP versions, not just the catalog-pinned one. The narrow
+ * `NoSuchMethodError` catch survives runtime linkage drift while letting real bugs (NPE,
+ * ClassCast, etc.) propagate. Skipping the assignment is strictly safer than aborting
+ * `setupAndroidCommon` — consumers can override the property explicitly downstream.
+ */
+private inline fun applyAgpSdkProperty(
+    value: Any,
+    asInt: (Int) -> Unit,
+    asPreview: (String) -> Unit,
 ) {
-    val target = conf.androidTargetSdk
     try {
-        if (target is Int) {
-            defaultConfig.targetSdk = target
-        } else {
-            defaultConfig.targetSdkPreview = target.toString()
+        when (value) {
+            is Int -> asInt(value)
+            else -> asPreview(value.toString())
         }
-    } catch (_: Throwable) {
-        // Defensive: AGP may further restrict this property in future patches.
+    } catch (_: NoSuchMethodError) {
+        // AGP version drift — preview setter API may have changed/been removed.
     }
 }
 
