@@ -160,6 +160,13 @@ private fun MavenPublishBaseExtension.setupVanniktechKmpPublication(
         plainJavadocSupported = false,
         applyDokka = true,
     )
+    // Vanniktech 0.35 deprecated `androidVariantsToPublish` — both 3-arg and 4-arg
+    // constructors carry the same warning, only the 2-arg form is undeprecated and
+    // it drops the variant-list concept entirely. The consumer-facing override
+    // (`ANDROID_VARIANT_TO_PUBLISH` env/prop) has no replacement on that path, so
+    // we keep the deprecated constructor until a behaviour-preserving migration
+    // surface ships (likely after Vanniktech 0.36+ once the build Kotlin moves).
+    @Suppress("DEPRECATION")
     configure(
         KotlinMultiplatform(
             javadocJar = javadocJar,
