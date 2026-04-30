@@ -77,43 +77,12 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         // testInstrumentationRunner = "androidx.benchmark.junit4.AndroidBenchmarkRunner"
     }
 
-    // `targetSdk` was removed from `LibraryBaseFlavor` in AGP 9 (target API affects apps,
-    // not libraries — libraries inherit the consumer's effective target). Apply only on
-    // `ApplicationExtension`, where it's still the source of truth.
     if (this is ApplicationExtension) {
-        defaultConfig.apply {
-            try {
-                conf.androidTargetSdk.let {
-                    if (it is Int) targetSdk = it else targetSdkPreview = it.toString()
-                }
-            } catch (_: Throwable) {
-                // Defensive: AGP may further restrict this property in future patches.
-            }
-        }
+        applyApplicationTargetSdk(conf)
     }
 
     if (conf.kotlinConfig.setupRoom) {
-        // The KSP-arg part is plugin-agnostic (`room.generateKotlin` / `incremental` /
-        // `schemaLocation`); applies to both AGP 8 and AGP 9.
-        val roomSchemasDir = "${project.projectDir}/schemas"
-        project.ksp {
-            arg("room.generateKotlin", "true")
-            arg("room.incremental", "true")
-            arg("room.schemaLocation", roomSchemasDir)
-        }
-        // The legacy `sourceSets["androidTest"].assets.srcDir(...)` lookup uses AGP's
-        // `TestedExtension.sourceSets` collection, which the AGP-9 modern DSL does NOT
-        // expose. Wire that yourself if you run instrumented Room tests on AGP 9 —
-        // attach `$roomSchemasDir` to your `androidTest` source set's resources/assets
-        // manually. The legacy AGP-8 path keeps the auto-wiring for backwards compat.
-        @Suppress("DEPRECATION")
-        (this as? com.android.build.gradle.TestedExtension)?.sourceSets
-            ?.findByName("androidTest")?.assets?.srcDir(roomSchemasDir)
-            ?: project.logger.l(
-                "Room schemas at '$roomSchemasDir'; on AGP 9 attach to `androidTest` " +
-                    "source set's assets/resources manually — the legacy `TestedExtension." +
-                    "sourceSets` accessor is unavailable on the modern Android DSL.",
-            )
+        applyRoomKspAndAndroidTestAssets(project)
     }
 
     var isApplication = false
@@ -255,6 +224,51 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
     )
 
     project.setupFinalizeAndroidDsl(ctx)
+}
+
+/**
+ * `targetSdk` was removed from `LibraryBaseFlavor` in AGP 9 (target API affects apps,
+ * not libraries — libraries inherit the consumer's effective target). Applied only on
+ * `ApplicationExtension`, where it's still the source of truth. The `try/catch` is
+ * defensive against further AGP restrictions on this property.
+ */
+@Suppress("SwallowedException", "TooGenericExceptionCaught")
+private fun ApplicationExtension.applyApplicationTargetSdk(
+    conf: FluxoConfigurationExtensionImpl,
+) {
+    val target = conf.androidTargetSdk
+    try {
+        if (target is Int) {
+            defaultConfig.targetSdk = target
+        } else {
+            defaultConfig.targetSdkPreview = target.toString()
+        }
+    } catch (_: Throwable) {
+        // Defensive: AGP may further restrict this property in future patches.
+    }
+}
+
+/**
+ * Wires Room KSP arguments (plugin-agnostic) and best-effort `androidTest` source-set
+ * asset attachment via the legacy `TestedExtension.sourceSets` accessor (AGP-8 path).
+ * AGP 9 dropped that accessor from the modern DSL; we log a clear pointer for manual
+ * wiring instead. Extracted to keep `setupAndroidCommon`'s nesting depth in check.
+ */
+private fun CommonExtension.applyRoomKspAndAndroidTestAssets(project: Project) {
+    val roomSchemasDir = "${project.projectDir}/schemas"
+    project.ksp {
+        arg("room.generateKotlin", "true")
+        arg("room.incremental", "true")
+        arg("room.schemaLocation", roomSchemasDir)
+    }
+    @Suppress("DEPRECATION")
+    (this as? com.android.build.gradle.TestedExtension)?.sourceSets
+        ?.findByName("androidTest")?.assets?.srcDir(roomSchemasDir)
+        ?: project.logger.l(
+            "Room schemas at '$roomSchemasDir'; on AGP 9 attach to `androidTest` " +
+                "source set's assets/resources manually — the legacy `TestedExtension." +
+                "sourceSets` accessor is unavailable on the modern Android DSL.",
+        )
 }
 
 private fun Project.configureMonkeyLauncherTasks() {
