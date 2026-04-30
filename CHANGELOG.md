@@ -7,6 +7,9 @@
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 [//]: # (Next release: 0.14.0.)
 
+### Removed
+- **breaking** `FluxoPublicationConfig.sonatypeHost` — Vanniktech 0.34.0 removed `SonatypeHost` and all OSSRH support; Sonatype Central Portal (via `publishToMavenCentral`) is the sole publish target since OSSRH retired 2025-06-30. The field had no remaining semantic content and a soft-deprecation no-op would silently swallow consumer values; a clean removal forces consumers to confront the migration. **Migration**: drop `sonatypeHost = …` from your `FluxoPublicationConfig {}` block and switch publish credentials to a [Central Portal user-token](https://central.sonatype.org/publish/publish-portal-gradle/).
+
 ### Added
 - self-warn (one-shot per JVM) at configuration time when the consumer's Kotlin plugin version is at or beyond the first untabulated minor in the Kotlin → max-JVM-target compatibility table. Surfaces silent JVM-target capping, which previously required maintainer attention to discover.
 - self-warn (one-shot per JVM) at configuration time when the consumer's `kotlinLangVersion` exceeds Detekt's supported maximum, instead of silently clamping.

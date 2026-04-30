@@ -43,25 +43,17 @@ public data class FluxoPublicationConfig(
     public var scmTag: String? = if (isSnapshot) DEFAULT_BRANCH_NAME else "v$version",
 
     /**
-     * No longer consulted: Vanniktech's Maven Publish plugin removed `SonatypeHost`
-     * (and all OSSRH support) in 0.34.0 — Sonatype Central Portal is the only target now.
-     * The field is retained for one release as a no-op so consumers see a deprecation
-     * warning instead of an unresolved-reference compile error; remove it from your
-     * build script and migrate publish credentials to a Central Portal user-token.
+     * URL of an additional Maven repository to publish to (Artifactory, internal Nexus, etc.).
      *
-     * @see <a href="https://central.sonatype.org/publish/publish-portal-gradle/">Central Portal Gradle guide</a>
+     * `null` (default) means no extra repository is registered — the Vanniktech-driven
+     * Central Portal upload path remains available independently.
+     *
+     * Historically defaulted to the Sonatype OSSRH staging/snapshots URLs, but OSSRH was
+     * retired 2025-06-30 and Vanniktech 0.34+ publishes via Central Portal directly, so a
+     * non-null default would silently target dead infrastructure. Set explicitly when
+     * publishing to a custom mirror.
      */
-    @Deprecated(
-        "Vanniktech 0.34+ removed SonatypeHost; Central Portal is the only target. " +
-            "This field is now ignored — remove it from your build script.",
-        level = DeprecationLevel.WARNING,
-    )
-    public var sonatypeHost: Any? = null,
-
-    public var repositoryUrl: String = when {
-        isSnapshot -> "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-        else -> "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-    },
+    public var repositoryUrl: String? = null,
 
     public var licenseName: String? = "The Apache License, Version 2.0",
     public var licenseUrl: String? = "https://www.apache.org/licenses/LICENSE-2.0.txt",

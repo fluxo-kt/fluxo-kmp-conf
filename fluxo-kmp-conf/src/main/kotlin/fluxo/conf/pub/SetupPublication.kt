@@ -471,14 +471,18 @@ internal fun FluxoKmpConfContext.setupPublishingRepositories(
             }
         }
         if (mavenRemoteRepo) {
-            maven {
-                val url = config.repositoryUrl
-                setUrl(url)
-                p.logger.l("setup maven repository: $url")
+            val url = config.repositoryUrl
+            if (url.isNullOrBlank()) {
+                p.logger.l("skipping remote maven repository — `repositoryUrl` is unset")
+            } else {
+                maven {
+                    setUrl(url)
+                    p.logger.l("setup maven repository: $url")
 
-                credentials {
-                    username = config.repositoryUserName
-                    password = config.repositoryPassword
+                    credentials {
+                        username = config.repositoryUserName
+                        password = config.repositoryPassword
+                    }
                 }
             }
         }

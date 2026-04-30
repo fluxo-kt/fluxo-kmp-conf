@@ -129,8 +129,7 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
         ConfigurationType.IDEA_PLUGIN -> {}
 
         // Vanniktech 0.34+ dropped the `host` parameter (OSSRH retired 2025-06-30);
-        // Central Portal is the sole publish target. `config.sonatypeHost` is a
-        // deprecated no-op kept for one release to avoid breaking consumer build scripts.
+        // Central Portal is the sole publish target.
         else -> publishToMavenCentral(automaticRelease = true)
     }
 
