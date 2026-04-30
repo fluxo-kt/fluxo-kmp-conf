@@ -8,7 +8,7 @@ import org.gradle.api.provider.Provider
 @FluxoKmpConfDsl
 public interface ProcessorConfig : ArtifactProcessingChain {
 
-    public val next: Provider<out ProcessorConfig?>
+    public val next: Provider<out ProcessorConfig>
 
 
     /**
@@ -17,7 +17,7 @@ public interface ProcessorConfig : ArtifactProcessingChain {
      *
      * `null` by default (which means the default JRE value).
      */
-    public val maxHeapSize: Property<String?>
+    public val maxHeapSize: Property<String>
 
 
     // region ProcessorCallType

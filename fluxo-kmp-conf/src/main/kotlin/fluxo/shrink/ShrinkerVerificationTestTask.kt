@@ -54,7 +54,7 @@ internal abstract class ShrinkerVerificationTestTask : AbstractTestTask() {
 
     @get:Input
     @get:Optional
-    val chainForLog: Property<String?> = project.objects.nullableProperty()
+    val chainForLog: Property<String> = project.objects.nullableProperty()
 
     @get:InputFile
     @get:SkipWhenEmpty

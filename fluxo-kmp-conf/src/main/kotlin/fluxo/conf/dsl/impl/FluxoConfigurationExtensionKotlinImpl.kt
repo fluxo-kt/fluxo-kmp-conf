@@ -22,7 +22,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
-    val kotlinLangVersionProp: Property<String?>
+    val kotlinLangVersionProp: Property<String>
     override var kotlinLangVersion: String?
         get() {
             return kotlinLangVersionProp.orNull ?: parent?.kotlinLangVersion ?: ctx.libs
@@ -34,7 +34,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = kotlinLangVersionProp.set(value)
 
     @get:Input
-    val kotlinApiVersionProp: Property<String?>
+    val kotlinApiVersionProp: Property<String>
     override var kotlinApiVersion: String?
         get() {
             return kotlinApiVersionProp.orNull ?: parent?.kotlinApiVersion ?: ctx.libs
@@ -46,7 +46,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = kotlinApiVersionProp.set(value)
 
     @get:Input
-    val kotlinTestsLangVersionProp: Property<String?>
+    val kotlinTestsLangVersionProp: Property<String>
     override var kotlinTestsLangVersion: String?
         get() {
             return kotlinTestsLangVersionProp.orNull
@@ -59,7 +59,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = kotlinTestsLangVersionProp.set(value)
 
     @get:Input
-    val kotlinCoreLibrariesProp: Property<String?>
+    val kotlinCoreLibrariesProp: Property<String>
     override var kotlinCoreLibraries: String?
         get() {
             return kotlinCoreLibrariesProp.orNull ?: parent?.kotlinCoreLibraries ?: ctx.libs.v(
@@ -72,7 +72,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
-    val javaLangTargetProp: Property<String?>
+    val javaLangTargetProp: Property<String>
     override var javaLangTarget: String?
         get() {
             return javaLangTargetProp.orNull ?: parent?.javaLangTarget ?: ctx.libs.v(
@@ -84,7 +84,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = javaLangTargetProp.set(value)
 
     @get:Input
-    val javaTestsLangTargetProp: Property<String?>
+    val javaTestsLangTargetProp: Property<String>
     override var javaTestsLangTarget: String?
         get() {
             return javaTestsLangTargetProp.orNull ?: parent?.javaTestsLangTarget ?: ctx.libs
@@ -96,13 +96,13 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = javaTestsLangTargetProp.set(value)
 
     @get:Input
-    val useJdkReleaseProp: Property<Boolean?>
+    val useJdkReleaseProp: Property<Boolean>
     override var useJdkRelease: Boolean
         get() = useJdkReleaseProp.orNull ?: parent?.useJdkRelease ?: true
         set(value) = useJdkReleaseProp.set(value)
 
     @get:Input
-    val setupJvmToolchainProp: Property<Boolean?>
+    val setupJvmToolchainProp: Property<Boolean>
     override var setupJvmToolchain: Boolean
         get() = setupJvmToolchainProp.orNull ?: parent?.setupJvmToolchain ?: false
         set(value) = setupJvmToolchainProp.set(value)
@@ -117,21 +117,21 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
-    val setupKspProp: Property<Boolean?>
+    val setupKspProp: Property<Boolean>
     override var setupKsp: Boolean?
         get() = setupKspProp.orNull ?: parent?.setupKsp
         set(value) = setupKspProp.set(value)
 
 
     @get:Input
-    val setupKaptProp: Property<Boolean?>
+    val setupKaptProp: Property<Boolean>
     override var setupKapt: Boolean?
         get() = setupKaptProp.orNull ?: parent?.setupKapt
         set(value) = setupKaptProp.set(value)
 
 
     @get:Input
-    val setupLegacyKotlinHierarchyProp: Property<Boolean?>
+    val setupLegacyKotlinHierarchyProp: Property<Boolean>
     override var setupLegacyKotlinHierarchy: Boolean
         get() = setupLegacyKotlinHierarchyProp.orNull ?: parent?.setupLegacyKotlinHierarchy ?: false
         set(value) = setupLegacyKotlinHierarchyProp.set(value)
@@ -144,57 +144,57 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = optInProp.set(value)
 
     @get:Input
-    val optInInternalProp: Property<Boolean?>
+    val optInInternalProp: Property<Boolean>
     override var optInInternal: Boolean?
         get() = optInInternalProp.orNull ?: parent?.optInInternal
         set(value) = optInInternalProp.set(value)
 
 
     @get:Input
-    val explicitApiProp: Property<ExplicitApiMode?>
+    val explicitApiProp: Property<ExplicitApiMode>
     override var explicitApi: ExplicitApiMode?
         get() = explicitApiProp.orNull ?: parent?.explicitApi
         set(value) = explicitApiProp.set(value)
 
 
     @get:Input
-    val warningsAsErrorsProp: Property<Boolean?>
+    val warningsAsErrorsProp: Property<Boolean>
     override var allWarningsAsErrors: Boolean?
         get() = warningsAsErrorsProp.orNull ?: parent?.allWarningsAsErrors
         set(value) = warningsAsErrorsProp.set(value)
 
     @get:Input
-    val javaParametersProp: Property<Boolean?>
+    val javaParametersProp: Property<Boolean>
     override var javaParameters: Boolean?
         get() = javaParametersProp.orNull ?: parent?.javaParameters
         set(value) = javaParametersProp.set(value)
 
     @get:Input
-    val useIndyLambdasProp: Property<Boolean?>
+    val useIndyLambdasProp: Property<Boolean>
     override var useIndyLambdas: Boolean?
         get() = useIndyLambdasProp.orNull ?: parent?.useIndyLambdas
         set(value) = useIndyLambdasProp.set(value)
 
     @get:Input
-    val progressiveModeProp: Property<Boolean?>
+    val progressiveModeProp: Property<Boolean>
     override var progressiveMode: Boolean?
         get() = progressiveModeProp.orNull ?: parent?.progressiveMode
         set(value) = progressiveModeProp.set(value)
 
     @get:Input
-    val latestSettingsForTestProp: Property<Boolean?>
+    val latestSettingsForTestProp: Property<Boolean>
     override var latestSettingsForTests: Boolean?
         get() = latestSettingsForTestProp.orNull ?: parent?.latestSettingsForTests
         set(value) = latestSettingsForTestProp.set(value)
 
     @get:Input
-    val experimentalLatestCompilationProp: Property<Boolean?>
+    val experimentalLatestCompilationProp: Property<Boolean>
     override var experimentalLatestCompilation: Boolean?
         get() = experimentalLatestCompilationProp.orNull ?: parent?.experimentalLatestCompilation
         set(value) = experimentalLatestCompilationProp.set(value)
 
     @get:Input
-    val removeAssertionsInReleaseProp: Property<Boolean?>
+    val removeAssertionsInReleaseProp: Property<Boolean>
     override var removeAssertionsInRelease: Boolean?
         get() = removeAssertionsInReleaseProp.orNull ?: parent?.removeAssertionsInRelease
         set(value) = removeAssertionsInReleaseProp.set(value)
@@ -213,7 +213,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
-    val applicationFlagProp: Property<Boolean?>
+    val applicationFlagProp: Property<Boolean>
     override var isApplication: Boolean
         get() = applicationFlagProp.orNull ?: false
         set(value) = applicationFlagProp.set(value)
@@ -232,7 +232,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = addStdlibDependencyProp.set(value)
 
     @get:Input
-    val setupCoroutinesProp: Property<Boolean?>
+    val setupCoroutinesProp: Property<Boolean>
     override var setupCoroutines: Boolean?
         get() = setupCoroutinesProp.orNull ?: parent?.setupCoroutines
         set(value) = setupCoroutinesProp.set(value)
@@ -251,20 +251,20 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
-    val useExperimentalFastJarFsProp: Property<Boolean?>
+    val useExperimentalFastJarFsProp: Property<Boolean>
     override var useExperimentalFastJarFs: Boolean?
         get() = useExperimentalFastJarFsProp.orNull ?: parent?.useExperimentalFastJarFs
         set(value) = useExperimentalFastJarFsProp.set(value)
 
 
     @get:Input
-    val enableComposeProp: Property<Boolean?>
+    val enableComposeProp: Property<Boolean>
     override var enableCompose: Boolean?
         get() = enableComposeProp.orNull ?: parent?.enableCompose
         set(value) = enableComposeProp.set(value)
 
     @get:Input
-    val suppressKotlinComposeCompatibilityCheckProp: Property<Boolean?>
+    val suppressKotlinComposeCompatibilityCheckProp: Property<Boolean>
     override var suppressKotlinComposeCompatibilityCheck: Boolean?
         get() = suppressKotlinComposeCompatibilityCheckProp.orNull
             ?: parent?.suppressKotlinComposeCompatibilityCheck
@@ -279,13 +279,13 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
-    val enableApiValidationProp: Property<Boolean?>
+    val enableApiValidationProp: Property<Boolean>
     override var enableApiValidation: Boolean
         get() = enableApiValidationProp.orNull ?: parent?.enableApiValidation ?: false
         set(value) = enableApiValidationProp.set(value)
 
     @get:Input
-    val apiValidationProp: Property<BinaryCompatibilityValidatorConfig?>
+    val apiValidationProp: Property<BinaryCompatibilityValidatorConfig>
     val apiValidationGetter: BinaryCompatibilityValidatorConfig?
         get() {
             return apiValidationProp.orNull
@@ -312,38 +312,38 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
-    val setupVerificationProp: Property<Boolean?>
+    val setupVerificationProp: Property<Boolean>
     override var setupVerification: Boolean
         get() = setupVerificationProp.orNull ?: parent?.setupVerification ?: false
         set(value) = setupVerificationProp.set(value)
 
     @get:Input
-    val enableDetektCompilerPluginProp: Property<Boolean?>
+    val enableDetektCompilerPluginProp: Property<Boolean>
     override var enableDetektCompilerPlugin: Boolean?
         get() = enableDetektCompilerPluginProp.orNull ?: parent?.enableDetektCompilerPlugin
         set(value) = enableDetektCompilerPluginProp.set(value)
 
     @get:Input
-    val enableDetektAutoCorrectProp: Property<Boolean?>
+    val enableDetektAutoCorrectProp: Property<Boolean>
     override var enableDetektAutoCorrect: Boolean?
         get() = enableDetektAutoCorrectProp.orNull ?: parent?.enableDetektAutoCorrect
         set(value) = enableDetektAutoCorrectProp.set(value)
 
     @get:Input
-    val enableGenericAndroidLintProp: Property<Boolean?>
+    val enableGenericAndroidLintProp: Property<Boolean>
     override var enableGenericAndroidLint: Boolean
         get() = enableGenericAndroidLintProp.orNull ?: parent?.enableGenericAndroidLint ?: false
         set(value) = enableGenericAndroidLintProp.set(value)
 
     @get:Input
-    val enableSpotlessProp: Property<Boolean?>
+    val enableSpotlessProp: Property<Boolean>
     override var enableSpotless: Boolean
         get() = enableSpotlessProp.orNull ?: parent?.enableSpotless ?: false
         set(value) = enableSpotlessProp.set(value)
 
 
     @get:Input
-    val useDokkaProp: Property<Boolean?>
+    val useDokkaProp: Property<Boolean>
     override var useDokka: Boolean
         get() = useDokkaProp.orNull ?: parent?.useDokka ?: false
         set(value) = useDokkaProp.set(value)

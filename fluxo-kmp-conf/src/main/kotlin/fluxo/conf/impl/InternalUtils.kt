@@ -38,7 +38,7 @@ internal fun Project.envOrPropFlagValue(name: String): Boolean {
 }
 
 
-internal fun Project.envOrProp(name: String): Provider<String?> {
+internal fun Project.envOrProp(name: String): Provider<String> {
     return provider { envOrPropValue(name) }.memoizeSafe(logger)
 }
 

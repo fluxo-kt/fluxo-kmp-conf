@@ -41,7 +41,7 @@ internal abstract class ShrinkerKeepRulesFromApiTask : DefaultTask() {
 
     @get:Input
     @get:Optional
-    abstract val keepModifier: Property<String?>
+    abstract val keepModifier: Property<String>
 
     @get:InputFiles
     @get:SkipWhenEmpty

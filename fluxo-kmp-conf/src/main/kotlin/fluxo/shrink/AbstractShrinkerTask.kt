@@ -86,7 +86,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Optional
     @get:Input
-    val chainForLog: Property<String?> = objects.nullableProperty()
+    val chainForLog: Property<String> = objects.nullableProperty()
 
     @get:InputFiles
     @get:CompileClasspath
@@ -110,19 +110,19 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Optional
     @get:Input
-    val dontoptimize: Property<Boolean?> = objects.nullableProperty()
+    val dontoptimize: Property<Boolean> = objects.nullableProperty()
 
     @get:Optional
     @get:Input
-    val dontobfuscate: Property<Boolean?> = objects.nullableProperty()
+    val dontobfuscate: Property<Boolean> = objects.nullableProperty()
 
     @get:Optional
     @get:Input
-    val obfuscateIncrementally: Property<Boolean?> = objects.nullableProperty()
+    val obfuscateIncrementally: Property<Boolean> = objects.nullableProperty()
 
     @get:Optional
     @get:Input
-    val r8FulMode: Property<Boolean?> = objects.nullableProperty()
+    val r8FulMode: Property<Boolean> = objects.nullableProperty()
 
     private val r8Compat
         get() = r8FulMode.orNull != true
@@ -178,11 +178,11 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
     @get:Input
     @get:Optional
-    val jvmTarget: Property<String?> = objects.nullableProperty()
+    val jvmTarget: Property<String> = objects.nullableProperty()
 
     @get:Input
     @get:Optional
-    val androidMinSdk: Property<Int?> = objects.nullableProperty()
+    val androidMinSdk: Property<Int> = objects.nullableProperty()
 
     @get:Input
     @get:Optional
@@ -190,7 +190,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         objects.listProperty<ProcessorCallType>()
 
     @get:Internal
-    val maxHeapSize: Property<String?> = objects.nullableProperty()
+    val maxHeapSize: Property<String> = objects.nullableProperty()
 
     @get:Internal
     val vmOptions: Property<Boolean> = objects.notNullProperty(true)

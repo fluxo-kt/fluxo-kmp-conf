@@ -22,7 +22,7 @@ internal class ArtifactProcessorConfigImpl(
 
     // region chaining
 
-    override val next: Property<ProcessorConfig?> = objects.nullableProperty()
+    override val next: Property<ProcessorConfig> = objects.nullableProperty()
 
     override fun shrinkWithR8(configure: ProcessorConfigR8.() -> Unit) =
         setNextProcessor(JvmShrinker.R8, configure)
@@ -46,7 +46,7 @@ internal class ArtifactProcessorConfigImpl(
     // endregion
 
 
-    override val maxHeapSize: Property<String?> = objects.nullableProperty()
+    override val maxHeapSize: Property<String> = objects.nullableProperty()
 
     override val callFallbackOrder: ListProperty<ProcessorCallType> =
         objects.listProperty<ProcessorCallType>()

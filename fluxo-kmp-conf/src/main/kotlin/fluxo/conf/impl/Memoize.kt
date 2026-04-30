@@ -11,7 +11,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
 
 /** @see memoize */
-internal fun <T> Provider<T>.memoizeSafe(logger: Logger?): Provider<T> {
+internal fun <T : Any> Provider<T>.memoizeSafe(logger: Logger?): Provider<T> {
     return try {
         memoize()
     } catch (e: Throwable) {
@@ -22,7 +22,7 @@ internal fun <T> Provider<T>.memoizeSafe(logger: Logger?): Provider<T> {
 }
 
 /** @see org.jetbrains.intellij.memoize */
-internal fun <T> Provider<T>.memoize(): Provider<T> = when (this) {
+internal fun <T : Any> Provider<T>.memoize(): Provider<T> = when (this) {
     // ValueSource instances already memoize their value
     is DefaultValueSourceProviderFactory.ValueSourceProvider<*, *> -> this
 

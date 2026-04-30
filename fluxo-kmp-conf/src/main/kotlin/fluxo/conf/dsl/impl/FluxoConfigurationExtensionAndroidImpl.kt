@@ -21,13 +21,13 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     FluxoConfigurationExtensionImplBase {
 
     @get:Input
-    val androidNamespacePrefixProp: Property<String?>
+    val androidNamespacePrefixProp: Property<String>
     override var androidNamespacePrefix: String?
         get() = androidNamespacePrefixProp.orNull ?: parent?.androidNamespacePrefix
         set(value) = androidNamespacePrefixProp.set(value)
 
     @get:Input
-    val androidNamespaceProp: Property<String?>
+    val androidNamespaceProp: Property<String>
     override var androidNamespace: String
         get() = (
             androidNamespaceProp.orNull.takeIf { !it.isNullOrBlank() }
@@ -42,14 +42,14 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
         set(value) = androidNamespaceProp.set(value)
 
     @get:Input
-    val androidApplicationIdProp: Property<String?>
+    val androidApplicationIdProp: Property<String>
     override var androidApplicationId: String
         get() = androidApplicationIdProp.orNull ?: parent?.androidApplicationId ?: androidNamespace
         set(value) = androidApplicationIdProp.set(value)
 
 
     @get:Input
-    val androidVersionCodeProp: Property<Int?>
+    val androidVersionCodeProp: Property<Int>
     override var androidVersionCode: Int
         get() = androidVersionCodeProp.orNull
             ?: parent?.androidVersionCode
@@ -59,7 +59,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
 
 
     @get:Input
-    val androidMinSdkProp: Property<Any?>
+    val androidMinSdkProp: Property<Any>
     override var androidMinSdk: Any
         get() = androidMinSdkProp.orNull
             ?: parent?.androidMinSdk
@@ -72,7 +72,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
         }
 
     @get:Input
-    val androidTargetSdkProp: Property<Any?>
+    val androidTargetSdkProp: Property<Any>
     override var androidTargetSdk: Any
         get() = androidTargetSdkProp.orNull
             ?: parent?.androidTargetSdk
@@ -85,7 +85,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
         }
 
     @get:Input
-    val androidCompileSdkProp: Property<Any?>
+    val androidCompileSdkProp: Property<Any>
     override var androidCompileSdk: Any
         get() = androidCompileSdkProp.orNull
             ?: parent?.androidCompileSdk
@@ -109,7 +109,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
 
 
     @get:Input
-    val androidBuildToolsVersionProp: Property<String?>
+    val androidBuildToolsVersionProp: Property<String>
     override var androidBuildToolsVersion: String?
         get() = androidBuildToolsVersionProp.orNull
             ?: parent?.androidBuildToolsVersion
@@ -129,7 +129,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     // Mask android VariantBuilder with Any
     // to avoid runtime error when Android plugin isn't present.
     @get:Input
-    val filterVariantsProp: Property<((Any) -> Boolean)?>
+    val filterVariantsProp: Property<(Any) -> Boolean>
     val filterVariants: ((Any) -> Boolean)?
         get() = filterVariantsProp.orNull
         // TODO: Avoid casting
@@ -153,7 +153,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
 
 
     @get:Input
-    val setupRoomProp: Property<Boolean?>
+    val setupRoomProp: Property<Boolean>
     override var setupRoom: Boolean?
         get() = setupRoomProp.orNull ?: parent?.setupRoom
         set(value) = setupRoomProp.set(value)

@@ -25,20 +25,20 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     FluxoConfigurationExtensionImplBase {
 
     @get:Input
-    val enablePublicationProp: Property<Boolean?>
+    val enablePublicationProp: Property<Boolean>
     override var enablePublication: Boolean?
         get() = enablePublicationProp.orNull ?: parent?.enablePublication
         set(value) = enablePublicationProp.set(value)
 
     @get:Input
-    val useVanniktechPublishProp: Property<Boolean?>
+    val useVanniktechPublishProp: Property<Boolean>
     override var useVanniktechPublish: Boolean?
         get() = useVanniktechPublishProp.orNull ?: parent?.useVanniktechPublish
         set(value) = useVanniktechPublishProp.set(value)
 
 
     @get:Input
-    val versionProp: Property<String?>
+    val versionProp: Property<String>
     override var version: String
         get() = versionProp.orNull
             ?: parent?.version?.takeIf { it.isNotBlank() }
@@ -47,7 +47,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         set(value) = versionProp.set(value)
 
     @get:Input
-    val groupProp: Property<String?>
+    val groupProp: Property<String>
     override var group: String
         get() = groupProp.orNull
             ?: parent?.group?.takeIf { it.isNotBlank() }
@@ -56,14 +56,14 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         set(value) = groupProp.set(value)
 
     @get:Input
-    val projectNameProp: Property<String?>
+    val projectNameProp: Property<String>
     override var projectName: String?
         get() = projectNameProp.orNull ?: parent?.projectName
         set(value) = projectNameProp.set(value)
 
 
     @get:Input
-    val descriptionProp: Property<String?>
+    val descriptionProp: Property<String>
     override var description: String?
         get() {
             return descriptionProp.orNull
@@ -74,40 +74,40 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
 
 
     @get:Input
-    val defaultBranchProp: Property<String?>
+    val defaultBranchProp: Property<String>
     override var defaultGitBranchName: String
         get() = defaultBranchProp.orNull ?: parent?.defaultGitBranchName ?: DEFAULT_BRANCH_NAME
         set(value) = defaultBranchProp.set(value)
 
 
     @get:Input
-    val githubProjectProp: Property<String?>
+    val githubProjectProp: Property<String>
     override var githubProject: String?
         get() = githubProjectProp.orNull ?: parent?.githubProject
         set(value) = githubProjectProp.set(value)
 
 
     @get:Input
-    val reproducibleSnapshotsProp: Property<Boolean?>
+    val reproducibleSnapshotsProp: Property<Boolean>
     override var reproducibleArtifacts: Boolean?
         get() = reproducibleSnapshotsProp.orNull ?: parent?.reproducibleArtifacts
         set(value) = reproducibleSnapshotsProp.set(value)
 
 
     @get:Input
-    val processArtifactProp: Property<Boolean?>
+    val processArtifactProp: Property<Boolean>
     override var processArtifacts: Boolean
         get() = processArtifactProp.orNull ?: parent?.processArtifacts ?: true
         set(value) = processArtifactProp.set(value)
 
     @get:Input
-    val replaceOutgoingJarProp: Property<Boolean?>
+    val replaceOutgoingJarProp: Property<Boolean>
     override var replaceOutgoingJar: Boolean
         get() = replaceOutgoingJarProp.orNull ?: parent?.replaceOutgoingJar ?: true
         set(value) = replaceOutgoingJarProp.set(value)
 
     @get:Input
-    val autoGenerateKeepRulesFromApisProp: Property<Boolean?>
+    val autoGenerateKeepRulesFromApisProp: Property<Boolean>
     override var autoGenerateKeepRulesFromApis: Boolean
         get() = autoGenerateKeepRulesFromApisProp.orNull
             ?: parent?.autoGenerateKeepRulesFromApis
@@ -115,7 +115,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         set(value) = autoGenerateKeepRulesFromApisProp.set(value)
 
     @get:Input
-    val autoGenerateKeepModifierProp: Property<String?>
+    val autoGenerateKeepModifierProp: Property<String>
     override var autoGenerateKeepModifier: String
         get() = autoGenerateKeepModifierProp.orNull
             ?: parent?.autoGenerateKeepModifier
@@ -140,7 +140,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
 
 
     @get:Input
-    val publicationConfigProp: Property<FluxoPublicationConfig?>
+    val publicationConfigProp: Property<FluxoPublicationConfig>
     override var publicationConfig: FluxoPublicationConfig?
         get() = publicationConfigProp.orNull ?: parent?.publicationConfig?.updateForCurrentProject()
         set(value) = publicationConfigProp.set(value)
