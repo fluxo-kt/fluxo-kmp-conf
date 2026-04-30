@@ -131,7 +131,7 @@ spotless = "8.4.0"
 # Gradle plugin for building plugins for IntelliJ-based IDEs.
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij.platform
 # https://github.com/JetBrains/intellij-platform-gradle-plugin/releases
-intellij-platform = "2.1.0"
+intellij-platform = "2.15.0"
 
 # Universal Gradle plugin for artifact publication to any Maven instance.
 # https://github.com/vanniktech/gradle-maven-publish-plugin/blob/main/docs/what.md
