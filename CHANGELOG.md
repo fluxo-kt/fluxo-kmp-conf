@@ -5,7 +5,9 @@
 
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
-[//]: # (Next release: 0.14.0.)
+
+
+## [0.14.0] - 2026-04-30
 
 ### Removed
 - **breaking** `FluxoPublicationConfig.sonatypeHost` — Vanniktech 0.34.0 removed `SonatypeHost` and all OSSRH support; Sonatype Central Portal (via `publishToMavenCentral`) is the sole publish target since OSSRH retired 2025-06-30. The field had no remaining semantic content and a soft-deprecation no-op would silently swallow consumer values; a clean removal forces consumers to confront the migration. **Migration**: drop `sonatypeHost = …` from your `FluxoPublicationConfig {}` block and switch publish credentials to a [Central Portal user-token](https://central.sonatype.org/publish/publish-portal-gradle/).
