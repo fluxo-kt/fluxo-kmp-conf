@@ -286,8 +286,8 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
         conf.explicitApi?.let { explicitApi = it }
         coreLibrariesVersion = kc.coreLibs
 
-        val composeConfig = conf.setupCompose()
-        setupTargets(conf, composeConfig)
+        conf.setupCompose()
+        setupTargets(conf)
         setupSourceSetsKotlinCompatibility(kc)
 
         // TODO: Check KSP setup for KMP modules
@@ -307,7 +307,6 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,
-    composeConfig: ComposeConfiguration?,
     isMultiplatform: Boolean = this is KotlinMultiplatformExtension,
 ) = setupTargets {
     compilations.configureEach compilation@{
@@ -350,10 +349,6 @@ private fun KotlinProjectExtension.setupTargets(
                     isMultiplatform = isMultiplatform,
                 )
             }
-        }
-
-        if (composeConfig != null) {
-            setupComposeLegacyWay(conf, composeConfig, isTest)
         }
 
         // Disable test compilation if tests are disabled.

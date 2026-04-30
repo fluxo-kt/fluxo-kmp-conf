@@ -119,7 +119,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     val hasKotlinCompose = project.hasKotlinCompose
     val setupCompose = enableCompose == true || project.hasKmpCompose || hasKotlinCompose
-    val useKotlinCompose = hasKotlinCompose || setupCompose && pluginVersion >= KOTLIN_2_0
+    val useKotlinCompose = hasKotlinCompose || setupCompose
 
     val kc = KotlinConfig(
         lang = lang,

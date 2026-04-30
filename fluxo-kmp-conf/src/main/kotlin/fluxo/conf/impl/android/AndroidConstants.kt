@@ -35,8 +35,6 @@ internal const val ALIAS_LEAK_CANARY = "square-leakcanary"
 
 internal const val ALIAS_DESUGAR_LIBS = "android-desugarLibs"
 
-internal const val ALIAS_ANDROIDX_COMPOSE_COMPILER = "androidx-compose-compiler"
-
 // Old but sometimes useful annotation lib for Java/Kotlin compatibility.
 // Doesn't update, so no need for the version catalog.
 // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305

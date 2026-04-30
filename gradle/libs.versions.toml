@@ -17,9 +17,9 @@ version = "0.14.0-SNAPSHOT"
 # javaLangTarget 11 is required for Android Gradle Plugin and Android Lint.
 # javaLangTarget 17 is required for IntelliJ Platform Plugin.
 javaLangTarget = "17"
-kotlinLangVersion = "1.9"
-kotlinApiVersion = "1.9"
-kotlinCoreLibraries = "1.9.24"
+kotlinLangVersion = "2.1"
+kotlinApiVersion = "2.1"
+kotlinCoreLibraries = "2.1.21"
 
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
