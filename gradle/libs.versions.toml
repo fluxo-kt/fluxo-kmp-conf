@@ -120,7 +120,7 @@ fluxo-bcv-js = "1.0.0"
 dokka = "2.2.0"
 
 # https://github.com/detekt/detekt/releases
-detekt = "1.23.7"
+detekt = "1.23.8"
 
 # https://github.com/pinterest/ktlint/releases
 ktlint = "1.4.1"
