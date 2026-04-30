@@ -2,6 +2,7 @@ package fluxo.conf.impl.android
 
 import kotlin.KotlinVersion
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import org.junit.jupiter.api.Test
 
@@ -87,11 +88,16 @@ internal class AgpVersionTest {
         // Direct falsification of the `>= AGP_9_0` comparison the rest of the plugin relies
         // on. A future refactor that swaps `>=` for `>` would silently flip 9.0.0 itself
         // back to the AGP-8 path; this test catches that mutation.
+        // `assertNotNull` smart-casts to non-null in JUnit/kotlin.test, avoiding `!!`
+        // (which the project's detekt config forbids).
         val parsed90 = AgpVersion.parseVersionString("9.0.0")
         val parsed87 = AgpVersion.parseVersionString("8.7.2")
         val parsed91 = AgpVersion.parseVersionString("9.1.1-alpha09+meta")
-        assertEquals(true, parsed90!! >= AgpVersion.AGP_9_0)
-        assertEquals(false, parsed87!! >= AgpVersion.AGP_9_0)
-        assertEquals(true, parsed91!! >= AgpVersion.AGP_9_0)
+        assertNotNull(parsed90)
+        assertNotNull(parsed87)
+        assertNotNull(parsed91)
+        assertEquals(true, parsed90 >= AgpVersion.AGP_9_0)
+        assertEquals(false, parsed87 >= AgpVersion.AGP_9_0)
+        assertEquals(true, parsed91 >= AgpVersion.AGP_9_0)
     }
 }
