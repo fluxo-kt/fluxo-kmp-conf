@@ -2,12 +2,10 @@
 
 package fluxo.conf.impl.kotlin
 
-import bundle
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.isTestRelated
 import fluxo.log.e
 import kotlin.KotlinVersion
-import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
