@@ -32,6 +32,7 @@
 - README documents the four recognised version-catalog aliases (`androidx.compose.ui.tooling`, `square.leakcanary`, `square.plumber`, `pinned`) — previously a hidden consumer contract.
 
 ### Fixed
+- the Kotlin → max-JVM-target compatibility table was missing the Kotlin 2.1 (JVM 23) and Kotlin 2.2 (JVM 24) entries. Consumers on Kotlin 2.1+ requesting a JVM target of 23 or 24 were silently capped at JVM 22; they would see no error but the compiled bytecode targeted a lower JVM version than requested.
 - the Detekt `languageVersion` clamp parsed Kotlin language versions as `Float`, which silently misranks any future two-digit minor: `"1.10".toFloat() == 1.1f` (would rank below `1.9`), `"2.10".toFloat() == 2.1f` (would not trigger the clamp at all). Replaced with `kotlin.KotlinVersion`-based comparison. Latent today (no Kotlin 1.10/2.10 yet) but a correctness landmine for future minors.
 - under AGP 9 + non-KMP `com.android.library`, applying the plugin caused `compileDebugKotlin` to fail at runtime with `NoSuchMethodError: BuildPerformanceMetrics.add$default(...)`. The plugin's published runtime classpath leaked `kotlin-compiler-embeddable` and 25 transitives (incl. detekt-core) onto the consumer's buildscript classpath; under AGP 9's built-in Kotlin (KGP 2.2.10 bundled) Gradle's `<latest>` resolution upgraded `kotlin-compiler-embeddable` to our pinned 2.2.21 while KGP itself stayed at 2.2.10, producing the inlined-helper signature mismatch. Both are now `compileOnly` — `KotlinToolingVersion` is provided transitively by KGP at the consumer-applied version, `BaselineProvider` by detekt-gradle-plugin, and the only direct shrinker call (`Lazy.getValueOrNull`) was inlined. KGP's own warning ("please remove kotlin-compiler-embeddable from the build classpath alongside KGP") no longer fires for our plugin.
 
@@ -455,6 +456,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.14.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.14.0
 [0.13.2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.2
 [0.13.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.1
 [0.13.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.0
