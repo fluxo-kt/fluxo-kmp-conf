@@ -142,12 +142,12 @@ vanniktech-mvn-publish = "0.36.0"
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-gradle.
-proguard = "7.6.0"
+proguard = "7.9.1"
 
 # ProGuardCORE, a library to read, analyze, modify, and write JVM class files.
 # https://github.com/Guardsquare/proguard-core/releases
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-core.
-proguard-core = "9.1.6"
+proguard-core = "9.3.2"
 
 # Kotlin JVM metadata manipulation library.
 # Used by ProGuardCORE.

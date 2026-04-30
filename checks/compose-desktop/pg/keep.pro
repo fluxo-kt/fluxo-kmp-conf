@@ -10,3 +10,12 @@
 }
 
 -dontwarn androidx.annotation.**
+
+# JetBrains Runtime (JBR) bridge classes shipped with Compose Desktop call
+# `MethodHandle.invokeExact(...)` with explicit signatures. ProGuard cannot
+# resolve those against the polymorphic-signature method on
+# `java.lang.invoke.MethodHandle` because the actual runtime descriptor is
+# synthesised per call-site by the JVM. The references are intrinsically
+# unresolvable from a static-analysis perspective; suppress the warning.
+-dontwarn com.jetbrains.JBR
+-dontwarn com.jetbrains.JBR$*
