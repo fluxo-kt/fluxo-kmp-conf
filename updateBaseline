@@ -43,9 +43,15 @@ cd ../compose-desktop || exit 106
 pwd
 ./gradlew ${COMMON_TASKS} || EXIT_CODE=107
 
+echo ""
+echo "=======> checks/android"
+cd ../android || exit 108
+pwd
+./gradlew ${COMMON_TASKS} || EXIT_CODE=109
+
 
 # Go back to root
-cd ../../ || exit 108
+cd ../../ || exit 110
 
 if [ ${EXIT_CODE} -ne 0 ]; then
   echo ""
