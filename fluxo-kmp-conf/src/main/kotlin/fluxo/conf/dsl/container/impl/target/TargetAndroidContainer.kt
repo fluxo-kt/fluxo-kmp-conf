@@ -72,17 +72,26 @@ internal abstract class TargetAndroidContainer<T>(
     override fun KotlinMultiplatformExtension.createTarget() =
         createTarget(::androidTarget)
 
+    /**
+     * `false` when the upstream Android plugin auto-creates the KMP `android` target on the
+     * consumer's behalf (AGP-9 KMP+Android: `com.android.kotlin.multiplatform.library` builds
+     * the target from `kotlin { android { } }`). In that case `setup` MUST skip the legacy
+     * `KotlinMultiplatformExtension.createTarget(::androidTarget)` call — invoking it would
+     * collide with the auto-created target ("target 'android' already exists, but was not
+     * created with the 'android' preset") because the new plugin uses the disjoint
+     * `KotlinMultiplatformAndroidLibraryTarget` type, not `KotlinAndroidTarget`. The default
+     * `true` matches the legacy AGP-8 path; subclasses bound to AGP-9-only plugin ids
+     * override.
+     */
+    protected open val needsLegacyTargetCreation: Boolean get() = true
+
     final override fun setup(k: KotlinMultiplatformExtension) {
-        if (this is Library && this.isAgp9OrLater) {
-            // The AGP-9 KMP+Android plugin (`com.android.kotlin.multiplatform.library`)
-            // auto-creates the `android` KMP target via `kotlin { android { } }`. The legacy
-            // `createTarget(::androidTarget)` call below would crash with "target 'android'
-            // already exists, but was not created with the 'android' preset" — the new
-            // target is `KotlinMultiplatformAndroidLibraryTarget`, disjoint from
-            // `KotlinAndroidTarget` (this container's type parameter) and managed by its own
-            // source-set layout. Post-extension wiring is delivered by `setupKmpAndroidExtension`
-            // (namespace/compileSdk/minSdk/buildToolsVersion) and `setupKmpAndroidLint`
-            // (Lint config). Only the consumer-facing warning of `setupAndroid` runs here.
+        if (!needsLegacyTargetCreation) {
+            // Legacy target creation skipped — see [needsLegacyTargetCreation]. Post-extension
+            // wiring (namespace/compileSdk/minSdk via `setupKmpAndroidExtension`, Lint via
+            // `setupKmpAndroidLint`) is delivered by separate `pluginManager.withPlugin` hooks
+            // keyed on the AGP-9 KMP plugin id. Only `setupAndroid` runs here, for the
+            // consumer-facing warning when `lazyAndroid` is non-empty.
             setupAndroid(context.project)
             return
         }
@@ -174,16 +183,16 @@ internal abstract class TargetAndroidContainer<T>(
         init {
             // AGP 9 has no KMP+Android equivalent of `com.android.application` (only
             // `com.android.kotlin.multiplatform.library`). KMP+Android-app modules cannot
-            // be expressed under AGP 9 and must restructure (split a thin AGP-9 KMP library
-            // beneath a non-KMP `com.android.application` consumer module). Fail-fast at
-            // container init rather than letting AGP reject the co-application later.
+            // be expressed under AGP 9 and must restructure. Fail-fast at container init
+            // rather than letting AGP reject the co-application later with a cryptic message.
             if (AgpVersion.isAgp9OrLater(context.project)) {
                 error(
                     "AGP 9+ rejects `$ANDROID_APP_PLUGIN_ID` + " +
                         "`kotlin(\"multiplatform\")` co-application, and there is no " +
-                        "KMP-aware AGP application plugin. KMP+Android-app modules must " +
-                        "split into a KMP library (this module, swap to `androidLibrary { … }`) " +
-                        "consumed by a separate non-KMP `com.android.application` module.",
+                        "KMP-aware AGP application plugin. Restructure: extract the KMP " +
+                        "shared code into a separate `$ANDROID_KMP_LIB_PLUGIN_ID` module, " +
+                        "and keep the app code (Activity, manifest, etc.) in a thin " +
+                        "non-KMP `$ANDROID_APP_PLUGIN_ID` module that depends on it.",
                 )
             }
             applyPlugins(ANDROID_APP_PLUGIN_ID)
@@ -204,10 +213,12 @@ internal abstract class TargetAndroidContainer<T>(
          * `true` when the build classpath has AGP `>= 9.0` — controls whether this container
          * applies the legacy [ANDROID_LIB_PLUGIN_ID] (AGP 8.x) or the AGP-9 KMP-aware
          * [ANDROID_KMP_LIB_PLUGIN_ID]. Snapshotted at init time (before `applyPlugins`
-         * queues the id); `setupAndroid` re-uses the same flag so init and configuration
-         * agree on which line is active.
+         * queues the id); `setupAndroid` and [needsLegacyTargetCreation] re-use the same
+         * flag so init, target creation, and configuration agree on which line is active.
          */
-        internal val isAgp9OrLater: Boolean = AgpVersion.isAgp9OrLater(context.project)
+        private val isAgp9OrLater: Boolean = AgpVersion.isAgp9OrLater(context.project)
+
+        override val needsLegacyTargetCreation: Boolean get() = !isAgp9OrLater
 
         init {
             applyPlugins(if (isAgp9OrLater) ANDROID_KMP_LIB_PLUGIN_ID else ANDROID_LIB_PLUGIN_ID)
