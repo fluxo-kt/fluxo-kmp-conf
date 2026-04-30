@@ -161,6 +161,19 @@ jobs:
         env:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
+      - name: 'Run check-android'
+        if: always()
+        timeout-minutes: 8
+        working-directory: checks/android
+        # Non-KMP `com.android.library` integration check exercising the legacy AGP
+        # `LibraryExtension`-based `setupAndroidCommon` path under AGP 9 (built-in
+        # Kotlin). Lost CI coverage when `checks/kmp` migrated to the AGP-9 KMP+Android
+        # plugin in 0.14.0; restored here so the non-KMP setup line stays falsified
+        # against every plugin/Kotlin/AGP bump.
+        run: ./gradlew build assemble check --continue --stacktrace --scan
+        env:
+          GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+
       - name: 'Run self check'
         timeout-minutes: 4
         working-directory: self
