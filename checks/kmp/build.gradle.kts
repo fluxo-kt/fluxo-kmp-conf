@@ -14,7 +14,7 @@ plugins {
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
 
-val manual = true
+val manual = false
 
 fkcSetupMultiplatform(
     config = {
