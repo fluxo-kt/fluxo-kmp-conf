@@ -28,6 +28,10 @@ fkcSetupMultiplatform(
         enableGenericAndroidLint = true
         enableGradleDoctor = true
         enablePublication = true
+        // Verifies Fluxo's auto-config of `kotlin.android { }` from FluxoConfigurationExtension.
+        androidNamespace = "io.github.fluxo_kt.fluxo_kmp_conf.checks.kmp"
+        androidCompileSdk = 34
+        androidMinSdk = 24
     },
     kmp = { if (!manual) allDefaultTargets() },
 ) {
@@ -38,12 +42,9 @@ fkcSetupMultiplatform(
         jvm()
         // The `android { }` block (provided by `com.android.kotlin.multiplatform.library`)
         // creates the android KMP target. No explicit `androidTarget()` — AGP 9 hard-rejects it.
+        // namespace/compileSdk/minSdk are auto-applied by Fluxo from `androidNamespace` etc.
         @Suppress("UnstableApiUsage")
-        android {
-            namespace = "io.github.fluxo_kt.fluxo_kmp_conf.checks.kmp"
-            compileSdk = 34
-            minSdk = 24
-        }
+        android {}
 
         js {
             browser()

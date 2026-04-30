@@ -26,6 +26,7 @@ import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
 import fluxo.conf.impl.android.setupAndroidCommon
+import fluxo.conf.impl.android.setupKmpAndroidExtension
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.get
@@ -301,6 +302,12 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     }
 
     project.setupVerification(conf)
+
+    // AGP-9 KMP+Android (`com.android.kotlin.multiplatform.library`) registers a separate
+    // extension type that does not flow through `setupAndroidCommon` (which is bound to the
+    // legacy `TestedExtension`). Apply Fluxo defaults — namespace, compileSdk, minSdk —
+    // to the new extension when the consumer applies the new plugin.
+    project.setupKmpAndroidExtension(conf)
 }
 
 // FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions
