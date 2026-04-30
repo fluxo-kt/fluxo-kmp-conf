@@ -10,6 +10,7 @@ import fluxo.conf.dsl.container.impl.ContainerHolderAware
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.AndroidTarget
+import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.android.ANDROID_KMP_LIB_PLUGIN_ID
@@ -181,11 +182,13 @@ internal abstract class TargetAndroidContainer<T>(
         TargetAndroidContainer<BaseAppModuleExtension>(context, targetName) {
 
         init {
-            // AGP 9 has no KMP+Android equivalent of `com.android.application` (only
-            // `com.android.kotlin.multiplatform.library`). KMP+Android-app modules cannot
-            // be expressed under AGP 9 and must restructure. Fail-fast at container init
-            // rather than letting AGP reject the co-application later with a cryptic message.
-            if (AgpVersion.isAgp9OrLater(context.project)) {
+            // The AGP-9 + KMP+app rejection only applies when this container runs in a KMP
+            // context — non-KMP `fkcSetupAndroidApp` (which routes through `asAndroid(app=true)`
+            // → `ANDROID_APP` configuration type) is unaffected because there is no
+            // `kotlin("multiplatform")` plugin to co-apply with `com.android.application`.
+            // Stand-alone AGP 9 + `com.android.application` continues to work as before.
+            val isKmpContext = context.conf.mode == KOTLIN_MULTIPLATFORM
+            if (isKmpContext && AgpVersion.isAgp9OrLater(context.project)) {
                 error(
                     "AGP 9+ rejects `$ANDROID_APP_PLUGIN_ID` + " +
                         "`kotlin(\"multiplatform\")` co-application, and there is no " +
@@ -210,22 +213,32 @@ internal abstract class TargetAndroidContainer<T>(
         TargetAndroidContainer<LibraryExtension>(context, targetName) {
 
         /**
-         * `true` when the build classpath has AGP `>= 9.0` — controls whether this container
-         * applies the legacy [ANDROID_LIB_PLUGIN_ID] (AGP 8.x) or the AGP-9 KMP-aware
-         * [ANDROID_KMP_LIB_PLUGIN_ID]. Snapshotted at init time (before `applyPlugins`
-         * queues the id); `setupAndroid` and [needsLegacyTargetCreation] re-use the same
-         * flag so init, target creation, and configuration agree on which line is active.
+         * `true` only when **both** of these hold:
+         *  - this container is being constructed inside a KMP configuration
+         *    (`fkcSetupMultiplatform { androidLibrary { } }` → `asKmp` → `KOTLIN_MULTIPLATFORM`),
+         *  - the build classpath carries AGP `>= 9.0`.
+         *
+         * Non-KMP `fkcSetupAndroidLibrary` always routes through the legacy
+         * `com.android.library` path regardless of AGP version: that plugin still works
+         * standalone under AGP 9, and applying the KMP+Android library plugin in a non-KMP
+         * project causes AGP to error with `'com.android.kotlin.multiplatform.library' and
+         * 'com.android.library' plugins cannot be applied in the same project` (the legacy
+         * id gets in via consumer / parent-config defaults). Snapshotted at init time;
+         * `setupAndroid` and [needsLegacyTargetCreation] re-use the same flag so init, target
+         * creation, and configuration agree on which line is active.
          */
-        private val isAgp9OrLater: Boolean = AgpVersion.isAgp9OrLater(context.project)
+        private val useAgp9KmpLine: Boolean =
+            context.conf.mode == KOTLIN_MULTIPLATFORM &&
+                AgpVersion.isAgp9OrLater(context.project)
 
-        override val needsLegacyTargetCreation: Boolean get() = !isAgp9OrLater
+        override val needsLegacyTargetCreation: Boolean get() = !useAgp9KmpLine
 
         init {
-            applyPlugins(if (isAgp9OrLater) ANDROID_KMP_LIB_PLUGIN_ID else ANDROID_LIB_PLUGIN_ID)
+            applyPlugins(if (useAgp9KmpLine) ANDROID_KMP_LIB_PLUGIN_ID else ANDROID_LIB_PLUGIN_ID)
         }
 
         override fun setupAndroid(project: Project) {
-            if (isAgp9OrLater) {
+            if (useAgp9KmpLine) {
                 // The AGP-9 KMP+Android plugin auto-creates the `android` KMP target via
                 // `kotlin { android { } }` and does NOT register a top-level `android`
                 // Gradle extension. `FluxoConfigurationExtension` slot-fills (`namespace`,
