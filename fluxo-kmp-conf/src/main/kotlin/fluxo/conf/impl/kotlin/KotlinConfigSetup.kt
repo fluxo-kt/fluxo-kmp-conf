@@ -36,12 +36,6 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         api = null
     }
 
-    val k2 = pluginVersion >= KOTLIN_2_0 || try {
-        lang != null && lang > KotlinLangVersion.KOTLIN_1_9
-    } catch (_: Throwable) {
-        false
-    }
-
     // TODO: Detect if JVM toolchains are already enabled in the project.
     val jvmToolchain = setupJvmToolchain
     var jvmTargetInt = jvmTarget?.toJvmMajorVersion(jvmToolchain) ?: 0
@@ -56,17 +50,16 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         javaParameters ?: false &&
         !isApplication
 
-    // `jdk-release` requires Kotlin 1.7.0 or newer and JDK 9 or newer.
-    // Also, no sense to use it with the JVM toolchain.
+    // `jdk-release` requires JDK 9 or newer. The Kotlin 1.7+ guard is unconditional
+    // under the layer-2 KGP 2.0+ floor. Also, no sense to use it with the JVM
+    // toolchain.
     //
     // TODO: Auto detect if `-Xjdk-release` actually can be used.
     //  Fail only for release builds if not, warn otherwise.
     //  If there's no `ct.sym` file in JDK but `-Xjdk-release` is used,
     //  the compiler will stop with an error._
     //  https://youtrack.jetbrains.com/issue/KT-29974#focus=Comments-27-9458958.0-0
-    val useJdkRelease = useJdkRelease && !jvmToolchain &&
-        JRE_VERSION >= JRE_1_9 &&
-        pluginVersion >= KOTLIN_1_7
+    val useJdkRelease = useJdkRelease && !jvmToolchain && JRE_VERSION >= JRE_1_9
 
     val progressive = progressiveMode ?: true
 
@@ -126,7 +119,6 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         api = api,
         tests = tests,
         coreLibs = coreLibs,
-        k2 = k2,
 
         jvmTarget = jvmTarget,
         jvmTargetInt = jvmTargetInt,
