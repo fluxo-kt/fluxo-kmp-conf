@@ -97,8 +97,8 @@ private fun KotlinMultiplatformAndroidLibraryExtension.applyNamespace(
 
 private fun KotlinMultiplatformAndroidLibraryExtension.applyCompileSdk(
     conf: FluxoConfigurationExtensionImpl,
-) {
-    if (compileSdk != null || !compileSdkPreview.isNullOrBlank()) return
+) = noSuchMethodSafe {
+    if (compileSdk != null || !compileSdkPreview.isNullOrBlank()) return@noSuchMethodSafe
     when (val v = conf.androidCompileSdk) {
         is Int -> compileSdk = v
         is String -> compileSdkPreview = v
@@ -111,8 +111,8 @@ private fun KotlinMultiplatformAndroidLibraryExtension.applyCompileSdk(
 
 private fun KotlinMultiplatformAndroidLibraryExtension.applyMinSdk(
     conf: FluxoConfigurationExtensionImpl,
-) {
-    if (minSdk != null || !minSdkPreview.isNullOrBlank()) return
+) = noSuchMethodSafe {
+    if (minSdk != null || !minSdkPreview.isNullOrBlank()) return@noSuchMethodSafe
     when (val v = conf.androidMinSdk) {
         is Int -> minSdk = v
         is String -> minSdkPreview = v
@@ -125,8 +125,8 @@ private fun KotlinMultiplatformAndroidLibraryExtension.applyMinSdk(
 
 private fun KotlinMultiplatformAndroidLibraryExtension.applyBuildToolsVersion(
     conf: FluxoConfigurationExtensionImpl,
-) {
-    if (!buildToolsVersion.isNullOrBlank()) return
+) = noSuchMethodSafe {
+    if (!buildToolsVersion.isNullOrBlank()) return@noSuchMethodSafe
     conf.androidBuildToolsVersion?.takeIf { it.isNotBlank() }?.let { buildToolsVersion = it }
 }
 

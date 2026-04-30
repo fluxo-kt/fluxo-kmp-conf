@@ -240,26 +240,21 @@ private fun ApplicationExtension.applyApplicationTargetSdk(
 )
 
 /**
- * Applies an AGP "Int-or-Preview" SDK property pair. Both setters can disappear or rename
- * across AGP minor versions (the `*Preview` setters are `@Incubating`; `targetSdk` was
- * removed from `LibraryBaseFlavor` in AGP 9 — precedent for why this matters); the plugin
- * supports a range of AGP versions, not just the catalog-pinned one. The narrow
- * `NoSuchMethodError` catch survives runtime linkage drift while letting real bugs (NPE,
- * ClassCast, etc.) propagate. Skipping the assignment is strictly safer than aborting
- * `setupAndroidCommon` — consumers can override the property explicitly downstream.
+ * Applies a legacy AGP "Int-or-Preview" SDK property pair. Non-`Int` values fall through
+ * to the preview setter via `toString()` — the legacy path treats `fluxoConfiguration { }`
+ * as the single source of truth, so unsupported types are rare and best squashed into the
+ * preview slot rather than fail-fast (the AGP-9 KMP path opts for fail-fast logging
+ * because that path is bidirectional). The forward-compat NSME catch is shared with the
+ * KMP path via [noSuchMethodSafe].
  */
 private inline fun applyAgpSdkProperty(
     value: Any,
     asInt: (Int) -> Unit,
     asPreview: (String) -> Unit,
-) {
-    try {
-        when (value) {
-            is Int -> asInt(value)
-            else -> asPreview(value.toString())
-        }
-    } catch (_: NoSuchMethodError) {
-        // AGP version drift — preview setter API may have changed/been removed.
+) = noSuchMethodSafe {
+    when (value) {
+        is Int -> asInt(value)
+        else -> asPreview(value.toString())
     }
 }
 
