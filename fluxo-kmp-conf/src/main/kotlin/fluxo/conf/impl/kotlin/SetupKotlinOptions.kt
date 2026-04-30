@@ -35,16 +35,13 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     val compilerArgs = freeCompilerArgs.orElse(emptyList()).get().toMutableSet()
     compilerArgs.addAll(DEFAULT_OPTS)
 
-    val kotlinPluginVersion = context.kotlinPluginVersion
+    // Layer-2 floor is consumer Kotlin 2.1+ (→ KGP 2.1.0+), so the `lang == null` arms
+    // are tautologically `false` (kotlin19orLower) / `true` (kotlin20orUpper). The
+    // remaining checks only fire when the consumer EXPLICITLY overrides
+    // `kotlinLangVersion` via `fluxoConfiguration { }` to a 1.9-or-earlier value.
     val (lang) = kc.langAndApiVersions(isTest = isTest, latestSettings = useLatestSettings)
-    val kotlin19orLower = when {
-        lang != null -> lang <= KotlinLangVersion.KOTLIN_1_9
-        else -> kotlinPluginVersion < KOTLIN_2_0
-    }
-    val kotlin20orUpper = when {
-        lang != null -> lang > KotlinLangVersion.KOTLIN_1_9
-        else -> kotlinPluginVersion >= KOTLIN_2_0
-    }
+    val kotlin19orLower = lang != null && lang <= KotlinLangVersion.KOTLIN_1_9
+    val kotlin20orUpper = !kotlin19orLower
     if (kotlin19orLower && KOTLIN_UP_TO_1_9_OPTS.isNotEmpty()) {
         compilerArgs.addAll(KOTLIN_UP_TO_1_9_OPTS)
     }
@@ -62,8 +59,9 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         }
     }
 
-    // Required for multiplatform projects since Kotlin 1.9.20.
-    if (isMultiplatform && kotlinPluginVersion >= KOTLIN_1_9_20) {
+    // `-Xexpect-actual-classes` required for multiplatform projects since Kotlin 1.9.20;
+    // unconditional under the layer-2 floor (consumer KGP 2.1.0+).
+    if (isMultiplatform) {
         compilerArgs.add("-Xexpect-actual-classes")
     }
 
@@ -79,16 +77,16 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 setupJvmCompatibility(jvmTarget)
 
                 val jvmTargetInt = jvmTarget.toJvmMajorVersion()
+                // jdk-release only applies in JVM non-Android builds, when the JDK
+                // differs from the target, and when consumer lang is 1.9-or-earlier
+                // (jdk-release fails on the lang-2.0 + KGP-1.9.x combination; the
+                // historical 2.0..2.0.20 escape arm is unreachable under the layer-2
+                // KGP 2.1.0+ floor and was dropped).
+                // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda
                 val useJdkRelease = kc.useJdkRelease &&
-                    // Only apply jdk-release in JVM (non-Android) builds.
-                    // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda.
                     !isAndroid &&
-                    // Don't use when compiled against the current JDK version (useless).
                     jvmTargetInt != JRE_VERSION &&
-                    ( // Somehow, jdk-release fails with kotlin lang 2.0 and Kotlin 1.9.
-                        !kotlin20orUpper ||
-                            kotlinPluginVersion >= KOTLIN_2_0 && kotlinPluginVersion < KOTLIN_2_0_20
-                        )
+                    !kotlin20orUpper
 
                 // ct.sym is broken for -Xjdk-release=18+ with JDK 18..22.
                 // https://bugs.openjdk.org/browse/JDK-8331027
@@ -190,10 +188,10 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
             compilerArgs.add(langFeature("BreakContinueInInlineLambdas"))
         }
 
-        // K2 Explicit backing fields
+        // K2 Explicit backing fields (KGP 1.7+ — unconditional under the layer-2 floor).
         // https://github.com/Kotlin/KEEP/issues/278#issuecomment-1152073904
         // https://github.com/Kotlin/KEEP/pull/289
-        if (k2Used && kotlinPluginVersion >= KOTLIN_1_7) {
+        if (k2Used) {
             compilerArgs.add(langFeature("ExplicitBackingFields"))
         }
 
@@ -202,10 +200,10 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         // "-XXLanguage:+WhenGuards"
     }
 
-    // OPT_IN_USAGE_ERROR is a warning in K2,
-    // preventing safe code gen compatible with `-Werror`.
+    // OPT_IN_USAGE_ERROR is a warning in K2 (consumer KGP 2.0+, unconditional under
+    // the layer-2 floor), preventing safe code gen compatible with `-Werror`.
     // https://youtrack.jetbrains.com/issue/KT-66513#focus=Comments-27-9461367.0-0
-    if (warningsAsErrors && kotlinPluginVersion >= KOTLIN_2_0) {
+    if (warningsAsErrors) {
         compilerArgs.add("-Xdont-warn-on-error-suppression")
     }
 
