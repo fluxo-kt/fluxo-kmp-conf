@@ -7,7 +7,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 
-internal inline fun <reified T> ObjectFactory.new(vararg params: Any): T =
+internal inline fun <reified T : Any> ObjectFactory.new(vararg params: Any): T =
     newInstance(T::class.java, *params)
 
 

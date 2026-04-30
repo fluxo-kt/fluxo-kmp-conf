@@ -9,7 +9,6 @@ import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginAware
 import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
@@ -32,16 +31,7 @@ internal val Project.mppExtOrNull: KotlinMultiplatformExtension?
     get() = kotlinExtension as KotlinMultiplatformExtension?
 
 internal val Project.javaSourceSets: SourceSetContainer
-    get() = when {
-        GradleVersion.current() >= GradleVersion.version("7.1") ->
-            the<JavaPluginExtension>().sourceSets
-
-        else -> {
-            @Suppress("DEPRECATION")
-            convention.getPlugin(org.gradle.api.plugins.JavaPluginConvention::class.java)
-                .sourceSets
-        }
-    }
+    get() = the<JavaPluginExtension>().sourceSets
 
 
 internal fun Project.ksp(action: KspExtension.() -> Unit) =

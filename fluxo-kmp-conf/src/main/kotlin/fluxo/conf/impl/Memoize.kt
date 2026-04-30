@@ -36,7 +36,7 @@ internal fun <T : Any> Provider<T>.memoize(): Provider<T> = when (this) {
 
 /** @see org.jetbrains.intellij.MemoizedProvider */
 @Suppress("HasPlatformType")
-private class MemoizedProvider<T>(private val delegate: ProviderInternal<T>) :
+private class MemoizedProvider<T : Any>(private val delegate: ProviderInternal<T>) :
     AbstractMinimalProvider<T>() {
 
     // guarantee at-most-once execution of the original provider

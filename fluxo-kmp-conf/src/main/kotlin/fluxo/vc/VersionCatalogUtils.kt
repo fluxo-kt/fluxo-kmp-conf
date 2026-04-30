@@ -218,7 +218,7 @@ internal fun FluxoVersionCatalog.onVersion(
 // endregion
 
 
-private inline fun <T> FluxoVersionCatalog.on(
+private inline fun <T : Any> FluxoVersionCatalog.on(
     lookup: VersionCatalog.() -> Optional<Provider<T>>,
     noinline body: (Provider<T>) -> Unit,
 ): Boolean {

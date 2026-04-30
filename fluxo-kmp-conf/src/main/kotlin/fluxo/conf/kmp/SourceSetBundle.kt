@@ -24,7 +24,7 @@ public interface SourceSetBundle {
 internal fun SourceSetBundle(
     main: Provider<KotlinSourceSet>,
     test: Provider<KotlinSourceSet>,
-    moreTests: Provider<Array<KotlinSourceSet>?>? = null,
+    moreTests: Provider<Array<KotlinSourceSet>>? = null,
     isAndroid: Boolean = false,
 ): SourceSetBundle = SourceSetBundleLazy(main, test, moreTests, isAndroid = isAndroid)
 
@@ -38,14 +38,14 @@ internal fun SourceSetBundle(
 private class SourceSetBundleLazy(
     main: Provider<KotlinSourceSet>,
     test: Provider<KotlinSourceSet>,
-    moreTests: Provider<Array<KotlinSourceSet>?>?,
+    moreTests: Provider<Array<KotlinSourceSet>>?,
     override val isAndroid: Boolean = false,
 ) : SourceSetBundleBase() {
     override val main: KotlinSourceSet by main.memoize()
     override val test: KotlinSourceSet by test.memoize()
 
     private val _moreTests = moreTests?.memoize()
-    override val moreTests: Array<KotlinSourceSet>? get() = _moreTests?.get()
+    override val moreTests: Array<KotlinSourceSet>? get() = _moreTests?.orNull
 }
 
 private class SourceSetBundleSimple(

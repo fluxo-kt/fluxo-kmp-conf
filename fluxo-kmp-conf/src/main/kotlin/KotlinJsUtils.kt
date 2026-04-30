@@ -57,20 +57,6 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
         }
 
         compilations.configureEach {
-            // Fallback for older Kotlin versions
-            try {
-                @Suppress("DEPRECATION")
-                kotlinOptions {
-                    moduleKind = "es"
-                    sourceMap = true
-                    try {
-                        useEsClasses = true
-                    } catch (_: Error) {
-                    }
-                }
-            } catch (_: Throwable) {
-            }
-
             compileTaskProvider.configure {
                 try {
                     compilerOptions(JsConfAction)
@@ -117,19 +103,12 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
                 }
             }
         }
-        // Apply Binaryen optimizer to the WASM target.
-        if (KOTLIN_PLUGIN_VERSION < KOTLIN_2_0) {
-            // Binaryen is enabled by default in Kotlin 2.0.
-            @Suppress("DEPRECATION")
-            applyBinaryen()
-        }
+        // Binaryen is enabled by default in Kotlin 2.0+; explicit applyBinaryen()
+        // was removed in 2.3 and pre-2.0 WASM is no longer a supported target.
     } else {
         // KotlinWasmTargetDsl is incomplete before the Kotlin 2.0
         try {
             if (this is KotlinWasmTargetDsl) {
-                // Binaryen is enabled by default in Kotlin 2.0.
-                // applyBinaryen()
-
                 binaries.executable()
             }
         } catch (_: Error) {

@@ -19,7 +19,7 @@ internal fun <T : Any?> MutableCollection<String>.cliArg(
     }
 }
 
-internal fun <T : Any?> MutableCollection<String>.cliArg(
+internal fun <T : Any> MutableCollection<String>.cliArg(
     name: String,
     value: Provider<T>,
     base: File? = null,

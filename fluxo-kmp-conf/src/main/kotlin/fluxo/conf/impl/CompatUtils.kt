@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
-
 package fluxo.conf.impl
 
 import java.util.Locale
@@ -13,9 +11,7 @@ internal inline fun <T, C : Collection<T>, O> C.ifNotEmpty(body: C.() -> O?): O?
     if (isNotEmpty()) body() else null
 
 
-internal fun String.lc(): String = toLowerCase(Locale.US)
-
-internal fun Char.uppercaseChar(): Char = toUpperCase()
+internal fun String.lc(): String = lowercase(Locale.US)
 
 /**
  *

@@ -3,13 +3,13 @@ package fluxo.conf.impl
 import groovy.lang.Closure
 import org.gradle.api.Action
 
-internal fun <T, V : Any> Any.closureOf(action: T.() -> V?): Closure<V?> =
+internal fun <T : Any, V : Any> Any.closureOf(action: T.() -> V?): Closure<V?> =
     KotlinClosure1(action, this, this)
 
-internal fun <T, U, V : Any> Any.closureOf(action: (T, U) -> V?): Closure<V?> =
+internal fun <T : Any, U : Any, V : Any> Any.closureOf(action: (T, U) -> V?): Closure<V?> =
     KotlinClosure2(action, this, this)
 
-private class KotlinClosure1<in T, V : Any>(
+private class KotlinClosure1<in T : Any, V : Any>(
     val function: T.() -> V?,
     owner: Any? = null,
     thisObject: Any? = null,
@@ -19,7 +19,7 @@ private class KotlinClosure1<in T, V : Any>(
     fun doCall(it: T): V? = it.function()
 }
 
-private class KotlinClosure2<in T, in U, V : Any>(
+private class KotlinClosure2<in T : Any, in U : Any, V : Any>(
     val function: (T, U) -> V?,
     owner: Any? = null,
     thisObject: Any? = null,

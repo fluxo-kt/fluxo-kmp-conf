@@ -26,11 +26,12 @@ internal class AsciiGraphReportRenderer(
 
     private fun prepareVisit() {
         hasNodes = false
-        renderer = GraphRenderer(textOutput)
+        val out = checkNotNull(textOutput) { "TextReportRenderer.textOutput is null" }
+        renderer = GraphRenderer(out)
         val nodeRenderer = nodeRenderer
         val rootRenderer = if (renderRoot) nodeRenderer else NodeRenderer.NO_OP
         nodeGraphsRenderer = NodeGraphsRenderer(
-            output = textOutput,
+            output = out,
             renderer = renderer,
             rootRenderer = rootRenderer,
             nodeRenderer = nodeRenderer,
@@ -41,14 +42,14 @@ internal class AsciiGraphReportRenderer(
 
     override fun completeProject(project: ProjectDetails) {
         if (!hasNodes) {
-            textOutput.withStyle(StyledTextOutput.Style.Info).println("No details")
+            textOutput?.withStyle(StyledTextOutput.Style.Info)?.println("No details")
         }
         super.completeProject(project)
     }
 
     internal fun render(root: RenderableNode) {
         if (hasNodes) {
-            textOutput.println()
+            textOutput?.println()
         }
         hasNodes = true
         nodeGraphsRenderer.render(listOf(root))
