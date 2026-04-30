@@ -73,6 +73,19 @@ internal abstract class TargetAndroidContainer<T>(
         createTarget(::androidTarget)
 
     final override fun setup(k: KotlinMultiplatformExtension) {
+        if (this is Library && this.isAgp9OrLater) {
+            // The AGP-9 KMP+Android plugin (`com.android.kotlin.multiplatform.library`)
+            // auto-creates the `android` KMP target via `kotlin { android { } }`. The legacy
+            // `createTarget(::androidTarget)` call below would crash with "target 'android'
+            // already exists, but was not created with the 'android' preset" — the new
+            // target is `KotlinMultiplatformAndroidLibraryTarget`, disjoint from
+            // `KotlinAndroidTarget` (this container's type parameter) and managed by its own
+            // source-set layout. Post-extension wiring is delivered by `setupKmpAndroidExtension`
+            // (namespace/compileSdk/minSdk/buildToolsVersion) and `setupKmpAndroidLint`
+            // (Lint config). Only the consumer-facing warning of `setupAndroid` runs here.
+            setupAndroid(context.project)
+            return
+        }
         val target = k.createTarget()
         val project = target.project
         val ctx = context.ctx
@@ -159,6 +172,20 @@ internal abstract class TargetAndroidContainer<T>(
         TargetAndroidContainer<BaseAppModuleExtension>(context, targetName) {
 
         init {
+            // AGP 9 has no KMP+Android equivalent of `com.android.application` (only
+            // `com.android.kotlin.multiplatform.library`). KMP+Android-app modules cannot
+            // be expressed under AGP 9 and must restructure (split a thin AGP-9 KMP library
+            // beneath a non-KMP `com.android.application` consumer module). Fail-fast at
+            // container init rather than letting AGP reject the co-application later.
+            if (AgpVersion.isAgp9OrLater(context.project)) {
+                error(
+                    "AGP 9+ rejects `$ANDROID_APP_PLUGIN_ID` + " +
+                        "`kotlin(\"multiplatform\")` co-application, and there is no " +
+                        "KMP-aware AGP application plugin. KMP+Android-app modules must " +
+                        "split into a KMP library (this module, swap to `androidLibrary { … }`) " +
+                        "consumed by a separate non-KMP `com.android.application` module.",
+                )
+            }
             applyPlugins(ANDROID_APP_PLUGIN_ID)
         }
 
@@ -173,28 +200,43 @@ internal abstract class TargetAndroidContainer<T>(
     class Library(context: ContainerContext, targetName: String) :
         TargetAndroidContainer<LibraryExtension>(context, targetName) {
 
+        /**
+         * `true` when the build classpath has AGP `>= 9.0` — controls whether this container
+         * applies the legacy [ANDROID_LIB_PLUGIN_ID] (AGP 8.x) or the AGP-9 KMP-aware
+         * [ANDROID_KMP_LIB_PLUGIN_ID]. Snapshotted at init time (before `applyPlugins`
+         * queues the id); `setupAndroid` re-uses the same flag so init and configuration
+         * agree on which line is active.
+         */
+        internal val isAgp9OrLater: Boolean = AgpVersion.isAgp9OrLater(context.project)
+
         init {
-            // Fail-fast under AGP 9+: `com.android.library` + `kotlin("multiplatform")` is
-            // hard-rejected by AGP, and `KotlinMultiplatformAndroidLibraryExtension` (the
-            // AGP-9 replacement) has a disjoint API surface — `LibraryExtension.() -> Unit`
-            // lambdas queued on `lazyAndroid` cannot be type-safely re-routed there. Surface
-            // a clear migration error here (before `applyPlugins` runs) rather than letting
-            // AGP fail later with a cryptic plugin co-application message.
-            if (AgpVersion.isAgp9OrLater(context.project)) {
-                error(
-                    "AGP 9+ rejects `$ANDROID_LIB_PLUGIN_ID` + " +
-                        "`kotlin(\"multiplatform\")` co-application. Replace the " +
-                        "`androidLibrary { … }` block with a direct `kotlin { android { … } }` " +
-                        "target inside `fkcSetupMultiplatform`, and apply " +
-                        "`$ANDROID_KMP_LIB_PLUGIN_ID` in your `plugins { }` block. " +
-                        "`androidNamespace` / `androidCompileSdk` / `androidMinSdk` from " +
-                        "`fluxoConfiguration { }` are auto-applied to the new extension.",
-                )
-            }
-            applyPlugins(ANDROID_LIB_PLUGIN_ID)
+            applyPlugins(if (isAgp9OrLater) ANDROID_KMP_LIB_PLUGIN_ID else ANDROID_LIB_PLUGIN_ID)
         }
 
         override fun setupAndroid(project: Project) {
+            if (isAgp9OrLater) {
+                // The AGP-9 KMP+Android plugin auto-creates the `android` KMP target via
+                // `kotlin { android { } }` and does NOT register a top-level `android`
+                // Gradle extension. `FluxoConfigurationExtension` slot-fills (`namespace`,
+                // `compileSdk`, `minSdk`, `buildToolsVersion`) are auto-applied by
+                // `setupKmpAndroidExtension` (wired in `setupKotlin`); lint by
+                // `setupKmpAndroidLint` (wired in `setupVerification`). `lazyAndroid`
+                // lambdas target the disjoint `LibraryExtension` type and cannot run on
+                // `KotlinMultiplatformAndroidLibraryExtension` — warn the consumer if any
+                // were queued so the silent-skip is observable, but stay GREEN otherwise.
+                if (!lazyAndroid.isEmpty()) {
+                    project.logger.e(
+                        "AGP 9+: `onAndroidExtension { … }` lambdas registered on " +
+                            "`androidLibrary { … }` for target `$name` are ignored — " +
+                            "they target the legacy `LibraryExtension`, replaced under " +
+                            "AGP 9 by the disjoint `KotlinMultiplatformAndroidLibraryExtension`. " +
+                            "Move per-target config to `kotlin { android { … } }` directly, " +
+                            "or to `fluxoConfiguration { androidNamespace = …, " +
+                            "androidCompileSdk = …, androidMinSdk = … }`.",
+                    )
+                }
+                return
+            }
             project.configureExtension<LibraryExtension>(ANDROID_EXT_NAME) {
                 setupAndroidExtension()
                 lazyAndroid.configureEach { this() }
