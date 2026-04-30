@@ -192,6 +192,16 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
     @get:Internal
     val maxHeapSize: Property<String> = objects.nullableProperty()
 
+    /**
+     * JVM thread stack size, e.g. `4m`, `8m`. Forwarded as `-Xss<value>` when the shrinker is
+     * invoked externally. ProGuard's hierarchy traversal recurses deeply on dense class trees
+     * (e.g. Compose Multiplatform 1.10+ + Skia + AndroidX); the platform default (~512 KB on
+     * macOS, ~1 MB on Linux) is insufficient and yields `StackOverflowError` mid-optimisation.
+     * Default `8m` empirically holds for full Compose Desktop projects under PG 7.6+.
+     */
+    @get:Internal
+    val maxStackSize: Property<String> = objects.notNullProperty(DEFAULT_PROGUARD_XSS)
+
     @get:Internal
     val vmOptions: Property<Boolean> = objects.notNullProperty(true)
 
@@ -493,6 +503,9 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
                 maxHeapSize.orNull?.let {
                     add("-Xmx:$it")
                 }
+                maxStackSize.orNull?.takeIf(String::isNotBlank)?.let {
+                    add("-Xss$it")
+                }
                 if (vmOptions.get()) {
                     // FIXME: Benchmark and adjust best options for R8/ProGuard.
                     add("-XX:+TieredCompilation")
@@ -730,6 +743,20 @@ private fun getJmods(javaHome: File): Sequence<File> {
         it.isFile && it.path.endsWith("jmod", ignoreCase = true)
     }
 }
+
+/**
+ * Default JVM thread stack size for external ProGuard invocations.
+ *
+ * ProGuard's optimisation passes traverse class hierarchies recursively
+ * (`ProgramClass.hierarchyAccept` → `ClassVisitor.visitProgramClass` → ...).
+ * Compose Multiplatform 1.10+ generates very deep hierarchies (Skia, AndroidX
+ * Compose runtime, kotlinx.coroutines internals) that overflow the platform
+ * default stack (~512 KB on macOS, ~1 MB on Linux) mid-pass.
+ *
+ * `8m` empirically holds across PG 7.6 → 7.9.x for full Compose Desktop builds.
+ * Override per-task via [AbstractShrinkerTask.maxStackSize] if needed.
+ */
+internal const val DEFAULT_PROGUARD_XSS = "8m"
 
 // TODO: Move into a separate file, loaded from resources
 // language=Shrinker Config
