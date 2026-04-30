@@ -3,6 +3,7 @@
 package fluxo.conf.impl.android
 
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.builder.model.BaseConfig
 import fluxo.conf.FluxoKmpConfContext
@@ -27,7 +28,7 @@ internal fun Project.setupFinalizeAndroidDsl(ctx: FluxoKmpConfContext) {
     val isMaxDebug = ctx.isMaxDebug
 
     val enableMaxDebug = isMaxDebug.toString()
-    the(AndroidComponentsExtension::class).finalizeDsl { a ->
+    the<AndroidComponentsExtension<CommonExtension, *, *>>().finalizeDsl { a ->
         val buildConfigIsRequired = a.buildFeatures.buildConfig == true || a.buildTypes.any {
             /** @see com.android.build.gradle.internal.dsl.BuildType */
             (it as BaseConfig).buildConfigFields.isNotEmpty()
@@ -36,7 +37,7 @@ internal fun Project.setupFinalizeAndroidDsl(ctx: FluxoKmpConfContext) {
             a.buildFeatures.buildConfig = true
         }
 
-        a.defaultConfig {
+        a.defaultConfig.apply {
             minSdk?.let { minSdk ->
                 @Suppress("MagicNumber")
                 when {

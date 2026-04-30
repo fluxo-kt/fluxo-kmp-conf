@@ -132,7 +132,7 @@ private fun Project.configureAndroidLintExtension(
         configureExtension(name = LINT_EXTENSION_NAME, action = lintConfiguration)
     } else {
         configureExtension(name = ANDROID_EXT_NAME, CommonExtension::class) {
-            lint(lintConfiguration)
+            lint.apply(lintConfiguration)
         }
     }
 }

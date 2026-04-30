@@ -61,7 +61,6 @@ public final class Fkc {
 	public static final fun getTvosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 	public static final fun getValue (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Z
-	public static final fun getValueOrNull (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 	public static final fun getWatchosSet (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSetContainer;)Ljava/util/Set;
 	public static final fun iosCompat (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public static synthetic fun iosCompat$default (Lorg/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformExtension;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
