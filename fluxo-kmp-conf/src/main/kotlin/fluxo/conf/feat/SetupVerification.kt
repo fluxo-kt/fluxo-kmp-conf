@@ -7,6 +7,7 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
+import fluxo.conf.impl.android.ANDROID_KMP_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.namedCompat
@@ -37,10 +38,12 @@ internal fun Project.setupVerification(conf: FluxoConfigurationExtensionImpl) {
     // register a top-level `android` Gradle extension — `setupAndroidLint` configures lint via
     // that extension's `lint` block, so it's only valid for legacy `com.android.{library,
     // application}`. For the KMP+Android case, lint is exposed via
-    // `KotlinMultiplatformAndroidLibraryExtension.lint` and would need a parallel setup path.
-    // Tracked: setupKmpAndroidLint (TODO).
+    // `KotlinMultiplatformAndroidLibraryExtension.lint` and routed through `setupKmpAndroidLint`.
     withAnyPlugin(ANDROID_LIB_PLUGIN_ID, ANDROID_APP_PLUGIN_ID) {
         setupAndroidLint(conf, ignoredBuildTypes, ignoredFlavors, testsDisabled)
+    }
+    pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) {
+        setupKmpAndroidLint(conf, ignoredBuildTypes, ignoredFlavors, testsDisabled)
     }
 
     if (testsDisabled) {

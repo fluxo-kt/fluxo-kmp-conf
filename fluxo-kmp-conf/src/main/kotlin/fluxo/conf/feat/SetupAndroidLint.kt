@@ -1,6 +1,8 @@
 package fluxo.conf.feat
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.dsl.Lint
 import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import com.android.build.gradle.internal.lint.AndroidLintTask
@@ -17,6 +19,7 @@ import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.ifNotEmpty
+import fluxo.conf.impl.kotlin.mppExtOrNull
 import fluxo.conf.impl.withType
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.l
@@ -64,6 +67,60 @@ internal fun Project.setupAndroidLint(
     val disableLint = testsDisabled || !notForAndroid && !ctx.isTargetEnabled(KmpTargetCode.ANDROID)
     val isBaselineRequested = conf.ctx.hasStartTaskCalled(BASELINE_LINT_TASK_NAME)
     configureAndroidLintExtension(conf, disableLint, isBaselineRequested, notForAndroid)
+    wireAndroidLintTaskGraph(conf, ignoredBuildTypes, ignoredFlavors, disableLint)
+}
+
+/**
+ * Parallel of [setupAndroidLint] for the AGP-9 KMP+Android plugin
+ * (`com.android.kotlin.multiplatform.library`).
+ *
+ * The new plugin does NOT register a top-level `android` Gradle extension; lint is exposed
+ * via [KotlinMultiplatformAndroidLibraryExtension.lint] (same `Lint` DSL type as the legacy
+ * `CommonExtension.lint`), so the inner [Lint.configureAndroidLintExtension] body is reused
+ * verbatim — only the extension lookup differs. The shared post-extension task wiring is
+ * delegated to [wireAndroidLintTaskGraph], which is plugin-agnostic.
+ *
+ * Idempotent and CC-safe: configuration runs inside a `configureEach` callback against the
+ * KMP+Android target (which itself implements [KotlinMultiplatformAndroidLibraryExtension]).
+ */
+@Suppress("UnstableApiUsage")
+internal fun Project.setupKmpAndroidLint(
+    conf: FluxoConfigurationExtensionImpl,
+    ignoredBuildTypes: List<String> = emptyList(),
+    ignoredFlavors: List<String> = emptyList(),
+    testsDisabled: Boolean = !conf.setupVerification || conf.ctx.testsDisabled,
+) {
+    val ctx = conf.ctx
+    val disableLint = testsDisabled || !ctx.isTargetEnabled(KmpTargetCode.ANDROID)
+    val isBaselineRequested = ctx.hasStartTaskCalled(BASELINE_LINT_TASK_NAME)
+
+    val mppExt = mppExtOrNull ?: return
+    mppExt.targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
+        // The target IS the extension on the AGP-9 KMP+Android plugin.
+        lint.configureAndroidLintExtension(
+            conf = conf,
+            disableLint = disableLint,
+            reBaseline = isBaselineRequested,
+        )
+    }
+
+    wireAndroidLintTaskGraph(conf, ignoredBuildTypes, ignoredFlavors, disableLint)
+}
+
+/**
+ * Plugin-agnostic post-extension wiring: variant-driven task disabling, sarif merge hookup,
+ * and lint-version reporting. Operates on AGP-internal task types (`AndroidLintTask`,
+ * `AndroidLintAnalysisTask`, …) which are emitted regardless of which AGP plugin
+ * (`com.android.{library,application}` or `com.android.kotlin.multiplatform.library`)
+ * created the Android variants — so this helper is shared by both
+ * [setupAndroidLint] (legacy) and [setupKmpAndroidLint] (AGP-9 KMP+Android).
+ */
+internal fun Project.wireAndroidLintTaskGraph(
+    conf: FluxoConfigurationExtensionImpl,
+    ignoredBuildTypes: List<String>,
+    ignoredFlavors: List<String>,
+    disableLint: Boolean,
+) {
     if (disableLint) {
         return
     }
