@@ -48,17 +48,6 @@ internal val PluginAware.hasAndroidLibPlugin: Boolean
 internal val PluginAware.hasAndroidKmpLibPlugin: Boolean
     get() = pluginManager.hasPlugin(ANDROID_KMP_LIB_PLUGIN_ID)
 
-/**
- * Any AGP plugin that produces an Android-ish artifact: legacy `com.android.application`,
- * legacy `com.android.library`, or the AGP-9 KMP-aware `com.android.kotlin.multiplatform.library`.
- *
- * Use this for "do we need to wire the publish/verification pipeline for an Android artifact?"
- * checks. For "is this the legacy `com.android.library` extension specifically?", use
- * [hasAndroidLibPlugin].
- */
-internal val PluginAware.hasAnyAndroidArtifactPlugin: Boolean
-    get() = hasAndroidAppPlugin || hasAndroidLibPlugin || hasAndroidKmpLibPlugin
-
 internal val PluginAware.hasRoomPlugin: Boolean
     get() = pluginManager.hasPlugin(ANDROIDX_ROOM_PLUGIN_ID)
 

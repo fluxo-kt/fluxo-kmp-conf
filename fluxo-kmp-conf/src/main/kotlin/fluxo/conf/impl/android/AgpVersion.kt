@@ -30,14 +30,6 @@ internal object AgpVersion {
     val AGP_9_0: KotlinVersion = KotlinVersion(major = 9, minor = 0, patch = 0)
 
     /**
-     * AGP `8.8.0`, the floor where the `com.android.kotlin.multiplatform.library` plugin id and
-     * its types (`KotlinMultiplatformAndroidLibraryExtension`,
-     * `KotlinMultiplatformAndroidLibraryTarget`) first ship inside the AGP jar — gated, opt-in.
-     */
-    @Suppress("MagicNumber")
-    val AGP_8_8: KotlinVersion = KotlinVersion(major = 8, minor = 8, patch = 0)
-
-    /**
      * Cached lookup. Keyed by classloader (the `Project` keeps a stable buildscript classloader
      * across the configuration phase), so a single `Project` returns a stable answer across all
      * call sites without re-running reflection.
@@ -122,11 +114,13 @@ internal object AgpVersion {
     /**
      * Parses a `MAJOR.MINOR.PATCH(-pre)?(+meta)?` string into a [KotlinVersion]. Pre-release and
      * build-metadata suffixes are intentionally discarded — for branching purposes, an alpha of
-     * `9.1.0` is treated identically to the stable `9.1.0`.
+     * `9.1.0` is treated identically to the stable `9.1.0`. Missing patch defaults to `0`.
      *
-     * Returns `null` for malformed input.
+     * Returns `null` when major or minor is absent / non-numeric. `internal` (not `private`) so
+     * `AgpVersionTest` can falsify the parser branches without going through the reflective
+     * detection paths (which need a real classloader to drive).
      */
-    private fun parseVersionString(raw: String): KotlinVersion? {
+    internal fun parseVersionString(raw: String): KotlinVersion? {
         val core = raw.substringBefore('-').substringBefore('+')
         val parts = core.split('.')
         val major = parts.getOrNull(0)?.toIntOrNull()
