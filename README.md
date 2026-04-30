@@ -20,10 +20,10 @@ Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects
 
 Initially made for the [Fluxo][fluxo] state management framework and other libraries, then published for general use.
 
-Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
-[![Kotlin](http://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
-[![Gradle](http://img.shields.io/badge/Gradle-8.14.4-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
-[![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-8.7-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
+Targeted for Gradle 9.0+ and Kotlin 2.1+. Built with:<br>
+[![Kotlin](http://img.shields.io/badge/Kotlin-2.2.21-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
+[![Gradle](http://img.shields.io/badge/Gradle-9.3.1-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
+[![Android Gradle Plugin](http://img.shields.io/badge/Android--Gradle--Plugin-9.1-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
 
 ### How to use
 
@@ -32,8 +32,8 @@ Targeted for Gradle 8+ and Kotlin 1.9+. Built with:<br>
 ```kotlin
 // in the `build.gradle.kts` of the target module.
 plugins {
-  kotlin("multiplatform") version "2.0.21"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.13.2" // <-- add here
+  kotlin("multiplatform") version "2.2.21"
+  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.14.0" // <-- add here
 }
 ```
 
