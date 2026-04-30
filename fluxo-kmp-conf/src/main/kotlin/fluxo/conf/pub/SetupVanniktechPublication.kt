@@ -9,6 +9,7 @@ import com.vanniktech.maven.publish.JavaPlatform
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SourcesJar
 import com.vanniktech.maven.publish.VersionCatalog
 import envOrPropValue
 import fluxo.conf.data.BuildConstants.GRADLE_PLUGIN_PUBLISH_PLUGIN_ID
@@ -69,7 +70,7 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
             if (!conf.ctx.isTargetEnabled(KmpTargetCode.ANDROID)) {
                 return
             }
-            setupVanniktechAndroidLibPublication(p)
+            setupVanniktechAndroidLibPublication(p, config, conf)
         }
 
         else -> {
@@ -174,11 +175,21 @@ private fun MavenPublishBaseExtension.setupVanniktechKmpPublication(
     configure(KotlinMultiplatform(javadocJar = javadocJar, sourcesJar = true))
 }
 
-private fun MavenPublishBaseExtension.setupVanniktechAndroidLibPublication(p: Project) {
+private fun MavenPublishBaseExtension.setupVanniktechAndroidLibPublication(
+    p: Project,
+    config: FluxoPublicationConfig,
+    conf: FluxoConfigurationExtensionImpl,
+) {
+    // Vanniktech 0.36 dropped the convenience constructors that defaulted
+    // JavadocJar/SourcesJar; resolving javadoc through the same helper as the
+    // KMP/JVM/Plugin paths keeps the consumer's Dokka choice the single source
+    // of truth across every publish target type.
+    val javadocJar = vanniktechJavaDocOption(p, config, conf)
+    val sourcesJar = SourcesJar.Sources()
     val variant = p.envOrPropValue(ANDROID_VARIANT_TO_PUBLISH_KEY)
     val platform = when {
-        variant.isNullOrEmpty() -> AndroidMultiVariantLibrary()
-        else -> AndroidSingleVariantLibrary(variant)
+        variant.isNullOrEmpty() -> AndroidMultiVariantLibrary(javadocJar, sourcesJar)
+        else -> AndroidSingleVariantLibrary(javadocJar, sourcesJar, variant)
     }
     configure(platform)
 }

@@ -137,7 +137,7 @@ intellij-platform = "2.1.0"
 # https://github.com/vanniktech/gradle-maven-publish-plugin/blob/main/docs/what.md
 # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 # https://mvnrepository.com/artifact/com.vanniktech.maven.publish.base/com.vanniktech.maven.publish.base.gradle.plugin
-vanniktech-mvn-publish = "0.35.0"
+vanniktech-mvn-publish = "0.36.0"
 
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
