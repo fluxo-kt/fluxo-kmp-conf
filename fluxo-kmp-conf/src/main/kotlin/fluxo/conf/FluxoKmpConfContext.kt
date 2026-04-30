@@ -314,12 +314,10 @@ internal abstract class FluxoKmpConfContext
         //  https://github.com/JetBrains/gradle-idea-ext-plugin
         val p = rootProject
 
-        // New Gradle limits the lazy plugin configuration,
-        // so we can't rely on the `onProjectInSyncRun` to be work.
-        val gradleVersion = GradleVersion.current()
-        if (gradleVersion >= GradleVersion.version("8.11")) {
-            markProjectInSync(reason = "$gradleVersion")
-        }
+        // Gradle 8.11+ limits lazy plugin configuration, so `onProjectInSyncRun` cannot be
+        // relied on for IDE-import detection at config time. Mark eagerly. Floor is now
+        // Gradle 9.x via the wrapper, so the version gate is unconditional.
+        markProjectInSync(reason = "${GradleVersion.current()}")
 
         // taskGraph is ready AFTER the configuration phase,
         // so it's better to detect sync as early as possible.
