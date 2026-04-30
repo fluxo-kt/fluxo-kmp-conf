@@ -43,7 +43,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
             const val COMMON_JVM = "commonJvm"
             const val ANDROID = "android"
         }
-
     }
 
 
@@ -66,7 +65,6 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
                 companion object {
                     const val COMMON_WASM = "commonWasm"
                 }
-
             }
         }
 

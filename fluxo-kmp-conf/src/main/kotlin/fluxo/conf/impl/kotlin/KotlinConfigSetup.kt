@@ -7,7 +7,6 @@ import fluxo.log.w
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun FluxoConfigurationExtensionImpl.KotlinConfig(

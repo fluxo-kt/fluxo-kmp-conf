@@ -12,7 +12,6 @@ import fluxo.conf.dsl.container.impl.ContainerKotlinMultiplatformAware
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainer
 import fluxo.conf.dsl.container.impl.target.TargetAndroidContainer
-import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.ConfigurationType.ANDROID_APP
 import fluxo.conf.dsl.impl.ConfigurationType.ANDROID_LIB
 import fluxo.conf.dsl.impl.ConfigurationType.GRADLE_PLUGIN
@@ -58,11 +57,8 @@ internal fun configureKotlinJvm(
 ): Boolean {
     val type = conf.mode
     require(type != KOTLIN_MULTIPLATFORM) { "Unexpected Kotlin Multiplatform configuration" }
-    if (!checkIfNeedToConfigure(type, conf)) {
-        return false
-    }
-
     val project = conf.project
+    project.logger.l(':' + type.builderMethod)
     val ctx = conf.ctx
 
     val isApp = type === ANDROID_APP
@@ -170,19 +166,16 @@ internal fun configureKotlinMultiplatform(
     conf: FluxoConfigurationExtensionImpl,
     containers: Array<Container>,
 ): Boolean {
-    if (!checkIfNeedToConfigure(KOTLIN_MULTIPLATFORM, conf)) {
-        return false
-    }
-    val hasAnyTarget = containers.any { it is KmpTargetContainer<*> }
-    if (!hasAnyTarget) {
-        conf.project.logger.w(
+    val project = conf.project
+    project.logger.l(':' + KOTLIN_MULTIPLATFORM.builderMethod)
+    if (containers.none { it is KmpTargetContainer<*> }) {
+        project.logger.w(
             ":${KOTLIN_MULTIPLATFORM.builderMethod}" +
                 " - no applicable Kotlin targets found, skipping module configuration",
         )
         return false
     }
 
-    val project = conf.project
     val ctx = conf.ctx
     ctx.loadAndApplyPluginIfNotApplied(id = KOTLIN_MPP_PLUGIN_ID, project = project)
 
@@ -258,15 +251,6 @@ internal fun configureKotlinMultiplatform(
 
     return true
 }
-
-private fun checkIfNeedToConfigure(
-    type: ConfigurationType,
-    conf: FluxoConfigurationExtensionImpl,
-): Boolean {
-    conf.project.logger.l(':' + type.builderMethod)
-    return true
-}
-
 
 private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     conf: FluxoConfigurationExtensionImpl,
