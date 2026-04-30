@@ -172,7 +172,7 @@ private fun MavenPublishBaseExtension.setupVanniktechKmpPublication(
     p.mppExtOrNull?.targets?.withType<KotlinAndroidTarget>()?.configureEach {
         publishLibraryVariants = androidVariantsToPublish
     }
-    configure(KotlinMultiplatform(javadocJar = javadocJar, sourcesJar = true))
+    configure(KotlinMultiplatform(javadocJar = javadocJar, sourcesJar = SourcesJar.Sources()))
 }
 
 private fun MavenPublishBaseExtension.setupVanniktechAndroidLibPublication(
