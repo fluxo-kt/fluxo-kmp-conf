@@ -15,11 +15,11 @@
         message="Missing space between &quot;configuration&quot; on the previous line and &quot;for&quot; here? Resulting string is &quot;configurationfor&quot;.">
         <location
             file="src/main/kotlin/fluxo/conf/impl/kotlin/KotlinConfigSetup.kt"
-            line="221"
+            line="203"
             column="18"/>
         <location
             file="src/main/kotlin/fluxo/conf/impl/kotlin/KotlinConfigSetup.kt"
-            line="220"
+            line="202"
             column="18"
             message="Previous text here"/>
     </issue>
@@ -47,7 +47,7 @@
         message="`compileJavaTaskProvider` is defined both as a member in class `org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation` and an extension in package `fluxo.conf.impl.kotlin`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
         <location
             file="src/main/kotlin/fluxo/conf/impl/kotlin/SetupJvmCompatibility.kt"
-            line="98"
+            line="106"
             column="43"/>
     </issue>
 
@@ -56,7 +56,7 @@
         message="`compileJavaTaskProvider` is defined both as a member in class `org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaCompilation` and an extension in package `fluxo.conf.impl.kotlin`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
         <location
             file="src/main/kotlin/fluxo/conf/impl/kotlin/SetupJvmCompatibility.kt"
-            line="99"
+            line="107"
             column="47"/>
     </issue>
 
@@ -65,7 +65,7 @@
         message="`compileJavaTaskProvider` is defined both as a member in class `org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmCompilation` and an extension in package `fluxo.conf.impl.kotlin`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
         <location
             file="src/main/kotlin/fluxo/conf/impl/kotlin/SetupJvmCompatibility.kt"
-            line="101"
+            line="109"
             column="36"/>
     </issue>
 
@@ -103,6 +103,15 @@
             file="../gradle/wrapper/gradle-wrapper.properties"
             line="8"
             column="17"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.kotlin.multiplatform.library than 9.1.1 is available: 9.2.0">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="105"
+            column="25"/>
     </issue>
 
     <issue

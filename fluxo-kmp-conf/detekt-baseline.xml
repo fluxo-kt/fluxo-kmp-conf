@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
@@ -6,12 +6,6 @@
     <ID>AvoidFirstOrLastOnList:AbstractShrinkerTask.kt$AbstractShrinkerTask$first</ID>
     <ID>AvoidFirstOrLastOnList:SetupJvmCompatibility.kt$first</ID>
     <ID>CompilerWarning:AbstractShrinkerTask.kt$AbstractShrinkerTask$output != null</ID>
-    <ID>CompilerWarning:AndroidTarget.kt$AndroidTarget$TestedExtension</ID>
-    <ID>CompilerWarning:AndroidTarget.kt$AndroidTarget.Configure$BaseAppModuleExtension</ID>
-    <ID>CompilerWarning:AndroidTarget.kt$AndroidTarget.Configure$LibraryExtension</ID>
-    <ID>CompilerWarning:AndroidTarget.kt$BaseAppModuleExtension</ID>
-    <ID>CompilerWarning:AndroidTarget.kt$LibraryExtension</ID>
-    <ID>CompilerWarning:AndroidTarget.kt$TestedExtension</ID>
     <ID>CompilerWarning:CompilationUtils.kt$compilations</ID>
     <ID>CompilerWarning:DependencyPinningBundle.kt$because(reason)</ID>
     <ID>CompilerWarning:DependencyPinningBundle.kt$if (DEBUG_PINS) { project.logger.v("Pinning ${requested.module} to $version in $path") }</ID>
@@ -22,8 +16,6 @@
     <ID>CompilerWarning:DependencyPinningBundle.kt$val reason = "$PIN_REASON from bundle '$alias'"</ID>
     <ID>CompilerWarning:DependencyPinningBundle.kt$val version = KOTLIN_PLUGIN_VERSION_STRING</ID>
     <ID>CompilerWarning:DependencyPinningBundle.kt$version</ID>
-    <ID>CompilerWarning:FkcSetupAndroid.kt$BaseAppModuleExtension</ID>
-    <ID>CompilerWarning:FkcSetupAndroid.kt$LibraryExtension</ID>
     <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$ctx.scmTag ?: defaultGitBranchName</ID>
     <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$descriptionProp.orNull ?: project.description?.takeIf { it.isNotBlank() } ?: parent?.description</ID>
     <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$groupProp.orNull ?: parent?.group?.takeIf { it.isNotBlank() } ?: ctx.libs.v("group", "package", allowFallback = false)</ID>
@@ -31,7 +23,6 @@
     <ID>CompilerWarning:GradleProvisioner.kt$GradleProvisioner$setVisible</ID>
     <ID>CompilerWarning:JarState.kt$JarState.Companion$mavenCoordinate: String</ID>
     <ID>CompilerWarning:JarState.kt$JarState.Companion$provisioner: Provisioner</ID>
-    <ID>CompilerWarning:KotlinConfigSetup.kt$KOTLIN_1_9</ID>
     <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$target.compilations</ID>
     <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$withJavaEnabled</ID>
     <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$if (SHOW_DEBUG_LOGS) { val msg = "Detected plugin '$pluginId' class name: '$className' (via $url)" logger.v(msg) }</ID>
@@ -41,10 +32,9 @@
     <ID>CompilerWarning:MultiplatformSourceSetUtils.kt$compilations</ID>
     <ID>CompilerWarning:MultiplatformSourceSetUtils.kt$project ?: targets.firstOrNull()?.project ?: throw NullPointerException("Please, provide project")</ID>
     <ID>CompilerWarning:ProjectUtils.kt$javaClass.getMethod("getTotalMemorySize").invoke(this) as Long</ID>
-    <ID>CompilerWarning:SetupAndroid.kt$TestedExtension</ID>
     <ID>CompilerWarning:SetupAndroidSigning.kt$alias</ID>
     <ID>CompilerWarning:SetupArtifactsProcessing.kt$inputFiles</ID>
-    <ID>CompilerWarning:SetupBinaryCompatibilityValidator.kt$return when (targetName) { "android" -> ApiTarget.ANDROID "jvm" -> ApiTarget.JVM "js" -> ApiTarget.JS else -> error("Unsupported API check task name: $taskName") }</ID>
+    <ID>CompilerWarning:SetupBinaryCompatibilityValidator.kt$return when (targetName) { "android" -&gt; ApiTarget.ANDROID "jvm" -&gt; ApiTarget.JVM "js" -&gt; ApiTarget.JS else -&gt; error("Unsupported API check task name: $taskName") }</ID>
     <ID>CompilerWarning:SetupBinaryCompatibilityValidator.kt$val targetName = taskName.removeSuffix("ApiCheck").takeUnless { it == taskName } ?: return null</ID>
     <ID>CompilerWarning:SetupCompose.kt$enableIntrinsicRemember</ID>
     <ID>CompilerWarning:SetupCompose.kt$enableNonSkippingGroupOptimization</ID>
@@ -52,14 +42,11 @@
     <ID>CompilerWarning:SetupCompose.kt$generateFunctionKeyMetaClasses</ID>
     <ID>CompilerWarning:SetupCompose.kt$stabilityConfigurationFile</ID>
     <ID>CompilerWarning:SetupFinalizeAndroidDsl.kt$a.buildTypes</ID>
-    <ID>CompilerWarning:SetupJvmCompatibility.kt$TestedExtension</ID>
     <ID>CompilerWarning:SetupJvmCompatibility.kt$this is KotlinJvmTarget</ID>
     <ID>CompilerWarning:SetupJvmCompatibility.kt$withJavaEnabled</ID>
-    <ID>CompilerWarning:SetupKotlin.kt$TestedExtension</ID>
     <ID>CompilerWarning:SetupKotlinCompatibility.kt$as?</ID>
     <ID>CompilerWarning:SetupKotlinDependencies.kt$runtime</ID>
     <ID>CompilerWarning:SetupKotlinExperimentalTestCompilation.kt$compilations</ID>
-    <ID>CompilerWarning:SetupKotlinOptions.kt$KOTLIN_1_9</ID>
     <ID>CompilerWarning:SetupKotlinOptions.kt$isJs = false</ID>
     <ID>CompilerWarning:SetupKotlinOptions.kt$isJs = true</ID>
     <ID>CompilerWarning:SetupKotlinOptions.kt$val isJs: Boolean</ID>
@@ -69,14 +56,6 @@
     <ID>CompilerWarning:SetupSpotless.kt$indentWithSpaces</ID>
     <ID>CompilerWarning:SetupTestsReport.kt$mergedReportService == null</ID>
     <ID>CompilerWarning:SetupTestsReport.kt$this is Test</ID>
-    <ID>CompilerWarning:TargetAndroidContainer.kt$BaseAppModuleExtension</ID>
-    <ID>CompilerWarning:TargetAndroidContainer.kt$LibraryExtension</ID>
-    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer$TestedExtension</ID>
-    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer.App$BaseAppModuleExtension</ID>
-    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer.Configure$BaseAppModuleExtension</ID>
-    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer.Configure$LibraryExtension</ID>
-    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer.Library$LibraryExtension</ID>
-    <ID>CompilerWarning:TargetAndroidContainer.kt$TestedExtension</ID>
     <ID>CompilerWarning:TestReportResult.kt$TestReportResult.Companion$kmpTarget != null</ID>
     <ID>CompilerWarning:TomlResultCatalog.kt$TomlResultCatalog$logger: Logger</ID>
     <ID>CompilerWarning:VerifyApiWithAsm.kt$VerifierClassVisitor$expectedSuper != null</ID>
@@ -126,7 +105,6 @@
     <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
     <ID>ForbiddenComment:FluxoPublicationConfig.kt$// TODO: Make an immutable resulting class</ID>
     <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt$// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
-    <ID>ForbiddenComment:KmpTargetContainer.kt$KmpTargetContainer$// TODO: Create common bundle once and reuse?</ID>
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Add env flag for dynamic switch-on when needed</ID>
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Auto detect if `-Xjdk-release` actually can be used.</ID>
     <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Detect if JVM toolchains are already enabled in the project.</ID>
@@ -179,7 +157,6 @@
     <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Check KSP setup for KMP modules</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.</ID>
     <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: With coil-bom:2.2.2 doesn't work as enforcedPlatform for Android and/or KMP</ID>
-    <ID>ForbiddenComment:SetupKotlinExperimentalTestCompilation.kt$// TODO: Find a solution for KMP 2.0</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to JvmCompatibility?</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: -Xwasm-use-new-exception-proposal</ID>
     <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+</ID>
@@ -216,24 +193,20 @@
     <ID>ForbiddenComment:ShrinkerTestBase.kt$// TODO: Optimized bytcode tests.</ID>
     <ID>ForbiddenComment:ShrinkerVerificationTestTask.kt$ShrinkerVerificationTestTask.ShrinkerVerificationTest$// TODO: Verify the jar itself (artifact signature, reproducibility, etc.)</ID>
     <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
-    <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: provide a `setupParentSourceSet` with a single SourceSet arg</ID>
-    <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// TODO: should androidUnitTestDebug depend on androidUnitTest?</ID>
     <ID>ForbiddenComment:TomlResultCatalog.kt$TomlResultCatalog$// TODO: Parse bundles</ID>
     <ID>ForbiddenComment:VerifyApiWithReflection.kt$// TODO: Check parent classes and interfaces.</ID>
     <ID>ForbiddenPublicDataClass:FluxoPublicationConfig.kt$FluxoPublicationConfig</ID>
-    <ID>ImportOrdering:TargetWasmContainer.kt$import fluxo.conf.dsl.container.impl.ContainerContext import fluxo.conf.dsl.container.impl.ContainerHolderAware import fluxo.conf.dsl.container.impl.KmpTargetCode import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl import fluxo.conf.dsl.container.target.WasmTarget import fluxo.conf.impl.kotlin.KOTLIN_1_8_20 import fluxo.conf.impl.kotlin.KOTLIN_1_9_20 import org.gradle.api.GradleException import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl</ID>
     <ID>ImportOrdering:WasmTarget.kt$import DEFAULT_COMMON_JS_CONFIGURATION as DEFAULT_CONF import fluxo.conf.dsl.container.KotlinTargetContainer import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithWasmPresetFunctions import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl</ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String></ID>
+    <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String&gt;</ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>NoNotNullOperator:AbstractShrinkerTask.kt$AbstractShrinkerTask$callFallbackOrder.last()!!</ID>
     <ID>NoUnusedImports:SetupAndroid.kt$fluxo.conf.impl.android.SetupAndroid.kt</ID>
     <ID>NoUnusedImports:SetupPublication.kt$fluxo.conf.pub.SetupPublication.kt</ID>
-    <ID>NoUnusedImports:TargetAndroidContainer.kt$fluxo.conf.dsl.container.impl.target.TargetAndroidContainer.kt</ID>
     <ID>SpacingAroundComma:SetupAndroid.kt$,</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
-    <ID>UnnecessaryPassThroughClass:InteroperabilityUtils.kt$KotlinClosure2&lt;in T : Any, in U : Any, V : Any> : Closure</ID>
+    <ID>UnnecessaryPassThroughClass:InteroperabilityUtils.kt$KotlinClosure2&lt;in T : Any, in U : Any, V : Any&gt; : Closure</ID>
     <ID>UnnecessaryPassThroughClass:KotlinMultiplatformActionContainer.kt$KotlinMultiplatformActionContainer : CustomTypeContainerContainerKotlinMultiplatformAware</ID>
     <ID>UnnecessaryPassThroughClass:KotlinProjectActionContainer.kt$KotlinProjectActionContainer : CustomTypeContainerContainerKotlinAware</ID>
     <ID>UnreachableCode:DependencyPinningBundle.kt$because(reason)</ID>
@@ -249,7 +222,7 @@
     <ID>UnreachableCode:LoadAndApplyPluginIfNotApplied.kt$val className = l.substring(IMPLEMENTATION_CLASS.length).trim() .takeIf { it.isNotEmpty() } ?: continue</ID>
     <ID>UnreachableCode:LoadAndApplyPluginIfNotApplied.kt$yield(className)</ID>
     <ID>UnreachableCode:MultiplatformSourceSetUtils.kt$project ?: targets.firstOrNull()?.project ?: throw NullPointerException("Please, provide project")</ID>
-    <ID>UnreachableCode:SetupBinaryCompatibilityValidator.kt$return when (targetName) { "android" -> ApiTarget.ANDROID "jvm" -> ApiTarget.JVM "js" -> ApiTarget.JS else -> error("Unsupported API check task name: $taskName") }</ID>
+    <ID>UnreachableCode:SetupBinaryCompatibilityValidator.kt$return when (targetName) { "android" -&gt; ApiTarget.ANDROID "jvm" -&gt; ApiTarget.JVM "js" -&gt; ApiTarget.JS else -&gt; error("Unsupported API check task name: $taskName") }</ID>
     <ID>UnreachableCode:SetupBinaryCompatibilityValidator.kt$val targetName = taskName.removeSuffix("ApiCheck").takeUnless { it == taskName } ?: return null</ID>
     <ID>UnreachableCode:VerifyApiWithReflection.kt$if (!requireParamsAndPublic(method, pTypes, className, member)) { checked = false }</ID>
     <ID>UnreachableCode:VerifyApiWithReflection.kt$return if (checked) null else TestResult.ResultType.FAILURE</ID>
