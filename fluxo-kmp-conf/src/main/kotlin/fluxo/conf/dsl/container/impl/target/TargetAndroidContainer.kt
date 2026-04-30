@@ -12,7 +12,9 @@ import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.target.AndroidTarget
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
+import fluxo.conf.impl.android.ANDROID_KMP_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
+import fluxo.conf.impl.android.AgpVersion
 import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.container
@@ -172,6 +174,23 @@ internal abstract class TargetAndroidContainer<T>(
         TargetAndroidContainer<LibraryExtension>(context, targetName) {
 
         init {
+            // Fail-fast under AGP 9+: `com.android.library` + `kotlin("multiplatform")` is
+            // hard-rejected by AGP, and `KotlinMultiplatformAndroidLibraryExtension` (the
+            // AGP-9 replacement) has a disjoint API surface — `LibraryExtension.() -> Unit`
+            // lambdas queued on `lazyAndroid` cannot be type-safely re-routed there. Surface
+            // a clear migration error here (before `applyPlugins` runs) rather than letting
+            // AGP fail later with a cryptic plugin co-application message.
+            if (AgpVersion.isAgp9OrLater(context.project)) {
+                error(
+                    "AGP 9+ rejects `$ANDROID_LIB_PLUGIN_ID` + " +
+                        "`kotlin(\"multiplatform\")` co-application. Replace the " +
+                        "`androidLibrary { … }` block with a direct `kotlin { android { … } }` " +
+                        "target inside `fkcSetupMultiplatform`, and apply " +
+                        "`$ANDROID_KMP_LIB_PLUGIN_ID` in your `plugins { }` block. " +
+                        "`androidNamespace` / `androidCompileSdk` / `androidMinSdk` from " +
+                        "`fluxoConfiguration { }` are auto-applied to the new extension.",
+                )
+            }
             applyPlugins(ANDROID_LIB_PLUGIN_ID)
         }
 
