@@ -2,40 +2,93 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
+    <ID>ArgumentListWrapping:SetupAndroid.kt$( "shell", "monkey", "-p", appIdProvider.get(), "-c", "android.intent.category.LAUNCHER", "1", )</ID>
     <ID>AvoidFirstOrLastOnList:AbstractShrinkerTask.kt$AbstractShrinkerTask$first</ID>
-    <ID>AvoidFirstOrLastOnList:ParseJvmApiDump.kt$last</ID>
     <ID>AvoidFirstOrLastOnList:SetupJvmCompatibility.kt$first</ID>
-    <ID>CompilerWarning:KmpConfigurationContainerDslImpl.kt$KmpConfigurationContainerDslImpl$ExperimentalWasmDsl</ID>
-    <ID>CompilerWarning:KotlinJsUtils.kt$compilerOptions</ID>
-    <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$targets</ID>
-    <ID>CompilerWarning:SetupAndroid.kt$exec</ID>
+    <ID>CompilerWarning:AbstractShrinkerTask.kt$AbstractShrinkerTask$output != null</ID>
+    <ID>CompilerWarning:AndroidTarget.kt$AndroidTarget$TestedExtension</ID>
+    <ID>CompilerWarning:AndroidTarget.kt$AndroidTarget.Configure$BaseAppModuleExtension</ID>
+    <ID>CompilerWarning:AndroidTarget.kt$AndroidTarget.Configure$LibraryExtension</ID>
+    <ID>CompilerWarning:AndroidTarget.kt$BaseAppModuleExtension</ID>
+    <ID>CompilerWarning:AndroidTarget.kt$LibraryExtension</ID>
+    <ID>CompilerWarning:AndroidTarget.kt$TestedExtension</ID>
+    <ID>CompilerWarning:CompilationUtils.kt$compilations</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$because(reason)</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$if (DEBUG_PINS) { project.logger.v("Pinning ${requested.module} to $version in $path") }</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$reason</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$useVersion(version)</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$val compilerEmbeddable = object : ModuleIdentifier { override fun getGroup() = "org.jetbrains.kotlin" override fun getName() = "kotlin-compiler-embeddable" }</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$val path = project.path + "::${conf.name}"</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$val reason = "$PIN_REASON from bundle '$alias'"</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$val version = KOTLIN_PLUGIN_VERSION_STRING</ID>
+    <ID>CompilerWarning:DependencyPinningBundle.kt$version</ID>
+    <ID>CompilerWarning:FkcSetupAndroid.kt$BaseAppModuleExtension</ID>
+    <ID>CompilerWarning:FkcSetupAndroid.kt$LibraryExtension</ID>
+    <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$ctx.scmTag ?: defaultGitBranchName</ID>
+    <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$descriptionProp.orNull ?: project.description?.takeIf { it.isNotBlank() } ?: parent?.description</ID>
+    <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$groupProp.orNull ?: parent?.group?.takeIf { it.isNotBlank() } ?: ctx.libs.v("group", "package", allowFallback = false)</ID>
+    <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$versionProp.orNull ?: parent?.version?.takeIf { it.isNotBlank() } ?: ctx.libs.v("version", "versionName", "app", "appVersion", "v", allowFallback = false)</ID>
+    <ID>CompilerWarning:GradleProvisioner.kt$GradleProvisioner$setVisible</ID>
+    <ID>CompilerWarning:JarState.kt$JarState.Companion$mavenCoordinate: String</ID>
+    <ID>CompilerWarning:JarState.kt$JarState.Companion$provisioner: Provisioner</ID>
+    <ID>CompilerWarning:KotlinConfigSetup.kt$KOTLIN_1_9</ID>
+    <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$target.compilations</ID>
+    <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$withJavaEnabled</ID>
+    <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$if (SHOW_DEBUG_LOGS) { val msg = "Detected plugin '$pluginId' class name: '$className' (via $url)" logger.v(msg) }</ID>
+    <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$logger: Logger</ID>
+    <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$val className = l.substring(IMPLEMENTATION_CLASS.length).trim() .takeIf { it.isNotEmpty() } ?: continue</ID>
+    <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$yield(className)</ID>
+    <ID>CompilerWarning:MultiplatformSourceSetUtils.kt$compilations</ID>
+    <ID>CompilerWarning:MultiplatformSourceSetUtils.kt$project ?: targets.firstOrNull()?.project ?: throw NullPointerException("Please, provide project")</ID>
+    <ID>CompilerWarning:ProjectUtils.kt$javaClass.getMethod("getTotalMemorySize").invoke(this) as Long</ID>
+    <ID>CompilerWarning:SetupAndroid.kt$TestedExtension</ID>
+    <ID>CompilerWarning:SetupAndroidSigning.kt$alias</ID>
     <ID>CompilerWarning:SetupArtifactsProcessing.kt$inputFiles</ID>
-    <ID>CompilerWarning:SetupCompose.kt$KotlinCommonOptions</ID>
+    <ID>CompilerWarning:SetupBinaryCompatibilityValidator.kt$return when (targetName) { "android" -> ApiTarget.ANDROID "jvm" -> ApiTarget.JVM "js" -> ApiTarget.JS else -> error("Unsupported API check task name: $taskName") }</ID>
+    <ID>CompilerWarning:SetupBinaryCompatibilityValidator.kt$val targetName = taskName.removeSuffix("ApiCheck").takeUnless { it == taskName } ?: return null</ID>
     <ID>CompilerWarning:SetupCompose.kt$enableIntrinsicRemember</ID>
     <ID>CompilerWarning:SetupCompose.kt$enableNonSkippingGroupOptimization</ID>
     <ID>CompilerWarning:SetupCompose.kt$enableStrongSkippingMode</ID>
-    <ID>CompilerWarning:SetupCompose.kt$kotlinOptions</ID>
-    <ID>CompilerWarning:SetupJvmCompatibility.kt$KCompilation</ID>
-    <ID>CompilerWarning:SetupJvmCompatibility.kt$KotlinJvmOptions</ID>
-    <ID>CompilerWarning:SetupKotlinCompatibility.kt$KotlinCommonOptions</ID>
+    <ID>CompilerWarning:SetupCompose.kt$generateFunctionKeyMetaClasses</ID>
+    <ID>CompilerWarning:SetupCompose.kt$stabilityConfigurationFile</ID>
+    <ID>CompilerWarning:SetupFinalizeAndroidDsl.kt$a.buildTypes</ID>
+    <ID>CompilerWarning:SetupJvmCompatibility.kt$TestedExtension</ID>
+    <ID>CompilerWarning:SetupJvmCompatibility.kt$this is KotlinJvmTarget</ID>
+    <ID>CompilerWarning:SetupJvmCompatibility.kt$withJavaEnabled</ID>
+    <ID>CompilerWarning:SetupKotlin.kt$TestedExtension</ID>
     <ID>CompilerWarning:SetupKotlinCompatibility.kt$as?</ID>
-    <ID>CompilerWarning:SetupKotlinExperimentalTestCompilation.kt$KCompilation</ID>
-    <ID>CompilerWarning:SetupKotlinOptions.kt$KotlinCommonOptions</ID>
-    <ID>CompilerWarning:SetupKotlinOptions.kt$KotlinJsOptions</ID>
-    <ID>CompilerWarning:SetupKotlinOptions.kt$KotlinJvmOptions</ID>
+    <ID>CompilerWarning:SetupKotlinDependencies.kt$runtime</ID>
+    <ID>CompilerWarning:SetupKotlinExperimentalTestCompilation.kt$compilations</ID>
+    <ID>CompilerWarning:SetupKotlinOptions.kt$KOTLIN_1_9</ID>
+    <ID>CompilerWarning:SetupKotlinOptions.kt$isJs = false</ID>
+    <ID>CompilerWarning:SetupKotlinOptions.kt$isJs = true</ID>
+    <ID>CompilerWarning:SetupKotlinOptions.kt$val isJs: Boolean</ID>
+    <ID>CompilerWarning:SetupPublication.kt$LibraryExtension</ID>
     <ID>CompilerWarning:SetupPublication.kt$config: FluxoPublicationConfig</ID>
     <ID>CompilerWarning:SetupPublication.kt$project: Project</ID>
+    <ID>CompilerWarning:SetupSpotless.kt$indentWithSpaces</ID>
+    <ID>CompilerWarning:SetupTestsReport.kt$mergedReportService == null</ID>
     <ID>CompilerWarning:SetupTestsReport.kt$this is Test</ID>
-    <ID>CompilerWarning:TargetWasmContainer.kt$ExperimentalWasmDsl</ID>
-    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.Configure$ExperimentalWasmDsl</ID>
-    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmJs$ExperimentalWasmDsl</ID>
-    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmJs$wasm</ID>
-    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmJs$wasmJs</ID>
-    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmWasi$ExperimentalWasmDsl</ID>
-    <ID>CompilerWarning:TargetWasmContainer.kt$TargetWasmContainer.WasmWasi$wasmWasi</ID>
-    <ID>CompilerWarning:WasmTarget.kt$ExperimentalWasmDsl</ID>
-    <ID>CompilerWarning:WasmTarget.kt$WasmTarget.Configure$ExperimentalWasmDsl</ID>
+    <ID>CompilerWarning:TargetAndroidContainer.kt$BaseAppModuleExtension</ID>
+    <ID>CompilerWarning:TargetAndroidContainer.kt$LibraryExtension</ID>
+    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer$TestedExtension</ID>
+    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer.App$BaseAppModuleExtension</ID>
+    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer.Configure$BaseAppModuleExtension</ID>
+    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer.Configure$LibraryExtension</ID>
+    <ID>CompilerWarning:TargetAndroidContainer.kt$TargetAndroidContainer.Library$LibraryExtension</ID>
+    <ID>CompilerWarning:TargetAndroidContainer.kt$TestedExtension</ID>
+    <ID>CompilerWarning:TestReportResult.kt$TestReportResult.Companion$kmpTarget != null</ID>
+    <ID>CompilerWarning:TomlResultCatalog.kt$TomlResultCatalog$logger: Logger</ID>
+    <ID>CompilerWarning:VerifyApiWithAsm.kt$VerifierClassVisitor$expectedSuper != null</ID>
+    <ID>CompilerWarning:VerifyApiWithReflection.kt$if (!requireParamsAndPublic(method, pTypes, className, member)) { checked = false }</ID>
+    <ID>CompilerWarning:VerifyApiWithReflection.kt$method == null</ID>
+    <ID>CompilerWarning:VerifyApiWithReflection.kt$requireNotNull</ID>
+    <ID>CompilerWarning:VerifyApiWithReflection.kt$return if (checked) null else TestResult.ResultType.FAILURE</ID>
+    <ID>CompilerWarning:VerifyApiWithReflection.kt$val actualReturnType = method.returnType.name</ID>
+    <ID>CompilerWarning:VerifyApiWithReflection.kt$var checked = requireEquals(expected = returnType, actual = actualReturnType) { "Method return type mismatch (actual=$actualReturnType): $className#${member.signature}" }</ID>
+    <ID>CompilerWarning:VersionCatalogUtils.kt$alias</ID>
     <ID>CyclomaticComplexMethod:AbstractShrinkerTask.kt$AbstractShrinkerTask$@Suppress("LongMethod") private fun writeRootConfiguration( file: File, reportsDir: Directory, jarsConfigurationFile: File, shrinker: JvmShrinker, )</ID>
+    <ID>CyclomaticComplexMethod:SetupFinalizeAndroidDsl.kt$internal fun Project.setupFinalizeAndroidDsl(ctx: FluxoKmpConfContext)</ID>
     <ID>DataClassTypedIDs:FluxoPublicationConfig.kt$FluxoPublicationConfig$/** PGP signing key ID */ public var signingKeyId: String? = null</ID>
     <ID>DataClassTypedIDs:FluxoPublicationConfig.kt$FluxoPublicationConfig$public var developerId: String? = null</ID>
     <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
@@ -90,7 +143,6 @@
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// FIXME: Avoid duplicate logging between similar tasks</ID>
     <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: note dependency in the (root?) project classpath</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Automatic per-app language support</ID>
-    <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Support Kotlin bundled Compose compiler since Kotlin 2.0.0-RC2.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Support bundletool codeTransparency here.</ID>
     <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
     <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Cache the Lint configuration file?</ID>
@@ -169,17 +221,42 @@
     <ID>ForbiddenComment:TomlResultCatalog.kt$TomlResultCatalog$// TODO: Parse bundles</ID>
     <ID>ForbiddenComment:VerifyApiWithReflection.kt$// TODO: Check parent classes and interfaces.</ID>
     <ID>ForbiddenPublicDataClass:FluxoPublicationConfig.kt$FluxoPublicationConfig</ID>
+    <ID>ImportOrdering:TargetWasmContainer.kt$import fluxo.conf.dsl.container.impl.ContainerContext import fluxo.conf.dsl.container.impl.ContainerHolderAware import fluxo.conf.dsl.container.impl.KmpTargetCode import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl import fluxo.conf.dsl.container.target.WasmTarget import fluxo.conf.impl.kotlin.KOTLIN_1_8_20 import fluxo.conf.impl.kotlin.KOTLIN_1_9_20 import org.gradle.api.GradleException import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl</ID>
+    <ID>ImportOrdering:WasmTarget.kt$import DEFAULT_COMMON_JS_CONFIGURATION as DEFAULT_CONF import fluxo.conf.dsl.container.KotlinTargetContainer import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithWasmPresetFunctions import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl</ID>
     <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
     <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String></ID>
     <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
     <ID>NoNotNullOperator:AbstractShrinkerTask.kt$AbstractShrinkerTask$callFallbackOrder.last()!!</ID>
+    <ID>NoUnusedImports:SetupAndroid.kt$fluxo.conf.impl.android.SetupAndroid.kt</ID>
+    <ID>NoUnusedImports:SetupPublication.kt$fluxo.conf.pub.SetupPublication.kt</ID>
+    <ID>NoUnusedImports:TargetAndroidContainer.kt$fluxo.conf.dsl.container.impl.target.TargetAndroidContainer.kt</ID>
     <ID>SpacingAroundComma:SetupAndroid.kt$,</ID>
     <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
-    <ID>TooManyFunctions:SetupJvmCompatibility.kt$fluxo.conf.impl.kotlin.SetupJvmCompatibility.kt</ID>
-    <ID>UnnecessaryPassThroughClass:InteroperabilityUtils.kt$KotlinClosure2&lt;in T, in U, V : Any> : Closure</ID>
+    <ID>UnnecessaryPassThroughClass:InteroperabilityUtils.kt$KotlinClosure2&lt;in T : Any, in U : Any, V : Any> : Closure</ID>
     <ID>UnnecessaryPassThroughClass:KotlinMultiplatformActionContainer.kt$KotlinMultiplatformActionContainer : CustomTypeContainerContainerKotlinMultiplatformAware</ID>
     <ID>UnnecessaryPassThroughClass:KotlinProjectActionContainer.kt$KotlinProjectActionContainer : CustomTypeContainerContainerKotlinAware</ID>
+    <ID>UnreachableCode:DependencyPinningBundle.kt$because(reason)</ID>
+    <ID>UnreachableCode:DependencyPinningBundle.kt$if (DEBUG_PINS) { project.logger.v("Pinning ${requested.module} to $version in $path") }</ID>
+    <ID>UnreachableCode:DependencyPinningBundle.kt$reason</ID>
+    <ID>UnreachableCode:DependencyPinningBundle.kt$useVersion(version)</ID>
+    <ID>UnreachableCode:DependencyPinningBundle.kt$version</ID>
+    <ID>UnreachableCode:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$ctx.scmTag ?: defaultGitBranchName</ID>
+    <ID>UnreachableCode:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$descriptionProp.orNull ?: project.description?.takeIf { it.isNotBlank() } ?: parent?.description</ID>
+    <ID>UnreachableCode:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$groupProp.orNull ?: parent?.group?.takeIf { it.isNotBlank() } ?: ctx.libs.v("group", "package", allowFallback = false)</ID>
+    <ID>UnreachableCode:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$versionProp.orNull ?: parent?.version?.takeIf { it.isNotBlank() } ?: ctx.libs.v("version", "versionName", "app", "appVersion", "v", allowFallback = false)</ID>
+    <ID>UnreachableCode:LoadAndApplyPluginIfNotApplied.kt$if (SHOW_DEBUG_LOGS) { val msg = "Detected plugin '$pluginId' class name: '$className' (via $url)" logger.v(msg) }</ID>
+    <ID>UnreachableCode:LoadAndApplyPluginIfNotApplied.kt$val className = l.substring(IMPLEMENTATION_CLASS.length).trim() .takeIf { it.isNotEmpty() } ?: continue</ID>
+    <ID>UnreachableCode:LoadAndApplyPluginIfNotApplied.kt$yield(className)</ID>
+    <ID>UnreachableCode:MultiplatformSourceSetUtils.kt$project ?: targets.firstOrNull()?.project ?: throw NullPointerException("Please, provide project")</ID>
+    <ID>UnreachableCode:SetupBinaryCompatibilityValidator.kt$return when (targetName) { "android" -> ApiTarget.ANDROID "jvm" -> ApiTarget.JVM "js" -> ApiTarget.JS else -> error("Unsupported API check task name: $taskName") }</ID>
+    <ID>UnreachableCode:SetupBinaryCompatibilityValidator.kt$val targetName = taskName.removeSuffix("ApiCheck").takeUnless { it == taskName } ?: return null</ID>
+    <ID>UnreachableCode:VerifyApiWithReflection.kt$if (!requireParamsAndPublic(method, pTypes, className, member)) { checked = false }</ID>
+    <ID>UnreachableCode:VerifyApiWithReflection.kt$return if (checked) null else TestResult.ResultType.FAILURE</ID>
+    <ID>UnreachableCode:VerifyApiWithReflection.kt$val actualReturnType = method.returnType.name</ID>
+    <ID>UnreachableCode:VerifyApiWithReflection.kt$var checked = requireEquals(expected = returnType, actual = actualReturnType) { "Method return type mismatch (actual=$actualReturnType): $className#${member.signature}" }</ID>
+    <ID>UnusedPrivateMember:AbstractShrinkerTask.kt$AbstractShrinkerTask$private fun Writer.ln()</ID>
+    <ID>UnusedPrivateMember:AbstractShrinkerTask.kt$AbstractShrinkerTask$private fun Writer.ln(s: String)</ID>
     <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>
   </CurrentIssues>
 </SmellBaseline>

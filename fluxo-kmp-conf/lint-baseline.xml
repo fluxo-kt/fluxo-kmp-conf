@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.7.2" type="baseline" client="gradle" dependencies="false" name="AGP (8.7.2)" variant="all" version="8.7.2">
+<issues format="6" by="lint 9.1.1" type="baseline" client="gradle" dependencies="false" name="AGP (9.1.1)" variant="all" version="9.1.1">
 
     <issue
         id="StopShip"
@@ -11,8 +11,103 @@
     </issue>
 
     <issue
+        id="TextConcatSpace"
+        message="Missing space between &quot;configuration&quot; on the previous line and &quot;for&quot; here? Resulting string is &quot;configurationfor&quot;.">
+        <location
+            file="src/main/kotlin/fluxo/conf/impl/kotlin/KotlinConfigSetup.kt"
+            line="221"
+            column="18"/>
+        <location
+            file="src/main/kotlin/fluxo/conf/impl/kotlin/KotlinConfigSetup.kt"
+            line="220"
+            column="18"
+            message="Previous text here"/>
+    </issue>
+
+    <issue
+        id="MemberExtensionConflict"
+        message="`register` is defined both as a member in class `org.gradle.api.tasks.TaskContainer` and an extension in package `fluxo.conf.impl`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
+        <location
+            file="src/main/kotlin/fluxo/conf/feat/DependencyAnalysisTasks.kt"
+            line="44"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="MemberExtensionConflict"
+        message="`register` is defined both as a member in class `org.gradle.api.tasks.TaskContainer` and an extension in package `fluxo.conf.impl`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
+        <location
+            file="src/main/kotlin/fluxo/conf/feat/DependencyAnalysisTasks.kt"
+            line="45"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="MemberExtensionConflict"
+        message="`compileJavaTaskProvider` is defined both as a member in class `org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation` and an extension in package `fluxo.conf.impl.kotlin`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
+        <location
+            file="src/main/kotlin/fluxo/conf/impl/kotlin/SetupJvmCompatibility.kt"
+            line="98"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="MemberExtensionConflict"
+        message="`compileJavaTaskProvider` is defined both as a member in class `org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaCompilation` and an extension in package `fluxo.conf.impl.kotlin`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
+        <location
+            file="src/main/kotlin/fluxo/conf/impl/kotlin/SetupJvmCompatibility.kt"
+            line="99"
+            column="47"/>
+    </issue>
+
+    <issue
+        id="MemberExtensionConflict"
+        message="`compileJavaTaskProvider` is defined both as a member in class `org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmCompilation` and an extension in package `fluxo.conf.impl.kotlin`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
+        <location
+            file="src/main/kotlin/fluxo/conf/impl/kotlin/SetupJvmCompatibility.kt"
+            line="101"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="MemberExtensionConflict"
+        message="`register` is defined both as a member in class `org.gradle.api.tasks.TaskContainer` and an extension in package `fluxo.conf.impl`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
+        <location
+            file="src/main/kotlin/fluxo/conf/impl/TaskContainerUtils.kt"
+            line="13"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="MemberExtensionConflict"
+        message="`register` is defined both as a member in class `org.gradle.api.tasks.TaskContainer` and an extension in package `fluxo.conf.impl`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
+        <location
+            file="src/main/kotlin/fluxo/conf/impl/TaskContainerUtils.kt"
+            line="19"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="MemberExtensionConflict"
+        message="`register` is defined both as a member in class `org.gradle.api.tasks.TaskContainer` and an extension in package `fluxo.conf.impl`. The defined behavior for this is to use the member, but since the extension is explicitly imported into this file, there&apos;s a chance that this was not expected. (One common way this happens is for members to be added to a class after code was already written to use an extension).">
+        <location
+            file="src/main/kotlin/fluxo/conf/impl/TaskContainerUtils.kt"
+            line="25"
+            column="22"/>
+    </issue>
+
+    <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.library than 8.7.2 is available: 9.2.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.2.0 is difficult: 8.7.3)">
+        message="A newer version of Gradle than 9.3.1 is available: 9.5.0">
+        <location
+            file="../gradle/wrapper/gradle-wrapper.properties"
+            line="8"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.library than 9.1.1 is available: 9.2.0">
         <location
             file="../gradle/libs.versions.toml"
             line="105"
@@ -21,7 +116,7 @@
 
     <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.library than 8.7.2 is available: 9.2.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.2.0 is difficult: 8.7.3)">
+        message="A newer version of com.android.lint than 9.1.1 is available: 9.2.0">
         <location
             file="../gradle/libs.versions.toml"
             line="105"
@@ -30,16 +125,7 @@
 
     <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.tools.build:gradle than 8.7.2 is available: 9.2.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.2.0 is difficult: 8.7.3)">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="105"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.tools.build:gradle than 8.7.2 is available: 9.2.0. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.2.0 is difficult: 8.7.3)">
+        message="A newer version of com.android.tools.build:gradle than 9.1.1 is available: 9.2.0">
         <location
             file="../gradle/libs.versions.toml"
             line="105"
