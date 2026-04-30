@@ -52,6 +52,7 @@ import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
 
 /*
@@ -167,24 +168,14 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
 
 // Gradle 8.3+ exposes dirPermissions/filePermissions (Action-based); Gradle 9.0
 // removes the dirMode/fileMode integer setters entirely. Prefer the modern API;
-// fall back to the deprecated setters on Gradle 8.0–8.2.
+// `dirMode`/`fileMode` were removed in Gradle 9 — `dirPermissions`/`filePermissions`
+// (added in 8.3) is now the only path. Gradle 9 is the wrapper floor.
 private fun AbstractArchiveTask.applyReproducibleArchivePermissions() {
     try {
         dirPermissions { unix("0755") }
         filePermissions { unix("0644") }
-        return
-    } catch (_: NoSuchMethodError) {
-        // Pre-8.3 fallback below.
     } catch (e: Throwable) {
         logger.e("dirPermissions/filePermissions reproducibleArtifacts setup error: $e", e)
-        return
-    }
-    @Suppress("DEPRECATION")
-    try {
-        dirMode = "0755".toInt(radix = 8)
-        fileMode = "0644".toInt(radix = 8)
-    } catch (e: Throwable) {
-        logger.e("dirMode/fileMode reproducibleArtifacts setup error: $e", e)
     }
 }
 
@@ -209,15 +200,14 @@ private fun FluxoKmpConfContext.setupPublicationMultiplatform(
     )
     setupPublicationRepositoryAndSigning(p, config, publishing)
 
-    p.mppExt.apply {
-        if (targets.any { it.platformType == KotlinPlatformType.androidJvm }) {
-            try {
-                // Kotlin before 1.9
-                @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
-                android().publishLibraryVariants(RELEASE, DEBUG)
-            } catch (e: Throwable) {
-                p.logger.e("android.publishLibraryVariants error: $e", e)
-            }
+    // Kotlin 2.0+ removed the `kotlin { android() }` factory in favour of
+    // `androidTarget()`; here we configure already-created Android targets
+    // by type rather than navigating the (removed) name-keyed accessor.
+    p.mppExt.targets.withType(KotlinAndroidTarget::class.java).configureEach {
+        try {
+            publishLibraryVariants = listOf(RELEASE, DEBUG)
+        } catch (e: Throwable) {
+            p.logger.e("KotlinAndroidTarget.publishLibraryVariants error: $e", e)
         }
     }
 }

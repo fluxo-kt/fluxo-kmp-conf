@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.gradle.targets.js.NpmPackageVersion
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootEnvSpec
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion
 
@@ -38,26 +39,32 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
 
         val libs = ctx.libs
         val testsDisabled = ctx.testsDisabled
-        configureExtension<YarnRootExtension>(YarnRootExtension.YARN) {
-            lockFileDirectory = rootDir.resolve(".kotlin-js-store")
 
-            // The Yarn 1.x line is frozen.
-            // At least use the last known version.
-            // https://github.com/yarnpkg/yarn/releases.
-            if (setupDependencies) {
+        // The Yarn 1.x line is frozen; the public Provider-based version
+        // setter lives on `YarnRootEnvSpec` (extension name "yarnSpec"),
+        // not on the deprecated `var version: String` of `YarnRootExtension`.
+        if (setupDependencies) {
+            configureExtension<YarnRootEnvSpec>(YarnRootEnvSpec.YARN) {
                 val alias = "js-yarn"
                 val wasSet = libs.onVersion(alias) {
-                    version = it
+                    version.set(it)
                     logDependency(KJS, "$alias:$it")
                 }
                 if (!wasSet) {
                     val min = MIN_YARN
-                    if (KotlinToolingVersion(version) < KotlinToolingVersion(min)) {
-                        version = min
+                    val current = version.orNull
+                    if (current == null ||
+                        KotlinToolingVersion(current) < KotlinToolingVersion(min)
+                    ) {
+                        version.set(min)
                         logDependency(KJS, "$alias:$min")
                     }
                 }
             }
+        }
+
+        configureExtension<YarnRootExtension>(YarnRootExtension.YARN) {
+            lockFileDirectory = rootDir.resolve(".kotlin-js-store")
 
             // yarn.lock is calculated differently without tests, ignore mismatch
             if (testsDisabled) {

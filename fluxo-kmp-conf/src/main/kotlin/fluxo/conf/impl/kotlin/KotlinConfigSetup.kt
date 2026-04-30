@@ -70,10 +70,10 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     val progressive = progressiveMode ?: true
 
-    val canUseLatestSettings = progressive &&
-        pluginVersion >= KOTLIN_1_4 &&
-        @Suppress("DEPRECATION")
-        (lang == null || lang >= KotlinLangVersion.KOTLIN_1_4)
+    // KGP build-floor is 2.x; both pluginVersion >= KOTLIN_1_4 and
+    // lang >= KOTLIN_1_4 are tautologies. The KOTLIN_1_4 enum value
+    // was promoted to error-level deprecation in Kotlin 2.2.
+    val canUseLatestSettings = progressive
 
 
     var tests = kotlinTestsLangVersion?.toKotlinLangVersion()

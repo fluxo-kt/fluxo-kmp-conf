@@ -39,7 +39,9 @@ internal fun Project.envOrPropFlagValue(name: String): Boolean {
 
 
 internal fun Project.envOrProp(name: String): Provider<String> {
-    return provider { envOrPropValue(name) }.memoizeSafe(logger)
+    // Provider<T : Any> bound — coerce missing values to "" (callers historically
+    // treated empty and missing identically: `isNullOrEmpty()` / `isBlank()`).
+    return provider<String> { envOrPropValue(name).orEmpty() }.memoizeSafe(logger)
 }
 
 internal fun Project.envOrPropValue(name: String): String? {

@@ -82,7 +82,7 @@ internal abstract class FluxoConfigurationExtensionImpl
 
 
     @get:Input
-    protected abstract val defaultConfiguration: Property<(KmpDsl.() -> Unit)?>
+    protected abstract val defaultConfiguration: Property<(KmpDsl.() -> Unit)>
 
 
     @get:Input

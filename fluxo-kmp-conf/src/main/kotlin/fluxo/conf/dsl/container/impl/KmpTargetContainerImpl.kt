@@ -20,7 +20,6 @@ import fluxo.conf.impl.set
 import fluxo.conf.kmp.SourceSetBundle
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
@@ -59,7 +58,7 @@ internal abstract class KmpTargetContainerImpl<T : KotlinTarget>(
     }
 
 
-    interface CommonJvm<T : AbstractKotlinTarget> : KmpTargetContainer<T> {
+    interface CommonJvm<T : KotlinTarget> : KmpTargetContainer<T> {
 
         companion object {
             const val COMMON_JVM = "commonJvm"

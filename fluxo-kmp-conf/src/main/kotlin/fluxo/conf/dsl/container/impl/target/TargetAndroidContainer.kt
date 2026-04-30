@@ -60,16 +60,15 @@ internal abstract class TargetAndroidContainer<T>(
     }
 
 
-    override fun KotlinMultiplatformExtension.createTarget() = when {
-        /** `androidTarget` should be used since Kotlin 1.9.0 instead of `android`. */
-        // https://kotl.in/android-target-dsl.
-        context.kotlinPluginVersion >= KOTLIN_1_9 ->
-            createTarget(::androidTarget)
-
-        else ->
-            @Suppress("DEPRECATION")
-            createTarget(::android)
-    }
+    /**
+     * `androidTarget` replaced the old `android()` factory in Kotlin 1.9.0;
+     * `android()` itself was removed in KGP 2.x. Build Kotlin is now 2.2+,
+     * so the legacy fallback is unreachable and would no longer compile.
+     *
+     * @see <a href="https://kotl.in/android-target-dsl">Android target DSL</a>
+     */
+    override fun KotlinMultiplatformExtension.createTarget() =
+        createTarget(::androidTarget)
 
     final override fun setup(k: KotlinMultiplatformExtension) {
         val target = k.createTarget()

@@ -12,11 +12,13 @@ import fluxo.log.l
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.HasBinaries
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetContainerDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmSubTargetContainerDsl
@@ -62,7 +64,12 @@ private fun Task.commonConfiguration(deps: Any?) {
 
 private fun Project.printKotlinTargetsInfo() {
     println("Project '$path' Kotlin targets:")
-    kotlinExtension.targets.forEach { target ->
+    val targets: Iterable<KotlinTarget> = when (val ext = kotlinExtension) {
+        is KotlinMultiplatformExtension -> ext.targets
+        is KotlinSingleTargetExtension<*> -> listOf(ext.target)
+        else -> emptyList()
+    }
+    targets.forEach { target ->
         println("Target: $target (${target.name}, ${target.platformType})")
         target.attributes.let {
             it.keySet().forEach { attr ->
@@ -77,7 +84,7 @@ private fun Project.printKotlinTargetsInfo() {
             println("$T d8: ${target.isD8Configured}")
         }
         if (target is KotlinJsTargetDsl) {
-            println("$T moduleName: ${target.moduleName}")
+            println("$T moduleName: ${target.outputModuleName.get()}")
         }
         if (target is KotlinJvmTarget) {
             println("$T javaEnabled: ${target.withJavaEnabled}")

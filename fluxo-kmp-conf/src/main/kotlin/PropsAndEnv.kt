@@ -107,7 +107,7 @@ internal fun Project.scmTag(allowBranch: Boolean = true): Provider<String> {
     // FIXME: Don't allow commit/branch for the release.
     //  If release version is specified, it should be in a tag.
 
-    return provider {
+    return provider<String> {
         var result = envOrPropValue("SCM_TAG")
         if (result.isNullOrBlank()) {
             // current tag name
@@ -135,7 +135,10 @@ internal fun Project.scmTag(allowBranch: Boolean = true): Provider<String> {
             // full commit hash, sha1
             result = result.substring(0, 7)
         }
-        result
+        // No tag/short-hash/branch resolvable — Provider<T : Any> bound forces
+        // a non-null value; downstream callers treat an empty string as "no
+        // SCM tag" identically to how they treated a null pre-Gradle-9.
+        result.orEmpty()
     }.memoizeSafe(logger)
 }
 

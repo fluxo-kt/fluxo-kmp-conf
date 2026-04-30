@@ -15,7 +15,7 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     FluxoConfigurationExtensionImplBase {
 
     @get:Input
-    val onConfigurationProp: Property<(KotlinProjectExtension.() -> Unit)?>
+    val onConfigurationProp: Property<(KotlinProjectExtension.() -> Unit)>
     override var onConfiguration: (KotlinProjectExtension.() -> Unit)?
         get() = onConfigurationProp.orNull ?: parent?.onConfiguration
         set(value) = onConfigurationProp.set(value)

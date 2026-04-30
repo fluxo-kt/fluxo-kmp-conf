@@ -14,12 +14,14 @@ import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.kotlin.ksp
+import fluxo.conf.impl.register
 import fluxo.conf.impl.the
 import fluxo.log.e
 import fluxo.log.l
 import fluxo.vc.onLibrary
 import fluxo.vc.onVersion
 import org.gradle.api.Project
+import org.gradle.api.tasks.Exec
 
 /**
  * @see com.android.build.api.dsl.TestedExtension
@@ -225,18 +227,21 @@ private fun Project.configureMonkeyLauncherTasks() {
         if (variant !is ApplicationVariant) {
             return@onVariants
         }
-        val appId = variant.applicationId.get()
+        val appIdProvider = variant.applicationId
         val variantName = variant.name.replaceFirstChar { it.uppercase() }
         val installTask = tasks.named("install$variantName")
-        tasks.register("connected${variant.name}MonkeyTest") {
+        tasks.register<Exec>("connected${variant.name}MonkeyTest") {
             dependsOn(installTask)
-            doLast {
-                exec {
-                    commandLine =
-                        "adb shell monkey -p $appId -c android.intent.category.LAUNCHER 1"
-                            .split(" ")
-                }
+            // Resolved at execution time via Provider — CC-safe.
+            argumentProviders.add {
+                listOf(
+                    "shell", "monkey",
+                    "-p", appIdProvider.get(),
+                    "-c", "android.intent.category.LAUNCHER",
+                    "1",
+                )
             }
+            executable = "adb"
         }
     }
 }
