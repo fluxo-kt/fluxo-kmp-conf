@@ -19,8 +19,6 @@ import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.container
 import fluxo.conf.impl.isTestRelated
-import fluxo.conf.impl.kotlin.KOTLIN_1_9
-import fluxo.conf.impl.kotlin.KOTLIN_2_0
 import fluxo.conf.impl.set
 import fluxo.conf.kmp.SourceSetBundle
 import fluxo.log.e
@@ -105,13 +103,13 @@ internal abstract class TargetAndroidContainer<T : AndroidCommonExtension>(
             target.unitTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
             target.instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
         } catch (e: Throwable) {
-            if (ctx.kotlinPluginVersion >= KOTLIN_2_0) {
-                project.logger.e(
-                    "Failed to set unitTest and instrumentedTest" +
-                        " source set trees for Android to `test`",
-                    e,
-                )
-            }
+            // The pre-2.0 KGP silent-swallow guard was dropped with the layer-2 floor
+            // bump (consumer KGP 2.0+); both APIs exist unconditionally now.
+            project.logger.e(
+                "Failed to set unitTest and instrumentedTest" +
+                    " source set trees for Android to `test`",
+                e,
+            )
         }
 
         setupAndroid(project)
