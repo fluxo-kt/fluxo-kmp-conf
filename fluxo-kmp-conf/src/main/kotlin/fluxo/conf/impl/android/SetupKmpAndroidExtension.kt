@@ -5,6 +5,7 @@ package fluxo.conf.impl.android
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.kotlin.ksp
 import fluxo.conf.impl.kotlin.mppExtOrNull
 import fluxo.conf.impl.withType
 import fluxo.log.e
@@ -51,10 +52,19 @@ internal fun Project.setupKmpAndroidExtension(conf: FluxoConfigurationExtensionI
  *
  * Mirrors the subset of [setupAndroidCommon] that the new extension exposes: `namespace`,
  * `compileSdk` (Int or `compileSdkPreview` String), `minSdk` (Int or `minSdkPreview` String),
- * `buildToolsVersion`. The new extension does NOT have `defaultConfig`, `buildTypes`,
- * `productFlavors`, `testInstrumentationRunner`, `resourceConfigurations`, etc. — those are
- * either unsupported or surfaced via a different DSL (`withDeviceTestBuilder { }` for
- * instrumentation runner). Consumers needing them stay on the legacy `com.android.library` path.
+ * `buildToolsVersion`, plus Room KSP args when `setupRoom = true`. The new extension does NOT
+ * have `defaultConfig`, `buildTypes`, `productFlavors`, or `resourceConfigurations` — those
+ * are either unsupported or surfaced via a different DSL.
+ *
+ * `testInstrumentationRunner` is intentionally NOT auto-defaulted here: the AGP-9 KMP+Android
+ * path requires the consumer to explicitly opt-in to device tests via `withDeviceTestBuilder
+ * { }`, and a blanket `withDeviceTest { }` registration eagerly creates the
+ * `androidDeviceTest*` configurations whether the consumer wanted them or not (verified by
+ * configuration-resolution failure in checks/kmp during the 0.14.0 audit). This is an
+ * upstream-imposed difference vs. AGP-8's always-present `defaultConfig.test
+ * InstrumentationRunner`. Consumers that want the legacy `androidx.test.runner.AndroidJUnit
+ * Runner` default must specify it inside their own `withDeviceTestBuilder { }.configure {
+ * instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }` block.
  */
 private fun KotlinMultiplatformAndroidLibraryExtension.applyFluxoDefaults(
     conf: FluxoConfigurationExtensionImpl,
@@ -63,6 +73,7 @@ private fun KotlinMultiplatformAndroidLibraryExtension.applyFluxoDefaults(
     applyCompileSdk(conf)
     applyMinSdk(conf)
     applyBuildToolsVersion(conf)
+    if (conf.kotlinConfig.setupRoom) applyRoomKspArgs(conf)
 }
 
 private fun KotlinMultiplatformAndroidLibraryExtension.applyNamespace(
@@ -117,4 +128,37 @@ private fun KotlinMultiplatformAndroidLibraryExtension.applyBuildToolsVersion(
 ) {
     if (!buildToolsVersion.isNullOrBlank()) return
     conf.androidBuildToolsVersion?.takeIf { it.isNotBlank() }?.let { buildToolsVersion = it }
+}
+
+/**
+ * Mirrors `setupAndroidCommon`'s legacy Room wiring. The KSP-arg part (`room.generateKotlin` /
+ * `incremental` / `schemaLocation`) is plugin-agnostic — it operates on the project-level
+ * `KspExtension`, not on the Android extension — so it ports cleanly to the AGP-9 KMP+Android
+ * path.
+ *
+ * The legacy path also calls `sourceSets["androidTest"].assets.srcDir(roomSchemasDir)` to
+ * expose the schemas to instrumented tests as test-app assets. That source-set lookup uses
+ * AGP's legacy `LibraryExtension.sourceSets` collection, which the AGP-9 KMP+Android extension
+ * does NOT expose (KMP source sets live on `KotlinMultiplatformExtension.sourceSets` under
+ * different names like `androidDeviceTest`, with a different `resources`/`kotlin` shape and no
+ * direct `assets` accessor at the time of writing). Wire that yourself if you run instrumented
+ * Room tests on AGP 9 KMP+Android — the message at info-level documents the migration anchor.
+ */
+private fun KotlinMultiplatformAndroidLibraryExtension.applyRoomKspArgs(
+    conf: FluxoConfigurationExtensionImpl,
+) {
+    val project = conf.project
+    val schemasDir = "${project.projectDir}/schemas"
+    project.ksp {
+        arg("room.generateKotlin", "true")
+        arg("room.incremental", "true")
+        arg("room.schemaLocation", schemasDir)
+    }
+    project.logger.l(
+        "Room KSP args wired (KMP+Android, schemas at '$schemasDir'). For instrumented " +
+            "Room tests under AGP 9 KMP+Android, attach `$schemasDir` to the " +
+            "`androidDeviceTest` source set's resources manually — `LibraryExtension." +
+            "sourceSets[\"androidTest\"].assets.srcDir(...)` from the legacy path is NOT " +
+            "available on `KotlinMultiplatformAndroidLibraryExtension`.",
+    )
 }
