@@ -15,7 +15,6 @@ import org.gradle.api.internal.tasks.testing.TestResultProcessor
 import org.gradle.api.internal.tasks.testing.TestStartEvent
 import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.testing.TestResult
-import org.jetbrains.kotlin.util.getValueOrNull
 
 @Suppress("LongParameterList")
 internal class ShrinkerVerifier(
@@ -187,7 +186,12 @@ internal class ShrinkerVerifier(
         try {
             classLoader.close()
         } finally {
-            mainJar.getValueOrNull()?.close()
+            // Inlined `Lazy.getValueOrNull` (was in `org.jetbrains.kotlin.util`) to keep
+            // `kotlin-compiler-embeddable` off the published runtime classpath — it conflicts
+            // with KGP-bundled compiler internals on the consumer's buildscript classpath
+            // when the consumer's KGP version differs from ours (e.g. AGP 9 ships built-in
+            // Kotlin at the version AGP was tested against, not the catalog-pinned one).
+            if (mainJar.isInitialized()) mainJar.value.close()
         }
     }
 

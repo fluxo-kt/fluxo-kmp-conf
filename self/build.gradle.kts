@@ -60,8 +60,24 @@ dependencies {
     implementation(libs.plugin.spotless)
     // Detekt ReportMergeTask is used internally
     implementation(libs.plugin.detekt)
-    implementation(libs.detekt.core)
-    implementation(libs.kotlin.compiler.embeddable)
+    // `kotlin-compiler-embeddable` is `compileOnly` so it stays off the published plugin's
+    // runtime classpath. It conflicts with KGP-bundled compiler internals on the consumer's
+    // buildscript classpath (KGP since 2.1.0 no longer drags it in transitively, and the
+    // synthetic `BuildPerformanceMetrics.add$default` and similar helpers diverge between
+    // Kotlin patch versions). When the consumer is on AGP 9 with built-in Kotlin (KGP 2.2.10
+    // bundled) plus our pinned 2.2.21, Gradle's `<latest>` resolution picks 2.2.21 for
+    // `kotlin-compiler-embeddable` while KGP itself stays at 2.2.10 → `NoSuchMethodError`
+    // from `GradleCompilationResults` on `compileDebugKotlin`. Compile-time access is enough
+    // because at runtime KGP brings `kotlin-tooling-core` (where `KotlinToolingVersion` lives)
+    // and Detekt brings `kotlin-compiler-embeddable` transitively at the consumer-applied
+    // version, so reflective callers see a self-consistent classpath.
+    compileOnly(libs.kotlin.compiler.embeddable)
+    // `detekt-core` is `compileOnly`: the only direct compile-time use is the
+    // `io.github.detekt.tooling.api.BaselineProvider` import in `MergeDetektBaselinesTask`,
+    // plus the reflective fallback resolved via `Class.forName`. Consumer builds that apply
+    // the Detekt plugin pull detekt-core transitively via detekt-gradle-plugin, so the
+    // consumer-facing runtime surface stays self-consistent without us republishing it.
+    compileOnly(libs.detekt.core)
     // ASM for bytecode verification.
     implementation(libs.asm)
 
