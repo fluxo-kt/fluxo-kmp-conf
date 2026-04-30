@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>MaxLineLength:Res.kt$Res$getResourceUri</ID>
-    <ID>MaxLineLength:Res.kt$Res$readResourceBytes</ID>
+    <ID>CompilerWarning:Main.kt$Preview</ID>
+    <ID>MaxLineLength:Res.kt$Res$public</ID>
+    <ID>MaxLineLength:Res.kt$Res$public suspend</ID>
+    <ID>RedundantSuspendModifier:Res.kt$Res$suspend</ID>
   </CurrentIssues>
 </SmellBaseline>

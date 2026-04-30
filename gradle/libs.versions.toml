@@ -339,6 +339,7 @@ kotlinx-binCompatValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-
 fluxo-bcv-js = { id = "io.github.fluxo-kt.binary-compatibility-validator-js", version.ref = "fluxo-bcv-js" }
 
 android-lib = { id = "com.android.library", version.ref = "android-gradle-plugin" }
+android-kotlinMultiplatformLib = { id = "com.android.kotlin.multiplatform.library", version.ref = "android-gradle-plugin" }
 
 # https://mvnrepository.com/artifact/com.android.lint/com.android.lint.gradle.plugin?repo=google
 # https://maven.google.com/web/index.html#com.android.lint:com.android.lint.gradle.plugin
