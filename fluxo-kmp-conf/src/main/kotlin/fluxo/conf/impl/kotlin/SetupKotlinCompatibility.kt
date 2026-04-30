@@ -9,24 +9,24 @@ import fluxo.log.e
 import kotlin.KotlinVersion
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import org.jetbrains.kotlin.gradle.plugin.sources.AbstractKotlinSourceSet
 
-internal typealias KCompilation = KotlinCompilation<KotlinCommonOptions>
+internal typealias KCompilation = KotlinCompilation<*>
 
-internal fun KotlinCommonOptions.setupKotlinCompatibility(
+internal fun KotlinCommonCompilerOptions.setupKotlinCompatibility(
     conf: FluxoConfigurationExtensionImpl,
     isTest: Boolean,
     isExperimentalTest: Boolean,
 ) {
     val (lang, api) = conf.kotlinConfig
         .langAndApiVersions(isTest = isTest, latestSettings = isExperimentalTest)
-    lang?.apply { languageVersion = version }
-    api?.apply { apiVersion = version }
+    lang?.let(languageVersion::set)
+    api?.let(apiVersion::set)
 }
 
 internal fun KotlinProjectExtension.setupSourceSetsKotlinCompatibility(

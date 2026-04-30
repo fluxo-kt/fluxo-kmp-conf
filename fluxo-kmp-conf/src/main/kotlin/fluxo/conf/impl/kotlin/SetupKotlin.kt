@@ -319,36 +319,37 @@ private fun KotlinProjectExtension.setupTargets(
             isTest = isTest,
             latestSettings = isExperimentalTest,
         )
-        jvmTargetVersion?.let(::setupJvmCompatibility)
+        jvmTargetVersion?.let { setupJvmCompatibility(it) }
 
-        // In Kotlin 1.9 `compilerOptions` are still unreliable.
-        // Use `kotlinOptions` instead for now.
         val ctx = conf.ctx
-        kotlinOptions.run {
-            val platformType = target.platformType
-            val isAndroid = platformType.let { KotlinPlatformType.androidJvm === it }
-            val isJsOrWasm = !isAndroid && platformType
-                .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
+        val platformType = target.platformType
+        val isAndroid = platformType.let { KotlinPlatformType.androidJvm === it }
+        val isJsOrWasm = !isAndroid && platformType
+            .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
 
-            val warningsAsErrors = conf.kotlinConfig.warningsAsErrors &&
-                !isJsOrWasm && !isTest && (ctx.isCI || ctx.isRelease)
+        val warningsAsErrors = conf.kotlinConfig.warningsAsErrors &&
+            !isJsOrWasm && !isTest && (ctx.isCI || ctx.isRelease)
 
-            setupKotlinCompatibility(
-                conf = conf,
-                isTest = isTest,
-                isExperimentalTest = isExperimentalTest,
-            )
+        val compName = name
+        compileTaskProvider.configure {
+            compilerOptions {
+                setupKotlinCompatibility(
+                    conf = conf,
+                    isTest = isTest,
+                    isExperimentalTest = isExperimentalTest,
+                )
 
-            setupKotlinOptions(
-                conf = conf,
-                compilationName = name,
-                warningsAsErrors = warningsAsErrors,
-                latestSettings = isExperimentalTest,
-                jvmTargetVersion = jvmTargetVersion,
-                isAndroid = isAndroid,
-                isTest = isTest,
-                isMultiplatform = isMultiplatform,
-            )
+                setupKotlinOptions(
+                    conf = conf,
+                    compilationName = compName,
+                    warningsAsErrors = warningsAsErrors,
+                    latestSettings = isExperimentalTest,
+                    jvmTargetVersion = jvmTargetVersion,
+                    isAndroid = isAndroid,
+                    isTest = isTest,
+                    isMultiplatform = isMultiplatform,
+                )
+            }
         }
 
         if (composeConfig != null) {

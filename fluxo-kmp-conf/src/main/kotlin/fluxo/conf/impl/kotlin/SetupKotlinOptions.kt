@@ -4,13 +4,13 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
 import fluxo.log.e
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 
 @Suppress("LongParameterList", "ComplexMethod", "LongMethod")
-internal fun KotlinCommonOptions.setupKotlinOptions(
+internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     conf: FluxoConfigurationExtensionImpl,
     compilationName: String,
     warningsAsErrors: Boolean,
@@ -29,10 +29,10 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     val kc = conf.kotlinConfig
 
     if (warningsAsErrors) {
-        allWarningsAsErrors = true
+        allWarningsAsErrors.set(true)
     }
 
-    val compilerArgs = freeCompilerArgs.toMutableSet()
+    val compilerArgs = freeCompilerArgs.orElse(emptyList()).get().toMutableSet()
     compilerArgs.addAll(DEFAULT_OPTS)
 
     val kotlinPluginVersion = context.kotlinPluginVersion
@@ -70,7 +70,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     val isJvm: Boolean
     val isJs: Boolean
     when (this) {
-        is KotlinJvmOptions -> {
+        is KotlinJvmCompilerOptions -> {
             isJvm = true
             isJs = false
 
@@ -115,7 +115,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             }
 
             if (kc.javaParameters) {
-                javaParameters = true
+                javaParameters.set(true)
             }
 
             compilerArgs.addAll(JVM_OPTS)
@@ -154,7 +154,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
             }
         }
 
-        is KotlinJsOptions -> {
+        is KotlinJsCompilerOptions -> {
             isJs = true
             isJvm = false
             compilerArgs.addAll(JS_OPTS)
@@ -167,20 +167,17 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
     }
 
     if ((kc.progressive || useLatestSettings) && lang.isCurrentOrLater) {
-        options.progressiveMode.set(true)
+        progressiveMode.set(true)
         // compilerArgs.add("-progressive")
     }
 
     if (useLatestSettings) {
-        val k2Used = when {
-            kotlin20orUpper -> true
-            else -> {
-                @Suppress("DEPRECATION")
-                kotlinPluginVersion >= KOTLIN_1_9 &&
-                    kotlinPluginVersion < KOTLIN_2_0 &&
-                    (isJvm || isJs) && useK2
-            }
-        }
+        // K2 is the only compiler from Kotlin 2.0+; the consumer KGP-1.9 `useK2`
+        // toggle was removed from compilerOptions. We compile against KGP 2.2,
+        // so K2 is implicit in this branch. The `kotlin20orUpper` keyword guard
+        // still gates K2-specific lang-feature flags below for consumer KGPs
+        // whose lang version is 1.9.
+        val k2Used = kotlin20orUpper
 
         // Lang features
         /** @see org.jetbrains.kotlin.config.LanguageFeature */
@@ -217,7 +214,7 @@ internal fun KotlinCommonOptions.setupKotlinOptions(
         compilerArgs.add("-Xdebug")
     }
 
-    freeCompilerArgs = compilerArgs.toList()
+    freeCompilerArgs.set(compilerArgs.toList())
 }
 
 @Volatile

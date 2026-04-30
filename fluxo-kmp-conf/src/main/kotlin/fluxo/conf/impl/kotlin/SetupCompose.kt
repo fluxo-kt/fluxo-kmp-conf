@@ -13,7 +13,6 @@ import java.io.File
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 
 
@@ -99,38 +98,39 @@ internal class ComposeConfiguration(
 )
 
 
-internal fun KotlinCompilation<KotlinCommonOptions>.setupComposeLegacyWay(
+internal fun KotlinCompilation<*>.setupComposeLegacyWay(
     conf: FluxoConfigurationExtensionImpl,
     composeConf: ComposeConfiguration,
     isTest: Boolean,
 ) {
-    // Compose options can work with errors using new `compilerOptions`.
-    // Continue with `kotlinOptions` for now.
-    val ko = kotlinOptions
-
+    val args = mutableListOf<String>()
     val p = "plugin:androidx.compose.compiler.plugins.kotlin"
     if (conf.suppressKotlinComposeCompatibilityCheck == true) {
         val v = conf.ctx.kotlinPluginVersion.toString()
-        ko.freeCompilerArgs += listOf("-P", "$p:suppressKotlinVersionCompatibilityCheck=$v")
+        args += listOf("-P", "$p:suppressKotlinVersionCompatibilityCheck=$v")
     }
 
     // https://developer.android.com/develop/ui/compose/performance/stability/fix#configuration-file
     composeConf.stabilityConfFile?.let {
-        ko.freeCompilerArgs += listOf("-P", "$p:stabilityConfigurationPath=${it.absolutePath}")
+        args += listOf("-P", "$p:stabilityConfigurationPath=${it.absolutePath}")
     }
 
     val reportsDir = composeConf.reportsDir
     val composeMetrics = !isTest && reportsDir != null
-    if (!composeMetrics || reportsDir == null) {
-        return
+    if (composeMetrics && reportsDir != null) {
+        // Output Compose Compiler metrics to the specified directory.
+        // https://chris.banes.dev/composable-metrics/
+        // https://github.com/androidx/androidx/blob/androidx-main/compose/compiler/design/compiler-metrics.md#interpreting-compose-compiler-metrics
+        val rDir = reportsDir.ioFile.absolutePath
+        args += listOf("-P", "$p:metricsDestination=$rDir")
+        args += listOf("-P", "$p:reportsDestination=$rDir")
     }
 
-    // Output Compose Compiler metrics to the specified directory.
-    // https://chris.banes.dev/composable-metrics/
-    // https://github.com/androidx/androidx/blob/androidx-main/compose/compiler/design/compiler-metrics.md#interpreting-compose-compiler-metrics
-    val rDir = reportsDir.ioFile.absolutePath
-    ko.freeCompilerArgs += listOf("-P", "$p:metricsDestination=$rDir")
-    ko.freeCompilerArgs += listOf("-P", "$p:reportsDestination=$rDir")
+    if (args.isNotEmpty()) {
+        compileTaskProvider.configure {
+            compilerOptions.freeCompilerArgs.addAll(args)
+        }
+    }
 
     @Suppress("MaxLineLength")
     // Note: convert the report to the human-readable HTML.

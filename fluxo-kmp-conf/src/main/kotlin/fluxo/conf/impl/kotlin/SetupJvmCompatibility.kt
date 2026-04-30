@@ -7,13 +7,11 @@ import fluxo.log.l
 import kotlin.math.max
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -74,16 +72,12 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
                 targetCompatibility = v
             }
         }
-        /** `android.kotlinOptions` */
-        val ext = this as? ExtensionAware
-        ext?.configureExtensionIfAvailable<KotlinJvmOptions>("kotlinOptions") {
-            setupJvmCompatibility(jvmTarget)
-        }
+        // The legacy `android.kotlinOptions` extension was removed in AGP 9 +
+        // Kotlin 2.2 — JVM target now flows through each Kotlin compilation's
+        // `compilerOptions` (configured per-compilation in `setupTargets`),
+        // and Android source/target compatibility is set above via
+        // `compileOptions`. Nothing to do here.
     }
-}
-
-internal fun KotlinJvmOptions.setupJvmCompatibility(jvmTarget: String) {
-    this.jvmTarget = jvmTarget
 }
 
 internal fun KotlinJvmCompilerOptions.setupJvmCompatibility(jvmTarget: String) {
