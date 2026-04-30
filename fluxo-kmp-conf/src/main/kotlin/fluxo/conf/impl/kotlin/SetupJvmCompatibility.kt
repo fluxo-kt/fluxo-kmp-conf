@@ -1,6 +1,6 @@
 package fluxo.conf.impl.kotlin
 
-import com.android.build.gradle.TestedExtension
+import com.android.build.api.dsl.CommonExtension
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.log.l
@@ -64,14 +64,22 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
         // as more fine-grained configuration is preferred.
     }
 
-    // Android
-    project.configureExtensionIfAvailable<TestedExtension>(ANDROID_EXT_NAME) {
-        compileOptions {
-            jvmTarget.asJavaVersion().let { v ->
-                sourceCompatibility = v
-                targetCompatibility = v
-            }
-        }
+    // Android.
+    // Use the modern `com.android.build.api.dsl.CommonExtension` rather than the legacy
+    // `com.android.build.gradle.TestedExtension`: under AGP 9 the runtime extension instance
+    // (`com.android.build.gradle.internal.dsl.LibraryExtensionImpl`) no longer implements
+    // `TestedExtension`, so a name-keyed unchecked cast to it explodes with
+    // `ClassCastException`. `CommonExtension` is the stable parent of both
+    // `LibraryExtension` and `BaseAppModuleExtension` across AGP 8 and 9 and exposes
+    // `compileOptions` directly.
+    project.configureExtensionIfAvailable<CommonExtension>(ANDROID_EXT_NAME) {
+        // AGP 9 dropped the action-form `compileOptions { }` helper from `CommonExtension`
+        // — only the getter survives — so configure via the property directly. Behaviour is
+        // identical: still sets sourceCompatibility + targetCompatibility on the per-extension
+        // singleton CompileOptions instance.
+        val v = jvmTarget.asJavaVersion()
+        compileOptions.sourceCompatibility = v
+        compileOptions.targetCompatibility = v
         // The legacy `android.kotlinOptions` extension was removed in AGP 9 +
         // Kotlin 2.2 — JVM target now flows through each Kotlin compilation's
         // `compilerOptions` (configured per-compilation in `setupTargets`),

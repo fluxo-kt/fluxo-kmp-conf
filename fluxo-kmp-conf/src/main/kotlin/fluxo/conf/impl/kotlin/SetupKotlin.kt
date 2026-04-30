@@ -67,6 +67,7 @@ internal fun configureKotlinJvm(
     val ctx = conf.ctx
 
     val isApp = type === ANDROID_APP
+    val isAndroid = isApp || type === ANDROID_LIB
     if (isApp) {
         ctx.loadAndApplyPluginIfNotApplied(id = ANDROID_APP_PLUGIN_ID, project = project)
     } else if (type === ANDROID_LIB) {
@@ -81,7 +82,16 @@ internal fun configureKotlinJvm(
         }
     }
 
-    ctx.loadAndApplyPluginIfNotApplied(id = KOTLIN_JVM_PLUGIN_ID, project = project)
+    // For Android types the `kotlin` extension is already registered by the time we get here:
+    // under AGP 9 by AGP's built-in Kotlin support (`android.builtInKotlin` defaults to true),
+    // under AGP 8 by the consumer-applied `org.jetbrains.kotlin.android` plugin (which AGP 9
+    // hard-rejects). Applying `kotlin-jvm` on top of either would conflict with the existing
+    // `kotlin` extension (`Cannot add extension with name 'kotlin'`); the extension is also of
+    // a different type (`KotlinAndroidProjectExtension`) which the assertion on line 103
+    // correctly accepts. Plain JVM / Gradle-plugin / IDEA-plugin paths still need the apply.
+    if (!isAndroid) {
+        ctx.loadAndApplyPluginIfNotApplied(id = KOTLIN_JVM_PLUGIN_ID, project = project)
+    }
 
     if (type === GRADLE_PLUGIN) {
         // Gradle Kotlin DSL uses the same compiler plugin (sam.with.receiver).
