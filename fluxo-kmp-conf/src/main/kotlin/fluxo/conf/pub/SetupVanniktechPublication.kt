@@ -22,12 +22,14 @@ import fluxo.conf.impl.android.RELEASE
 import fluxo.conf.impl.getByName
 import fluxo.conf.impl.kotlin.KOTLIN_JVM_PLUGIN_ID
 import fluxo.conf.impl.kotlin.KOTLIN_MPP_PLUGIN_ID
+import fluxo.conf.impl.kotlin.mppExtOrNull
 import fluxo.conf.impl.withType
 import fluxo.log.l
 import fluxo.log.w
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
 // https://vanniktech.github.io/gradle-maven-publish-plugin/other/
@@ -160,20 +162,16 @@ private fun MavenPublishBaseExtension.setupVanniktechKmpPublication(
         plainJavadocSupported = false,
         applyDokka = true,
     )
-    // Vanniktech 0.35 deprecated `androidVariantsToPublish` — both 3-arg and 4-arg
-    // constructors carry the same warning, only the 2-arg form is undeprecated and
-    // it drops the variant-list concept entirely. The consumer-facing override
-    // (`ANDROID_VARIANT_TO_PUBLISH` env/prop) has no replacement on that path, so
-    // we keep the deprecated constructor until a behaviour-preserving migration
-    // surface ships (likely after Vanniktech 0.36+ once the build Kotlin moves).
-    @Suppress("DEPRECATION")
-    configure(
-        KotlinMultiplatform(
-            javadocJar = javadocJar,
-            sourcesJar = true,
-            androidVariantsToPublish = androidVariantsToPublish,
-        ),
-    )
+    // Vanniktech 0.35 deprecated the `androidVariantsToPublish`-carrying constructors;
+    // their bodies just set `KotlinAndroidTarget.publishLibraryVariants` for us, so we
+    // do that directly and use the undeprecated 2-arg constructor. Behaviour-preserves
+    // the prior `forceAndroidVariantsIfNotEmpty = true` semantics: this writer runs
+    // unconditionally, overriding any consumer-side `publishLibraryVariants` because
+    // `ANDROID_VARIANT_TO_PUBLISH` is the publication-time control knob.
+    p.mppExtOrNull?.targets?.withType<KotlinAndroidTarget>()?.configureEach {
+        publishLibraryVariants = androidVariantsToPublish
+    }
+    configure(KotlinMultiplatform(javadocJar = javadocJar, sourcesJar = true))
 }
 
 private fun MavenPublishBaseExtension.setupVanniktechAndroidLibPublication(p: Project) {
