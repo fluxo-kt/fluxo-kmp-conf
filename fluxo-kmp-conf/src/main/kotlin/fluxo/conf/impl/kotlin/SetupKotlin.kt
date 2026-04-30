@@ -2,7 +2,7 @@ package fluxo.conf.impl.kotlin
 
 import MAIN_SOURCE_SET_NAME
 import TEST_SOURCE_SET_NAME
-import com.android.build.gradle.TestedExtension
+import com.android.build.api.dsl.CommonExtension
 import fkcSetupMultiplatform
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.container.Container
@@ -148,7 +148,7 @@ internal fun configureKotlinJvm(
         }
 
         if (!androidWasSetUp) {
-            project.configureExtensionIfAvailable<TestedExtension>(ANDROID_EXT_NAME) {
+            project.configureExtensionIfAvailable<CommonExtension>(ANDROID_EXT_NAME) {
                 setupAndroidCommon(conf)
             }
         }
@@ -244,7 +244,7 @@ internal fun configureKotlinMultiplatform(
             }
         }
         if (!androidWasSetUp) {
-            project.configureExtensionIfAvailable<TestedExtension>(ANDROID_EXT_NAME) {
+            project.configureExtensionIfAvailable<CommonExtension>(ANDROID_EXT_NAME) {
                 setupAndroidCommon(conf)
             }
         }

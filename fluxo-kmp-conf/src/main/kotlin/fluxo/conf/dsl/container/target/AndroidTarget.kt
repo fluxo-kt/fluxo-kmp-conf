@@ -1,18 +1,16 @@
 package fluxo.conf.dsl.container.target
 
 import AndroidCommonExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.TestedExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import fluxo.conf.dsl.container.KotlinTargetContainer
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm.Companion.ANDROID
 import fluxo.conf.impl.EMPTY_FUN
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
-public interface AndroidTarget<out T> :
-    KotlinTargetContainer<KotlinAndroidTarget>
-    where T : AndroidCommonExtension, T : TestedExtension {
+public interface AndroidTarget<out T : AndroidCommonExtension> :
+    KotlinTargetContainer<KotlinAndroidTarget> {
 
     @Deprecated(
         message = "Use `onAndroidExtension` instead.",
@@ -30,18 +28,14 @@ public interface AndroidTarget<out T> :
     public interface Configure {
 
         /**
-         *
-         * @see com.android.build.gradle.internal.dsl.BaseAppModuleExtension
          * @see com.android.build.api.dsl.ApplicationExtension
          */
         public fun androidApp(
             targetName: String = ANDROID,
-            configure: AndroidTarget<BaseAppModuleExtension>.() -> Unit = EMPTY_FUN,
+            configure: AndroidTarget<ApplicationExtension>.() -> Unit = EMPTY_FUN,
         )
 
         /**
-         *
-         * @see com.android.build.gradle.LibraryExtension
          * @see com.android.build.api.dsl.LibraryExtension
          */
         public fun androidLibrary(

@@ -2,8 +2,8 @@
 @file:JvmName("Fkc")
 @file:JvmMultifileClass
 
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.fluxoConfiguration
 import org.gradle.api.Project
@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
  * @param kotlin The configuration block for the [KotlinAndroidProjectExtension].
  * @param android The configuration block for the Android [LibraryExtension].
  *
- * @see com.android.build.gradle.LibraryExtension
+ * @see com.android.build.api.dsl.LibraryExtension
  * @see fluxo.conf.dsl.FluxoConfigurationExtension.androidNamespace
  * @see fluxo.conf.dsl.FluxoConfigurationExtension.enableBuildConfig
  * @see fluxo.conf.dsl.FluxoConfigurationExtension.setupRoom
@@ -82,10 +82,9 @@ public fun Project.fkcSetupAndroidLibrary(
  * @param setupCompose Whether to set up Compose in this module (auto-detected if already applied).
  *
  * @param kotlin Configuration block for the [KotlinAndroidProjectExtension].
- * @param android Configuration block for the Android [BaseAppModuleExtension].
+ * @param android Configuration block for the Android [ApplicationExtension].
  *
- * @see com.android.build.gradle.AppExtension
- * @see com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+ * @see com.android.build.api.dsl.ApplicationExtension
  *
  * @see fluxo.conf.dsl.FluxoConfigurationExtension.androidNamespace
  * @see fluxo.conf.dsl.FluxoConfigurationExtension.androidApplicationId
@@ -107,7 +106,7 @@ public fun Project.fkcSetupAndroidApp(
     setupKsp: Boolean? = null,
     setupCompose: Boolean? = null,
     kotlin: (KotlinAndroidProjectExtension.() -> Unit)? = null,
-    android: (BaseAppModuleExtension.() -> Unit)? = null,
+    android: (ApplicationExtension.() -> Unit)? = null,
 ) {
     project.fluxoConfiguration {
         isApplication = true

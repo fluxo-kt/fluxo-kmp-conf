@@ -4,9 +4,9 @@ package fluxo.conf.impl.android
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
-import com.android.build.gradle.TestedExtension
 import com.android.build.gradle.internal.lint.AndroidLintTask
 import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
@@ -24,10 +24,18 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Exec
 
 /**
- * @see com.android.build.api.dsl.TestedExtension
- * @see com.android.build.gradle.TestedExtension
+ * Common Android setup for both legacy AGP-8 `com.android.library` /
+ * `com.android.application` and AGP-9 (where the runtime extension instance no longer
+ * implements `com.android.build.gradle.TestedExtension` — only the modern hierarchy
+ * survives). Operates on the modern [CommonExtension] receiver, with `is LibraryExtension`
+ * / `is ApplicationExtension` smart-casts where the API needs invariant containers
+ * (`buildTypes`) or app-only properties (`applicationId`, `versionCode`, `targetSdk`,
+ * `bundle`, `signingConfigs`, `packaging`).
+ *
+ * @see com.android.build.api.dsl.LibraryExtension
+ * @see com.android.build.api.dsl.ApplicationExtension
  */
-internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensionImpl) {
+internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensionImpl) {
     val project = conf.project
     conf.androidNamespace.let { ns ->
         if (ns.isEmpty()) {
@@ -39,26 +47,19 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
     }
     conf.androidBuildToolsVersion?.let { buildToolsVersion = it }
 
-    // Note: avoiding setting of generics for CommonExtension is intentional
-    //  as number can vary between AGP versions.
-    project.the(CommonExtension::class).apply {
-        conf.androidCompileSdk.let {
-            if (it is Int) compileSdk = it else compileSdkPreview = it.toString()
-        }
+    conf.androidCompileSdk.let {
+        if (it is Int) compileSdk = it else compileSdkPreview = it.toString()
     }
 
     val ctx = conf.ctx
     val pseudoLocales = ctx.isMaxDebug && !ctx.isRelease && !ctx.isCI
-    defaultConfig {
+    // The Action-form `defaultConfig { … }` block lives on the concrete subtypes
+    // (`LibraryExtension` / `ApplicationExtension`), not on `CommonExtension` itself —
+    // only `getDefaultConfig()` is exposed on the parent. Use `defaultConfig.apply { }`
+    // for cross-subtype compatibility; the lambda receiver is the modern `DefaultConfig`
+    // (extends `BaseFlavor`) which carries minSdk/testInstrumentationRunner/etc.
+    defaultConfig.apply {
         conf.androidMinSdk.let { if (it is Int) minSdk = it else minSdkPreview = it.toString() }
-
-        try {
-            conf.androidTargetSdk.let {
-                if (it is Int) targetSdk = it else targetSdkPreview = it.toString()
-            }
-        } catch (_: Throwable) {
-            // Will be removed from LibraryBaseFlavor DSL in AGP v9.0
-        }
 
         // Explicit list of the locales to keep in the final app.
         // Doing this strips out extra locales from libraries like
@@ -74,19 +75,45 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // testInstrumentationRunner = "androidx.benchmark.junit4.AndroidBenchmarkRunner"
+    }
 
-        if (conf.kotlinConfig.setupRoom) {
-            // Exported Room DB schemas
-            // Enable incremental compilation for Room
-            val roomSchemasDir = "${project.projectDir}/schemas"
-            project.ksp {
-                arg("room.generateKotlin", "true")
-                arg("room.incremental", "true")
-                arg("room.schemaLocation", roomSchemasDir)
+    // `targetSdk` was removed from `LibraryBaseFlavor` in AGP 9 (target API affects apps,
+    // not libraries — libraries inherit the consumer's effective target). Apply only on
+    // `ApplicationExtension`, where it's still the source of truth.
+    if (this is ApplicationExtension) {
+        defaultConfig.apply {
+            try {
+                conf.androidTargetSdk.let {
+                    if (it is Int) targetSdk = it else targetSdkPreview = it.toString()
+                }
+            } catch (_: Throwable) {
+                // Defensive: AGP may further restrict this property in future patches.
             }
-            // Add exported schema location as test app assets.
-            sourceSets["androidTest"].assets.srcDir(roomSchemasDir)
         }
+    }
+
+    if (conf.kotlinConfig.setupRoom) {
+        // The KSP-arg part is plugin-agnostic (`room.generateKotlin` / `incremental` /
+        // `schemaLocation`); applies to both AGP 8 and AGP 9.
+        val roomSchemasDir = "${project.projectDir}/schemas"
+        project.ksp {
+            arg("room.generateKotlin", "true")
+            arg("room.incremental", "true")
+            arg("room.schemaLocation", roomSchemasDir)
+        }
+        // The legacy `sourceSets["androidTest"].assets.srcDir(...)` lookup uses AGP's
+        // `TestedExtension.sourceSets` collection, which the AGP-9 modern DSL does NOT
+        // expose. Wire that yourself if you run instrumented Room tests on AGP 9 —
+        // attach `$roomSchemasDir` to your `androidTest` source set's resources/assets
+        // manually. The legacy AGP-8 path keeps the auto-wiring for backwards compat.
+        @Suppress("DEPRECATION")
+        (this as? com.android.build.gradle.TestedExtension)?.sourceSets
+            ?.findByName("androidTest")?.assets?.srcDir(roomSchemasDir)
+            ?: project.logger.l(
+                "Room schemas at '$roomSchemasDir'; on AGP 9 attach to `androidTest` " +
+                    "source set's assets/resources manually — the legacy `TestedExtension." +
+                    "sourceSets` accessor is unavailable on the modern Android DSL.",
+            )
     }
 
     var isApplication = false
@@ -147,20 +174,37 @@ internal fun TestedExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         all { it.useJUnit() }
     }
 
-    buildTypes {
-        maybeCreate(DEBUG).apply {
-            matchingFallbacks.addAll(listOf("test", DEBUG, "qa"))
-
-            // UI localization testing.
-            // Generate resources for pseudo-locales: en-XA and ar-XB
-            // https://developer.android.com/guide/topics/resources/pseudolocales
-            if (pseudoLocales) {
-                isPseudoLocalesEnabled = true
+    // `CommonExtension.buildTypes` exposes a wildcard-bounded
+    // `NamedDomainObjectContainer<? extends BuildType>` (covariant), so `maybeCreate` /
+    // `add` won't compile against it. The Action-form `buildTypes(Function1<...>)` on the
+    // concrete subtypes is invariant inside its lambda — `LibraryExtension` exposes
+    // `NamedDomainObjectContainer<LibraryBuildType>`, `ApplicationExtension` exposes
+    // `NamedDomainObjectContainer<ApplicationBuildType>`. Dispatch by the runtime subtype.
+    when (this) {
+        is LibraryExtension -> buildTypes {
+            maybeCreate(DEBUG).apply {
+                matchingFallbacks.addAll(listOf("test", DEBUG, "qa"))
+            }
+            maybeCreate(RELEASE).apply {
+                matchingFallbacks.addAll(listOf(RELEASE, "prod", "production"))
             }
         }
+        is ApplicationExtension -> buildTypes {
+            maybeCreate(DEBUG).apply {
+                matchingFallbacks.addAll(listOf("test", DEBUG, "qa"))
 
-        maybeCreate(RELEASE).apply {
-            matchingFallbacks.addAll(listOf(RELEASE, "prod", "production"))
+                // UI localization testing.
+                // Generate resources for pseudo-locales: en-XA and ar-XB.
+                // https://developer.android.com/guide/topics/resources/pseudolocales
+                // `isPseudoLocalesEnabled` is on `ApplicationBuildType`, not
+                // `LibraryBuildType` — it's the app that bundles resources.
+                if (pseudoLocales) {
+                    isPseudoLocalesEnabled = true
+                }
+            }
+            maybeCreate(RELEASE).apply {
+                matchingFallbacks.addAll(listOf(RELEASE, "prod", "production"))
+            }
         }
     }
 

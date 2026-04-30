@@ -2,9 +2,8 @@ package fluxo.conf.dsl.container.impl.target
 
 import AndroidCommonExtension
 import bundleFor
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.TestedExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import fluxo.conf.dsl.container.impl.ContainerContext
 import fluxo.conf.dsl.container.impl.ContainerHolderAware
 import fluxo.conf.dsl.container.impl.KmpTargetCode
@@ -31,13 +30,12 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
-internal abstract class TargetAndroidContainer<T>(
+internal abstract class TargetAndroidContainer<T : AndroidCommonExtension>(
     context: ContainerContext,
     name: String,
 ) : KmpTargetContainerImpl<KotlinAndroidTarget>(context, name, ANDROID_SORT_ORDER),
     KmpTargetContainerImpl.CommonJvm<KotlinAndroidTarget>,
-    AndroidTarget<T>
-    where T : AndroidCommonExtension, T : TestedExtension {
+    AndroidTarget<T> {
 
     internal val lazyAndroid = context.objects.set<T.() -> Unit>()
 
@@ -165,7 +163,7 @@ internal abstract class TargetAndroidContainer<T>(
 
         override fun androidApp(
             targetName: String,
-            configure: AndroidTarget<BaseAppModuleExtension>.() -> Unit,
+            configure: AndroidTarget<ApplicationExtension>.() -> Unit,
         ) {
             holder.configure(targetName, ::App, KmpTargetCode.ANDROID, configure)
         }
@@ -179,7 +177,7 @@ internal abstract class TargetAndroidContainer<T>(
     }
 
     class App(context: ContainerContext, targetName: String) :
-        TargetAndroidContainer<BaseAppModuleExtension>(context, targetName) {
+        TargetAndroidContainer<ApplicationExtension>(context, targetName) {
 
         init {
             // The AGP-9 + KMP+app rejection only applies when this container runs in a KMP
@@ -202,7 +200,7 @@ internal abstract class TargetAndroidContainer<T>(
         }
 
         override fun setupAndroid(project: Project) {
-            project.configureExtension<BaseAppModuleExtension>(ANDROID_EXT_NAME) {
+            project.configureExtension<ApplicationExtension>(ANDROID_EXT_NAME) {
                 setupAndroidExtension()
                 lazyAndroid.configureEach { this() }
             }
