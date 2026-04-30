@@ -7,7 +7,6 @@ import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 
 @Suppress("LongParameterList", "ComplexMethod", "LongMethod")
 internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
@@ -35,16 +34,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     val compilerArgs = freeCompilerArgs.orElse(emptyList()).get().toMutableSet()
     compilerArgs.addAll(DEFAULT_OPTS)
 
-    // Layer-2 floor is consumer Kotlin 2.1+ (→ KGP 2.1.0+), so the `lang == null` arms
-    // are tautologically `false` (kotlin19orLower) / `true` (kotlin20orUpper). The
-    // remaining checks only fire when the consumer EXPLICITLY overrides
-    // `kotlinLangVersion` via `fluxoConfiguration { }` to a 1.9-or-earlier value.
     val (lang) = kc.langAndApiVersions(isTest = isTest, latestSettings = useLatestSettings)
-    val kotlin19orLower = lang != null && lang <= KotlinLangVersion.KOTLIN_1_9
-    val kotlin20orUpper = !kotlin19orLower
-    if (kotlin19orLower && KOTLIN_UP_TO_1_9_OPTS.isNotEmpty()) {
-        compilerArgs.addAll(KOTLIN_UP_TO_1_9_OPTS)
-    }
 
     if (useLatestSettings) {
         compilerArgs.addAll(LATEST_OPTS)
@@ -77,16 +67,15 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 setupJvmCompatibility(jvmTarget)
 
                 val jvmTargetInt = jvmTarget.toJvmMajorVersion()
-                // jdk-release only applies in JVM non-Android builds, when the JDK
-                // differs from the target, and when consumer lang is 1.9-or-earlier
-                // (jdk-release fails on the lang-2.0 + KGP-1.9.x combination; the
-                // historical 2.0..2.0.20 escape arm is unreachable under the layer-2
-                // KGP 2.1.0+ floor and was dropped).
+                // jdk-release applies in JVM non-Android builds when the JDK differs
+                // from the target. The historical lang-2.0 + KGP-1.9.x escape arm is
+                // unreachable under the layer-2 floor (KGP 2.0+); the prior
+                // `!kotlin20orUpper` defensive disable was dropped together with that
+                // floor bump.
                 // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda
                 val useJdkRelease = kc.useJdkRelease &&
                     !isAndroid &&
-                    jvmTargetInt != JRE_VERSION &&
-                    !kotlin20orUpper
+                    jvmTargetInt != JRE_VERSION
 
                 // ct.sym is broken for -Xjdk-release=18+ with JDK 18..22.
                 // https://bugs.openjdk.org/browse/JDK-8331027
@@ -170,30 +159,24 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     }
 
     if (useLatestSettings) {
-        // K2 is the only compiler from Kotlin 2.0+; the consumer KGP-1.9 `useK2`
-        // toggle was removed from compilerOptions. We compile against KGP 2.2,
-        // so K2 is implicit in this branch. The `kotlin20orUpper` keyword guard
-        // still gates K2-specific lang-feature flags below for consumer KGPs
-        // whose lang version is 1.9.
-        val k2Used = kotlin20orUpper
+        // K2 is the only compiler from Kotlin 2.0+; under the layer-2 floor (consumer
+        // KGP 2.0+) it is the only path, and the `useK2` toggle is gone from KGP.
 
         // Lang features
         /** @see org.jetbrains.kotlin.config.LanguageFeature */
         // https://github.com/JetBrains/kotlin/blob/ca0b061/compiler/util/src/org/jetbrains/kotlin/config/LanguageVersionSettings.kt
 
         // Non-local break and continue are in preview since 2.0.
-        // Unfortunately, in K2, the feature works only in JVM.
+        // In K2 the feature is JVM-only.
         // https://youtrack.jetbrains.com/issue/KT-1436/Support-non-local-break-and-continue
-        if (if (k2Used) isJvm else kotlin19orLower) {
+        if (isJvm) {
             compilerArgs.add(langFeature("BreakContinueInInlineLambdas"))
         }
 
-        // K2 Explicit backing fields (KGP 1.7+ — unconditional under the layer-2 floor).
+        // K2 Explicit backing fields (unconditional under the layer-2 floor).
         // https://github.com/Kotlin/KEEP/issues/278#issuecomment-1152073904
         // https://github.com/Kotlin/KEEP/pull/289
-        if (k2Used) {
-            compilerArgs.add(langFeature("ExplicitBackingFields"))
-        }
+        compilerArgs.add(langFeature("ExplicitBackingFields"))
 
         // TODO: Guard conditions for when-with-subject (Kotlin 2.0.20)
         //  https://youtrack.jetbrains.com/issue/KT-67787
@@ -232,31 +215,6 @@ private val DEFAULT_OPTS: List<String> = listOf(
     // https://github.com/Kotlin/KEEP/blob/context-parameters/proposals/context-parameters.md.
     // "-Xcontext-receivers",
 )
-
-// Not supported in the Kotlin 2.1 language version.
-@Suppress("RemoveExplicitTypeArguments", "RedundantSuppression")
-private val KOTLIN_UP_TO_1_9_OPTS = arrayOf<String>(
-    // Check uniqueness of signatures at klib generating phase.
-    // Not supported in the Kotlin 2.1+
-//    "-Xklib-enable-signature-clash-checks",
-
-    // For incremental compilation, both flags should be supplied:
-    //  -Xenable-incremental-compilation and -Xic-cache-dir
-//    "-Xenable-incremental-compilation",
-//    "-Xic-cache-dir=${System.getProperty("user.home")}/.kotlin/ic",
-
-    // Support for IR backend parallel compilation:
-    //  https://youtrack.jetbrains.com/issue/KT-46085
-    // IR backend runs lowerings by file in N parallel threads.
-    //  0 means use a thread per processor core.
-    //  The default value is 1.
-    // Using /2 processors as JVM and Android targets share the processors
-    // and compile at the same time.
-    // Also reserved 2 cores for Gradle multitasking.
-    // On Apple M1 Max parallelism reduces compilation time by 1/3.
-    // Seems to be not supported in Kotlin 2.0+ and failing in Kotlin 1.9.21
-//    "-Xbackend-threads=" + (CPUs / 2 - 1).coerceAtLeast(1),
-).asList()
 
 /** Latest options for early testing Kotlin compatibility or for non-production compilations. */
 private val LATEST_OPTS = arrayOf(
