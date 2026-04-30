@@ -123,7 +123,7 @@ internal class KmpConfigurationContainerDslImpl(
         // Fixed in Kotlin 2.0.
         val kpv = holder.kotlinPluginVersion
         if (wasm) {
-            @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
+            @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
             if (kpv >= KOTLIN_1_8_20 &&
                 (kpv >= KOTLIN_2_0 || isGradleNotFailingOnImplicitTaskDependencies())
             ) {

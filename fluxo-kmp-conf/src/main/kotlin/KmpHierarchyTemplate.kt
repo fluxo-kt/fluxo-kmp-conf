@@ -43,13 +43,7 @@ public val KotlinHierarchyTemplate.Templates.fluxoKmpConf: KotlinHierarchyBuilde
 
             group(COMMON_JVM) {
                 withJvm()
-                try {
-                    withAndroidTarget()
-                } catch (_: Throwable) {
-                    // Fallback for old Kotlin
-                    @Suppress("DEPRECATION")
-                    withAndroid()
-                }
+                withAndroidTarget()
 
                 excludeCompilations {
                     when (it.platformType) {
@@ -63,15 +57,9 @@ public val KotlinHierarchyTemplate.Templates.fluxoKmpConf: KotlinHierarchyBuilde
             group(NON_JVM) {
                 group(COMMON_JS) {
                     withJs()
-                    try {
-                        group(COMMON_WASM) {
-                            withWasmJs()
-                            withWasmWasi()
-                        }
-                    } catch (_: Throwable) {
-                        // Fallback for Kotlin before v2.0
-                        @Suppress("DEPRECATION")
-                        withWasm()
+                    group(COMMON_WASM) {
+                        withWasmJs()
+                        withWasmWasi()
                     }
                 }
                 group(NATIVE) {
