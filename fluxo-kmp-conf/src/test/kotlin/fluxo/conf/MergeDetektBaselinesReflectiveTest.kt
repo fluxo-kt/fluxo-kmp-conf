@@ -186,7 +186,10 @@ internal class MergeDetektBaselinesReflectiveTest {
         }
         val out = mergeFiles(malformed).readText()
         val idMatches = Regex("<ID>(.*?)</ID>").findAll(out).map { it.groupValues[1] }.toList()
-        assertTrue(idMatches.none { it.isBlank() }, "No blank IDs must appear in output; found: $idMatches")
+        assertTrue(
+            idMatches.none { it.isBlank() },
+            "No blank IDs must appear in output; found: $idMatches",
+        )
         assertTrue(idMatches.any { "ValidManual" in it }, "ValidManual must be preserved")
         assertTrue(idMatches.any { "ValidCurrent" in it }, "ValidCurrent must be preserved")
         assertEquals(2, idMatches.size, "Only 2 valid IDs must survive filtering")
