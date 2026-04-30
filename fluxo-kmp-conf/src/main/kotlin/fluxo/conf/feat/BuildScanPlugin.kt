@@ -10,7 +10,7 @@ import fluxo.log.w
 // Develocity: build scans, data to speed up build and improve build reliability.
 // https://scans.gradle.com/plugin/
 // https://plugins.gradle.org/plugin/com.gradle.develocity
-internal fun FluxoKmpConfContext.prepareBuildScanPlugin() = rootProject.run {
+internal fun FluxoKmpConfContext.prepareBuildScanPlugin(): Unit = rootProject.run {
     try {
         // New and shiny Develocity plugin.
         val develocity = extensions.findByName("develocity")

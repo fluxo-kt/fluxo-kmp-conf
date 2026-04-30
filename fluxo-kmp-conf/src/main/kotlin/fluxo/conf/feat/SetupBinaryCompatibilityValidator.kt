@@ -23,7 +23,7 @@ import org.gradle.api.tasks.TaskProvider
 internal fun setupBinaryCompatibilityValidator(
     conf: FluxoConfigurationExtensionImpl,
     project: Project = conf.project,
-) = project.run r@{
+): Unit = project.run r@{
     val ctx = conf.ctx
     val config = conf.apiValidationGetter
     val disabledByRelease = ctx.isRelease && config?.disableForNonRelease == true
