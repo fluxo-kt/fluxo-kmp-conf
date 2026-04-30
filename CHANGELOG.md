@@ -19,7 +19,7 @@
 
 ### Changed
 - migrate publication archive permissions from the Gradle-9.0-removed `dirMode` / `fileMode` setters to `dirPermissions { unix("0755") }` / `filePermissions { unix("0644") }` (added in Gradle 8.3); retain a `NoSuchMethodError` fallback for Gradle 8.0–8.2. Without this, consumers on Gradle 9 would hit `NoSuchMethodError` during publication archive setup.
-- `FluxoPublicationConfig.sonatypeHost` is now a `@Deprecated` no-op (warning level). Vanniktech 0.34.0 removed `SonatypeHost` and all OSSRH support — Sonatype Central Portal is the sole publish target since OSSRH retired 2025-06-30. The field is retained for one release so existing build scripts continue to compile; remove it and migrate your publish credentials to a Central Portal user-token.
+- `FluxoPublicationConfig.repositoryUrl` defaults to `null` (was hard-coded to the now-retired Sonatype OSSRH staging/snapshot URLs). When unset, no extra Maven repository is registered — Vanniktech's Central Portal upload path is independent. Set explicitly when publishing to a custom mirror (Artifactory, internal Nexus, etc.).
 
 ### Fixed
 - the Detekt `languageVersion` clamp parsed Kotlin language versions as `Float`, which silently misranks any future two-digit minor: `"1.10".toFloat() == 1.1f` (would rank below `1.9`), `"2.10".toFloat() == 2.1f` (would not trigger the clamp at all). Replaced with `kotlin.KotlinVersion`-based comparison. Latent today (no Kotlin 1.10/2.10 yet) but a correctness landmine for future minors.
