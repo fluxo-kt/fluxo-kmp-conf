@@ -4,7 +4,11 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.lib)
+    // AGP 9.0+ rejects `com.android.library` + `kotlin("multiplatform")` co-application
+    // (see https://kotlinlang.org/docs/multiplatform/multiplatform-project-agp-9-migration.html).
+    // The KMP-aware plugin auto-creates the `android` KMP target via the `kotlin { android { } }`
+    // DSL block, replacing the legacy `androidTarget()` call below.
+    alias(libs.plugins.android.kotlinMultiplatformLib)
     alias(libs.plugins.gradle.doctor) apply false
     alias(libs.plugins.vanniktech.mvn.publish)
     id("io.github.fluxo-kt.fluxo-kmp-conf")
@@ -32,7 +36,14 @@ fkcSetupMultiplatform(
         applyDefaultHierarchyTemplate(KotlinHierarchyTemplate.fluxoKmpConf)
 
         jvm()
-        androidTarget()
+        // The `android { }` block (provided by `com.android.kotlin.multiplatform.library`)
+        // creates the android KMP target. No explicit `androidTarget()` — AGP 9 hard-rejects it.
+        @Suppress("UnstableApiUsage")
+        android {
+            namespace = "io.github.fluxo_kt.fluxo_kmp_conf.checks.kmp"
+            compileSdk = 34
+            minSdk = 24
+        }
 
         js {
             browser()
