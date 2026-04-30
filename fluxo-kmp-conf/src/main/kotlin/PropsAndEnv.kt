@@ -23,9 +23,6 @@ import org.gradle.api.provider.Provider
 
 public operator fun Provider<Boolean>.getValue(t: Any?, p: Any?): Boolean = orNull == true
 
-@JvmName("getValueOrNull")
-public operator fun <T : Any> Provider<T>.getValue(t: Any?, p: Any?): T? = orNull
-
 public operator fun <T : Any> Provider<T>.getValue(t: Any?, p: Any?): T = get()
 
 // endregion
