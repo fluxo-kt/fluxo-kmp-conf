@@ -40,7 +40,7 @@ When reasoning about API drift, "dead-under-our-floor" code, ProGuard keep rules
 - **Module rename trap**: `settings.gradle.kts` renames `:fluxo-kmp-conf` → `:plugin`. The string `plugin` is referenced by `jitpack.yml`; renaming breaks JitPack snapshot consumers (comment on the line warns).
 - **Git symlinks required for development** (Windows: enable per the README link). Without them the shared-sources trick fails. `.aiexclude` is itself a symlink to `.cursorignore`.
 - `org.gradle.vfs.watch=false` and `org.gradle.unsafe.watch-fs=false` are intentional — VFS watching errors with "same file via different paths" because of source sharing. Don't re-enable.
-- `MAX_DEBUG=true` is committed in `gradle.properties` — verbose plugin logs at `lifecycle` level are the **plugin-developer** default, not a consumer recommendation.
+- `MAX_DEBUG=true` is an **opt-in developer debugging flag** — set via local `gradle.properties` or env var. It is NOT committed by default; verbose plugin logs are opt-in, not the default. `FLUXO_VERBOSE` is a lighter variant. Both are read via `envOrPropFlag` in `PropsAndEnv.kt`.
 - **Tests auto-disable** when `DISABLE_TESTS=true`, the build is an *included* build with no startup tasks, or `check`/`test` are excluded. If `prepareKotlinIdeaImport` runs but expected tasks don't, see `FluxoKmpConfContext.testsDisabled`.
 - **IDE-sync-only config** uses `onProjectInSyncRun` (detected via `prepareKotlinIdeaImport` / `prepareKotlinBuildScriptModel` task names). Use it instead of `afterEvaluate` for IDE-import hooks.
 - The plugin **applies only to root projects** (`checkIsRootProject`) and **requires a Kotlin plugin already on the classpath** before it's applied — order in `plugins {}` matters.

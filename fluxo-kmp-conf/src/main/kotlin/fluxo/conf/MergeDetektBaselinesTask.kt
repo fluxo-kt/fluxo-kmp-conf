@@ -140,7 +140,10 @@ private fun readBaselineXml(
 
 private fun addIds(element: Element, target: SortedSet<String>) {
     val ids = element.getElementsByTagName("ID")
-    for (j in 0 until ids.length) target.add(ids.item(j).textContent)
+    for (j in 0 until ids.length) {
+        val id = ids.item(j).textContent.trim()
+        if (id.isNotEmpty()) target.add(id)
+    }
 }
 
 private fun writeBaselineXml(

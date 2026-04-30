@@ -163,6 +163,36 @@ internal class MergeDetektBaselinesReflectiveTest {
     }
 
     @Test
+    fun `empty and blank IDs in input are filtered from output`() {
+        // Malformed baselines with <ID/> self-closing or whitespace-only <ID>  </ID> elements
+        // must not produce empty ID nodes in the merged output.
+        val malformed = File(tempDir, "malformed.xml").also { f ->
+            f.writeText(
+                """
+                <?xml version='1.0' encoding='UTF-8'?>
+                <SmellBaseline>
+                  <ManuallySuppressedIssues>
+                    <ID/>
+                    <ID>   </ID>
+                    <ID>ValidManual:File${'$'}h1</ID>
+                  </ManuallySuppressedIssues>
+                  <CurrentIssues>
+                    <ID></ID>
+                    <ID>ValidCurrent:File${'$'}h2</ID>
+                  </CurrentIssues>
+                </SmellBaseline>
+                """.trimIndent()
+            )
+        }
+        val out = mergeFiles(malformed).readText()
+        val idMatches = Regex("<ID>(.*?)</ID>").findAll(out).map { it.groupValues[1] }.toList()
+        assertTrue(idMatches.none { it.isBlank() }, "No blank IDs must appear in output; found: $idMatches")
+        assertTrue(idMatches.any { "ValidManual" in it }, "ValidManual must be preserved")
+        assertTrue(idMatches.any { "ValidCurrent" in it }, "ValidCurrent must be preserved")
+        assertEquals(2, idMatches.size, "Only 2 valid IDs must survive filtering")
+    }
+
+    @Test
     fun `output is valid XML readable by DocumentBuilder`() {
         val a = baseline(
             "a.xml",
