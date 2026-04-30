@@ -6,6 +6,8 @@
 ./gradlew --stop --info
 
 COMMON_TASKS="dependencyGuardBaseline detektBaselineMerge updateLintBaseline --continue -Dlint.baselines.continue=true"
+# checks/kmp has lint configured but with baseline=off — updateLintBaseline is not registered there.
+KMP_TASKS="dependencyGuardBaseline detektBaselineMerge --continue"
 export GRADLE_OPTS="${GRADLE_OPTS} -Dorg.gradle.logging.stacktrace=all"
 export GRADLE_OPTS="${GRADLE_OPTS} -Dorg.gradle.caching=false -Dkotlin.incremental=false"
 export CI=true
@@ -33,7 +35,7 @@ echo ""
 echo "=======> checks/kmp"
 cd ../kmp || exit 104
 pwd
-./gradlew kotlinUpgradeYarnLock ${COMMON_TASKS} || EXIT_CODE=105
+./gradlew kotlinUpgradeYarnLock ${KMP_TASKS} || EXIT_CODE=105
 
 echo ""
 echo "=======> checks/compose-desktop"
