@@ -86,6 +86,14 @@ internal fun Project.onComposeDesktopApplication(
     }
 }
 
-@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 private val DesktopExtension.isJvmApplication0: Boolean
-    get() = _isJvmApplicationInitialized
+    // `application` is a lazy delegate — check isInitialized via the backing Lazy field
+    // rather than the private compiler-generated `_isJvmApplicationInitialized` flag.
+    get() = try {
+        javaClass.getDeclaredField("application\$delegate")
+            .also { it.isAccessible = true }
+            .get(this)
+            .let { (it as? Lazy<*>)?.isInitialized() == true }
+    } catch (_: Throwable) {
+        false
+    }

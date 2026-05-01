@@ -7,6 +7,7 @@ import fluxo.conf.impl.capitalizeAsciiOnly
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.provider.Provider
 import org.gradle.plugin.use.PluginDependency
+import org.jetbrains.kotlin.gradle.plugin.HasKotlinDependencies
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.Companion.COMMON_MAIN_SOURCE_SET_NAME
 
@@ -44,9 +45,13 @@ public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
     // instead of writing the ksp("dep")
     // use ksp<Target>() or add(ksp<SourceSet>).
     // https://kotlinlang.org/docs/ksp-multiplatform.html
-    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-    val parent = (this as org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler)
-        .parent
+    //
+    // DefaultKotlinDependencyHandler.getParent() is `public final` in bytecode but the class
+    // itself lives in KGP's internal `mpp` package. Reflect on the method to avoid a
+    // compile-time coupling to the internal class name (a class rename/move would silently
+    // produce a runtime ClassCastException with the cast approach; here it surfaces clearly).
+    val parent = javaClass.getMethod("getParent").invoke(this) as? HasKotlinDependencies
+        ?: error("KotlinDependencyHandler.ksp: cannot resolve source set from ${javaClass.name}")
     var confName = parent.compileOnlyConfigurationName
         .replace(COMPILE_ONLY, "", ignoreCase = true)
     if (confName.startsWith(COMMON_MAIN_SOURCE_SET_NAME, ignoreCase = true)) {

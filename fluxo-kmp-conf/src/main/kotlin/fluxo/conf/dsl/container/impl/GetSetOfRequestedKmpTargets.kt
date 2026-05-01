@@ -59,7 +59,12 @@ internal fun FluxoKmpConfContext.getSetOfRequestedKmpTargets(): Set<KmpTargetCod
         set.add(KmpTargetCode.COMMON)
     }
 
-    return set.optimizeReadOnlySet()
+    // Inline kotlin.collections.optimizeReadOnlySet(): collapse empty/singleton to canonicals.
+    return when (set.size) {
+        0 -> emptySet()
+        1 -> setOf(set.first())
+        else -> set
+    }
 }
 
 

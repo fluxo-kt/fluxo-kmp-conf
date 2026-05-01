@@ -2,7 +2,6 @@
 
 package fluxo.conf.impl
 
-import fluxo.log.e
 import fluxo.log.l
 import fluxo.log.w
 import org.gradle.api.Project
@@ -15,7 +14,6 @@ import org.gradle.api.artifacts.dsl.DependencyConstraintHandler
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
-import org.jetbrains.kotlin.gradle.plugin.HasKotlinDependencies
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
 
@@ -50,18 +48,14 @@ internal fun Project.implementation(dch: DependencyConstraintHandler, constraint
 
 internal fun KotlinDependencyHandler.implementationAndLog(dependencyNotation: Any) =
     implementation(dependencyNotation).also {
-        logKmpDependency(IMPLEMENTATION, it ?: dependencyNotation) {
-            implementationConfigurationName
-        }
+        logKmpDependency(IMPLEMENTATION, it ?: dependencyNotation)
     }
 
 internal fun <T : Dependency> KotlinDependencyHandler.implementationAndLog(
     dependencyNotation: T,
     configure: T.() -> Unit,
 ) = implementation(dependencyNotation, configure).also {
-    logKmpDependency(IMPLEMENTATION, it, " ($dependencyNotation)") {
-        implementationConfigurationName
-    }
+    logKmpDependency(IMPLEMENTATION, it, " ($dependencyNotation)")
 }
 
 
@@ -102,9 +96,7 @@ internal fun Project.compileOnlyWithConstraint(dh: DependencyHandler, dependency
 
 internal fun KotlinDependencyHandler.compileOnlyAndLog(dependencyNotation: Any) =
     compileOnly(dependencyNotation).also {
-        logKmpDependency(COMPILE_ONLY, it ?: dependencyNotation) {
-            compileOnlyConfigurationName
-        }
+        logKmpDependency(COMPILE_ONLY, it ?: dependencyNotation)
     }
 
 
@@ -162,26 +154,12 @@ private fun Project.addAndLog(
     }
 }
 
-private inline fun KotlinDependencyHandler.logKmpDependency(
+private fun KotlinDependencyHandler.logKmpDependency(
     configurationName: String,
     dependencyNotation: Any,
     extra: String = "",
-    configurationNameAccessor: HasKotlinDependencies.() -> String,
 ) {
-    val confName = try {
-        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-        when (this) {
-            is org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler ->
-                configurationNameAccessor(parent)
-
-            else -> null
-        }
-    } catch (e: Throwable) {
-        project.logger.e("Failed to get configuration name: $e", e)
-        null
-    } ?: "KMP/$configurationName"
-
-    project.logDependency(confName, dependencyNotation, extra)
+    project.logDependency("KMP/$configurationName", dependencyNotation, extra)
 }
 
 internal fun Project.logDependency(
