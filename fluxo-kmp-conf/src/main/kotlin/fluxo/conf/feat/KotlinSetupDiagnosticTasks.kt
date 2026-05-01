@@ -22,7 +22,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetContainerDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmSubTargetContainerDsl
-import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
     onProjectInSyncRun(forceIf = hasStartTaskCalled(DIAGNOSTIC_TASKS)) {
@@ -85,9 +84,6 @@ private fun Project.printKotlinTargetsInfo() {
         }
         if (target is KotlinJsTargetDsl) {
             println("$T moduleName: ${target.outputModuleName.get()}")
-        }
-        if (target is KotlinJvmTarget) {
-            println("$T javaEnabled: ${target.withJavaEnabled}")
         }
         if (target is HasBinaries<*>) {
             when (target) {

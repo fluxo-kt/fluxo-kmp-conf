@@ -101,7 +101,11 @@ internal enum class KmpTargetCode {
             }
         }
 
-        @Suppress("CyclomaticComplexMethod")
+        // REDUNDANT_ELSE_IN_WHEN: else branches are kept intentionally — the plugin is a
+        // published binary that consumers run against future KGP versions. New KonanTarget /
+        // KotlinPlatformType / Family entries added by JetBrains must degrade gracefully
+        // (log + return null/empty) rather than throw NoWhenBranchMatchedException.
+        @Suppress("CyclomaticComplexMethod", "REDUNDANT_ELSE_IN_WHEN")
         internal fun fromKotlinTarget(target: KotlinTarget, logger: Logger?): KmpTargetCode? {
             return when (val platformType = target.platformType) {
                 KotlinPlatformType.common -> COMMON
@@ -158,6 +162,7 @@ internal enum class KmpTargetCode {
             }
         }
 
+        @Suppress("REDUNDANT_ELSE_IN_WHEN")
         internal fun fromKotlinFamily(family: Family): Array<KmpTargetCode> {
             return when (family) {
                 Family.ANDROID -> ANDROID_NATIVE
