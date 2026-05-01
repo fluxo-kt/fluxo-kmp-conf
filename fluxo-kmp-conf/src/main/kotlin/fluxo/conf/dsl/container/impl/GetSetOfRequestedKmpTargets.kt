@@ -20,8 +20,7 @@ internal fun FluxoKmpConfContext.getSetOfRequestedKmpTargets(): Set<KmpTargetCod
         return emptySet()
     }
 
-    // Inline HashMap load-factor capacity formula (avoids kotlin.collections.mapCapacity internal)
-    val set = HashSet<KmpTargetCode>((Code.ALL.size / 0.75f + 1f).toInt())
+    val set = HashSet<KmpTargetCode>((Code.ALL.size / HASH_LOAD_FACTOR + 1f).toInt())
     when {
         // old "split_targets"/splitTargets mode compatibility
         sequence == null || isSplitTargetsEnabled -> {
@@ -59,14 +58,19 @@ internal fun FluxoKmpConfContext.getSetOfRequestedKmpTargets(): Set<KmpTargetCod
         set.add(KmpTargetCode.COMMON)
     }
 
-    // Inline kotlin.collections.optimizeReadOnlySet(): collapse empty/singleton to canonicals.
-    return when (set.size) {
-        0 -> emptySet()
-        1 -> setOf(set.first())
-        else -> set
-    }
+    return set.intoReadOnly()
 }
 
+// HashMap default load factor; avoids kotlin.collections.mapCapacity internal.
+private const val HASH_LOAD_FACTOR = 0.75f
+
+// Equivalent to kotlin.collections.optimizeReadOnlySet() — collapses empty/singleton sets to
+// their canonical read-only singletons; avoids the INVISIBLE_MEMBER suppress for the internal.
+private fun <T> Set<T>.intoReadOnly(): Set<T> = when (size) {
+    0 -> emptySet()
+    1 -> setOf(first())
+    else -> this
+}
 
 private val ALIASES = mapOf(
     Code::ALL.name to Code.ALL,
