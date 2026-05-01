@@ -8,6 +8,7 @@ import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
 import java.io.File
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 
 @Suppress("LongMethod")
@@ -49,21 +50,22 @@ internal fun FluxoConfigurationExtensionImpl.setupCompose() {
     project.configureExtension<ComposeCompilerGradlePluginExtension>(
         name = "composeCompiler",
     ) {
-        enableStrongSkippingMode.set(true)
-        enableIntrinsicRemember.set(true)
-        stabilityConfFile?.let { stabilityConfigurationFile.set(it) }
+        // StrongSkipping and IntrinsicRemember are enabled by default since Kotlin 2.1;
+        // explicitly setting them is redundant and emits deprecation warnings.
+        stabilityConfFile?.let { file ->
+            stabilityConfigurationFiles.add(project.layout.file(project.provider { file }))
+        }
         reportsDir?.let {
             // TODO: Make Compose Compiler metrics in HTML automatically with Gradle.
             metricsDestination.set(it)
             reportsDestination.set(it)
         }
         if (!isRelease) {
-            // Experimental options.
-            enableNonSkippingGroupOptimization.set(true)
+            // Experimental option: reduce group overhead for non-skippable composables.
+            featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 
             if (isMaxDebug) {
                 includeSourceInformation.set(true)
-                generateFunctionKeyMetaClasses.set(true)
                 includeTraceMarkers.set(true)
             }
         }
