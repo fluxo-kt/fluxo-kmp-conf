@@ -107,7 +107,7 @@ jobs:
 
       - name: Initialize CodeQL
         if: matrix.os == 'ubuntu' && matrix.java != '23'
-        uses: github/codeql-action/init@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        uses: github/codeql-action/init@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
         with:
           languages: ${{ matrix.language }}
           # If you wish to specify custom queries, you can do so here or in a config file.
@@ -123,7 +123,7 @@ jobs:
 
       - name: Upload sarif report (Detekt)
         if: always() && (github.event_name == 'pull_request' || env.IS_DEFAULT_BRANCH)
-        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
         continue-on-error: true
         with:
           sarif_file: build/detekt-merged.sarif
@@ -131,7 +131,7 @@ jobs:
 
       - name: Upload sarif report (Lint)
         if: always() && (github.event_name == 'pull_request' || env.IS_DEFAULT_BRANCH)
-        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
         continue-on-error: true
         with:
           sarif_file: build/lint-merged.sarif
@@ -196,7 +196,7 @@ jobs:
       - name: Perform CodeQL Analysis
         if: matrix.os == 'ubuntu' && matrix.java != '23'
         timeout-minutes: 6
-        uses: github/codeql-action/analyze@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        uses: github/codeql-action/analyze@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
         with:
           category: "/language:${{matrix.language}}"
 
