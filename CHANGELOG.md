@@ -6,17 +6,8 @@
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
-### Added
-- `fkcSetupIdeaPlugin`: new `extension: (IntelliJPlatformExtension.() -> Unit)?` parameter for direct IntelliJ Platform extension configuration.
 
-### Changed
-- `fkcSetupIdeaPlugin`: `intellijVersion` now defaults to `""` (was a required parameter); existing callers that pass it explicitly continue to work. A deprecation warning is now emitted at configuration time when the parameter is non-blank — in IntelliJ Platform Gradle Plugin v2 the dependency is declared in `dependencies { intellijPlatform { intellijIdeaCommunity(version) } }` instead.
-
-### Fixed
-- `fkcSetupIdeaPlugin`: `sinceBuild` parameter was previously a no-op (commented-out). It now correctly configures `IntelliJPlatformExtension.pluginConfiguration.ideaVersion.sinceBuild`, setting the `since-build` attribute in the patched `plugin.xml`.
-
-
-## [0.14.0] - 2026-04-30
+## [0.14.0] - 2026-05-01
 
 ### Removed
 - **breaking** `FluxoPublicationConfig.sonatypeHost` — Vanniktech 0.34.0 removed `SonatypeHost` and all OSSRH support; Sonatype Central Portal (via `publishToMavenCentral`) is the sole publish target since OSSRH retired 2025-06-30. The field had no remaining semantic content and a soft-deprecation no-op would silently swallow consumer values; a clean removal forces consumers to confront the migration. **Migration**: drop `sonatypeHost = …` from your `FluxoPublicationConfig {}` block and switch publish credentials to a [Central Portal user-token](https://central.sonatype.org/publish/publish-portal-gradle/).
@@ -28,6 +19,7 @@
 - **breaking** `Provider<T?>.getValue(thisRef, property)` property-delegation operator removed. Kotlin 2.2's strict `T:Any` constraint on `Property<T>`/`Provider<T>` collapsed the nullable and non-null overloads to identical signatures; only the non-null variant survives. **Migration**: replace `val x: Foo? by fooProvider` with `val x: Foo? = fooProvider.orNull`.
 - migrate publication archive permissions from the Gradle-9.0-removed `dirMode` / `fileMode` setters to `dirPermissions { unix("0755") }` / `filePermissions { unix("0644") }` (added in Gradle 8.3). Without this, consumers on Gradle 9 would hit `NoSuchMethodError` during publication archive setup.
 - `FluxoPublicationConfig.repositoryUrl` defaults to `null` (was hard-coded to the now-retired Sonatype OSSRH staging/snapshot URLs). When unset, no extra Maven repository is registered — Vanniktech's Central Portal upload path is independent. Set explicitly when publishing to a custom mirror (Artifactory, internal Nexus, etc.).
+- `fkcSetupIdeaPlugin`: `intellijVersion` now defaults to `""` (was a required parameter); existing callers that pass it explicitly continue to work. A deprecation warning is emitted at configuration time when the parameter is non-blank — in IntelliJ Platform Gradle Plugin v2 the IDE dependency is declared in `dependencies { intellijPlatform { intellijIdeaCommunity(version) } }` instead.
 
 ### Added
 - recognise the AGP-9 KMP+Android plugin (`com.android.kotlin.multiplatform.library`, AGP `>= 8.8.0`, **required** from AGP `9.0`). The plugin replaces the legacy `com.android.library` + `kotlin("multiplatform")` co-application that AGP 9 hard-rejects, and auto-creates the `android` KMP target from `kotlin { android { } }`. Consumers can now drive AGP 9 KMP+Android modules end-to-end through `fkcSetupMultiplatform`.
@@ -42,6 +34,7 @@
 - KDoc for `FluxoPublicationConfig.projectName` explaining the Maven-artifact-ID character restriction.
 - KDoc on `enableGradleDoctor` documents the consumer-side escape hatch: override Gradle Doctor defaults via the standard `doctor { ... }` extension on the root project (no wrapper API was added — the existing extension already covers it).
 - README documents the four recognised version-catalog aliases (`androidx.compose.ui.tooling`, `square.leakcanary`, `square.plumber`, `pinned`) — previously a hidden consumer contract.
+- `fkcSetupIdeaPlugin`: new `extension: (IntelliJPlatformExtension.() -> Unit)?` parameter for direct IntelliJ Platform extension configuration.
 
 ### Fixed
 - `JRE_17` internal constant had the value `11` (copy-paste from `JRE_11 = 11`). Two consumer-visible effects: (1) when using `fkcSetupIdeaPlugin`, the plugin's JVM-target floor was enforced at JDK 11 instead of the required JDK 17, silently producing JDK-11-level bytecode in IDE-plugin builds that mandate JDK 17+; (2) the `-Xjdk-release` compiler flag was applied to JVM targets in the range `12..22` (should be `18..22`), meaning consumers requesting JVM target 12–17 received superfluous `-Xjdk-release` arguments that could alter codegen in unexpected ways.
@@ -50,6 +43,7 @@
 - shrinker API verification (`setupVerification = true`) would crash with `NoSuchMethodError` on Gradle 8.14+ and Gradle 9.x: the plugin used an internal `DefaultTestFailureDetails` constructor that Gradle 8.14 removed. Switched to the public `TestFailure.fromTestAssertionFailure` / `TestFailure.fromTestFrameworkFailure` factories (stable since Gradle 7.4).
 - the Detekt `languageVersion` clamp parsed Kotlin language versions as `Float`, which silently misranks any future two-digit minor: `"1.10".toFloat() == 1.1f` (would rank below `1.9`), `"2.10".toFloat() == 2.1f` (would not trigger the clamp at all). Replaced with `kotlin.KotlinVersion`-based comparison. Latent today (no Kotlin 1.10/2.10 yet) but a correctness landmine for future minors.
 - under AGP 9 + non-KMP `com.android.library`, applying the plugin caused `compileDebugKotlin` to fail at runtime with `NoSuchMethodError: BuildPerformanceMetrics.add$default(...)`. The plugin's published runtime classpath leaked `kotlin-compiler-embeddable` and 25 transitives (incl. detekt-core) onto the consumer's buildscript classpath; under AGP 9's built-in Kotlin (KGP 2.2.10 bundled) Gradle's `<latest>` resolution upgraded `kotlin-compiler-embeddable` to our pinned 2.2.21 while KGP itself stayed at 2.2.10, producing the inlined-helper signature mismatch. Both are now `compileOnly` — `KotlinToolingVersion` is provided transitively by KGP at the consumer-applied version, `BaselineProvider` by detekt-gradle-plugin, and the only direct shrinker call (`Lazy.getValueOrNull`) was inlined. KGP's own warning ("please remove kotlin-compiler-embeddable from the build classpath alongside KGP") no longer fires for our plugin.
+- `fkcSetupIdeaPlugin`: `sinceBuild` parameter was a no-op since the IJ Platform v1 → v2 migration (the v2 configuration block was commented out). It now correctly wires to `IntelliJPlatformExtension.pluginConfiguration.ideaVersion.sinceBuild`, setting the `since-build` attribute in the patched `plugin.xml`.
 
 ### Updated
 - bump build Kotlin **2.0.21 → 2.2.21** (matches the Kotlin embedded in Gradle 9.3.1's daemon). KSP follows: **2.0.21-1.0.28 → 2.2.21-2.0.5**. Consumers gain access to the Kotlin 2.2 compiler features through the wrap layer (the plugin's own DSL is still backwards-compatible to the new 2.1 floor).
