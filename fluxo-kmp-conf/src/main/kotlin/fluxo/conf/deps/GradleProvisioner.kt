@@ -56,7 +56,6 @@ internal object GradleProvisioner {
                 config.setDescription(mavenCoords.toString())
                 config.setTransitive(withTransitives)
                 config.isCanBeConsumed = false
-                config.isVisible = false
                 config.attributes {
                     attribute(
                         Bundling.BUNDLING_ATTRIBUTE,
