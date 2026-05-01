@@ -6,6 +6,15 @@
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
+### Added
+- `fkcSetupIdeaPlugin`: new `extension: (IntelliJPlatformExtension.() -> Unit)?` parameter for direct IntelliJ Platform extension configuration.
+
+### Changed
+- `fkcSetupIdeaPlugin`: `intellijVersion` now defaults to `""` (was a required parameter); existing callers that pass it explicitly continue to work. A deprecation warning is now emitted at configuration time when the parameter is non-blank — in IntelliJ Platform Gradle Plugin v2 the dependency is declared in `dependencies { intellijPlatform { intellijIdeaCommunity(version) } }` instead.
+
+### Fixed
+- `fkcSetupIdeaPlugin`: `sinceBuild` parameter was previously a no-op (commented-out). It now correctly configures `IntelliJPlatformExtension.pluginConfiguration.ideaVersion.sinceBuild`, setting the `since-build` attribute in the patched `plugin.xml`.
+
 
 ## [0.14.0] - 2026-04-30
 

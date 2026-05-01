@@ -9,6 +9,8 @@ projectFilesBackup*/
 # Gradle
 .gradle/
 build/
+# IntelliJ Platform Gradle Plugin v2 local cache
+.intellijPlatform/
 
 # JVM/Android
 local.properties

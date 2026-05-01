@@ -1,0 +1,7 @@
+<idea-plugin>
+    <id>io.github.fluxo_kt.check.intellij_platform</id>
+    <name>FluxoKmpConf IJ Check</name>
+    <version>1.0.0</version>
+    <description>Minimal IntelliJ plugin to exercise fkcSetupIdeaPlugin end-to-end.</description>
+    <change-notes/>
+</idea-plugin>
