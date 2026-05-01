@@ -3,7 +3,6 @@
 package fluxo.conf.pub
 
 import MAIN_SOURCE_SET_NAME
-import com.android.build.gradle.LibraryExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.deps.loadPluginStaticallyError
@@ -223,9 +222,7 @@ private fun FluxoKmpConfContext.setupPublicationAndroidLibrary(
 
     val publishing = p.applyMavenPublishPlugin(config)
 
-    val androidExtension = p.the<LibraryExtension>()
-
-    val sourcePaths = androidExtension.sourceSets[MAIN_SOURCE_SET_NAME].java.srcDirs
+    val sourcePaths = p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
     val sourceJarTask = p.registerSourceJarTask(sourcePaths)
     val javadocTask = setupJavadocTask(p, config, useDokka = useDokka)
 
