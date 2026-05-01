@@ -1,5 +1,3 @@
-@file:Suppress("UnusedPrivateMember")
-
 package fluxo.conf.impl.kotlin
 
 import fluxo.conf.FluxoKmpConfContext
