@@ -13,6 +13,7 @@ The plugin lazily, target-aware, configures Kotlin/JVM, Android, KMP, Compose, I
 - **Property/env flags only via `PropsAndEnv.kt`** (`envOrPropFlag` / `envOrPropValue`); for shelling out, the same file's `runCommand` helper. Never `System.getenv` / raw `Runtime.exec`.
 - **Configuration-cache compatible**: no `Project` access at execution time, no eager task creation. CC is on, `problems=warn` — silent violations are possible, treat warnings as errors during review.
 - **Public API is the contract**: KDoc on `fluxo/conf/dsl/FluxoConfigurationExtension*.kt` is authoritative. New flags need impl in `FluxoConfigurationExtensionImpl*` plus parent-inheritance fallback where the KDoc says so.
+- **`kotlin.internal` annotations are fair game**: `@LowPriorityInOverloadResolution`, `@kotlin.internal.OnlyInputTypes`, and similar `kotlin.internal` annotations provide real semantic value (overload-resolution control, type-safety enforcement). The `kotlin.internal` package name does NOT mean "forbidden to consumers"; it means "no public stability promise". Using them with `@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")` is intentional policy here. If they break in a future Kotlin version, fix it then. **Never silently remove them to avoid a compiler warning.** Kotlin 2.2 emits a meta-warning when such suppression is used ("behavior UNSPECIFIED"); that meta-warning is itself accepted as a known cost of the more expressive API.
 
 ## Supported version matrix (READ BEFORE assessing dead code or compat fallbacks)
 

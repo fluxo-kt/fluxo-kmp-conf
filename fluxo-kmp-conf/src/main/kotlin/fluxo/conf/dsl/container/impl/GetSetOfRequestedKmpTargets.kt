@@ -7,7 +7,7 @@ import org.gradle.api.GradleException
 import requestedKmpTargets
 
 @Throws(GradleException::class)
-@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "NestedBlockDepth")
+@Suppress("NestedBlockDepth")
 internal fun FluxoKmpConfContext.getSetOfRequestedKmpTargets(): Set<KmpTargetCode> {
     val project = rootProject
     val targets = project.requestedKmpTargets()
@@ -20,7 +20,8 @@ internal fun FluxoKmpConfContext.getSetOfRequestedKmpTargets(): Set<KmpTargetCod
         return emptySet()
     }
 
-    val set = HashSet<KmpTargetCode>(mapCapacity(Code.ALL.size))
+    // Inline HashMap load-factor capacity formula (avoids kotlin.collections.mapCapacity internal)
+    val set = HashSet<KmpTargetCode>((Code.ALL.size / 0.75f + 1f).toInt())
     when {
         // old "split_targets"/splitTargets mode compatibility
         sequence == null || isSplitTargetsEnabled -> {

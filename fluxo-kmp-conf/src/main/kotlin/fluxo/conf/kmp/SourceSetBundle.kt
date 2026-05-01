@@ -1,6 +1,5 @@
 package fluxo.conf.kmp
 
-import fluxo.annotation.InternalFluxoApi
 import fluxo.conf.impl.memoize
 import getValue
 import org.gradle.api.provider.Provider
@@ -77,7 +76,6 @@ private abstract class SourceSetBundleBase : SourceSetBundle {
     }
 
     @JvmSynthetic
-    @InternalFluxoApi
     override fun hashCode(): Int {
         var result = main.hashCode()
         result = 31 * result + test.hashCode()
