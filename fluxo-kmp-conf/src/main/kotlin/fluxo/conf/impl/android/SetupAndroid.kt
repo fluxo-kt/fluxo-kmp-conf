@@ -51,31 +51,52 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
 
     val ctx = conf.ctx
     val pseudoLocales = ctx.isMaxDebug && !ctx.isRelease && !ctx.isCI
+    // Explicit list of the locales to keep in the final app.
+    // Strips extra locales from libraries like Google Play Services and Firebase.
+    // https://developer.android.com/studio/build/shrink-code#unused-alt-resources
+    // https://gist.github.com/amake/0ac7724681ac1c178c6f95a5b09f03ce
+    // Note: en_XA and ar_XB are pseudo-locales for debugging.
+    val languages = conf.androidResourceConfigurations.toMutableSet()
+        .apply { if (pseudoLocales) addAll(arrayOf("en_XA", "ar_XB")) }
+
     // The Action-form `defaultConfig { … }` block lives on the concrete subtypes
     // (`LibraryExtension` / `ApplicationExtension`), not on `CommonExtension` itself —
     // only `getDefaultConfig()` is exposed on the parent. Use `defaultConfig.apply { }`
     // for cross-subtype compatibility; the lambda receiver is the modern `DefaultConfig`
     // (extends `BaseFlavor`) which carries minSdk/testInstrumentationRunner/etc.
     defaultConfig.apply {
-        applyAgpSdkProperty(conf.androidMinSdk, { minSdk = it }, { minSdkPreview = it })
-
-        // Explicit list of the locales to keep in the final app.
-        // Doing this strips out extra locales from libraries like
-        // Google Play Services and Firebase, which add an unnecessary bloat.
-        // https://developer.android.com/studio/build/shrink-code#unused-alt-resources
-        // https://gist.github.com/amake/0ac7724681ac1c178c6f95a5b09f03ce
-        // https://stackoverflow.com/questions/42937870/what-does-b-stand-for-and-what-is-the-syntax-behind-bsrlatn
-        // https://stackoverflow.com/a/49117551/1816338
-        // Note: en_XA and ar_XB are pseudo-locales for debugging.
-        val languages = conf.androidResourceConfigurations.toMutableSet()
-            .apply { if (pseudoLocales) addAll(arrayOf("en_XA", "ar_XB")) }
-        resourceConfigurations.addAll(languages)
+        applyAgpSdkProperty(conf.androidMinSdk, { minSdk = it }) {
+            // minSdkPreview is deprecated in AGP 9 and will be removed in AGP 10.0.
+            // The enclosing noSuchMethodSafe in applyAgpSdkProperty already handles
+            // the runtime NoSuchMethodError when AGP 10.0 removes this setter.
+            @Suppress("DEPRECATION")
+            minSdkPreview = it
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // testInstrumentationRunner = "androidx.benchmark.junit4.AndroidBenchmarkRunner"
     }
 
     if (this is ApplicationExtension) {
+        // Locale filtering is app-only — libraries do not produce APKs so filtering
+        // their resources here would be incorrect. AGP 8.3+ uses
+        // androidResources.localeFilters; older AGP falls back to the deprecated
+        // defaultConfig.resourceConfigurations via a noSuchMethodSafe catch.
+        // https://developer.android.com/studio/build/shrink-code#unused-alt-resources
+        // https://stackoverflow.com/a/49117551/1816338
+        if (languages.isNotEmpty()) {
+            var localeFiltersApplied = false
+            noSuchMethodSafe {
+                androidResources.localeFilters.addAll(languages)
+                localeFiltersApplied = true
+            }
+            if (!localeFiltersApplied) {
+                // AGP < 8.3 fallback: resourceConfigurations is deprecated in AGP 9.x.
+                // Remove this branch once the consumer floor exceeds AGP 8.2.
+                @Suppress("DEPRECATION")
+                noSuchMethodSafe { defaultConfig.resourceConfigurations.addAll(languages) }
+            }
+        }
         applyApplicationTargetSdk(conf)
     }
 
@@ -198,7 +219,6 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         // Disable all features by default
         aidl = false
         prefab = false
-        renderScript = false
         resValues = false
         shaders = false
         viewBinding = false
@@ -206,6 +226,10 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         compose = conf.enableCompose
         buildConfig = conf.enableBuildConfig
     }
+    // renderScript defaults to false. Set explicitly for clarity; wrap in noSuchMethodSafe
+    // because it will be removed in AGP 10.0. @Suppress for the compile-time deprecation.
+    @Suppress("DEPRECATION")
+    noSuchMethodSafe { buildFeatures.renderScript = false }
 
     if (ctx.testsDisabled) {
         val tasks = project.tasks
