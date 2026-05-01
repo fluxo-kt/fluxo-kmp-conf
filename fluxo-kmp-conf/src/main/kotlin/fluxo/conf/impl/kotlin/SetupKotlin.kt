@@ -303,7 +303,8 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     project.setupKmpAndroidExtension(conf)
 }
 
-// FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions
+// Options are set per-compilation (not via KotlinProjectExtension.compilerOptions) because
+// setupKotlinOptions uses freeCompilerArgs.set() which would silently discard project-level args.
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,

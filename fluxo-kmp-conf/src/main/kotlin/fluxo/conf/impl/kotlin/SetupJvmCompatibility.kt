@@ -117,7 +117,7 @@ internal const val JRE_1_9 = 9
 
 internal const val JRE_11 = 11
 
-internal const val JRE_17 = 11
+internal const val JRE_17 = 17
 
 internal const val JRE_21 = 21
 

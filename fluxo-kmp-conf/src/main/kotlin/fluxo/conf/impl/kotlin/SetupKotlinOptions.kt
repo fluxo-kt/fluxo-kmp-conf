@@ -110,9 +110,6 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 compilerArgs.addAll(LATEST_JVM_OPTS)
             }
 
-            // TODO: Support for -Xemit-jvm-type-annotations
-            //  https://youtrack.jetbrains.com/issue/KT-13228#focus=Comments-27-9765734.0-0
-
             /** @see ANDROID_SAFE_JVM_TARGET */
             if (isAndroid && kc.useSafeAndroidOptions) {
                 compilerArgs.add("-Xstring-concat=inline")
