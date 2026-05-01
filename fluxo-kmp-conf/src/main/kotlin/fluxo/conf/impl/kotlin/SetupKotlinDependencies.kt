@@ -157,6 +157,12 @@ internal fun Project.setupMultiplatformDependencies(
         // Jetbrains KMP Compose
         val jbCompose = (kmpe as ExtensionAware).extensions.findByName("compose")
         if (jbCompose != null && jbCompose is org.jetbrains.compose.ComposePlugin.Dependencies) {
+            // ComposePlugin.Dependencies.runtime is @Deprecated("Specify dependency directly").
+            // We cannot use the catalog version here because `jbCompose.runtime` returns the
+            // coordinate versioned to the CONSUMER's applied Compose plugin — which may differ
+            // from our catalog pin. Using our catalog version would silently mismatch. There is
+            // no non-deprecated API to obtain the compose version from outside ComposeBuildConfig.
+            @Suppress("DEPRECATION")
             kmpe.commonCompileOnly(jbCompose.runtime, project)
         }
 

@@ -43,7 +43,7 @@ internal fun Project.setupSpotless(
         fun FormatExtension.defaultFormatSettings(numSpacesPerTab: Int = 4) {
             targetExclude(*SPOTLESS_EXCLUDE_PATHS)
             trimTrailingWhitespace()
-            indentWithSpaces(numSpacesPerTab)
+            leadingTabsToSpaces(numSpacesPerTab)
             endWithNewline()
         }
 
