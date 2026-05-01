@@ -45,22 +45,32 @@ public fun KotlinDependencyHandler.ksp(dependencyNotation: Any): Dependency? {
     // instead of writing the ksp("dep")
     // use ksp<Target>() or add(ksp<SourceSet>).
     // https://kotlinlang.org/docs/ksp-multiplatform.html
-    //
-    // DefaultKotlinDependencyHandler.getParent() is `public final` in bytecode but the class
-    // itself lives in KGP's internal `mpp` package. Reflect on the method to avoid a
-    // compile-time coupling to the internal class name (a class rename/move would silently
-    // produce a runtime ClassCastException with the cast approach; here it surfaces clearly).
-    val parent = javaClass.getMethod("getParent").invoke(this) as? HasKotlinDependencies
+    val parent = kspParentOrNull()
         ?: error("KotlinDependencyHandler.ksp: cannot resolve source set from ${javaClass.name}")
     var confName = parent.compileOnlyConfigurationName
         .replace(COMPILE_ONLY, "", ignoreCase = true)
     if (confName.startsWith(COMMON_MAIN_SOURCE_SET_NAME, ignoreCase = true)) {
         confName += "Metadata"
     } else {
-        confName = confName.replace(MAIN_SOURCE_SET_POSTFIX, "", ignoreCase = true)
+        // Literal avoids importing `internal const val MAIN_SOURCE_SET_POSTFIX` into a file that
+        // also carries @Suppress("INVISIBLE_*") — triggering a Kotlin 2.2 K2 IR-optimizer crash
+        // (IrConstOnlyNecessaryTransformer tries to const-fold every internal-const getter in the
+        // same compilation unit regardless of which function the suppress is attached to).
+        confName = confName.replace("Main", "", ignoreCase = true)
     }
     confName = "ksp${confName.capitalizeAsciiOnly()}"
     return with(project) {
         addAndLog(dependencies, confName, dependencyNotation)
     }
 }
+
+// `DefaultKotlinDependencyHandler.parent: HasKotlinDependencies` is `public final` in JVM
+// bytecode; the class lives in KGP's internal `mpp` package — a compile-time restriction, not a
+// runtime one. Direct typed cast gives IDE navigation and compile-time safety: a rename/move
+// surfaces immediately as a compile error, not a silent runtime failure.
+//
+// Isolated here (not inlined into ksp()) to avoid a Kotlin 2.2 K2 IR optimizer bug that
+// crashes on `internal const val` getters when @Suppress("INVISIBLE_*") is on the same function.
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+private fun KotlinDependencyHandler.kspParentOrNull(): HasKotlinDependencies? =
+    (this as? org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler)?.parent

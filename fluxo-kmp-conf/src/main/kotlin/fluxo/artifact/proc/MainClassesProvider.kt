@@ -86,14 +86,12 @@ internal fun Project.onComposeDesktopApplication(
     }
 }
 
+// `_isJvmApplicationInitialized` is an explicitly maintained JetBrains flag (not a compiler
+// artifact) — set to true as the FIRST line of the `application` lazy body. Accessing it
+// directly gives compile-time type-safety: a rename produces a compile error, not silent `false`.
+// Both INVISIBLE_MEMBER and INVISIBLE_REFERENCE are required: in Kotlin's diagnostic model an
+// `internal` property is both an inaccessible member AND an invisible symbol, even when its
+// type (Boolean) is public. The Kotlin 2.2 meta-warning for INVISIBLE_REFERENCE is accepted.
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 private val DesktopExtension.isJvmApplication0: Boolean
-    // `application` is a lazy delegate — check isInitialized via the backing Lazy field
-    // rather than the private compiler-generated `_isJvmApplicationInitialized` flag.
-    get() = try {
-        javaClass.getDeclaredField("application\$delegate")
-            .also { it.isAccessible = true }
-            .get(this)
-            .let { (it as? Lazy<*>)?.isInitialized() == true }
-    } catch (_: Throwable) {
-        false
-    }
+    get() = _isJvmApplicationInitialized
