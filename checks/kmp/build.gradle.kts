@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate
+import org.jetbrains.kotlin.gradle.targets.web.yarn.BaseYarnRootExtension
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -77,5 +78,15 @@ fkcSetupMultiplatform(
         linuxArm64()
 
         mingwX64()
+    }
+}
+
+// Mocha's current transitive ranges still admit vulnerable versions; keep the
+// fixture lockfile on patched versions until Mocha moves its own ranges.
+listOf("kotlinYarn", "kotlinWasmYarn").forEach { extensionName ->
+    extensions.configure<BaseYarnRootExtension>(extensionName) {
+        resolution("diff", "8.0.3")
+        resolution("js-yaml", "4.1.1")
+        resolution("serialize-javascript", "7.0.5")
     }
 }
