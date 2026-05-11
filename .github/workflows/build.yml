@@ -11,19 +11,8 @@ on:
       - '**/pr-**.yml'
       - '**/release.yml'
       - '**dependabot.yml'
-    # Avoid useless and/or duplicate runs.
-    # Also, we merge with --ff-only,
-    # so we don't need to run on the merge commit.
-    branches-ignore:
-      # Dependabot creates both branch and PR. Avoid running twice.
-      - 'dependabot/**'
-      - 'dev'
-      - 'feat*/**'
-      - 'fix/**'
-      - 'mr/**'
-      - 'pr/**'
-      - 'pull/**'
-      - 'wip/**'
+    # The repository uses ff-only merges, but PR checks must still run on the
+    # pull_request merge ref so branch protection can gate the exact mergeable tree.
   push:
     paths-ignore:
       - '**-validation.yml'
@@ -36,7 +25,7 @@ on:
       - '**dependabot.yml'
 
 permissions:
-  contents: write
+  contents: read
   # required for all workflows (CodeQL)
   security-events: write
   # required for workflows in private repositories (CodeQL)
@@ -53,7 +42,6 @@ env:
   #GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   DEPENDENCY_GRAPH_INCLUDE_CONFIGURATIONS: "^(?!(classpath)).*"
   DEPENDENCY_GRAPH_INCLUDE_PROJECTS: "^:(?!(buildSrc|test|check)).*"
-  IS_DEFAULT_BRANCH: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
 
 jobs:
   buildAndCheck:
@@ -78,7 +66,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@a5ad31d6a139d249332a2605b85202e8c0b78450 # v2.19.1
         with:
           disable-sudo: true
           egress-policy: audit
@@ -93,12 +81,12 @@ jobs:
           java-version: '${{ matrix.java }}'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
         with:
           cache-disabled: ${{ matrix.os == 'windows' }} # super slow on Windows.
           cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
-          cache-read-only: ${{ !env.IS_DEFAULT_BRANCH }}
-          dependency-graph: ${{ env.IS_DEFAULT_BRANCH && 'generate-and-submit' || 'disabled'}}
+          cache-read-only: ${{ github.ref != format('refs/heads/{0}', github.event.repository.default_branch) }}
+          dependency-graph: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'generate-and-submit' || 'disabled'}}
           add-job-summary-as-pr-comment: on-failure
           artifact-retention-days: 1
 
@@ -107,7 +95,7 @@ jobs:
 
       - name: Initialize CodeQL
         if: matrix.os == 'ubuntu' && matrix.java != '23'
-        uses: github/codeql-action/init@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        uses: github/codeql-action/init@3ce22a6e336a7fcc318bc58ae1986395bdc83ba7 # v4.35.4
         with:
           languages: ${{ matrix.language }}
           # If you wish to specify custom queries, you can do so here or in a config file.
@@ -122,16 +110,16 @@ jobs:
         run: ./gradlew build assemble check --continue --stacktrace --scan
 
       - name: Upload sarif report (Detekt)
-        if: always() && (github.event_name == 'pull_request' || env.IS_DEFAULT_BRANCH)
-        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        if: always() && (github.event_name == 'pull_request' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+        uses: github/codeql-action/upload-sarif@3ce22a6e336a7fcc318bc58ae1986395bdc83ba7 # v4.35.4
         continue-on-error: true
         with:
           sarif_file: build/detekt-merged.sarif
           category: detekt
 
       - name: Upload sarif report (Lint)
-        if: always() && (github.event_name == 'pull_request' || env.IS_DEFAULT_BRANCH)
-        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        if: always() && (github.event_name == 'pull_request' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+        uses: github/codeql-action/upload-sarif@3ce22a6e336a7fcc318bc58ae1986395bdc83ba7 # v4.35.4
         continue-on-error: true
         with:
           sarif_file: build/lint-merged.sarif
@@ -183,7 +171,7 @@ jobs:
 
       - name: Upload the build report
         if: always()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: '${{ matrix.os }}-build-report'
           path: |
@@ -196,12 +184,12 @@ jobs:
       - name: Perform CodeQL Analysis
         if: matrix.os == 'ubuntu' && matrix.java != '23'
         timeout-minutes: 6
-        uses: github/codeql-action/analyze@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        uses: github/codeql-action/analyze@3ce22a6e336a7fcc318bc58ae1986395bdc83ba7 # v4.35.4
         with:
           category: "/language:${{matrix.language}}"
 
       - name: "Post result in PR comment"
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         if: github.event_name == 'pull_request' && failure()
         env:
           OS: ${{ matrix.os }}
