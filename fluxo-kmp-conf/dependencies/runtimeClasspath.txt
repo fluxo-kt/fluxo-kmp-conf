@@ -7,8 +7,8 @@ com.diffplug.spotless:spotless-lib:4.5.0
 com.diffplug.spotless:spotless-plugin-gradle:8.4.0
 com.dropbox.dependency-guard:com.dropbox.dependency-guard.gradle.plugin:0.5.0
 com.dropbox.dependency-guard:dependency-guard:0.5.0
-com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.51.0
-com.github.ben-manes:gradle-versions-plugin:0.51.0
+com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.54.0
+com.github.ben-manes:gradle-versions-plugin:0.54.0
 com.googlecode.concurrent-trees:concurrent-trees:2.6.1
 com.googlecode.javaewah:JavaEWAH:1.2.3
 com.squareup.moshi:moshi-kotlin:1.12.0
@@ -24,7 +24,8 @@ org.antlr:antlr4-runtime:4.11.1
 org.checkerframework:checker-qual:3.21.2
 org.eclipse.jgit:org.eclipse.jgit:7.5.0.202512021534-r
 org.eclipse.platform:org.eclipse.osgi:3.24.100
-org.jetbrains.kotlin:kotlin-reflect:1.8.20
+org.jetbrains.kotlin:kotlin-bom:2.0.21
+org.jetbrains.kotlin:kotlin-reflect:2.0.21
 org.ow2.asm:asm:9.9.1
 org.slf4j:slf4j-api:2.0.17
 org.tomlj:tomlj:1.1.1

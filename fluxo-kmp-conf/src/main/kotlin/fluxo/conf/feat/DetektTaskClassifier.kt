@@ -84,6 +84,7 @@ private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? =
         platform.equals("Jmh", ignoreCase = true) ||
         platform.equals("Dokka", ignoreCase = true) ||
         platform.equals("Java", ignoreCase = true) ||
+        platform.equals("Dev", ignoreCase = true) ||
         platform.equals("Experimental", ignoreCase = true)
     -> DetectedTaskPlatform.JVM
 

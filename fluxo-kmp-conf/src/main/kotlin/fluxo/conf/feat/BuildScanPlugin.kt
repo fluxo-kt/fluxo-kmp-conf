@@ -28,11 +28,8 @@ internal fun FluxoKmpConfContext.prepareBuildScanPlugin(): Unit = rootProject.ru
         if (hasProperty("buildScan")) {
             return
         }
-        val bs = extensions.findByName("buildScan")
-        @Suppress("DEPRECATION")
-        if (bs != null && bs is com.gradle.scan.plugin.BuildScanExtension) {
-            bs.termsOfServiceUrl = "https://gradle.com/terms-of-service"
-            bs.termsOfServiceAgree = "yes"
+        val buildScan = extensions.findByName("buildScan")
+        if (buildScan != null && configureLegacyBuildScan(buildScan)) {
             logger.w("Configured the build scan plugin (legacy gradle.enterprise)")
         }
     } catch (e: Throwable) {
@@ -41,3 +38,21 @@ internal fun FluxoKmpConfContext.prepareBuildScanPlugin(): Unit = rootProject.ru
         }
     }
 }
+
+private fun configureLegacyBuildScan(buildScan: Any): Boolean {
+    val type = buildScan.javaClass
+    val setUrl = type.methods.firstOrNull {
+        it.name == "setTermsOfServiceUrl" && it.hasSingleStringParameter()
+    }
+    val setAgree = type.methods.firstOrNull {
+        it.name == "setTermsOfServiceAgree" && it.hasSingleStringParameter()
+    }
+    if (setUrl != null && setAgree != null) {
+        setUrl.invoke(buildScan, "https://gradle.com/terms-of-service")
+        setAgree.invoke(buildScan, "yes")
+    }
+    return setUrl != null && setAgree != null
+}
+
+private fun java.lang.reflect.Method.hasSingleStringParameter(): Boolean =
+    parameterTypes.size == 1 && parameterTypes[0] == String::class.java
