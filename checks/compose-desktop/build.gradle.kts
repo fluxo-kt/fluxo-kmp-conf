@@ -48,9 +48,10 @@ dependencies {
     // For a library, use compose.desktop.common.
     // With compose.desktop.common you will also lose @Preview functionality.
     implementation(compose.desktop.currentOs)
-    implementation(compose.components.resources)
+    implementation(libs.compose.components.resources)
+    implementation(libs.compose.ui.tooling.preview)
 
-    testImplementation(compose.desktop.uiTestJUnit4)
+    testImplementation(libs.compose.ui.test.junit4)
 }
 
 compose.desktop.application {

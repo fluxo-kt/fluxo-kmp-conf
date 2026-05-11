@@ -8,7 +8,6 @@ import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
 import java.io.File
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 
 @Suppress("LongMethod")
@@ -60,14 +59,9 @@ internal fun FluxoConfigurationExtensionImpl.setupCompose() {
             metricsDestination.set(it)
             reportsDestination.set(it)
         }
-        if (!isRelease) {
-            // Experimental option: reduce group overhead for non-skippable composables.
-            featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
-
-            if (isMaxDebug) {
-                includeSourceInformation.set(true)
-                includeTraceMarkers.set(true)
-            }
+        if (!isRelease && isMaxDebug) {
+            includeSourceInformation.set(true)
+            includeTraceMarkers.set(true)
         }
     }
     if (SHOW_DEBUG_LOGS) {
