@@ -6,7 +6,7 @@
 // Usage: cd checks/intellij-platform && ./gradlew check
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.intellij.platform)
+    id("org.jetbrains.intellij.platform")
     id("io.github.fluxo-kt.fluxo-kmp-conf")
 }
 
@@ -25,9 +25,8 @@ fkcSetupIdeaPlugin(
 
 dependencies {
     intellijPlatform {
-        // IntelliJ IDEA Community 2024.3.x — last stable release in the 2024.3 line.
-        // For 2025.3+ use `intellijIdea(version)` instead (Community no longer published separately).
-        intellijIdeaCommunity("2024.3.5")
+        // IntelliJ IDEA 2024.3.x keeps this check on the plugin's documented since-build line.
+        intellijIdea("2024.3.6")
         // No bundled plugins needed for this minimal check.
     }
 }

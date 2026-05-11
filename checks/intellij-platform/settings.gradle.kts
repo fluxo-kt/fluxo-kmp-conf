@@ -1,26 +1,28 @@
+import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
+
 pluginManagement {
     repositories {
         // For Gradle plugins only. Last because proxies to mavenCentral.
         gradlePluginPortal()
-        // IntelliJ Platform Gradle Plugin v2 is also published here.
-        maven("https://packages.jetbrains.com/repositories/public")
     }
     includeBuild("../../")
 }
 
 plugins {
+    id("org.jetbrains.intellij.platform.settings") version "2.16.0"
     id("com.gradle.develocity") version "4.4.1"
 }
 
 dependencyResolutionManagement {
     repositories {
-        // For IntelliJ IDEA Community and bundled plugin artifacts.
-        maven("https://www.jetbrains.com/intellij-repository/releases")
-        maven("https://packages.jetbrains.com/repositories/public")
-        maven("https://www.jetbrains.com/intellij-repository/snapshots")
-        // For Marketplace plugins.
-        maven("https://plugins.jetbrains.com/maven")
         mavenCentral()
+        gradlePluginPortal()
+        maven(url = "https://www.jitpack.io") {
+            content {
+                includeGroupByRegex("com\\.github\\..*")
+            }
+        }
+        intellijPlatform { defaultRepositories() }
     }
 }
 
