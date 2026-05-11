@@ -12,7 +12,7 @@ internal fun getTaskDetailsFromName(
     val parts = name.splitCamelCase()
     var list = if (!allowNonDetekt) {
         require(parts.isNotEmpty() && parts[0] == DETEKT_TASK_NAME) {
-            "Unexpected detect task name: $name"
+            "Unexpected detekt task name: $name"
         }
         parts.drop(1)
     } else {
