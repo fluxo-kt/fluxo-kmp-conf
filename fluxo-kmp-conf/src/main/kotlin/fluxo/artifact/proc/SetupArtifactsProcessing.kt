@@ -5,7 +5,7 @@ import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.gradle.addToCheckAndTestDependencies
 import fluxo.log.e
 import fluxo.log.l
@@ -262,7 +262,7 @@ internal fun setupArtifactsProcessing(
 
         if (testChainArtifact && !isApplication && lastChainTask != null) {
             val jarProvider = requireNotNull(mainJar)
-            val verifyTask = tasks.register<ShrinkerVerificationTestTask>(
+            val verifyTask = tasks.registerCompat<ShrinkerVerificationTestTask>(
                 name = getShrinkerVerifyTaskName(chainId = chainId),
             ) {
                 dependsOn(lastChainTask)

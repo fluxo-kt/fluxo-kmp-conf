@@ -16,5 +16,5 @@ internal fun KotlinTarget.disableCompilations(testOnly: Boolean = false) {
 internal fun KotlinCompilation<*>.disableCompilation() {
     val action = getDisableTaskAction(this)
     compileTaskProvider.configure(action)
-    compileJavaTaskProvider?.configure(action)
+    javaCompileTaskProviderCompat?.configure(action)
 }

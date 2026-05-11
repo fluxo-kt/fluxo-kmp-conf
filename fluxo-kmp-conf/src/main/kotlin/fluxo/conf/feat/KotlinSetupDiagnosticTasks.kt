@@ -6,7 +6,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.KotlinSourceSetsReportTask
 import fluxo.conf.impl.ifNotEmpty
 import fluxo.conf.impl.namedOrNull
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.withType
 import fluxo.log.l
 import org.gradle.api.Project
@@ -43,7 +43,7 @@ internal fun FluxoKmpConfContext.prepareKotlinSetupDiagnosticTasks() {
                     doLast { printKotlinSourceSetsInfo() }
                 }
 
-                tasks.register<KotlinSourceSetsReportTask>(SOURCES_GRAPH_TASK) {
+                tasks.registerCompat<KotlinSourceSetsReportTask>(SOURCES_GRAPH_TASK) {
                     description = printTaskDescriptionFor("source sets", "graph")
                     commonConfiguration(checkTask)
                 }

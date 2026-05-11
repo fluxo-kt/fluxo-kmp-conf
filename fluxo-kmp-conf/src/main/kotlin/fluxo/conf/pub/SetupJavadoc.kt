@@ -12,7 +12,7 @@ import fluxo.conf.impl.kotlin.JRE_11
 import fluxo.conf.impl.kotlin.asJavaVersion
 import fluxo.conf.impl.kotlin.asJvmTargetVersion
 import fluxo.conf.impl.namedOrNull
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.withType
 import fluxo.log.l
 import fluxo.log.w
@@ -131,7 +131,7 @@ private fun Project.getOrCreateDokkaTask(
     val tasks = tasks
     val taskName = if (tasks.has(JAVADOC_TASK_NAME)) "dokkaHtmlJar" else JAVADOC_TASK_NAME
     return tasks.namedOrNull(JAVADOC_TASK_NAME)
-        ?: tasks.register<Jar>(taskName) {
+        ?: tasks.registerCompat<Jar>(taskName) {
             configureJavadocTask()
             description = "Assembles Kotlin docs with Dokka into a Javadoc jar"
             // Dokka v2 (DGPv2) splits formats by plugin id: `org.jetbrains.dokka`
@@ -152,7 +152,7 @@ private fun Project.getOrCreateDokkaTask(
 
 private fun Project.getOrCreateJavadocTask(): NamedDomainObjectProvider<out Task> {
     return tasks.namedOrNull(JAVADOC_TASK_NAME)
-        ?: tasks.register<Jar>(JAVADOC_TASK_NAME, Jar::configureJavadocTask)
+        ?: tasks.registerCompat<Jar>(JAVADOC_TASK_NAME, Jar::configureJavadocTask)
 }
 
 private fun Jar.configureJavadocTask() {

@@ -9,7 +9,7 @@ import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.dependencies
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.namedCompat
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.withType
 import fluxo.log.e
 import fluxo.log.l
@@ -49,7 +49,7 @@ internal fun FluxoKmpConfContext.registerReportMergeTask(
     filePrefix: String,
 ): TaskProvider<ReportMergeTask>? {
     if (testsDisabled) return null
-    return rootProject.tasks.register<ReportMergeTask>(name) {
+    return rootProject.tasks.registerCompat<ReportMergeTask>(name) {
         group = JavaBasePlugin.VERIFICATION_GROUP
         this.description = description
         output.set(project.layout.buildDirectory.file("$filePrefix-merged.sarif"))
@@ -95,7 +95,7 @@ internal fun Project.setupDetekt(
     val detektBaselineFile = layout.projectDirectory.file(DETEKT_BASELINE_FILE_NAME)
     val mergeDetektBaselinesTask = when {
         testsDisabled || !context.hasStartTaskCalled(MergeDetektBaselinesTask.TASK_NAME) -> null
-        else -> tasks.register<MergeDetektBaselinesTask>(MergeDetektBaselinesTask.TASK_NAME) {
+        else -> tasks.registerCompat<MergeDetektBaselinesTask>(MergeDetektBaselinesTask.TASK_NAME) {
             outputFile.set(detektBaselineFile)
         }
     }
@@ -218,7 +218,7 @@ internal fun Project.setupDetekt(
     }
 
     if (!testsDisabled) {
-        val detektAll = tasks.register<Task>("detektAll") {
+        val detektAll = tasks.registerCompat<Task>("detektAll") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Calls all available Detekt tasks for this project"
             dependsOn(detektTasks)

@@ -84,7 +84,7 @@ internal fun KotlinJvmCompilerOptions.setupJvmCompatibility(jvmTarget: String) {
 }
 
 internal fun KCompilation.setupJvmCompatibility(jvmTarget: String) {
-    compileJavaTaskProvider?.configure {
+    javaCompileTaskProviderCompat?.configure {
         sourceCompatibility = jvmTarget
         targetCompatibility = jvmTarget
     }
@@ -92,7 +92,7 @@ internal fun KCompilation.setupJvmCompatibility(jvmTarget: String) {
 
 
 /** @see org.jetbrains.kotlin.gradle.plugin.findJavaTaskForKotlinCompilation */
-internal val KotlinCompilation<*>.compileJavaTaskProvider: TaskProvider<out JavaCompile>?
+internal val KotlinCompilation<*>.javaCompileTaskProviderCompat: TaskProvider<out JavaCompile>?
     get() = when (this) {
         is KotlinJvmAndroidCompilation -> compileJavaTaskProvider
         is KotlinWithJavaCompilation<*, *> -> compileJavaTaskProvider

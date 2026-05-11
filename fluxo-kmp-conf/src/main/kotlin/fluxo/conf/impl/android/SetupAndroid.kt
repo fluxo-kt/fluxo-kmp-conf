@@ -14,7 +14,7 @@ import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.get
 import fluxo.conf.impl.getDisableTaskAction
 import fluxo.conf.impl.kotlin.ksp
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.the
 import fluxo.log.e
 import fluxo.log.l
@@ -313,7 +313,7 @@ private fun Project.configureMonkeyLauncherTasks() {
         val appIdProvider = variant.applicationId
         val variantName = variant.name.replaceFirstChar { it.uppercase() }
         val installTask = tasks.named("install$variantName")
-        tasks.register<Exec>("connected${variant.name}MonkeyTest") {
+        tasks.registerCompat<Exec>("connected${variant.name}MonkeyTest") {
             dependsOn(installTask)
             // Resolved at execution time via Provider — CC-safe.
             argumentProviders.add {

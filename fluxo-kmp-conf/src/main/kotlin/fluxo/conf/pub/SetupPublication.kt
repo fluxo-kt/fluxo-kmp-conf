@@ -21,7 +21,7 @@ import fluxo.conf.impl.hasExtension
 import fluxo.conf.impl.kotlin.mppExt
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.namedOrNull
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.the
 import fluxo.conf.impl.uppercaseFirstChar
 import fluxo.conf.impl.withType
@@ -614,7 +614,7 @@ internal val Project.gradlePluginExt: GradlePluginDevelopmentExtension
 private fun Project.registerSourceJarTask(sourcePaths: Any): NamedDomainObjectProvider<out Task> {
     val taskName = "sourcesJar"
     val existing = tasks.namedOrNull(taskName)
-    val provider = existing ?: tasks.register<Jar>(taskName) {
+    val provider = existing ?: tasks.registerCompat<Jar>(taskName) {
         from(sourcePaths)
         group = LifecycleBasePlugin.BUILD_GROUP
         description = "Assembles a project sources jar."

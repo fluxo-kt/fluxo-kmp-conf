@@ -18,7 +18,7 @@ import fluxo.conf.impl.kotlin.javaSourceSets
 import fluxo.conf.impl.kotlin.mppExt
 import fluxo.conf.impl.lc
 import fluxo.conf.impl.logDependency
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.conf.jvm.JvmFiles
 import fluxo.conf.jvm.JvmFilesProvider
 import fluxo.gradle.ioFile
@@ -49,7 +49,7 @@ internal const val PRO_EXT = ".pro"
 internal fun Project.registerShrinkerTask(
     setup: ProcessorSetup<JvmShrinker, ProcessorConfigR8>,
     mainClassesProvider: Provider<out Iterable<String>>,
-): TaskProvider<AbstractShrinkerTask> = tasks.register<AbstractShrinkerTask>(
+): TaskProvider<AbstractShrinkerTask> = tasks.registerCompat<AbstractShrinkerTask>(
     name = setup.getShrinkerTaskName(),
 ) {
     val isVerbose = SHOW_DEBUG_LOGS || logger.isInfoEnabled

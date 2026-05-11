@@ -2,7 +2,7 @@ package fluxo.shrink
 
 import fluxo.conf.feat.API_DIR
 import fluxo.conf.feat.bindToApiDumpTasks
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.gradle.FLUXO_TASK_GROUP
 import fluxo.gradle.ioFile
 import fluxo.log.e
@@ -127,7 +127,7 @@ internal abstract class ShrinkerKeepRulesFromApiTask : DefaultTask() {
 internal fun Project.registerShrinkerKeepRulesGenTask(
     autoGenerateKeepModifier: String,
 ): TaskProvider<ShrinkerKeepRulesFromApiTask> {
-    return tasks.register<ShrinkerKeepRulesFromApiTask>(SHRINKER_KEEP_GEN_TASK_NAME) {
+    return tasks.registerCompat<ShrinkerKeepRulesFromApiTask>(SHRINKER_KEEP_GEN_TASK_NAME) {
         group = FLUXO_TASK_GROUP
         description = "Generates shrinker (R8/ProGuard) keep rules from API reports"
 

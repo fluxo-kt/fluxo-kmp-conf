@@ -7,7 +7,7 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.impl.closureOf
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.namedCompat
-import fluxo.conf.impl.register
+import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.splitCamelCase
 import fluxo.conf.impl.withType
 import fluxo.log.e
@@ -56,7 +56,7 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
         testsDisabled || mergedReportService == null -> null
         else -> {
             project.logger.l("setupTestsReport, register :$TEST_REPORTS_TASK_NAME task")
-            project.tasks.register<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
+            project.tasks.registerCompat<TestReportsMergeTask>(TEST_REPORTS_TASK_NAME) {
                 output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME))
             }
         }

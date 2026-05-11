@@ -9,17 +9,17 @@ import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
 
 /** @see org.gradle.api.tasks.TaskContainer.register */
-internal inline fun <reified T : Task> TaskContainer.register(name: String): TaskProvider<T> =
+internal inline fun <reified T : Task> TaskContainer.registerCompat(name: String): TaskProvider<T> =
     register(name, T::class.java)
 
 /** @see org.gradle.api.tasks.TaskContainer.register */
-internal inline fun <reified T : Task> TaskContainer.register(
+internal inline fun <reified T : Task> TaskContainer.registerCompat(
     name: String,
     noinline configuration: T.() -> Unit,
 ): TaskProvider<T> = register(name, T::class.java, actionOf(configuration))
 
 /** @see org.gradle.api.tasks.TaskContainer.register */
-internal inline fun <reified T : Task> TaskContainer.register(
+internal inline fun <reified T : Task> TaskContainer.registerCompat(
     name: String,
     vararg arguments: Any,
 ): TaskProvider<T> = register(name, T::class.java, *arguments)
