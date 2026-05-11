@@ -84,9 +84,6 @@ jobs:
           add-job-summary-as-pr-comment: on-failure
           artifact-retention-days: 1
 
-      # TODO: If it's a "build(deps): ..." commit, then run the dependency review actions,
-      #  amend the `dependencyGuardBaseline` and `kotlinUpgradeYarnLock` task results
-
       - name: Initialize CodeQL
         if: matrix.os == 'ubuntu' && matrix.java != '23'
         uses: github/codeql-action/init@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4.35.4

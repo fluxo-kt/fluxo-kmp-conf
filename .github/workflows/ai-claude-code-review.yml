@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 33
 
     env:
-      AI_CLOUD_REVIEW_PROMPT: ${{ secrets.AI_CLOUD_REVIEW_PROMPT || vars.AI_CLOUD_REVIEW_PROMPT }}
+      AI_CLOUD_REVIEW_PROMPT: ${{ secrets.AI_CLOUD_REVIEW_PROMPT }}
 
     steps:
       - name: Harden Runner
@@ -39,7 +39,7 @@ jobs:
             exit 1
           }
           test -n "$AI_CLOUD_REVIEW_PROMPT" || {
-            echo "::error::Set AI_CLOUD_REVIEW_PROMPT as a secret or variable."
+            echo "::error::Set AI_CLOUD_REVIEW_PROMPT as a repository or organization secret."
             exit 1
           }
 

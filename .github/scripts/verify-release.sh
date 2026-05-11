@@ -28,9 +28,11 @@ if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
 fi
 
 plugin_url="https://plugins.gradle.org/plugin/io.github.fluxo-kt.fluxo-kmp-conf/${catalog_version}"
-plugin_status="$(curl -fsS -o /dev/null -w '%{http_code}' "${plugin_url}" || true)"
+plugin_status="$(curl -sS -o /dev/null -w '%{http_code}' "${plugin_url}" || true)"
 [[ "${plugin_status}" != "200" ]] ||
   fail "Gradle Plugin Portal already has io.github.fluxo-kt.fluxo-kmp-conf ${catalog_version}"
+[[ "${plugin_status}" == "400" || "${plugin_status}" == "404" ]] ||
+  fail "Could not verify Gradle Plugin Portal status for ${catalog_version} (${plugin_status})"
 
 declare -a central_artifacts=(
   "io.github.fluxo-kt|fluxo-kmp-conf|https://repo1.maven.org/maven2/io/github/fluxo-kt/fluxo-kmp-conf/${catalog_version}/fluxo-kmp-conf-${catalog_version}.pom"
