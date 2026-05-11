@@ -203,8 +203,5 @@ jobs:
 #  https://github.com/lsc/serenity/blob/6ef8100/.github/workflows/lintcommits.yml
 #  https://github.com/p-gentili/ockam/blob/c3a4139/.github/workflows/commits.yml
 
-# TODO: Integrate the dependency-review-action
-#  https://github.com/marketplace/actions/gradle-build-action#integrating-the-dependency-review-action
-
 # TODO: CI Improvements
 #  https://github.com/ajalt/clikt/blob/master/.github/workflows/build.yml
