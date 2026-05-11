@@ -5,6 +5,9 @@ on:
     # The repository uses ff-only merges, but PR checks must still run on the
     # pull_request merge ref so branch protection can gate the exact mergeable tree.
   push:
+    branches:
+      - main
+      - dev
     paths-ignore:
       - '**-validation.yml'
       - '**.*ignore'

@@ -2,6 +2,9 @@ name: Validate Workflows
 
 on:
   push:
+    branches:
+      - main
+      - dev
     paths:
       - '.github/actions/**.yml'
       - '.github/actions/**.yaml'

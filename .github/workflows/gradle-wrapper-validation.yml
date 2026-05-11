@@ -9,6 +9,9 @@ on:
       - '**/gradle*.properties'
       - '**/gradlew*'
   push:
+    branches:
+      - main
+      - dev
     paths:
       - '**/gradle-wrapper-validation.yml'
       - '**/gradle/wrapper/'
