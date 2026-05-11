@@ -36,7 +36,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Confirm start in the comment
-        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -118,7 +118,7 @@ jobs:
           fi
 
       # Track result in the comment
-      - uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -128,7 +128,7 @@ jobs:
               issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo,
               body: `✅ Baseline [updated](${RUN_URL}).`
             })
-      - uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         if: failure()
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
