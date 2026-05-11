@@ -1,0 +1,37 @@
+language: en-US
+
+reviews:
+  profile: assertive
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  review_status: true
+  review_details: true
+  commit_status: true
+  fail_commit_status: true
+  collapse_walkthrough: true
+  changed_files_summary: true
+  path_filters:
+    - "!**/.DS_Store"
+    - "!**/.gradle/**"
+    - "!**/build/**"
+  auto_review:
+    enabled: false
+    labels:
+      - ai-review
+    drafts: false
+    auto_incremental_review: true
+    ignore_usernames:
+      - dependabot[bot]
+      - github-actions[bot]
+
+chat:
+  allow_non_org_members: false
+  auto_reply: false
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - AGENTS.md
+      - README.md
+      - CONTRIBUTING.md
