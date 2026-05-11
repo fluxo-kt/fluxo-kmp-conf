@@ -57,7 +57,7 @@ jobs:
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support.
         language: [ 'java-kotlin' ]
 
-    name: 'Build and check on ${{ matrix.os }}'
+    name: 'Build and check on ${{ matrix.os }} / JDK ${{ matrix.java }}'
     timeout-minutes: 30
     runs-on: '${{ matrix.os }}-latest'
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -173,7 +173,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: '${{ matrix.os }}-build-report'
+          name: '${{ matrix.os }}-jdk-${{ matrix.java }}-build-report'
           path: |
             **/build/logs/
             **/build/reports/
