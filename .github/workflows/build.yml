@@ -2,15 +2,6 @@ name: Build
 
 on:
   pull_request:
-    paths-ignore:
-      - '**-validation.yml'
-      - '**.*ignore'
-      - '**.md'
-      - '**.txt'
-      - '**/actionlint**'
-      - '**/pr-**.yml'
-      - '**/release.yml'
-      - '**dependabot.yml'
     # The repository uses ff-only merges, but PR checks must still run on the
     # pull_request merge ref so branch protection can gate the exact mergeable tree.
   push:
