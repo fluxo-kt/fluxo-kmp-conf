@@ -107,6 +107,7 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
     // Vanniktech's plugin handles remote repos.
     val publishing = p.extensions.getByName<PublishingExtension>(PUBLISHING_EXT_NAME)
     conf.ctx.setupPublishingRepositories(p, config, publishing, mavenRemoteRepo = false)
+    p.validateSignedReleaseBeforeRemotePublish(config)
 
     if (getIfSigningEnabled(config, p)) {
         p.logger.l("setup publications signing configuration")

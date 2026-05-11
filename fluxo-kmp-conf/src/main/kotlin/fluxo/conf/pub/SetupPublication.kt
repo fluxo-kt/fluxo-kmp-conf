@@ -387,11 +387,12 @@ internal fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning(
     mavenRemoteRepo: Boolean = true,
 ) {
     val isSigningEnabled = getIfSigningEnabled(config, p)
+    p.validateSignedReleaseBeforeRemotePublish(config)
     if (isSigningEnabled) {
         p.pluginManager.apply(SIGNING_EXT_NAME)
         p.configureExtension<SigningExtension>(name = SIGNING_EXT_NAME) {
             p.logger.l("setup publications signing configuration")
-            useInMemoryPgpKeys(config.signingKeyId, config.signingKey, config.signingPassword)
+            configureInMemoryPgpKeys(config)
             sign(publishing.publications)
 
             // Signature is a hard requirement if publishing a non-snapshot
@@ -497,6 +498,41 @@ internal fun getIfSigningEnabled(config: FluxoPublicationConfig, p: Project): Bo
         }
     }
     return isSigningEnabled
+}
+
+internal fun Project.validateSignedReleaseBeforeRemotePublish(config: FluxoPublicationConfig) {
+    tasks.configureEach {
+        if (!isRemotePublishTask(name)) return@configureEach
+        doFirst {
+            if (!config.isSnapshot && config.signingKey.isNullOrBlank()) {
+                throw GradleException(
+                    "Refusing to publish non-snapshot ${config.group}:${config.projectName}:" +
+                        "${config.version} without SIGNING_KEY/signingInMemoryKey. " +
+                        "Maven Central and Gradle Plugin Portal releases require signed " +
+                        "artifacts; configure in-memory PGP signing before running $path.",
+                )
+            }
+        }
+    }
+}
+
+private fun SigningExtension.configureInMemoryPgpKeys(config: FluxoPublicationConfig) {
+    val signingKeyId = config.signingKeyId
+    if (signingKeyId.isNullOrBlank()) {
+        useInMemoryPgpKeys(config.signingKey, config.signingPassword)
+    } else {
+        useInMemoryPgpKeys(signingKeyId, config.signingKey, config.signingPassword)
+    }
+}
+
+private fun isRemotePublishTask(name: String): Boolean {
+    val remoteRepositoryPublish = name.startsWith("publish") &&
+        "Repository" in name &&
+        !name.contains("LocalDev", ignoreCase = true) &&
+        !name.contains("MavenLocal", ignoreCase = true)
+    return name == "publishPlugins" ||
+        name.contains("MavenCentral", ignoreCase = true) ||
+        remoteRepositoryPublish
 }
 
 

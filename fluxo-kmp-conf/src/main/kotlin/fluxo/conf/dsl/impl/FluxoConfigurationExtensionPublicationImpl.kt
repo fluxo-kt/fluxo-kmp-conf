@@ -12,9 +12,6 @@ import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_B
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.shrink.AUTOGEN_KEEP_MODIFIERS
 import fluxo.vc.v
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -167,45 +164,17 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
         val project = project
         publicationConfigProp.set(
             project.provider {
-                var version = version
+                val version = version
                 val group = group
                 val description = description
-                val isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
                 var url: String? = null
                 var scmUrl: String? = null
-                var publicationUrl: String? = null
-
-                val scmTag = when {
-                    !isSnapshot -> "v$version"
-                    else -> ctx.scmTag ?: defaultGitBranchName
-                }
 
                 // TODO: Add validation for githubProject value.
                 //  Shouldn't be url, but `namespace/name`
                 githubProject?.let { githubProject ->
                     url = "https://github.com/$githubProject"
-                    publicationUrl = "$url/tree/$scmTag"
                     scmUrl = "scm:git:git://github.com/$githubProject.git"
-                }
-
-                // Make snapshot builds safe and reproducible for usage
-                if (reproducibleArtifacts != false && isSnapshot) {
-                    version = version.substringBeforeLast("SNAPSHOT")
-
-                    // commit short hash is more convenient for usage as date-n-build
-                    val commitSha = ctx.scmTag
-                    if (!commitSha.isNullOrEmpty()) {
-                        // Version structure: `major.minor-COMMIT_SHA-SNAPSHOT`.
-                        version = version.trimEnd { !it.isDigit() }
-                        val idx = version.lastIndexOf('.')
-                        if (idx > 0) version = version.substring(0, idx)
-                        version += "-$commitSha"
-                    } else {
-                        // Version structure: `major.minor.patch-yyMMddHHmmss-buildNumber-SNAPSHOT`.
-                        version += SimpleDateFormat("yyMMddHHmmss", Locale.US).format(Date())
-                        version += project.buildNumberSuffix("-local", "-")
-                    }
-                    version += "-SNAPSHOT"
                 }
 
                 FluxoPublicationConfig(
@@ -214,17 +183,29 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
                     projectName = projectNamePrep(),
                     projectDescription = description.orEmpty(),
                     projectUrl = url,
-                    publicationUrl = publicationUrl,
                     scmUrl = scmUrl,
-                    scmTag = scmTag,
+                    publicationUrl = null,
+                    isSnapshot = false,
+                    scmTag = null,
                     signingKey = project.signingKey(),
                     signingKeyId = project.envOrPropValue("SIGNING_KEY_ID")
                         ?: project.envOrPropValue("signingInMemoryKeyId"),
                     signingPassword = project.envOrPropValue("SIGNING_PASSWORD")
                         ?: project.envOrPropValue("signingInMemoryKeyPassword"),
-                    repositoryUserName = project.envOrPropValue("OSSRH_USER"),
-                    repositoryPassword = project.envOrPropValue("OSSRH_PASSWORD"),
-                ).apply(configure)
+                    repositoryUserName = project.envOrPropValue("mavenCentralUsername")
+                        ?: project.envOrPropValue("MAVEN_CENTRAL_USERNAME")
+                        ?: project.envOrPropValue("OSSRH_USER"),
+                    repositoryPassword = project.envOrPropValue("mavenCentralPassword")
+                        ?: project.envOrPropValue("MAVEN_CENTRAL_PASSWORD")
+                        ?: project.envOrPropValue("OSSRH_PASSWORD"),
+                ).apply(configure).also {
+                    it.finalizePublicationDefaults(
+                        githubProjectUrl = url,
+                        fallbackScmTag = ctx.scmTag ?: defaultGitBranchName,
+                        reproducibleArtifacts = reproducibleArtifacts,
+                        localSnapshotSuffix = project.buildNumberSuffix("-local", "-"),
+                    )
+                }
             },
         )
     }
