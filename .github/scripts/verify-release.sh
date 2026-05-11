@@ -32,5 +32,14 @@ plugin_status="$(curl -fsS -o /dev/null -w '%{http_code}' "${plugin_url}" || tru
 [[ "${plugin_status}" != "200" ]] ||
   fail "Gradle Plugin Portal already has io.github.fluxo-kt.fluxo-kmp-conf ${catalog_version}"
 
+for artifact in fluxo-kmp-conf plugin; do
+  central_url="https://repo1.maven.org/maven2/io/github/fluxo-kt/${artifact}/${catalog_version}/"
+  central_status="$(curl -sS -o /dev/null -w '%{http_code}' "${central_url}" || true)"
+  [[ "${central_status}" != "200" ]] ||
+    fail "Maven Central already has io.github.fluxo-kt:${artifact}:${catalog_version}"
+  [[ "${central_status}" == "404" ]] ||
+    fail "Could not verify Maven Central status for io.github.fluxo-kt:${artifact}:${catalog_version} (${central_status})"
+done
+
 echo "version=${catalog_version}" >> "${GITHUB_OUTPUT}"
 echo "tag=${GITHUB_REF_NAME}" >> "${GITHUB_OUTPUT}"
