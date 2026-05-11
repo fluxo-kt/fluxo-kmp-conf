@@ -58,4 +58,23 @@ internal class DetektKotlinClampTest {
         // is true, so 2.10 > 2.1 → must be CLAMPED. Pair impl is correct.
         assertFalse(isWithinDetektSupportedLangVersion("2.10"))
     }
+
+    @Test
+    fun `parseDetektJvmTarget handles legacy and modern Gradle JVM target shapes`() {
+        assertEquals(8, parseDetektJvmTarget("1.8"))
+        assertEquals(17, parseDetektJvmTarget("17"))
+        assertEquals(22, parseDetektJvmTarget("22"))
+        assertEquals(23, parseDetektJvmTarget("23"))
+        assertEquals(null, parseDetektJvmTarget("invalid"))
+    }
+
+    @Test
+    fun `jvm target predicate clamps only targets beyond Detekt support`() {
+        assertTrue(isWithinDetektSupportedJvmTarget("1.8"))
+        assertTrue(isWithinDetektSupportedJvmTarget("17"))
+        assertTrue(isWithinDetektSupportedJvmTarget("22"))
+        assertFalse(isWithinDetektSupportedJvmTarget("23"))
+        assertFalse(isWithinDetektSupportedJvmTarget("24"))
+        assertTrue(isWithinDetektSupportedJvmTarget("invalid"))
+    }
 }

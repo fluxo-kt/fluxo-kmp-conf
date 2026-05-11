@@ -17,9 +17,12 @@ import org.gradle.api.logging.Logger
  * `TooManyFunctions` ceiling.
  */
 internal const val DETEKT_MAX_SUPPORTED_KOTLIN_VERSION = "2.1"
+internal const val DETEKT_MAX_SUPPORTED_JVM_TARGET = 22
 
 @Volatile
 private var WARNED_DETEKT_KOTLIN_CLAMP = false
+@Volatile
+private var WARNED_DETEKT_JVM_TARGET_CLAMP = false
 
 /**
  * Parses a Kotlin language version string (`"<major>"` or `"<major>.<minor>"`)
@@ -62,6 +65,37 @@ internal fun clampKotlinLangVersionForDetekt(
                 "analyse with --language-version=$max. Bump Detekt to a release " +
                 "that supports Kotlin $requested or update " +
                 "DETEKT_MAX_SUPPORTED_KOTLIN_VERSION in DetektKotlinClamp.kt.",
+        )
+    }
+    return max
+}
+
+internal fun parseDetektJvmTarget(s: String): Int? {
+    val value = s.trim()
+    val major = when {
+        value.startsWith("1.") -> value.substringAfter("1.")
+        else -> value
+    }
+    return major.toIntOrNull()
+}
+
+internal fun isWithinDetektSupportedJvmTarget(requested: String): Boolean =
+    parseDetektJvmTarget(requested)?.let { it <= DETEKT_MAX_SUPPORTED_JVM_TARGET } ?: true
+
+internal fun clampJvmTargetForDetekt(
+    requested: String,
+    logger: Logger,
+): String {
+    if (isWithinDetektSupportedJvmTarget(requested)) return requested
+    val max = DETEKT_MAX_SUPPORTED_JVM_TARGET.toString()
+    if (!WARNED_DETEKT_JVM_TARGET_CLAMP) {
+        WARNED_DETEKT_JVM_TARGET_CLAMP = true
+        logger.warn(
+            "[fluxo-kmp-conf] Detekt's max-supported JVM target " +
+                "($max) is older than the requested $requested. Detekt will " +
+                "analyse with --jvm-target=$max. Bump Detekt to a release " +
+                "that supports JVM target $requested or update " +
+                "DETEKT_MAX_SUPPORTED_JVM_TARGET in DetektKotlinClamp.kt.",
         )
     }
     return max
