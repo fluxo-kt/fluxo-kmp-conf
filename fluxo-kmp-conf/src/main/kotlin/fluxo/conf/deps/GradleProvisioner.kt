@@ -3,7 +3,6 @@ package fluxo.conf.deps
 import fluxo.log.w
 import java.io.File
 import org.gradle.api.GradleException
-import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -30,32 +29,15 @@ internal object GradleProvisioner {
         configurations: ConfigurationContainer,
         dependencies: DependencyHandler,
     ): Provisioner {
-        val classpathConf = configurations.findByName("classpath")
         return Provisioner { withTransitives: Boolean, mavenCoords: Collection<String> ->
             try {
-                val config = configurations.create(
-                    "fluxo" + Request(withTransitives, mavenCoords).hashCode(),
-                )
-                mavenCoords.map { dependencies.create(it) }
-                    .forEach {
-                        // Note in the classpath configuration
-                        try {
-                            classpathConf?.dependencies?.add(it)
-                        } catch (_: InvalidUserDataException) {
-                            // Can't change dependencies of dependency configuration ':classpath'
-                            // after it has been resolved.
-                        } catch (e: Throwable) {
-                            project.logger.w(
-                                "Failed to add dependency '$it' to classpath configuration: $e",
-                                e,
-                            )
-                        }
-
-                        config.dependencies.add(it)
-                    }
+                val requestedDependencies = mavenCoords.map { dependencies.create(it) }
+                    .toTypedArray()
+                val config = configurations.detachedConfiguration(*requestedDependencies)
                 config.setDescription(mavenCoords.toString())
                 config.setTransitive(withTransitives)
                 config.isCanBeConsumed = false
+                config.isCanBeResolved = true
                 config.attributes {
                     attribute(
                         Bundling.BUNDLING_ATTRIBUTE,

@@ -116,10 +116,10 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
             val classLoader = Thread.currentThread().contextClassLoader ?: javaClass.classLoader
             classNames += classLoader.findPluginClassNames(pluginId, logger)
             for (name in classNames) {
-                pluginClass = tryGetClassForName(className)
+                pluginClass = tryGetClassForName(name)
                 if (pluginClass != null) {
                     val message = "Found plugin '$pluginId' class on the classpath" +
-                        " for '${project.path}': $className" +
+                        " for '${project.path}': $name" +
                         CLASS_NAME_AUTO_DETECTED
                     logger.w(message)
                     return pluginClass
@@ -146,7 +146,7 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
             detected = CLASS_NAME_AUTO_DETECTED
         }
         for (name in classNames) {
-            pluginClass = Class.forName(className, true, classLoader)
+            pluginClass = Class.forName(name, true, classLoader)
             if (pluginClass != null) {
                 val confFile = "build.gradle.kts"
                 val warn = "Dynamically loaded plugin '$pluginId'" +
@@ -171,7 +171,7 @@ private fun ClassLoader.findPluginClassNames(
     pluginId: String,
     logger: Logger,
 ): List<String> = sequence {
-    val files = getResources("META-INF\\gradle-plugins\\$pluginId.properties")
+    val files = getResources("META-INF/gradle-plugins/$pluginId.properties")
     for (url in files) {
         url.openStream().use { stream ->
             stream.bufferedReader().useLines { lines ->

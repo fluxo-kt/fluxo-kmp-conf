@@ -61,7 +61,7 @@ internal abstract class FluxoKmpConfContext
         rootProject.objects.domainObjectSet(String::class.java)
 
     internal val provisioner: Provisioner = GradleProvisioner.DedupingProvisioner(
-        GradleProvisioner.forRootProjectBuildscript(rootProject),
+        GradleProvisioner.forProject(rootProject),
     )
 
     @get:Inject
