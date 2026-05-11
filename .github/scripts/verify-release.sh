@@ -32,13 +32,18 @@ plugin_status="$(curl -fsS -o /dev/null -w '%{http_code}' "${plugin_url}" || tru
 [[ "${plugin_status}" != "200" ]] ||
   fail "Gradle Plugin Portal already has io.github.fluxo-kt.fluxo-kmp-conf ${catalog_version}"
 
-for artifact in fluxo-kmp-conf plugin; do
-  central_url="https://repo1.maven.org/maven2/io/github/fluxo-kt/${artifact}/${catalog_version}/"
+declare -a central_artifacts=(
+  "io.github.fluxo-kt|fluxo-kmp-conf|https://repo1.maven.org/maven2/io/github/fluxo-kt/fluxo-kmp-conf/${catalog_version}/fluxo-kmp-conf-${catalog_version}.pom"
+  "io.github.fluxo-kt.fluxo-kmp-conf|io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin|https://repo1.maven.org/maven2/io/github/fluxo-kt/fluxo-kmp-conf/io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin/${catalog_version}/io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin-${catalog_version}.pom"
+)
+
+for artifact in "${central_artifacts[@]}"; do
+  IFS='|' read -r group artifact_id central_url <<< "${artifact}"
   central_status="$(curl -sS -o /dev/null -w '%{http_code}' "${central_url}" || true)"
   [[ "${central_status}" != "200" ]] ||
-    fail "Maven Central already has io.github.fluxo-kt:${artifact}:${catalog_version}"
+    fail "Maven Central already has ${group}:${artifact_id}:${catalog_version}"
   [[ "${central_status}" == "404" ]] ||
-    fail "Could not verify Maven Central status for io.github.fluxo-kt:${artifact}:${catalog_version} (${central_status})"
+    fail "Could not verify Maven Central status for ${group}:${artifact_id}:${catalog_version} (${central_status})"
 done
 
 echo "version=${catalog_version}" >> "${GITHUB_OUTPUT}"

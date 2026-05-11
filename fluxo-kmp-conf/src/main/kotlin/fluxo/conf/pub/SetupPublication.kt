@@ -36,6 +36,7 @@ import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.provider.Property
 import org.gradle.api.publish.PublicationContainer
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPom
@@ -151,6 +152,7 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
             }
         }
     }
+    p.configureKotlinCheckSigningConfigurationTask()
 
     // Reproducible builds setup, produce deterministic output.
     // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
@@ -175,6 +177,22 @@ private fun AbstractArchiveTask.applyReproducibleArchivePermissions() {
         filePermissions { unix("0644") }
     } catch (e: Throwable) {
         logger.e("dirPermissions/filePermissions reproducibleArtifacts setup error: $e", e)
+    }
+}
+
+private const val KOTLIN_CHECK_SIGNING_TASK_NAME = "checkSigningConfiguration"
+private const val GRADLE_HOME_PATH_ACCESSOR = "getGradleHomePath"
+
+private fun Project.configureKotlinCheckSigningConfigurationTask() {
+    tasks.matching { it.name == KOTLIN_CHECK_SIGNING_TASK_NAME }.configureEach {
+        // KGP 2.2 exposes this required input but leaves it unset; reflection keeps the
+        // workaround absent on older KGPs that do not have the task or property.
+        val gradleHomePath = javaClass.methods
+            .singleOrNull { it.name == GRADLE_HOME_PATH_ACCESSOR && it.parameterCount == 0 }
+            ?.invoke(this) as? Property<*>
+            ?: return@configureEach
+        @Suppress("UNCHECKED_CAST")
+        (gradleHomePath as Property<String>).convention(gradle.gradleUserHomeDir.absolutePath)
     }
 }
 

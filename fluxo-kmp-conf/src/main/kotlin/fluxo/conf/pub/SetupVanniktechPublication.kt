@@ -2,6 +2,7 @@ package fluxo.conf.pub
 
 import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.DeploymentValidation
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.GradlePublishPlugin
 import com.vanniktech.maven.publish.JavaLibrary
@@ -128,14 +129,20 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
                     ?.let { website.set(it) }
                 config.publicationUrl?.let { vcsUrl.set(it) }
             }
-            publishToMavenCentral(automaticRelease = true)
+            publishToMavenCentral(
+                automaticRelease = true,
+                validateDeployment = DeploymentValidation.PUBLISHED,
+            )
         }
 
         ConfigurationType.IDEA_PLUGIN -> {}
 
         // Vanniktech 0.34+ dropped the `host` parameter (OSSRH retired 2025-06-30);
         // Central Portal is the sole publish target.
-        else -> publishToMavenCentral(automaticRelease = true)
+        else -> publishToMavenCentral(
+            automaticRelease = true,
+            validateDeployment = DeploymentValidation.PUBLISHED,
+        )
     }
 
     // Log publications
