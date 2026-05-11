@@ -1,6 +1,5 @@
 package fluxo.conf.deps
 
-import fluxo.log.w
 import java.io.File
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -31,9 +30,9 @@ internal object GradleProvisioner {
     ): Provisioner {
         return Provisioner { withTransitives: Boolean, mavenCoords: Collection<String> ->
             try {
-                val requestedDependencies = mavenCoords.map { dependencies.create(it) }
-                    .toTypedArray()
-                val config = configurations.detachedConfiguration(*requestedDependencies)
+                val config = configurations.detachedConfiguration()
+                mavenCoords.map { dependencies.create(it) }
+                    .forEach(config.dependencies::add)
                 config.setDescription(mavenCoords.toString())
                 config.setTransitive(withTransitives)
                 config.isCanBeConsumed = false

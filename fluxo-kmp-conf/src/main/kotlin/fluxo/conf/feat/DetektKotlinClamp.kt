@@ -21,6 +21,7 @@ internal const val DETEKT_MAX_SUPPORTED_JVM_TARGET = 22
 
 @Volatile
 private var WARNED_DETEKT_KOTLIN_CLAMP = false
+
 @Volatile
 private var WARNED_DETEKT_JVM_TARGET_CLAMP = false
 
