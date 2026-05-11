@@ -32,7 +32,6 @@ jobs:
           egress-policy: block
           allowed-endpoints: >
             github.com:443
-            downloads.gradle-dn.com:443
             downloads.gradle.org:443
             services.gradle.org:443
 
