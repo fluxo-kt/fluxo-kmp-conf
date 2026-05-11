@@ -10,7 +10,7 @@ inputs:
   files:
     description: Comma-separated glob pattern list of files to check
     required: false
-    default: '.github/workflows/*.yml, .github/workflows/*.yaml, .github/actions/**/*.yml, .github/actions/**/*.yaml'
+    default: '.github/workflows/*.yml, .github/workflows/*.yaml'
   flags:
     description: Extra flags for the actionlint
     required: false

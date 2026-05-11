@@ -38,4 +38,10 @@ jobs:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Validate action metadata YAML
+        shell: bash
+        run: |
+          git ls-files '.github/actions/*.yml' '.github/actions/*.yaml' '.github/actions/**/*.yml' '.github/actions/**/*.yaml' \
+            | xargs -r ruby -e 'require "yaml"; ARGV.each { |file| YAML.load_file(file) }'
+
       - uses: ./.github/actions/actionlint
