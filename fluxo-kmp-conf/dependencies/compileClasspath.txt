@@ -58,11 +58,11 @@ io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8
 io.gitlab.arturbosch.detekt:detekt-parser:1.23.8
 io.gitlab.arturbosch.detekt:detekt-psi-utils:1.23.8
 io.gitlab.arturbosch.detekt:detekt-tooling:1.23.8
-io.smallrye.common:smallrye-common-annotation:2.6.0
-io.smallrye.common:smallrye-common-constraint:2.6.0
-io.smallrye.common:smallrye-common-cpu:2.10.0
-io.smallrye.common:smallrye-common-function:2.6.0
-io.undertow:undertow-core:2.3.24.Final
+io.smallrye.common:smallrye-common-annotation:2.14.0
+io.smallrye.common:smallrye-common-constraint:2.14.0
+io.smallrye.common:smallrye-common-cpu:2.14.0
+io.smallrye.common:smallrye-common-function:2.14.0
+io.undertow:undertow-core:2.4.0.Final
 javax.inject:javax.inject:1
 org.apache.maven:maven-model:3.6.3
 org.barfuin.gradle.taskinfo:gradle-taskinfo:2.2.0
@@ -70,8 +70,8 @@ org.barfuin.gradle.taskinfo:org.barfuin.gradle.taskinfo.gradle.plugin:2.2.0
 org.checkerframework:checker-qual:3.37.0
 org.codehaus.woodstox:stax2-api:4.2.2
 org.gradle.plugin:compatibility-plugin:1.0.0
-org.jboss.logging:jboss-logging:3.6.1.Final
-org.jboss.threads:jboss-threads:3.7.0.Final
+org.jboss.logging:jboss-logging:3.6.2.Final
+org.jboss.threads:jboss-threads:3.9.2
 org.jboss.xnio:xnio-api:3.8.16.Final
 org.jdom:jdom2:2.0.6.1
 org.jetbrains.compose.hot-reload:hot-reload-gradle-plugin:1.0.0
