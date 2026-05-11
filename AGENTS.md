@@ -86,7 +86,7 @@ Tests are integration-style: `fluxo-kmp-conf/src/test/` is sparse (mostly shrink
 - **Bumping the plugin's own version**: update `gradle/libs.versions.toml` (`version`) and the `README.md` example block (consumer-visible Gradle Plugin Portal version).
 - **Adding a 3rd-party Gradle plugin we wrap**: mirror in `self/build.gradle.kts` *and* `fluxo-kmp-conf/build.gradle.kts` (`compileOnly`/`implementation` + `buildConfigField`). See *Surprises* — no guard.
 - Release: `vanniktech-mvn-publish` + `release.yml`; SCM derived from `SCM_TAG` / `BUILD_NUMBER` env (see `PropsAndEnv.kt`). Remote release requires Central Portal user-token secrets (`MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`), signing secrets (`SIGNING_KEY`, `SIGNING_PASSWORD`, optional `SIGNING_KEY_ID`), and Gradle Plugin Portal secrets (`GRADLE_PUBLISH_KEY`, `GRADLE_PUBLISH_SECRET`). `verify-release.sh` intentionally blocks tag/version mismatch and pre-existing GitHub releases before publication.
-- AI review workflows are label-gated by `ai-review`. Keep reusable review instructions in the `AI_CLOUD_REVIEW_PROMPT` GitHub secret; never store the private prompt in workflow YAML or GitHub variables. CodeRabbit uses the same label gate via `.coderabbit.yaml`.
+- AI review workflows run automatically on maintainer PRs. Claude review also accepts the `ai-review` label for explicit opt-in; CodeRabbit auto-reviews non-draft PRs and ignores bot authors via `.coderabbit.yaml`. Keep reusable review instructions in the `REVIEW_PROMPT` GitHub secret; never store the private prompt in workflow YAML or GitHub variables.
 
 ## Where deep context lives (don't duplicate)
 - Hierarchical KMP source-set diagram → `README.md` `## Hierarchical KMP project structure`.

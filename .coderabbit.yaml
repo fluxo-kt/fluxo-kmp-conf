@@ -15,9 +15,7 @@ reviews:
     - "!**/.gradle/**"
     - "!**/build/**"
   auto_review:
-    enabled: false
-    labels:
-      - ai-review
+    enabled: true
     drafts: false
     auto_incremental_review: true
     ignore_usernames:

@@ -16,12 +16,15 @@ jobs:
   claude-review:
     if: |
       !github.event.pull_request.draft &&
-      contains(github.event.pull_request.labels.*.name, 'ai-review')
+      (
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) ||
+        contains(github.event.pull_request.labels.*.name, 'ai-review')
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 33
 
     env:
-      AI_CLOUD_REVIEW_PROMPT: ${{ secrets.AI_CLOUD_REVIEW_PROMPT }}
+      REVIEW_PROMPT: ${{ secrets.REVIEW_PROMPT }}
 
     steps:
       - name: Harden Runner
@@ -38,8 +41,8 @@ jobs:
             echo "::error::Set the CLAUDE_CODE_OAUTH_TOKEN repository or organization secret."
             exit 1
           }
-          test -n "$AI_CLOUD_REVIEW_PROMPT" || {
-            echo "::error::Set AI_CLOUD_REVIEW_PROMPT as a repository or organization secret."
+          test -n "$REVIEW_PROMPT" || {
+            echo "::error::Set REVIEW_PROMPT as a repository or organization secret."
             exit 1
           }
 
@@ -61,7 +64,7 @@ jobs:
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            ${{ env.AI_CLOUD_REVIEW_PROMPT }}
+            ${{ env.REVIEW_PROMPT }}
           claude_args: |
             --max-turns 300
             --model sonnet
