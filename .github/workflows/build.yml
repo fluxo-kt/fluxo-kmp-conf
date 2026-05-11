@@ -51,7 +51,7 @@ jobs:
     name: 'Build and check on ${{ matrix.os }} / JDK ${{ matrix.java }}'
     timeout-minutes: 30
     runs-on: '${{ matrix.os }}-latest'
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, 'ci skip') }}
     env:
       GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: false
 

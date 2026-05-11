@@ -97,6 +97,7 @@ jobs:
       - name: Commit amend and push
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           if [ -n "$(git diff --name-only --cached)" ]; then
             # Show what's available.
@@ -108,8 +109,10 @@ jobs:
             # Show what we are about to push.
             git log -n 3 --pretty=format:"%h - %an, %ar : %s"
 
-            # Push changes back to branch
-            git push --force -v origin "HEAD:refs/heads/${GITHUB_HEAD_REF}"
+            # Push changes back only if Dependabot has not advanced the branch
+            # since this workflow checked it out.
+            git push --force-with-lease="refs/heads/${GITHUB_HEAD_REF}:${GITHUB_HEAD_SHA}" \
+              -v origin "HEAD:refs/heads/${GITHUB_HEAD_REF}"
           else
             echo "No changes needed."
           fi
