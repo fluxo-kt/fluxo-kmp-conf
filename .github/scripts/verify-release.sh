@@ -39,8 +39,8 @@ declare -a central_artifacts=(
   "io.github.fluxo-kt.fluxo-kmp-conf|io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin|https://repo1.maven.org/maven2/io/github/fluxo-kt/fluxo-kmp-conf/io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin/${catalog_version}/io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin-${catalog_version}.pom"
 )
 
-for artifact in "${central_artifacts[@]}"; do
-  IFS='|' read -r group artifact_id central_url <<< "${artifact}"
+for artifact_spec in "${central_artifacts[@]}"; do
+  IFS='|' read -r group artifact_id central_url <<< "${artifact_spec}"
   central_status="$(curl -sS -o /dev/null -w '%{http_code}' "${central_url}" || true)"
   [[ "${central_status}" != "200" ]] ||
     fail "Maven Central already has ${group}:${artifact_id}:${catalog_version}"

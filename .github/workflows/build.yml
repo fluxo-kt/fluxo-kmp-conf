@@ -48,8 +48,8 @@ jobs:
       matrix:
         # JDK 21 needed by IntelliJ Platform 2026.* targets (S12). JDK 23 keeps
         # early-warning coverage for newer daemon/toolchain behavior.
-        java: [ '21', '23' ]
-        os: [ 'macos', 'windows', 'ubuntu' ]
+        java: ['21', '23']
+        os: ['macos', 'windows', 'ubuntu']
     name: 'Build and check on ${{ matrix.os }} / JDK ${{ matrix.java }}'
     # Keep the job budget above the sum of the guarded Gradle/check steps. Otherwise
     # a slow but healthy matrix leg can be cancelled after its checks already passed.

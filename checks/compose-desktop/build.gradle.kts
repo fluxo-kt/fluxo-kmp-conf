@@ -26,6 +26,22 @@ tasks.named<Jar>("jar") {
     manifest.attributes["Main-Class"] = mainClassName
 }
 
+fun composeDesktopCurrentOs(): String {
+    val os = System.getProperty("os.name")
+    val arch = when (val value = System.getProperty("os.arch")) {
+        "x86_64", "amd64" -> "x64"
+        "aarch64" -> "arm64"
+        else -> error("Unsupported OS arch: $value")
+    }
+    val platform = when {
+        os.equals("Mac OS X", ignoreCase = true) -> "macos"
+        os.startsWith("Win", ignoreCase = true) -> "windows"
+        os.startsWith("Linux", ignoreCase = true) -> "linux"
+        else -> error("Unknown OS name: $os")
+    }
+    return "org.jetbrains.compose.desktop:desktop-jvm-$platform-$arch:${libs.versions.jetbrains.compose.get()}"
+}
+
 // See JB template and docs:
 // https://github.com/JetBrains/compose-multiplatform-desktop-template
 // https://github.com/JetBrains/compose-multiplatform/blob/e1aff75/tutorials/Native_distributions_and_local_execution/README.md
@@ -44,10 +60,7 @@ fkcSetupKotlinApp {
 }
 
 dependencies {
-    // `currentOs` should be used in launcher-sourceSet  and in testMain only.
-    // For a library, use compose.desktop.common.
-    // With compose.desktop.common you will also lose @Preview functionality.
-    implementation(compose.desktop.currentOs)
+    implementation(composeDesktopCurrentOs())
     implementation(libs.compose.components.resources)
     implementation(libs.compose.ui.tooling.preview)
 

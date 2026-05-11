@@ -196,8 +196,8 @@ private fun Logger.logKotlinProjectCompatibility(
     if (kc.jvmToolchain) {
         w(
             "JVM toolchain setup is enabled! \n" +
-                "Note that it's rarely beneficial because of inefficient resource usage," +
-                "compiler bugs, reduced performance and outdated javadoc," +
+                "Note that it's rarely beneficial because of inefficient resource usage, " +
+                "compiler bugs, reduced performance and outdated javadoc, " +
                 "without significant advantages for the most JVM projects. \n" +
                 "Atm, in Fluxo Conf it also disables granular JVM target configuration " +
                 "for different project targets, sources, compilations and tasks! \n" +

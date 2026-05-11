@@ -62,6 +62,32 @@ internal class PublicationDefaultsTest {
     }
 
     @Test
+    fun `snapshot reproducible version uses configured scm tag when present`() {
+        val config = FluxoPublicationConfig(
+            group = "io.github.fluxo-kt",
+            version = "0.14.1-SNAPSHOT",
+            projectName = "fluxo-kmp-conf",
+            publicationUrl = null,
+            scmTag = "custom123",
+        )
+
+        config.finalizePublicationDefaults(
+            githubProjectUrl = "https://github.com/fluxo-kt/fluxo-kmp-conf",
+            fallbackScmTag = "abc1234",
+            reproducibleArtifacts = true,
+            localSnapshotSuffix = "-local",
+        )
+
+        assertTrue(config.isSnapshot)
+        assertEquals("0.14-custom123-SNAPSHOT", config.version)
+        assertEquals("custom123", config.scmTag)
+        assertEquals(
+            "https://github.com/fluxo-kt/fluxo-kmp-conf/tree/custom123",
+            config.publicationUrl,
+        )
+    }
+
+    @Test
     fun `local reproducible snapshot uses stable timestamp and build suffix fallback`() {
         val result = reproducibleSnapshotVersion(
             rawVersion = "0.14.1-SNAPSHOT",

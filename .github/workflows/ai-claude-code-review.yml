@@ -17,6 +17,7 @@ jobs:
   claude-review:
     if: |
       !github.event.pull_request.draft &&
+      !github.event.pull_request.head.repo.fork &&
       (
         contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) ||
         contains(github.event.pull_request.labels.*.name, 'ai-review')

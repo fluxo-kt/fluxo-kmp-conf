@@ -14,10 +14,11 @@ internal fun FluxoPublicationConfig.finalizePublicationDefaults(
     timestamp: Date = Date(),
 ) {
     isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
+    val resolvedScmTag = scmTag.orEmpty().ifBlank { fallbackScmTag }
     if (reproducibleArtifacts != false && isSnapshot) {
         version = reproducibleSnapshotVersion(
             rawVersion = version,
-            scmTag = fallbackScmTag,
+            scmTag = resolvedScmTag,
             localSnapshotSuffix = localSnapshotSuffix,
             timestamp = timestamp,
         )
