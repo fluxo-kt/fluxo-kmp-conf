@@ -1,19 +1,15 @@
 package fluxo.conf.feat
 
-import MAIN_SOURCE_SET_POSTFIX
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.MergeDetektBaselinesTask
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAndLog
-import fluxo.conf.impl.android.DEBUG
-import fluxo.conf.impl.android.RELEASE
 import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.dependencies
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.register
-import fluxo.conf.impl.splitCamelCase
 import fluxo.conf.impl.withType
 import fluxo.log.e
 import fluxo.log.l
@@ -281,131 +277,10 @@ private fun Detekt.isDetektTaskAllowed(ctx: FluxoKmpConfContext): Boolean = with
     isTaskAllowed(getTaskDetailsFromName(name).platform)
 }
 
-private fun getTaskDetailsFromName(
-    name: String,
-    allowNonDetekt: Boolean = false,
-): DetectedTaskDetails {
-    val parts = name.splitCamelCase()
-    var list = if (!allowNonDetekt) {
-        require(parts.isNotEmpty() && parts[0] == DetektPlugin.DETEKT_TASK_NAME) {
-            "Unexpected detect task name: $name"
-        }
-        parts.drop(1)
-    } else {
-        parts
-    }
-
-    val last = parts.lastOrNull()
-    val isTest = last.equals("Test", ignoreCase = true)
-    val isMain = !isTest && last.equals(MAIN_SOURCE_SET_POSTFIX, ignoreCase = true)
-    if (isTest || isMain) {
-        list = list.dropLast(1)
-    }
-
-    val isMetadata = list.firstOrNull().equals("Metadata", ignoreCase = true)
-    if (isMetadata) {
-        list = list.drop(1)
-    }
-
-    var platform = detectPlatformFromString(list.firstOrNull())
-
-    // Android build tasks
-    @Suppress("ComplexCondition")
-    if (platform == DetectedTaskPlatform.UNKNOWN &&
-        list.firstOrNull().equals("assemble", ignoreCase = true) &&
-        list.lastOrNull().let {
-            it.equals(RELEASE, ignoreCase = true) ||
-                it.equals(DEBUG, ignoreCase = true)
-        }
-    ) {
-        // Android assemble: $name
-        platform = DetectedTaskPlatform.ANDROID
-    }
-
-    return DetectedTaskDetails(
-        platform = platform,
-        isMain = isMain,
-        isTest = isTest,
-        isMetadata = isMetadata,
-        taskName = name,
-    )
-}
-
-@Suppress("CyclomaticComplexMethod")
-private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? = when {
-    platform.isNullOrEmpty() ||
-        platform.equals("Common", ignoreCase = true) ||
-        platform.equals("Native", ignoreCase = true)
-    -> null
-
-    platform.equals("Js", ignoreCase = true) -> DetectedTaskPlatform.JS
-    platform.equals("Wasm", ignoreCase = true) -> DetectedTaskPlatform.WASM
-    platform.equals("Linux", ignoreCase = true) -> DetectedTaskPlatform.LINUX
-
-    platform.equals("Android", ignoreCase = true) ||
-        platform.equals("bundle", ignoreCase = true) // Android AAR build tasks
-    -> DetectedTaskPlatform.ANDROID
-
-    platform.equals("Mingw", ignoreCase = true) ||
-        platform.equals("Win", ignoreCase = true) ||
-        platform.equals("Windows", ignoreCase = true)
-    -> DetectedTaskPlatform.MINGW
-
-    platform.equals("Jvm", ignoreCase = true) ||
-        platform.equals("Jmh", ignoreCase = true) ||
-        platform.equals("Dokka", ignoreCase = true) ||
-        platform.equals("Java", ignoreCase = true)
-    -> DetectedTaskPlatform.JVM
-
-    platform.equals("Darwin", ignoreCase = true) ||
-        platform.equals("Apple", ignoreCase = true) ||
-        platform.equals("Ios", ignoreCase = true) ||
-        platform.equals("Watchos", ignoreCase = true) ||
-        platform.equals("Tvos", ignoreCase = true) ||
-        platform.equals("Macos", ignoreCase = true)
-    -> DetectedTaskPlatform.APPLE
-
-    else -> DetectedTaskPlatform.UNKNOWN
-}
-
-private data class DetectedTaskDetails(
-    val platform: DetectedTaskPlatform?,
-    val isMain: Boolean,
-    val isTest: Boolean,
-    val isMetadata: Boolean,
-    val taskName: String,
-)
-
-/**
- * @see org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
- * @see org.jetbrains.kotlin.konan.target.Family
- */
-private enum class DetectedTaskPlatform {
-    APPLE,
-    LINUX,
-    MINGW,
-    JS,
-    WASM,
-    ANDROID,
-    JVM,
-    UNKNOWN,
-
-    // TODO: Detect common/metadata tasks?
-}
-
 private fun FluxoKmpConfContext.isTaskAllowed(platform: DetectedTaskPlatform?): Boolean {
-    // TODO: Improve detekt task platform detection.
-    //  task :detekt detected as platform UNKNOWN
-    //  task :detektMetadataMain detected as platform UNKNOWN
-    //  task :detektMetadataCommonJsMain detected as platform UNKNOWN
-    //  task :detektMetadataCommonMain detected as platform UNKNOWN
-    //  task :detektMetadataNativeMain detected as platform UNKNOWN
-    //  task :detektMetadataNonJvmMain detected as platform UNKNOWN
-    //  task :detektMetadataUnixMain detected as platform UNKNOWN
-
     return when (platform) {
-        // Always allow common tasks or tasks for unknown platforms.
-        null, DetectedTaskPlatform.UNKNOWN -> true
+        null -> true
+        DetectedTaskPlatform.UNKNOWN -> false
         else -> platform.toKmpTargetCodes().any(::isTargetEnabled)
     }
 }
@@ -419,6 +294,9 @@ private fun DetectedTaskPlatform?.toKmpTargetCodes(): Array<KmpTargetCode> {
         DetectedTaskPlatform.WASM -> KmpTargetCode.COMMON_WASM
         DetectedTaskPlatform.ANDROID -> arrayOf(KmpTargetCode.ANDROID)
         DetectedTaskPlatform.JVM -> arrayOf(KmpTargetCode.JVM)
+        DetectedTaskPlatform.NATIVE -> KmpTargetCode.NATIVE
+        DetectedTaskPlatform.UNIX -> KmpTargetCode.UNIX
+        DetectedTaskPlatform.NON_JVM -> KmpTargetCode.NON_JVM
         null, DetectedTaskPlatform.UNKNOWN -> arrayOf()
     }
 }
