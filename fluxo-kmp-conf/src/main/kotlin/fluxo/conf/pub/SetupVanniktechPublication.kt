@@ -128,6 +128,7 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
                     ?.let { website.set(it) }
                 config.publicationUrl?.let { vcsUrl.set(it) }
             }
+            publishToMavenCentral(automaticRelease = true)
         }
 
         ConfigurationType.IDEA_PLUGIN -> {}
