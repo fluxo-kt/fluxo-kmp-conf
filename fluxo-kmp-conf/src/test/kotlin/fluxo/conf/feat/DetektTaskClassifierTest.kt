@@ -12,6 +12,8 @@ internal class DetektTaskClassifierTest {
         assertTask("detektMetadataNativeMain", DetectedTaskPlatform.NATIVE, metadata = true)
         assertTask("detektMetadataNonJvmMain", DetectedTaskPlatform.NON_JVM, metadata = true)
         assertTask("detektMetadataUnixMain", DetectedTaskPlatform.UNIX, metadata = true)
+        assertTask("detektMetadataNixMain", DetectedTaskPlatform.UNIX, metadata = true)
+        assertTask("detektMetadataWebMain", DetectedTaskPlatform.WEB, metadata = true)
     }
 
     @Test

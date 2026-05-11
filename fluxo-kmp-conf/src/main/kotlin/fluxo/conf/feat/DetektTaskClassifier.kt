@@ -62,7 +62,10 @@ private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? =
 
     platform.equals("Native", ignoreCase = true) -> DetectedTaskPlatform.NATIVE
     platform.equals("NonJvm", ignoreCase = true) -> DetectedTaskPlatform.NON_JVM
-    platform.equals("Unix", ignoreCase = true) -> DetectedTaskPlatform.UNIX
+    platform.equals("Unix", ignoreCase = true) ||
+        platform.equals("Nix", ignoreCase = true)
+    -> DetectedTaskPlatform.UNIX
+    platform.equals("Web", ignoreCase = true) -> DetectedTaskPlatform.WEB
     platform.equals("Js", ignoreCase = true) -> DetectedTaskPlatform.JS
     platform.equals("Wasm", ignoreCase = true) -> DetectedTaskPlatform.WASM
     platform.equals("Linux", ignoreCase = true) -> DetectedTaskPlatform.LINUX
@@ -117,6 +120,7 @@ internal enum class DetectedTaskPlatform {
     JVM,
     NATIVE,
     UNIX,
+    WEB,
     NON_JVM,
     UNKNOWN,
 }
