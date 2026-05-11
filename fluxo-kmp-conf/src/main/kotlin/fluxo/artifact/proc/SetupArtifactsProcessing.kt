@@ -164,12 +164,12 @@ internal fun setupArtifactsProcessing(
 
                     val obfuscate = config.obfuscate.get()
                     val hasNextObfuscator =
-                        hasNext && next?.obfuscateIncrementally?.orNull != false
+                        hasNext && next.obfuscateIncrementally.orNull != false
                     if (obfuscate && hasNextObfuscator && !config.obfuscateIncrementally.get()) {
                         p.logger.e(
                             "'obfuscateIncrementally' is disabled for the shrinker $shrinker, " +
                                 "but enabled for the next processor in the chain" +
-                                " (${next?.processor}). It's probably a mistake!",
+                                " (${next.processor}). It's probably a mistake!",
                         )
                     }
 

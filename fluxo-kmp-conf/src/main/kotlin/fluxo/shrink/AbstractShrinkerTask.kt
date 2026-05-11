@@ -362,7 +362,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         var called = false
         var ex: Throwable? = null
         var caller: ShrinkerReflectiveCaller? = null
-        val last = callFallbackOrder.last()!!
+        val last = callFallbackOrder.last()
         val start = currentTimeMillis()
         callType@ for (callType in callFallbackOrder) {
             val version = when {

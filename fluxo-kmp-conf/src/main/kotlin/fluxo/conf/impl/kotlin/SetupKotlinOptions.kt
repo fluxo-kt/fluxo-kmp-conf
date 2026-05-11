@@ -230,31 +230,11 @@ private val LATEST_OPTS = arrayOf(
     // Compile using LightTree parser with Front-end IR.
     "-Xuse-fir-lt",
 
-    // Use extended analysis mode based on Front-end IR.
-    // Warning: this feature is far from being production-ready.
-    "-Xuse-fir-extended-checkers",
-
     // Check pre- and postconditions on phases.
     "-Xcheck-phase-conditions",
-    // Run sticky condition checks on next phases as well.
-    "-Xcheck-sticky-phase-conditions",
-
-    // Use the builder inference by default,
-    // for all calls with lambdas, which can't be resolved without it.
-    // The corresponding calls' declarations may not be marked with @BuilderInference.
-    "-Xenable-builder-inference",
 
     // Enable new experimental generic type inference algorithm.
     "-Xnew-inference",
-
-    // Support inferring type arguments based on only self-upper-bounds
-    // of the corresponding type parameters.
-    "-Xself-upper-bound-inference",
-
-    // Enable extra compiler checks that might provide verbose diagnostic information
-    // for certain errors.
-    // Warning: this mode isn't backward-compatible and might cause compilation errors.
-    "-Xextended-compiler-checks",
 ).asList()
 
 private val LATEST_JVM_OPTS = arrayOf(

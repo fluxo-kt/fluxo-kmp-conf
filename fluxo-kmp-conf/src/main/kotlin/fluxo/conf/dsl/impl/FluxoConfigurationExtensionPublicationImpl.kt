@@ -201,7 +201,7 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
                 ).apply(configure).also {
                     it.finalizePublicationDefaults(
                         githubProjectUrl = url,
-                        fallbackScmTag = ctx.scmTag ?: defaultGitBranchName,
+                        fallbackScmTag = ctx.scmTag.ifBlank { defaultGitBranchName },
                         reproducibleArtifacts = reproducibleArtifacts,
                         localSnapshotSuffix = project.buildNumberSuffix("-local", "-"),
                     )
