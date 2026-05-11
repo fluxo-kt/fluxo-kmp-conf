@@ -8,6 +8,7 @@ permissions:
   actions: read
   checks: write
   contents: read
+  id-token: write
   issues: write
   pull-requests: write
   security-events: read
