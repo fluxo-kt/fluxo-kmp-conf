@@ -189,7 +189,9 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
                     scmTag = null,
                     signingKey = project.signingKey(),
                     signingKeyId = project.envOrPropValue("SIGNING_KEY_ID")
-                        ?: project.envOrPropValue("signingInMemoryKeyId"),
+                        ?.takeUnless(String::isBlank)
+                        ?: project.envOrPropValue("signingInMemoryKeyId")
+                            ?.takeUnless(String::isBlank),
                     signingPassword = project.envOrPropValue("SIGNING_PASSWORD")
                         ?: project.envOrPropValue("signingInMemoryKeyPassword"),
                     repositoryUserName = project.envOrPropValue("mavenCentralUsername")

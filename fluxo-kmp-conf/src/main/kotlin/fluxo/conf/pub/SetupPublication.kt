@@ -534,7 +534,7 @@ internal fun Project.validateSignedReleaseBeforeRemotePublish(config: FluxoPubli
     }
 }
 
-private fun SigningExtension.configureInMemoryPgpKeys(config: FluxoPublicationConfig) {
+internal fun SigningExtension.configureInMemoryPgpKeys(config: FluxoPublicationConfig) {
     val signingKeyId = config.signingKeyId
     if (signingKeyId.isNullOrBlank()) {
         useInMemoryPgpKeys(config.signingKey, config.signingPassword)
@@ -596,7 +596,7 @@ private const val LOCAL_REPO_PATH = "_/local-repo"
 private const val LOCAL_REPO_NAME = "localDev"
 
 /** Also a plugin name! */
-private const val SIGNING_EXT_NAME = "signing"
+internal const val SIGNING_EXT_NAME = "signing"
 
 internal const val PUBLISHING_EXT_NAME = "publishing"
 

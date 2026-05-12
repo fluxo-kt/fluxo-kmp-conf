@@ -21,6 +21,7 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.DEBUG
 import fluxo.conf.impl.android.RELEASE
+import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.getByName
 import fluxo.conf.impl.kotlin.KOTLIN_JVM_PLUGIN_ID
 import fluxo.conf.impl.kotlin.KOTLIN_MPP_PLUGIN_ID
@@ -31,6 +32,7 @@ import fluxo.log.w
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
@@ -119,6 +121,13 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
         config.signingKeyId?.let { extra["signingInMemoryKeyId"] = it }
         config.signingPassword?.let { extra["signingInMemoryKeyPassword"] = it }
 
+        p.pluginManager.apply(SIGNING_EXT_NAME)
+        p.configureExtension<SigningExtension>(name = SIGNING_EXT_NAME) {
+            configureInMemoryPgpKeys(config)
+            if (!config.isSnapshot) {
+                isRequired = true
+            }
+        }
         signAllPublications()
     }
 
