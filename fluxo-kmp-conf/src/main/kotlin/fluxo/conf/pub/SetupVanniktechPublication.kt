@@ -118,7 +118,8 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
         // Set Vanniktech's props first as a compatibility measure.
         val extra = p.extensions.extraProperties
         config.signingKey?.let { extra["signingInMemoryKey"] = it }
-        config.signingKeyId?.let { extra["signingInMemoryKeyId"] = it }
+        config.signingKeyId?.takeUnless(String::isBlank)
+            ?.let { extra["signingInMemoryKeyId"] = it }
         config.signingPassword?.let { extra["signingInMemoryKeyPassword"] = it }
 
         p.pluginManager.apply(SIGNING_EXT_NAME)
