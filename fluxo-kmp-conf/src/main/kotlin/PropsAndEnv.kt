@@ -83,8 +83,22 @@ public fun Project.signingKey(): String? {
     // signingInMemoryKey is used by Vanniktech's publishing plugin.
     val key = envOrPropValue("SIGNING_KEY")
         ?: envOrPropValue("signingInMemoryKey")
-    return key?.replace("\\n", "\n")
+    return key?.normalizeSigningKey()
 }
+
+internal fun String.normalizeSigningKey(): String {
+    val normalized = replace("\\n", "\n").trim()
+    val begin = normalized.indexOf(PGP_PRIVATE_KEY_BEGIN)
+    val end = if (begin >= 0) normalized.indexOf(PGP_PRIVATE_KEY_END, begin) else -1
+    return if (end >= 0) {
+        normalized.substring(begin, end + PGP_PRIVATE_KEY_END.length)
+    } else {
+        normalized
+    }
+}
+
+private const val PGP_PRIVATE_KEY_BEGIN = "-----BEGIN PGP PRIVATE KEY BLOCK-----"
+private const val PGP_PRIVATE_KEY_END = "-----END PGP PRIVATE KEY BLOCK-----"
 
 public fun Project?.buildNumberSuffix(default: String = "", delimiter: String = "."): String {
     val n = buildNumber()
