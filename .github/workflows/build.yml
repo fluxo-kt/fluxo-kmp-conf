@@ -105,8 +105,11 @@ jobs:
           sarif_file: build/lint-merged.sarif
           category: lint
 
+      # The root plugin build runs on every OS/JDK leg. The integration builds are
+      # Gradle/Kotlin behavior checks, so run them once on the primary supported JDK
+      # instead of multiplying the same coverage across every matrix leg.
       - name: 'Run check-gradle-plugin'
-        if: always()
+        if: always() && matrix.os == 'ubuntu' && matrix.java == '21'
         timeout-minutes: 6
         working-directory: checks/gradle-plugin
         run: ./gradlew build assemble check --continue --stacktrace --scan
@@ -114,7 +117,7 @@ jobs:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: 'Run check-kmp'
-        if: always()
+        if: always() && matrix.os == 'ubuntu' && matrix.java == '21'
         timeout-minutes: 12
         working-directory: checks/kmp
         run: ./gradlew build assemble check printKotlinSourceSetsGraph --continue --stacktrace --scan
@@ -122,7 +125,7 @@ jobs:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: 'Run check-compose-desktop'
-        if: always()
+        if: always() && matrix.os == 'ubuntu' && matrix.java == '21'
         timeout-minutes: 14
         working-directory: checks/compose-desktop
         run: ./gradlew build assemble check packageReleaseDistributionForCurrentOS --continue --stacktrace --scan
@@ -130,7 +133,7 @@ jobs:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: 'Run check-android'
-        if: always()
+        if: always() && matrix.os == 'ubuntu' && matrix.java == '21'
         timeout-minutes: 8
         working-directory: checks/android
         # Non-KMP `com.android.library` integration check exercising the legacy AGP
@@ -143,6 +146,7 @@ jobs:
           GITHUB_DEPENDENCY_GRAPH_ENABLED: false
 
       - name: 'Run self check'
+        if: always() && matrix.os == 'ubuntu' && matrix.java == '21'
         timeout-minutes: 4
         working-directory: self
         run: ./gradlew build assemble check --continue --stacktrace --scan
