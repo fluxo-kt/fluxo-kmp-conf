@@ -221,7 +221,7 @@ jobs:
 
       - name: Compile plugin for CodeQL
         timeout-minutes: 10
-        run: ./gradlew :plugin:compileKotlin --continue --stacktrace
+        run: ./gradlew :plugin:compileKotlin --rerun-tasks --continue --stacktrace
 
       - name: Perform CodeQL Analysis
         timeout-minutes: 12
