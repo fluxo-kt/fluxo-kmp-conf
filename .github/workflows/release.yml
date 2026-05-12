@@ -48,7 +48,6 @@ jobs:
     runs-on: macos-latest
     env:
       SCM_TAG: ${{ needs.verify_release.outputs.tag }}
-      ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
       ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
@@ -104,6 +103,11 @@ jobs:
             exit 1
           fi
 
+      - name: Normalize publication signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: .github/scripts/export-release-signing-key.sh
+
       - name: Write publication credentials
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
@@ -125,25 +129,16 @@ jobs:
           } >> ~/.gradle/gradle.properties
 
       - name: Verify release build
-        env:
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: >
           ./gradlew build assemble check
           --no-build-cache --no-configuration-cache --stacktrace
 
       - name: Validate Plugin Portal publication
-        env:
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: >
           ./gradlew publishPlugins --validate-only
           --no-build-cache --no-configuration-cache --stacktrace
 
       - name: Publish Maven Central and Plugin Portal
-        env:
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: >
           ./gradlew publishAndReleaseToMavenCentral publishPlugins
           --no-build-cache --no-configuration-cache --stacktrace
