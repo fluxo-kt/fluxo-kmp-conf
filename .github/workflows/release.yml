@@ -178,18 +178,9 @@ jobs:
           echo "RELEASE_SUFFIX=$RELEASE_SUFFIX" >> $GITHUB_ENV
 
       - name: GitHub Release
-        # https://github.com/anton-yurchenko/git-release#readme
-        # Pinned to v6.0.0 (manifest-list digest, multi-arch). Bump by
-        # resolving the new digest with:
-        #   curl -sL "https://hub.docker.com/v2/repositories/antonyurchenko/git-release/tags/<tag>" | jq .digest
-        uses: docker://antonyurchenko/git-release@sha256:b3a7d6a87981f8ed455e6b44c702e55afd95b3e628c324d7fd4f6f85728f792b
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRAFT_RELEASE: "true"
-          PRE_RELEASE: "${{ env.RELEASE_PRE }}"
-          RELEASE_NAME_SUFFIX: "${{ env.RELEASE_SUFFIX }}"
-          CHANGELOG_FILE: "CHANGELOG.md"
-          ALLOW_EMPTY_CHANGELOG: "false"
-
-# References
-# https://github.com/studiometa/vue-mapbox-gl/blob/8c3ca5a/.github/workflows/release.yml#L26
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.verify_release.outputs.tag }}
+          RELEASE_PRE: ${{ env.RELEASE_PRE }}
+          RELEASE_SUFFIX: ${{ env.RELEASE_SUFFIX }}
+        run: .github/scripts/create-github-release.sh
