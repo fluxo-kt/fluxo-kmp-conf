@@ -2,9 +2,6 @@ name: Dependency Submission
 
 on:
   push:
-    branches:
-      - main
-      - dev
     paths-ignore:
       - '**-validation.yml'
       - '**.*ignore'
