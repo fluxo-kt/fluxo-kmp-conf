@@ -48,6 +48,11 @@ jobs:
     runs-on: macos-latest
     env:
       SCM_TAG: ${{ needs.verify_release.outputs.tag }}
+      ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+      ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+      ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+      ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
 
     steps:
       - name: Harden Runner
@@ -93,6 +98,10 @@ jobs:
           done
           if (( ${#missing[@]} > 0 )); then
             printf '::error::Missing required release secrets: %s\n' "${missing[*]}"
+            exit 1
+          fi
+          if [[ "$SIGNING_KEY" != *"BEGIN PGP PRIVATE KEY BLOCK"* ]]; then
+            echo "::error::SIGNING_KEY must be the ASCII-armored private PGP key block."
             exit 1
           fi
 
