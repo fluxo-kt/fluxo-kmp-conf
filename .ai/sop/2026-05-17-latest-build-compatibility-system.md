@@ -372,6 +372,10 @@ Keep allowlists small and justified at the call site.
   generated `android` accessor at compile time. Use the named KMP extension and
   an explicit `KotlinMultiplatformAndroidLibraryTarget` cast when the fixture
   must prove the actual AGP 9 target shape.
+- Non-KMP Android library fixtures must cover both Kotlin wiring modes:
+  AGP 8 with consumer-applied `org.jetbrains.kotlin.android`, and AGP 9 with
+  built-in Kotlin where that legacy plugin remains unapplied. Both still use
+  the legacy `com.android.library` extension path.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -476,8 +480,10 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   `com.android.kotlin.multiplatform.library`.
 - [ ] Add AGP 9 Android/KMP execution fixture rows for lint/variant task
   coverage without weakening the routing fixture signal.
-- [ ] Add non-KMP Android fixture rows for the legacy Android path under AGP 8
-  and AGP 9 built-in Kotlin.
+- [x] Add non-KMP Android routing fixture rows for the legacy Android path
+  under AGP 8 consumer-applied Kotlin Android and AGP 9 built-in Kotlin.
+- [ ] Add non-KMP Android execution fixture rows for lint/variant task coverage
+  without weakening the routing fixture signal.
 - [ ] Add Compose Desktop fixture rows with matching Compose Multiplatform and
   Kotlin Compose plugin versions.
 - [x] Add a Kotlin JVM marker fixture that consumes the plugin through the repo

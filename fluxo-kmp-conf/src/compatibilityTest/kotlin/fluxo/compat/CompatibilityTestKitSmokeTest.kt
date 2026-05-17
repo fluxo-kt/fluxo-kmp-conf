@@ -67,6 +67,15 @@ internal class CompatibilityTestKitSmokeTest {
             }
         }
 
+    @TestFactory
+    fun `generated Android library consumers use legacy Android path`(): Iterable<DynamicTest> =
+        (selectedRows(fixture = "android-lib-agp8") +
+            selectedRows(fixture = "android-lib-agp9")).map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runAndroidLibraryConsumer(row)
+            }
+        }
+
     private fun runKotlinJvmConsumer(row: Map<String, String>) {
         val projectDir = tempDir.resolve(row.getValue("id"))
         Files.createDirectories(projectDir)
@@ -261,6 +270,33 @@ internal class CompatibilityTestKitSmokeTest {
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun runAndroidLibraryConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-android-library-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerAndroidLibraryBuildScript(row),
+        )
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks))
+            .forwardOutput()
+            .build()
+
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
@@ -525,6 +561,54 @@ internal class CompatibilityTestKitSmokeTest {
             }
         }
         """.trimIndent()
+
+    private fun markerAndroidLibraryBuildScript(row: Map<String, String>): String {
+        val isAgp8 = row.getValue("fixture") == "android-lib-agp8"
+        val kotlinAndroidPlugin = if (isAgp8) {
+            "id(\"org.jetbrains.kotlin.android\") version \"${row.getValue("kgpVersion")}\""
+        } else {
+            "id(\"org.jetbrains.kotlin.android\") version \"${row.getValue("kgpVersion")}\" apply false"
+        }
+        return """
+        plugins {
+            id("com.android.library") version "${row.getValue("agpVersion")}" apply false
+            $kotlinAndroidPlugin
+            id("${pluginId()}") version "${pluginVersion()}"
+        }
+
+        group = "compat"
+        version = "1.0.0"
+
+        fkcSetupAndroidLibrary(
+            namespace = "compat.${row.getValue("id").replace('-', '.')}",
+            config = {
+                setupVerification = false
+                enablePublication = false
+                enableGradleDoctor = false
+                setupCoroutines = false
+                androidCompileSdk = 35
+                androidMinSdk = 24
+            },
+        )
+
+        tasks.register("assertAndroidLibraryShape") {
+            doLast {
+                check(plugins.hasPlugin("com.android.library"))
+                check(!plugins.hasPlugin("com.android.kotlin.multiplatform.library"))
+                check(plugins.hasPlugin("org.jetbrains.kotlin.android") == $isAgp8)
+
+                val android = project.extensions.getByName("android")
+                    as com.android.build.api.dsl.LibraryExtension
+                check(android.namespace == "compat.${row.getValue("id").replace('-', '.')}")
+                check(android.compileSdk == 35)
+                check(android.defaultConfig.minSdk == 24)
+
+                val kotlin = project.extensions.getByName("kotlin")
+                check(kotlin is org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension)
+            }
+        }
+        """.trimIndent()
+    }
 
     private fun localMavenRepoPath(): String {
         val path = checkNotNull(System.getProperty("fluxo.local.maven.repo")) {
