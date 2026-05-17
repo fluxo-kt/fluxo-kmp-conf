@@ -41,7 +41,7 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
         return ApplyPluginResult.TRUE
     } catch (e: Throwable) {
         @Suppress("InstanceOfCheckForException")
-        if (project.hasPluginAvailable(id) || e !is UnknownPluginException) {
+        if (e !is UnknownPluginException) {
             logger.e("Failed to apply plugin '$id' in '${project.path}': $e", e)
         }
     }
@@ -256,13 +256,6 @@ private fun FluxoKmpConfContext.getPluginIdAndVersion(
     }
 
     return Triple(pluginId, pluginVersion, catalogPluginAlias)
-}
-
-private fun Project.hasPluginAvailable(pluginId: String): Boolean {
-    val plugin = buildscript.configurations.getByName("classpath")
-        .resolvedConfiguration.resolvedArtifacts
-        .find { it.moduleVersion.id.name.startsWith(pluginId) }
-    return plugin != null
 }
 
 private const val CLASS_NAME_AUTO_DETECTED = " (class name is not provided and auto detected!)"
