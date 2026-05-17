@@ -335,6 +335,9 @@ Keep allowlists small and justified at the call site.
   actionable only at remote publish task execution via
   `validateSignedReleaseBeforeRemotePublish`; non-publish tasks must not warn
   about unsigned publications.
+- Detekt tasks generated for Gradle JVM Test Suite source sets must be
+  classified as JVM when their source set name is a known JVM-only suite name.
+  `detektCompatibilityTest` is the current coverage row for this rule.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -459,6 +462,8 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
 - [ ] Decide whether dependencyGuard baseline creation in generated consumers is
   acceptable fixture byproduct or plugin-owned noise; if noise, make the fixture
   suppress it through public DSL/config rather than ignoring output.
+- [x] Classify `detektCompatibilityTest` as a JVM Detekt task so the new
+  `compatibilityTest` suite does not produce plugin-owned configuration errors.
 - [ ] Add configuration-cache fixture evidence for key rows, including a
   CC-compatible KMP command separate from diagnostics that intentionally disable
   CC.

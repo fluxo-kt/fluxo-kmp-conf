@@ -27,6 +27,7 @@ internal class DetektTaskClassifierTest {
     @Test
     fun `platform source set tasks map to target families`() {
         assertTask("detektJvmMain", DetectedTaskPlatform.JVM)
+        assertTask("detektCompatibilityTest", DetectedTaskPlatform.JVM, main = false, test = true)
         assertTask("detektDev", DetectedTaskPlatform.JVM, main = false)
         assertTask("detektAndroidDebug", DetectedTaskPlatform.ANDROID, main = false)
         assertTask("detektWasmJsMain", DetectedTaskPlatform.WASM)
