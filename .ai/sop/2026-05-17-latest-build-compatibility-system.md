@@ -391,6 +391,14 @@ Keep allowlists small and justified at the call site.
 - Non-KMP Android consumers with implicit JVM target expose a real compatibility
   invariant: Kotlin and AGP Java compile targets must be aligned to the same
   effective JRE target even when `jvmTarget` is not explicitly configured.
+- Compose Desktop fixture rows must not overstate the Java runtime they
+  exercise. Generated TestKit builds currently run on the compatibility test JVM;
+  Compose Desktop packaging requires JDK 17+, so the PR fixture uses JDK 17
+  evidence unless explicit Java launcher/JAVA_HOME wiring is added.
+- Compose Desktop fixture evidence must compile a real `@Composable`, run at
+  least one Kotlin test, and execute `packageReleaseDistributionForCurrentOS`.
+  Applying `org.jetbrains.kotlin.plugin.compose` only with `apply false` is
+  acceptable only when the shape assertion proves Fluxo applied it.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -499,7 +507,7 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   under AGP 8 consumer-applied Kotlin Android and AGP 9 built-in Kotlin.
 - [x] Add non-KMP Android execution fixture rows for lint/variant task coverage
   without weakening the routing fixture signal.
-- [ ] Add Compose Desktop fixture rows with matching Compose Multiplatform and
+- [x] Add Compose Desktop fixture rows with matching Compose Multiplatform and
   Kotlin Compose plugin versions.
 - [x] Add a Kotlin JVM marker fixture that consumes the plugin through the repo
   localDev Maven plugin marker without `withPluginClasspath()`.

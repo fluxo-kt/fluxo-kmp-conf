@@ -80,6 +80,14 @@ internal class CompatibilityTestKitSmokeTest {
             }
         }
 
+    @TestFactory
+    fun `generated Compose Desktop consumers run required lifecycle tasks`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "compose-desktop").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runComposeDesktopConsumer(row)
+            }
+        }
+
     private fun runKotlinJvmConsumer(row: Map<String, String>) {
         val projectDir = tempDir.resolve(row.getValue("id"))
         Files.createDirectories(projectDir)
@@ -316,6 +324,34 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
         assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun runComposeDesktopConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-compose-desktop-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerComposeDesktopBuildScript(row),
+        )
+        writeComposeDesktopSources(projectDir)
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks))
+            .forwardOutput()
+            .build()
+
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
@@ -629,6 +665,77 @@ internal class CompatibilityTestKitSmokeTest {
         """.trimIndent()
     }
 
+    private fun markerComposeDesktopBuildScript(row: Map<String, String>): String =
+        """
+        import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
+        plugins {
+            id("org.jetbrains.kotlin.jvm") version "${row.getValue("kgpVersion")}"
+            id("org.jetbrains.kotlin.plugin.compose") version "${row.getValue("kgpVersion")}" apply false
+            id("org.jetbrains.compose") version "${row.getValue("composeVersion")}"
+            id("${pluginId()}") version "${pluginVersion()}"
+        }
+
+        group = "compat"
+        version = "1.0.0"
+
+        val mainClassName = "compat.MainKt"
+
+        fun composeDesktopCurrentOs(): String {
+            val arch = when (val value = System.getProperty("os.arch")) {
+                "x86_64", "amd64" -> "x64"
+                "aarch64" -> "arm64"
+                else -> error("Unsupported OS arch: ${'$'}value")
+            }
+            val platform = when (val os = System.getProperty("os.name")) {
+                "Mac OS X" -> "macos"
+                else -> when {
+                    os.startsWith("Win", ignoreCase = true) -> "windows"
+                    os.startsWith("Linux", ignoreCase = true) -> "linux"
+                    else -> error("Unknown OS name: ${'$'}os")
+                }
+            }
+            return "org.jetbrains.compose.desktop:desktop-jvm-${'$'}platform-${'$'}arch:" +
+                "${row.getValue("composeVersion")}"
+        }
+
+        fkcSetupKotlinApp {
+            setupVerification = false
+            enablePublication = false
+            enableGradleDoctor = false
+            setupCoroutines = false
+        }
+
+        dependencies {
+            implementation(composeDesktopCurrentOs())
+            implementation("org.jetbrains.compose.components:components-resources:${row.getValue("composeVersion")}")
+            implementation("org.jetbrains.compose.ui:ui-tooling-preview:${row.getValue("composeVersion")}")
+            testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:${row.getValue("kgpVersion")}")
+        }
+
+        compose.desktop.application {
+            mainClass = mainClassName
+            nativeDistributions {
+                targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+                packageVersion = "1.0.0"
+                packageName = "CompatCompose"
+            }
+        }
+
+        tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+            useJUnitPlatform()
+        }
+
+        tasks.register("assertComposeDesktopShape") {
+            doLast {
+                check(plugins.hasPlugin("org.jetbrains.kotlin.jvm"))
+                check(plugins.hasPlugin("org.jetbrains.compose"))
+                check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
+                check(tasks.names.contains("packageReleaseDistributionForCurrentOS"))
+            }
+        }
+        """.trimIndent()
+
     private fun localMavenRepoPath(): String {
         val path = checkNotNull(System.getProperty("fluxo.local.maven.repo")) {
             "fluxo.local.maven.repo system property is missing"
@@ -800,6 +907,60 @@ internal class CompatibilityTestKitSmokeTest {
                 <issue id="AndroidGradlePluginVersion" severity="ignore" />
                 <issue id="NewerVersionAvailable" severity="ignore" />
             </lint>
+            """.trimIndent(),
+        )
+    }
+
+    private fun writeComposeDesktopSources(projectDir: Path) {
+        val mainDir = projectDir.resolve("src/main/kotlin/compat")
+        val testDir = projectDir.resolve("src/test/kotlin/compat")
+        Files.createDirectories(mainDir)
+        Files.createDirectories(testDir)
+        mainDir.resolve("Main.kt").writeText(
+            """
+            package compat
+
+            import androidx.compose.material.Button
+            import androidx.compose.material.MaterialTheme
+            import androidx.compose.material.Text
+            import androidx.compose.runtime.Composable
+            import androidx.compose.ui.window.Window
+            import androidx.compose.ui.window.application
+            import androidx.compose.ui.tooling.preview.Preview
+
+            internal fun buttonLabel(raw: String): String =
+                raw.trim().replaceFirstChar { it.uppercase() }
+
+            @Composable
+            @Preview
+            internal fun App() {
+                MaterialTheme {
+                    Button(onClick = {}) {
+                        Text(buttonLabel(" compat"))
+                    }
+                }
+            }
+
+            fun main() = application {
+                Window(onCloseRequest = ::exitApplication) {
+                    App()
+                }
+            }
+            """.trimIndent(),
+        )
+        testDir.resolve("MainTest.kt").writeText(
+            """
+            package compat
+
+            import kotlin.test.Test
+            import kotlin.test.assertEquals
+
+            class MainTest {
+                @Test
+                fun normalizesButtonLabel() {
+                    assertEquals("Compat", buttonLabel(" compat"))
+                }
+            }
             """.trimIndent(),
         )
     }
