@@ -135,13 +135,16 @@ jobs:
 
       - name: Validate Plugin Portal publication
         run: >
-          ./gradlew publishPlugins --validate-only
+          ./gradlew :plugin:verifyPluginPortalMetadata publishPlugins --validate-only
           --no-build-cache --no-configuration-cache --stacktrace
 
       - name: Publish Maven Central and Plugin Portal
         run: >
           ./gradlew publishAndReleaseToMavenCentral publishPlugins
           --no-build-cache --no-configuration-cache --stacktrace
+
+      - name: Verify Plugin Portal page
+        run: .github/scripts/verify-plugin-portal-page.sh "${{ needs.verify_release.outputs.version }}"
 
   gh_release:
     needs:

@@ -6,9 +6,20 @@ plugins {
 
 group = "io.github.fluxo-kt"
 version = libs.versions.version.get()
-description =
-    "Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects. Made by Fluxo."
+val pluginPortalDescription = "Gradle convention plugin for Kotlin Multiplatform (KMP): " +
+    "target-aware setup for Android, JVM, JS, Native, Compose, lint, Detekt, publishing, and CI."
+description = pluginPortalDescription
 val pluginId = libs.plugins.fluxo.conf.get().pluginId
+val pluginDisplayName = "Fluxo KMP Configuration"
+val pluginImplementationClass = "fluxo.conf.FluxoKmpConfPlugin"
+val pluginPortalTags = listOf(
+    "kotlin",
+    "kotlin-multiplatform",
+    "android",
+    "compose",
+    "gradle-configuration",
+    "convenience",
+)
 
 val resDir: Provider<Directory> = layout.buildDirectory
     .dir("generated/sources/fluxo/resources").map { dir ->
@@ -29,15 +40,9 @@ val resDir: Provider<Directory> = layout.buildDirectory
 fkcSetupGradlePlugin(
     pluginId = pluginId,
     pluginName = "fluxo-kmp-conf",
-    pluginClass = "fluxo.conf.FluxoKmpConfPlugin",
-    displayName = "Fluxo KMP Configuration",
-    tags = listOf(
-        "kotlin",
-        "kotlin-multiplatform",
-        "android",
-        "gradle-configuration",
-        "convenience",
-    ),
+    pluginClass = pluginImplementationClass,
+    displayName = pluginDisplayName,
+    tags = pluginPortalTags,
     kotlin = {
         sourceSets.main {
             resources.srcDir(resDir.get())
@@ -438,6 +443,80 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
     }
 }
 
+abstract class VerifyPluginPortalMetadataTask : DefaultTask() {
+
+    @get:org.gradle.api.tasks.Input
+    abstract val pluginId: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val pluginName: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val pluginDisplayName: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val pluginDescription: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val implementationClass: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val website: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val vcsUrl: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val tags: org.gradle.api.provider.ListProperty<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val actualPluginId: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val actualPluginDisplayName: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val actualPluginDescription: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val actualImplementationClass: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val actualWebsite: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val actualVcsUrl: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val actualTags: org.gradle.api.provider.ListProperty<String>
+
+    @org.gradle.api.tasks.TaskAction
+    fun verify() {
+        val failures = ArrayList<String>()
+        fun checkValue(label: String, actual: String?, expected: String) {
+            if (actual != expected) {
+                failures += "$label mismatch: expected `$expected`, got `${actual ?: "<null>"}`"
+            }
+        }
+        checkValue("website", actualWebsite.orNull, website.get())
+        checkValue("vcsUrl", actualVcsUrl.orNull, vcsUrl.get())
+        checkValue("plugin id", actualPluginId.orNull, pluginId.get())
+        checkValue("displayName", actualPluginDisplayName.orNull, pluginDisplayName.get())
+        checkValue("description", actualPluginDescription.orNull, pluginDescription.get())
+        checkValue("implementationClass", actualImplementationClass.orNull, implementationClass.get())
+        val resolvedActualTags = actualTags.get()
+        val expectedTags = tags.get()
+        if (resolvedActualTags != expectedTags) {
+            failures += "tags mismatch: expected `$expectedTags`, got `$resolvedActualTags`"
+        }
+
+        if (failures.isNotEmpty()) {
+            throw GradleException(failures.joinToString(separator = "\n"))
+        }
+        logger.lifecycle("Plugin Portal metadata checks passed.")
+    }
+}
+
 buildConfig {
     // MIRROR-START
     className("BuildConstants")
@@ -527,6 +606,39 @@ val verifyCompatibilityStatic = tasks.register<VerifyCompatibilityStaticTask>("v
     outputs.upToDateWhen { true }
 }
 
+val expectedPluginId = pluginId
+val expectedPluginWebsite = "https://github.com/fluxo-kt/fluxo-kmp-conf"
+val expectedPluginDisplayName = pluginDisplayName
+val expectedPluginDescription = pluginPortalDescription
+val expectedPluginImplementationClass = pluginImplementationClass
+val expectedPluginPortalTags = pluginPortalTags
+val pluginDevelopment = extensions.getByType(org.gradle.plugin.devel.GradlePluginDevelopmentExtension::class.java)
+val pluginDeclaration = pluginDevelopment.plugins.named("fluxo-kmp-conf")
+val verifyPluginPortalMetadata = tasks.register<VerifyPluginPortalMetadataTask>(
+    "verifyPluginPortalMetadata",
+) {
+    group = "verification"
+    description = "Verify the effective Gradle Plugin Portal metadata before publication."
+    this.pluginId.set(expectedPluginId)
+    this.pluginName.set("fluxo-kmp-conf")
+    this.pluginDisplayName.set(expectedPluginDisplayName)
+    this.pluginDescription.set(expectedPluginDescription)
+    this.implementationClass.set(expectedPluginImplementationClass)
+    this.website.set(expectedPluginWebsite)
+    this.vcsUrl.set(project.provider { "$expectedPluginWebsite/tree/v${project.version}" })
+    this.tags.set(expectedPluginPortalTags)
+    this.actualWebsite.set(pluginDevelopment.website)
+    this.actualVcsUrl.set(pluginDevelopment.vcsUrl)
+    this.actualPluginId.set(pluginDeclaration.map { it.id })
+    this.actualPluginDisplayName.set(pluginDeclaration.map { it.displayName })
+    this.actualPluginDescription.set(pluginDeclaration.map { it.description })
+    this.actualImplementationClass.set(pluginDeclaration.map { it.implementationClass })
+    this.actualTags.set(pluginDeclaration.flatMap { it.tags })
+    // Metadata drift is cheap to check and expensive to discover after publication.
+    // Keep this release gate active instead of relying on prior up-to-date state.
+    outputs.upToDateWhen { false }
+}
+
 val verifyBuildScriptMirror = tasks.register("verifyBuildScriptMirror") {
     group = "verification"
     description =
@@ -579,5 +691,6 @@ tasks.named("check") {
     dependsOn(
         verifyBuildScriptMirror,
         verifyCompatibilityStatic,
+        verifyPluginPortalMetadata,
     )
 }
