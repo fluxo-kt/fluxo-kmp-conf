@@ -150,6 +150,18 @@ val pluginUnderTestMetadataTask = tasks.named("pluginUnderTestMetadata")
 val publishPluginToLocalDevTasks = tasks.matching {
     it.name == "publishAllPublicationsToLocalDevRepository"
 }
+val compatibilityLocalMavenRepo = layout.buildDirectory.dir("compatibility/local-maven")
+
+plugins.withId("maven-publish") {
+    extensions.configure<org.gradle.api.publish.PublishingExtension>("publishing") {
+        repositories.withType<org.gradle.api.artifacts.repositories.MavenArtifactRepository>()
+            .matching { it.name == "localDev" }
+            .configureEach {
+                url = uri(compatibilityLocalMavenRepo)
+            }
+    }
+}
+
 val compatibilityTestKotlinPluginClasspath = configurations.register(
     "compatibilityTestKotlinPluginClasspath",
 ) {
@@ -178,7 +190,7 @@ testing {
                     systemProperty("fluxo.repo.root", rootDir.absolutePath)
                     systemProperty(
                         "fluxo.local.maven.repo",
-                        rootProject.file("_/local-repo").absolutePath,
+                        compatibilityLocalMavenRepo.get().asFile.absolutePath,
                     )
                     systemProperty("fluxo.plugin.id", pluginId)
                     systemProperty("fluxo.plugin.version", version.toString())

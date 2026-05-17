@@ -417,9 +417,10 @@ Keep allowlists small and justified at the call site.
 Do not remove unfinished entries. Mark entries complete only after code/docs are
 updated, verified, and committed. Add newly discovered work as separate entries.
 Current WIP limit: finish and commit one slice before starting the next. The
-next optimal slice is to finish the release-like Kotlin JVM marker fixture, then
-add local-Maven runtime classpath leak assertions. Do not start build-pin bumps
-until PR-profile TestKit, marker consumption, and static verifiers pass.
+next optimal slice is to move marker-consumption evidence to a compatibility-owned
+local Maven repository, then add local-Maven runtime classpath leak assertions.
+Do not start build-pin bumps until PR-profile TestKit, marker consumption, and
+static verifiers pass.
 
 - [x] Correct this SOP to the required path
   `.ai/sop/2026-05-17-latest-build-compatibility-system.md`.
@@ -511,7 +512,7 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   Kotlin Compose plugin versions.
 - [x] Add a Kotlin JVM marker fixture that consumes the plugin through the repo
   localDev Maven plugin marker without `withPluginClasspath()`.
-- [ ] Replace repo-local marker smoke with a configurable temporary local Maven
+- [x] Replace repo-local marker smoke with a configurable temporary local Maven
   repository or deliberately document why repo-local ignored `_/local-repo` is
   the chosen release evidence.
 - [ ] Add publication fixture rows that consume the plugin through a temporary
