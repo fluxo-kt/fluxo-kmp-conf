@@ -360,6 +360,10 @@ Keep allowlists small and justified at the call site.
   KGP and AGP KMP plugins available with `apply false`, `KMP_TARGETS=ANDROID`,
   plugin applies `com.android.kotlin.multiplatform.library`, does not apply
   legacy `com.android.library`, and propagates namespace/compileSdk/minSdk.
+- The first AGP 8 KMP boundary fixture should mirror that routing-only shape:
+  KGP and `com.android.library` available with `apply false`, `KMP_TARGETS=ANDROID`,
+  plugin applies the legacy library plugin, creates a `KotlinAndroidTarget`, and
+  propagates namespace/compileSdk/minSdk through `LibraryExtension`.
 - Android KMP routing fixtures should start with `help assert...`, not `check`.
   `check` mixes SDK/lint/variant work into the routing signal; add it only in a
   later fixture that intentionally covers Android task execution.
@@ -464,13 +468,16 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   `compileKotlinJvm`, `jvmTest`, and `check`.
 - [x] Add KMP all-targets-disabled configuration evidence with
   `KMP_TARGETS=COMMON`; current empty `KMP_TARGETS` means all targets.
-- [ ] Add AGP 8 Android/KMP fixture rows for the legacy `com.android.library`
-  plus KMP path.
+- [x] Add the first AGP 8 Android/KMP routing fixture for the legacy
+  `com.android.library` plus KMP path.
+- [ ] Add AGP 8 Android/KMP execution fixture rows for lint/variant task
+  coverage without weakening the routing fixture signal.
 - [x] Add the first AGP 9 Android/KMP routing fixture for
   `com.android.kotlin.multiplatform.library`.
 - [ ] Add AGP 9 Android/KMP execution fixture rows for lint/variant task
   coverage without weakening the routing fixture signal.
-- [ ] Add non-KMP Android fixture rows for the AGP 9 built-in Kotlin path.
+- [ ] Add non-KMP Android fixture rows for the legacy Android path under AGP 8
+  and AGP 9 built-in Kotlin.
 - [ ] Add Compose Desktop fixture rows with matching Compose Multiplatform and
   Kotlin Compose plugin versions.
 - [x] Add a Kotlin JVM marker fixture that consumes the plugin through the repo
