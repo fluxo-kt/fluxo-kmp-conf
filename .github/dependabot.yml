@@ -92,7 +92,6 @@ updates:
       - "dependencies"
     cooldown:
       default-days: 7
-      semver-major-days: 30
     ignore:
       - dependency-name: "anthropics/claude-code-action"
     groups:
