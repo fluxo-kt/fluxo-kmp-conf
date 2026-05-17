@@ -43,6 +43,14 @@ internal class CompatibilityTestKitSmokeTest {
             }
         }
 
+    @TestFactory
+    fun `generated KMP common-only consumers create no platform targets`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "kmp-common").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runKmpCommonOnlyConsumer(row)
+            }
+        }
+
     private fun runKotlinJvmConsumer(row: Map<String, String>) {
         val projectDir = tempDir.resolve(row.getValue("id"))
         Files.createDirectories(projectDir)
@@ -120,6 +128,7 @@ internal class CompatibilityTestKitSmokeTest {
             .build()
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
@@ -148,6 +157,35 @@ internal class CompatibilityTestKitSmokeTest {
             .build()
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun runKmpCommonOnlyConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-kmp-common-only-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerKmpCommonOnlyBuildScript(row),
+        )
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=COMMON")
+            .forwardOutput()
+            .build()
+
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
@@ -270,6 +308,41 @@ internal class CompatibilityTestKitSmokeTest {
                 }
                 check(forbidden.isEmpty()) {
                     "KMP_TARGETS=JVM created disabled target tasks: ${'$'}forbidden"
+                }
+            }
+        }
+        """.trimIndent()
+
+    private fun markerKmpCommonOnlyBuildScript(row: Map<String, String>): String =
+        """
+        plugins {
+            id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}" apply false
+            id("${pluginId()}") version "${pluginVersion()}"
+        }
+
+        group = "compat"
+        version = "1.0.0"
+
+        fkcSetupMultiplatform(
+            config = {
+                setupVerification = false
+                enablePublication = false
+                enableGradleDoctor = false
+                setupCoroutines = false
+            },
+            kmp = { allDefaultTargets() },
+        )
+
+        tasks.register("assertNoPlatformTargets") {
+            doLast {
+                val taskNames = tasks.names
+                val forbidden = taskNames.filter { taskName ->
+                    (taskName.startsWith("compileKotlin") && taskName != "compileKotlinMetadata") ||
+                        taskName.startsWith("compileTestKotlin") ||
+                        taskName == "jvmTest"
+                }
+                check(forbidden.isEmpty()) {
+                    "KMP_TARGETS=COMMON created platform target tasks: ${'$'}forbidden"
                 }
             }
         }
@@ -479,6 +552,11 @@ internal class CompatibilityTestKitSmokeTest {
             "Publications are unsigned",
             "setup maven POM",
             "maven publication",
+        )
+        private val KMP_NO_TARGET_DIAGNOSTICS = listOf(
+            "no applicable Kotlin targets found",
+            "No Kotlin Targets Declared",
+            "Unused Kotlin Source Sets",
         )
         private val FORBIDDEN_RUNTIME_LEAKS = listOf(
             "kotlin-compiler-embeddable",

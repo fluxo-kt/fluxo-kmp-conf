@@ -169,10 +169,14 @@ internal fun configureKotlinMultiplatform(
     val project = conf.project
     project.logger.l(':' + KOTLIN_MULTIPLATFORM.builderMethod)
     if (containers.none { it is KmpTargetContainer<*> }) {
-        project.logger.w(
+        val message =
             ":${KOTLIN_MULTIPLATFORM.builderMethod}" +
-                " - no applicable Kotlin targets found, skipping module configuration",
-        )
+                " - no applicable Kotlin targets found, skipping module configuration"
+        if (conf.ctx.allTargetsEnabled) {
+            project.logger.w(message)
+        } else {
+            project.logger.v(message)
+        }
         return false
     }
 

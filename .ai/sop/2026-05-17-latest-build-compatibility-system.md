@@ -347,6 +347,11 @@ Keep allowlists small and justified at the call site.
 - TestKit consumer environments must scrub `KMP_TARGETS` and `KMP_TARGETS_ALL`.
   Environment variables win over Gradle properties; inherited `KMP_TARGETS_ALL`
   would silently defeat row-level target filtering.
+- The all-targets-disabled KMP fixture must use `KMP_TARGETS=COMMON`, not empty
+  `KMP_TARGETS`; empty target input currently means all default targets enabled.
+- Intentional KMP target-filter skips must not emit Kotlin's no-target diagnostics
+  or plugin warning noise. The fixture keeps KGP on the plugin classpath with
+  `apply false` and verifies `fkcSetupMultiplatform` does not apply it.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -441,8 +446,8 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
 - [x] Add a KMP JVM-filtered consumer fixture row for
   `fkcSetupMultiplatform(config = {})`, target filtering, source-set behavior,
   `compileKotlinJvm`, `jvmTest`, and `check`.
-- [ ] Add KMP all-targets-disabled configuration evidence after defining the
-  canonical "none" input; current empty `KMP_TARGETS` means all targets.
+- [x] Add KMP all-targets-disabled configuration evidence with
+  `KMP_TARGETS=COMMON`; current empty `KMP_TARGETS` means all targets.
 - [ ] Add AGP 8 Android/KMP fixture rows for the legacy `com.android.library`
   plus KMP path.
 - [ ] Add AGP 9 Android/KMP fixture rows for
