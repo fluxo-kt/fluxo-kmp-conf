@@ -35,6 +35,14 @@ internal class CompatibilityTestKitSmokeTest {
             }
         }
 
+    @TestFactory
+    fun `generated KMP JVM-filtered consumers run required lifecycle tasks`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "kmp").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runKmpConsumer(row)
+            }
+        }
+
     private fun runKotlinJvmConsumer(row: Map<String, String>) {
         val projectDir = tempDir.resolve(row.getValue("id"))
         Files.createDirectories(projectDir)
@@ -106,7 +114,36 @@ internal class CompatibilityTestKitSmokeTest {
             .withTestKitDir(gradleUserHome.toFile())
             .withGradleVersion(row.getValue("gradleVersion"))
             .withPluginClasspath(pluginUnderTestClasspath())
+            .withEnvironment(sanitizedEnvironment())
             .withArguments(gradleArguments(requiredTasks))
+            .forwardOutput()
+            .build()
+
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun runKmpConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-kmp-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerKmpBuildScript(row),
+        )
+        writeKmpSources(projectDir)
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=JVM")
             .forwardOutput()
             .build()
 
@@ -119,7 +156,7 @@ internal class CompatibilityTestKitSmokeTest {
         val projectDir = tempDir.resolve("${row.getValue("id")}-marker")
         Files.createDirectories(projectDir)
         projectDir.resolve("settings.gradle.kts").writeText(
-            markerSettingsScript(),
+            markerSettingsScript(rootProjectName = "compat-kotlin-jvm-marker-consumer"),
         )
         projectDir.resolve("build.gradle.kts").writeText(
             markerKotlinJvmBuildScript(row),
@@ -133,6 +170,7 @@ internal class CompatibilityTestKitSmokeTest {
             .withProjectDir(projectDir.toFile())
             .withTestKitDir(gradleUserHome.toFile())
             .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
             .withArguments(gradleArguments(requiredTasks))
             .forwardOutput()
             .build()
@@ -142,7 +180,7 @@ internal class CompatibilityTestKitSmokeTest {
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
 
-    private fun markerSettingsScript(): String {
+    private fun markerSettingsScript(rootProjectName: String): String {
         val localMavenRepo = localMavenRepoPath()
         return """
             pluginManagement {
@@ -163,7 +201,7 @@ internal class CompatibilityTestKitSmokeTest {
                 }
             }
 
-            rootProject.name = "compat-kotlin-jvm-marker-consumer"
+            rootProject.name = "$rootProjectName"
             """.trimIndent()
     }
 
@@ -190,6 +228,50 @@ internal class CompatibilityTestKitSmokeTest {
 
         tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
             useJUnitPlatform()
+        }
+        """.trimIndent()
+
+    private fun markerKmpBuildScript(row: Map<String, String>): String =
+        """
+        plugins {
+            id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
+            id("${pluginId()}") version "${pluginVersion()}"
+        }
+
+        group = "compat"
+        version = "1.0.0"
+
+        fkcSetupMultiplatform(
+            config = {
+                setupVerification = false
+                enablePublication = false
+                enableGradleDoctor = false
+                setupCoroutines = false
+            },
+            kmp = { allDefaultTargets() },
+        )
+
+        kotlin {
+            sourceSets.commonTest.dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+
+        tasks.register("assertKmpShape") {
+            doLast {
+                val taskNames = tasks.names
+                val expected = setOf("compileKotlinMetadata", "compileKotlinJvm", "jvmTest")
+                check(taskNames.containsAll(expected)) {
+                    "Missing expected JVM-filtered KMP tasks: ${'$'}{expected - taskNames}"
+                }
+                val allowedCompileTasks = setOf("compileKotlinMetadata", "compileKotlinJvm")
+                val forbidden = taskNames.filter { taskName ->
+                    taskName.startsWith("compileKotlin") && taskName !in allowedCompileTasks
+                }
+                check(forbidden.isEmpty()) {
+                    "KMP_TARGETS=JVM created disabled target tasks: ${'$'}forbidden"
+                }
+            }
         }
         """.trimIndent()
 
@@ -285,6 +367,48 @@ internal class CompatibilityTestKitSmokeTest {
         )
     }
 
+    private fun writeKmpSources(projectDir: Path) {
+        val commonMainDir = projectDir.resolve("src/commonMain/kotlin/compat")
+        val commonTestDir = projectDir.resolve("src/commonTest/kotlin/compat")
+        val jvmTestDir = projectDir.resolve("src/jvmTest/kotlin/compat")
+        Files.createDirectories(commonMainDir)
+        Files.createDirectories(commonTestDir)
+        Files.createDirectories(jvmTestDir)
+        commonMainDir.resolve("CompatSubject.kt").writeText(
+            """
+            package compat
+
+            fun platformNeutralName(value: String): String =
+                value.trim().replaceFirstChar { it.uppercase() }
+            """.trimIndent(),
+        )
+        commonTestDir.resolve("CompatAssertions.kt").writeText(
+            """
+            package compat
+
+            import kotlin.test.assertEquals
+
+            fun assertPlatformNeutralName(raw: String, expected: String) {
+                assertEquals(expected, platformNeutralName(raw))
+            }
+            """.trimIndent(),
+        )
+        jvmTestDir.resolve("CompatSubjectTest.kt").writeText(
+            """
+            package compat
+
+            import kotlin.test.Test
+
+            class CompatSubjectTest {
+                @Test
+                fun normalizesCommonCodeOnJvm() {
+                    assertPlatformNeutralName(" fluxo", "Fluxo")
+                }
+            }
+            """.trimIndent(),
+        )
+    }
+
     private fun selectedRows(fixture: String): List<Map<String, String>> {
         val profile = System.getProperty("compat.profile", "pr")
         val profiles = when (profile) {
@@ -311,6 +435,9 @@ internal class CompatibilityTestKitSmokeTest {
 
     private fun gradleArguments(requiredTasks: List<String>): List<String> =
         requiredTasks + "--stacktrace"
+
+    private fun sanitizedEnvironment(): Map<String, String> =
+        System.getenv().filterKeys { it !in KMP_TARGET_ENV_KEYS }
 
     private fun pluginUnderTestClasspath(): List<File> {
         val metadata = Properties()
@@ -356,6 +483,10 @@ internal class CompatibilityTestKitSmokeTest {
         private val FORBIDDEN_RUNTIME_LEAKS = listOf(
             "kotlin-compiler-embeddable",
             "detekt-core",
+        )
+        private val KMP_TARGET_ENV_KEYS = setOf(
+            "KMP_TARGETS",
+            "KMP_TARGETS_ALL",
         )
     }
 }

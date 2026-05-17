@@ -338,6 +338,15 @@ Keep allowlists small and justified at the call site.
 - Detekt tasks generated for Gradle JVM Test Suite source sets must be
   classified as JVM when their source set name is a known JVM-only suite name.
   `detektCompatibilityTest` is the current coverage row for this rule.
+- The first KMP fixture is intentionally JVM-filtered with `-PKMP_TARGETS=JVM`.
+  It proves `fkcSetupMultiplatform(config = {})`, `allDefaultTargets()` target
+  filtering, JVM source sets, `compileKotlinJvm`, `jvmTest`, and `check`
+  without Android/JS/native downloads or task fanout.
+- KMP source-set evidence must compile real `commonMain` and `commonTest`
+  symbols from `jvmTest`; task-name assertions alone are not enough.
+- TestKit consumer environments must scrub `KMP_TARGETS` and `KMP_TARGETS_ALL`.
+  Environment variables win over Gradle properties; inherited `KMP_TARGETS_ALL`
+  would silently defeat row-level target filtering.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -429,8 +438,11 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   build-pin KGP on the injected plugin classpath even when the matrix row
   declares an older KGP; marker rows now separately prove exact consumer
   KGP/plugin-DSL classloader behavior for the Kotlin JVM PR row.
-- [ ] Add KMP consumer fixture rows for `fkcSetupMultiplatform(config = {})`,
-  target filtering, all-targets-disabled configuration, and source-set behavior.
+- [x] Add a KMP JVM-filtered consumer fixture row for
+  `fkcSetupMultiplatform(config = {})`, target filtering, source-set behavior,
+  `compileKotlinJvm`, `jvmTest`, and `check`.
+- [ ] Add KMP all-targets-disabled configuration evidence after defining the
+  canonical "none" input; current empty `KMP_TARGETS` means all targets.
 - [ ] Add AGP 8 Android/KMP fixture rows for the legacy `com.android.library`
   plus KMP path.
 - [ ] Add AGP 9 Android/KMP fixture rows for
