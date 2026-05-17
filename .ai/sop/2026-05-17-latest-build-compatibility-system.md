@@ -1,9 +1,10 @@
 # Latest-Build Compatibility SOP
 
-This SOP is the source of truth for the latest-build, multi-version runtime
+This SOP is the live source of truth for the latest-build, multi-version runtime
 compatibility, and verification system for `io.github.fluxo-kt.fluxo-kmp-conf`.
-Keep it prescriptive and current. Update the implementation state as each slice
-lands.
+Keep it prescriptive, current, and useful for the next implementation phase.
+Required path:
+`.ai/sop/2026-05-17-latest-build-compatibility-system.md`.
 
 ## Intent
 
@@ -156,11 +157,19 @@ For each update wave:
 
 Immediate candidates:
 
-- Gradle wrapper `9.5.1`, classified as forward-tested until upstream
-  KGP/Gradle docs allow declared support if necessary.
-- AGP `9.2.1`, requiring Gradle `9.4.1+`; do not combine with a KGP row that
-  officially tops at lower Gradle unless classified as canary.
-- Kotlin/KGP `2.3.21`, KSP `2.3.8`, Compose `1.11.0` as a coupled tranche.
+- Kotlin/KGP `2.3.21`: official Kotlin docs classify KGP `2.3.20-2.3.21`
+  as fully supported with Gradle `7.6.3-9.3.0` and AGP `8.2.2-9.0.0`.
+- Gradle wrapper `9.5.1`: Gradle current, but beyond the official KGP
+  `2.3.21` fully-supported Gradle max; classify as `forwardTested` or canary
+  until upstream tables align.
+- AGP `9.2.1`: official Android docs require Gradle `9.4.1+`; do not combine
+  with KGP `2.3.21` as `declaredSupported` because that exceeds KGP's official
+  Gradle max.
+- Compose Multiplatform `1.11.0`: official Compose docs say latest Compose is
+  compatible with latest Kotlin, requires the matching Kotlin Compose compiler
+  plugin version, and requires at least Kotlin `2.1.0`.
+- KSP `2.3.8`: candidate coupled with KGP `2.3.21`; verify artifact/version
+  availability before promoting.
 - Keep Kotlin language/API default separate from KGP build pin.
 
 ## Static Drift Prevention
@@ -233,26 +242,59 @@ Keep allowlists small and justified at the call site.
 
 ## Implementation State
 
-- 2026-05-17: SOP created. No compatibility model, generated TestKit harness,
-  adapter refactors, static drift tasks, CI wiring, or defect fixes have landed
-  yet.
-- 2026-05-17: SOP committed as
-  `e31b4b5 docs(compat): add compatibility system SOP`.
+- Current SOP path is
+  `.ai/sop/2026-05-17-latest-build-compatibility-system.md`; the initial SOP
+  was first committed at the wrong path and is being corrected before further
+  implementation work.
+- Committed: `e31b4b5 docs(compat): add compatibility system SOP` and
+  `880a759 docs(compat): track implementation queue`.
+- In progress: first `compat/` model files are staged for validation and a
+  separate focused commit after the SOP relocation commit.
+- Not landed: typed model loading, verification tasks, generated TestKit
+  harness, adapter refactors, CI wiring, and defect fixes.
+
+## Current Findings And Constraints
+
+- Current build pins are Kotlin `2.2.21`, KSP `2.2.21-2.0.5`, Gradle wrapper
+  `9.3.1`, AGP `9.1.1`, Compose Multiplatform `1.10.3`, Detekt `1.23.8`,
+  Vanniktech `0.36.0`, BCV `0.18.1`, Dokka `2.2.0`.
+- Gradle wrapper currently uses `gradle-9.3.1-bin.zip`.
+- Official-source constraint: KGP `2.3.21` fully supports Gradle only through
+  `9.3.0`, while AGP `9.2` requires Gradle `9.4.1`; latest-candidate rows must
+  stay `forwardTested`/canary until official tables align or the project chooses
+  an explicit non-declared canary policy.
+- Known unsafe-pattern call sites found by local scan:
+  `FluxoKmpConfContext.kt` uses unconditional IDE-sync marking and
+  `taskGraph.whenReady`; `DisableUnreachableTasks.kt` mutates task state from
+  `taskGraph.whenReady`; `LoadAndApplyPluginIfNotApplied.kt` uses
+  `resolvedConfiguration.resolvedArtifacts`; publication setup reads signing
+  and SCM-related state during configuration.
+- README has a stale JitPack example using Kotlin `2.0.21` while the current
+  README floor says Kotlin `2.1+`; fix through model-backed docs verification,
+  not an isolated text edit.
+- External explorer agents are running for build-surface mapping and SOP gap
+  audit; their outputs must be independently verified before becoming decisions.
 
 ## Living Implementation Queue
 
 Do not remove unfinished entries. Mark entries complete only after code/docs are
 updated, verified, and committed. Add newly discovered work as separate entries.
 
+- [x] Correct this SOP to the required path
+  `.ai/sop/2026-05-17-latest-build-compatibility-system.md`.
 - [ ] Update this SOP with every implementation slice, finding, verification
   command, failure, and commit hash that affects the compatibility system.
 - [ ] Independently map the existing build layout, version catalog, test suites,
   workflows, docs, and plugin compatibility code paths before changing behavior.
 - [ ] Verify current upstream compatibility data from official sources before
   writing version claims or changing build pins.
+- [ ] Verify KSP `2.3.8` candidate availability from primary artifact metadata
+  before using it in build pins or declared model rows.
 - [ ] Create the first repo-controlled compatibility model under `compat/` with
   explicit `buildPin`, `declaredSupported`, `forwardTested`, and `unsupported`
   concepts.
+- [ ] Validate `compat/*.tsv` shape and current build-pin alignment before
+  committing the initial model.
 - [ ] Add typed model loading for Gradle tasks without configuration-time
   dependency resolution.
 - [ ] Add `verifyCompatibilityMatrix` to reject internally inconsistent or
@@ -290,6 +332,8 @@ updated, verified, and committed. Add newly discovered work as separate entries.
 - [ ] Stop configuration-time dependency resolution for dynamic plugin loading
   unless explicitly opted in.
 - [ ] Move signing warnings and SCM probing to publish tasks only.
+- [ ] Locate every publication signing/SCM read path and classify whether it is
+  configuration-time noise, task input, or release preflight before editing.
 - [ ] Make local publish from `check` self-check/opt-in.
 - [ ] Fix or document `fkcSetupMultiplatform(config = {})`, then lock behavior
   with TestKit.
