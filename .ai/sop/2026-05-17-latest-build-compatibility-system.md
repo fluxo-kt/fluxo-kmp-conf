@@ -276,15 +276,16 @@ Keep allowlists small and justified at the call site.
 ## Implementation State
 
 - Current SOP path is
-  `.ai/sop/2026-05-17-latest-build-compatibility-system.md`; the initial SOP
-  was first committed at the wrong path and is being corrected before further
-  implementation work.
-- Committed: `e31b4b5 docs(compat): add compatibility system SOP` and
-  `880a759 docs(compat): track implementation queue`.
-- In progress: first `compat/` model files are staged for validation and a
-  separate focused commit after the SOP relocation commit.
-- Not landed: typed model loading, verification tasks, generated TestKit
-  harness, adapter refactors, CI wiring, and defect fixes.
+  `.ai/sop/2026-05-17-latest-build-compatibility-system.md`.
+- Landed slices: SOP creation/relocation, initial `compat/` model, static
+  compatibility verifier, source-level Kotlin JVM TestKit smoke, lifecycle task
+  coverage, profile row selection.
+- In progress: release-like Kotlin JVM marker fixture that publishes to the
+  repo localDev Maven repository and consumes by plugin id/version without
+  `withPluginClasspath()`.
+- Not landed: typed model loading beyond the local Gradle task, Android/KMP/
+  Compose fixtures, negative rows, classpath leak checks, adapter refactors, CI
+  wiring, and defect fixes.
 
 ## Current Findings And Constraints
 
@@ -321,6 +322,15 @@ Keep allowlists small and justified at the call site.
 - Existing `checks/*` builds consume the local plugin via composite
   `includeBuild("../../")`; they do not prove published plugin marker/POM
   behavior. Marker consumption must be a separate TestKit/release fixture.
+- The repo localDev Maven repository is `_/local-repo`. It can contain stale
+  artifacts, so marker fixtures must depend on
+  `publishAllPublicationsToLocalDevRepository` and assert the exact marker POM
+  plus runtime jar for the requested plugin id/version exist before running the
+  consumer build. Do not infer marker coordinates from publication log lines.
+- Source-level TestKit rows can still report the build-pin KGP version because
+  their injected plugin-under-test classpath includes the build-pin Kotlin
+  plugin. Marker rows are the classloader-fidelity evidence for exact consumer
+  KGP/plugin DSL behavior.
 - `checks/kmp/gradle.properties` disables configuration cache for its diagnostic
   graph task. Do not treat that as global KMP CC evidence; add a separate
   CC-compatible KMP fixture command.
@@ -335,8 +345,9 @@ Keep allowlists small and justified at the call site.
 Do not remove unfinished entries. Mark entries complete only after code/docs are
 updated, verified, and committed. Add newly discovered work as separate entries.
 Current WIP limit: finish and commit one slice before starting the next. The
-next optimal slice is the compatibility model plus cheap static verifiers. Do
-not start TestKit fixtures or build-pin bumps until those verifiers exist.
+next optimal slice is to finish the release-like Kotlin JVM marker fixture, then
+add local-Maven runtime classpath leak assertions. Do not start build-pin bumps
+until PR-profile TestKit, marker consumption, and static verifiers pass.
 
 - [x] Correct this SOP to the required path
   `.ai/sop/2026-05-17-latest-build-compatibility-system.md`.
@@ -381,12 +392,12 @@ not start TestKit fixtures or build-pin bumps until those verifiers exist.
 - [x] Wire custom TestKit suites to the `pluginUnderTestMetadata` task output;
   Gradle's default `withPluginClasspath()` discovery does not see that metadata
   automatically from this repo's custom `JvmTestSuite` runtime classpath.
-- [ ] Build generated TestKit fixture infrastructure with isolated Gradle user
+- [x] Build generated TestKit fixture infrastructure with isolated Gradle user
   homes and captured output assertions for known crash signatures.
 - [ ] Keep apply-time capability checks free of direct `compileOnly` KGP type
   references; source-level TestKit fixtures must catch `NoClassDefFoundError`
   before a release profile can validate marker/POM consumption.
-- [ ] Distinguish source-level TestKit fixtures that use an explicit
+- [x] Distinguish source-level TestKit fixtures that use an explicit
   `buildscript` KGP classpath from release-like marker fixtures that use
   `plugins { kotlin(...) apply false }`; both paths must be proven because
   Gradle TestKit injected plugin classpaths can expose different classloader
@@ -394,7 +405,7 @@ not start TestKit fixtures or build-pin bumps until those verifiers exist.
 - [x] Keep TestKit-only KGP classpath augmentation scoped to
   `compatibilityTest`; it models the consumer-supplied Kotlin plugin classpath
   without adding KGP to the published runtime dependency graph.
-- [ ] Add Kotlin JVM consumer fixture rows for `help`, `compileKotlin`, `test`,
+- [x] Add Kotlin JVM consumer fixture rows for `help`, `compileKotlin`, `test`,
   and `check`.
 - [x] Seed the Kotlin JVM fixture with the `current-build` model row, real
   Kotlin source and test files, isolated TestKit state, required lifecycle task
@@ -403,10 +414,10 @@ not start TestKit fixtures or build-pin bumps until those verifiers exist.
   from `compat/matrix.tsv`; source-level TestKit rows may prove source
   injection behavior, while local-Maven marker rows must separately prove
   marker/plugin-DSL classloader behavior.
-- [ ] Source-level Kotlin JVM rows currently run the plugin-under-test with the
+- [x] Source-level Kotlin JVM rows currently run the plugin-under-test with the
   build-pin KGP on the injected plugin classpath even when the matrix row
-  declares an older KGP; treat them as Gradle/runtime-smoke coverage until the
-  local-Maven marker fixture proves exact consumer KGP classloader behavior.
+  declares an older KGP; marker rows now separately prove exact consumer
+  KGP/plugin-DSL classloader behavior for the Kotlin JVM PR row.
 - [ ] Add KMP consumer fixture rows for `fkcSetupMultiplatform(config = {})`,
   target filtering, all-targets-disabled configuration, and source-set behavior.
 - [ ] Add AGP 8 Android/KMP fixture rows for the legacy `com.android.library`
@@ -416,6 +427,11 @@ not start TestKit fixtures or build-pin bumps until those verifiers exist.
 - [ ] Add non-KMP Android fixture rows for the AGP 9 built-in Kotlin path.
 - [ ] Add Compose Desktop fixture rows with matching Compose Multiplatform and
   Kotlin Compose plugin versions.
+- [x] Add a Kotlin JVM marker fixture that consumes the plugin through the repo
+  localDev Maven plugin marker without `withPluginClasspath()`.
+- [ ] Replace repo-local marker smoke with a configurable temporary local Maven
+  repository or deliberately document why repo-local ignored `_/local-repo` is
+  the chosen release evidence.
 - [ ] Add publication fixture rows that consume the plugin through a temporary
   local Maven plugin marker.
 - [ ] Add negative TestKit rows for Gradle below floor, Kotlin/KGP below floor,
@@ -426,6 +442,9 @@ not start TestKit fixtures or build-pin bumps until those verifiers exist.
   absence of linkage/class-initialization crash signatures.
 - [ ] Add runtime classpath leak verification for local Maven marker
   consumption, blocking leaks of `kotlin-compiler-embeddable` and `detekt-core`.
+- [ ] Decide whether dependencyGuard baseline creation in generated consumers is
+  acceptable fixture byproduct or plugin-owned noise; if noise, make the fixture
+  suppress it through public DSL/config rather than ignoring output.
 - [ ] Add configuration-cache fixture evidence for key rows, including a
   CC-compatible KMP command separate from diagnostics that intentionally disable
   CC.

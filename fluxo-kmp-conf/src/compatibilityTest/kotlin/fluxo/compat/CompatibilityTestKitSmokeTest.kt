@@ -26,6 +26,14 @@ internal class CompatibilityTestKitSmokeTest {
             }
         }
 
+    @TestFactory
+    fun `generated Kotlin JVM marker consumers run required lifecycle tasks`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "kotlin-jvm").map { row ->
+            DynamicTest.dynamicTest("${row.getValue("id")}-marker") {
+                runKotlinJvmMarkerConsumer(row)
+            }
+        }
+
     private fun runKotlinJvmConsumer(row: Map<String, String>) {
         val projectDir = tempDir.resolve(row.getValue("id"))
         Files.createDirectories(projectDir)
@@ -105,6 +113,126 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
+
+    private fun runKotlinJvmMarkerConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve("${row.getValue("id")}-marker")
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerKotlinJvmBuildScript(row),
+        )
+        writeKotlinJvmSources(projectDir)
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-marker-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withArguments(requiredTasks + "--stacktrace")
+            .forwardOutput()
+            .build()
+
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun markerSettingsScript(): String {
+        val localMavenRepo = localMavenRepoPath()
+        return """
+            pluginManagement {
+                repositories {
+                    maven("$localMavenRepo")
+                    google()
+                    gradlePluginPortal()
+                    mavenCentral()
+                }
+            }
+
+            dependencyResolutionManagement {
+                repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+                repositories {
+                    google()
+                    mavenCentral()
+                    gradlePluginPortal()
+                }
+            }
+
+            rootProject.name = "compat-kotlin-jvm-marker-consumer"
+            """.trimIndent()
+    }
+
+    private fun markerKotlinJvmBuildScript(row: Map<String, String>): String =
+        """
+        plugins {
+            id("org.jetbrains.kotlin.jvm") version "${row.getValue("kgpVersion")}"
+            id("${pluginId()}") version "${pluginVersion()}"
+        }
+
+        group = "compat"
+        version = "1.0.0"
+
+        fkcSetupKotlin {
+            setupVerification = false
+            enablePublication = false
+            enableGradleDoctor = false
+            setupCoroutines = false
+        }
+
+        dependencies {
+            add("testImplementation", "org.jetbrains.kotlin:kotlin-test-junit5:${row.getValue("kgpVersion")}")
+        }
+
+        tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+            useJUnitPlatform()
+        }
+        """.trimIndent()
+
+    private fun localMavenRepoPath(): String {
+        val path = checkNotNull(System.getProperty("fluxo.local.maven.repo")) {
+            "fluxo.local.maven.repo system property is missing"
+        }
+        val repo = File(path)
+        check(repo.isDirectory) {
+            "Local Maven repository is missing: ${repo.absolutePath}"
+        }
+        assertPublishedArtifacts(repo.toPath())
+        return repo.invariantSeparatorsPath
+    }
+
+    private fun assertPublishedArtifacts(repo: Path) {
+        val pluginId = pluginId()
+        val version = pluginVersion()
+        val markerPom = repo
+            .resolve(pluginId.replace('.', File.separatorChar))
+            .resolve("$pluginId.gradle.plugin")
+            .resolve(version)
+            .resolve("$pluginId.gradle.plugin-$version.pom")
+        val runtimeJar = repo
+            .resolve("io/github/fluxo-kt/fluxo-kmp-conf")
+            .resolve(version)
+            .resolve("fluxo-kmp-conf-$version.jar")
+        check(Files.isRegularFile(markerPom)) {
+            "Published plugin marker POM is missing: $markerPom"
+        }
+        check(Files.isRegularFile(runtimeJar)) {
+            "Published plugin runtime jar is missing: $runtimeJar"
+        }
+    }
+
+    private fun pluginId(): String =
+        checkNotNull(System.getProperty("fluxo.plugin.id")) {
+            "fluxo.plugin.id system property is missing"
+        }
+
+    private fun pluginVersion(): String =
+        checkNotNull(System.getProperty("fluxo.plugin.version")) {
+            "fluxo.plugin.version system property is missing"
+        }
 
     private fun writeKotlinJvmSources(projectDir: Path) {
         val mainDir = projectDir.resolve("src/main/kotlin/compat")

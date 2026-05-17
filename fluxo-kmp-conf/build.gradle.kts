@@ -147,6 +147,7 @@ tasks.test {
 }
 
 val pluginUnderTestMetadataTask = tasks.named("pluginUnderTestMetadata")
+val publishPluginToLocalDevTask = tasks.named("publishAllPublicationsToLocalDevRepository")
 val compatibilityTestKotlinPluginClasspath = configurations.register(
     "compatibilityTestKotlinPluginClasspath",
 ) {
@@ -169,10 +170,16 @@ testing {
             targets.configureEach {
                 testTask.configure {
                     dependsOn(pluginUnderTestMetadataTask)
+                    dependsOn(publishPluginToLocalDevTask)
                     classpath += files(pluginUnderTestMetadataTask)
                     shouldRunAfter(tasks.test)
                     systemProperty("fluxo.repo.root", rootDir.absolutePath)
+                    systemProperty(
+                        "fluxo.local.maven.repo",
+                        rootProject.file("_/local-repo").absolutePath,
+                    )
                     systemProperty("fluxo.plugin.id", pluginId)
+                    systemProperty("fluxo.plugin.version", version.toString())
                     systemProperty(
                         "compat.profile",
                         providers.gradleProperty("compat.profile").orElse("pr").get(),
