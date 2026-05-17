@@ -199,10 +199,10 @@ ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 # https://mrmans0n.github.io/compose-rules/detekt/#enabling-rules
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.19" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.8" }
 
 # https://github.com/Faire/faire-detekt-rules/releases
-detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.4.0" }
+detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.5.7" }
 
 # https://github.com/hbmartin/hbmartin-detekt-rules/releases
 detekt-hbmartin = { module = "com.github.hbmartin:hbmartin-detekt-rules", version = "0.1.7" }
@@ -217,7 +217,7 @@ detekt-compiler = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", ve
 #detekt-operator = { module = "io.cole.matthew.detekt.operator:detekt-operator", version = "0.0.1" }
 
 # https://github.com/cph-cachet/detekt-verify-implementation/releases
-detekt-verify-implementation = { module = "dk.cachet.detekt.extensions:detekt-verify-implementation", version = "1.2.6" }
+detekt-verify-implementation = { module = "dk.cachet.detekt.extensions:detekt-verify-implementation", version = "1.2.8" }
 
 # https://github.com/Ivy-Apps/detekt-explicit/tags
 detekt-explicit = { module = "com.github.Ivy-Apps:detekt-explicit", version = "0.0.8" }
