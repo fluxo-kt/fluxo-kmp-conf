@@ -14,7 +14,6 @@ import fluxo.conf.impl.TOTAL_OS_MEMORY
 import fluxo.conf.impl.XMX
 import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
-import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.tryAsBoolean
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
@@ -36,7 +35,6 @@ import isShrinkerDisabled
 import javax.inject.Inject
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
@@ -303,48 +301,10 @@ internal abstract class FluxoKmpConfContext
     private fun taskGraphBasedProjectSyncDetection() {
         // TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.
         //  https://github.com/JetBrains/gradle-idea-ext-plugin
-        val p = rootProject
-
         // Gradle 8.11+ limits lazy plugin configuration, so `onProjectInSyncRun` cannot be
         // relied on for IDE-import detection at config time. Mark eagerly. Floor is now
         // Gradle 9.x via the wrapper, so the version gate is unconditional.
         markProjectInSync(reason = "${GradleVersion.current()}")
-
-        // taskGraph is ready AFTER the configuration phase,
-        // so it's better to detect sync as early as possible.
-        if (!isProjectInSyncRun) {
-            p.tasks.namedCompat { it == KOTLIN_IDEA_IMPORT_TASK || it == KOTLIN_IDEA_BSM_TASK }
-                .configureEach {
-                    if (!isProjectInSyncRun) {
-                        markProjectInSync(reason = "project has import task in graph ($name)")
-                    }
-                }
-        }
-
-        val logger = p.logger
-        p.gradle.taskGraph.whenReady {
-            val allTasks: List<Task> = allTasks
-            if (SHOW_DEBUG_LOGS) {
-                val size = allTasks.size
-                logger.d("Task graph has $size ${if (size == 1) "task" else "tasks"}")
-                val isLongList = size > MAX_TASKS_TO_LOG
-                val prefix = if (isLongList) "(${size - MAX_TASKS_TO_LOG} more), ..." else ""
-                val tasks = if (isLongList) allTasks.takeLast(MAX_TASKS_TO_LOG) else allTasks
-                val tasksStr = tasks.joinToString(prefix = prefix) { it.path }
-                logger.v("Task graph: $tasksStr")
-            }
-
-            if (!isProjectInSyncRun) {
-                val hasImportTaskInGraph = allTasks.any {
-                    it.path.let { p ->
-                        p.endsWith(KOTLIN_IDEA_IMPORT_TASK) || p.endsWith(KOTLIN_IDEA_BSM_TASK)
-                    }
-                }
-                if (hasImportTaskInGraph) {
-                    markProjectInSync(reason = "project has import task in graph")
-                }
-            }
-        }
     }
 
     // endregion
@@ -360,7 +320,5 @@ internal abstract class FluxoKmpConfContext
         // https://twitter.com/Sellmair/status/1619308362881187840
         internal const val KOTLIN_IDEA_IMPORT_TASK = "prepareKotlinIdeaImport"
         internal const val KOTLIN_IDEA_BSM_TASK = "prepareKotlinBuildScriptModel"
-
-        private const val MAX_TASKS_TO_LOG = 10
     }
 }
