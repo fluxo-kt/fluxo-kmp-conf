@@ -1,8 +1,11 @@
 # Latest-Build Compatibility SOP
 
-This SOP is the live source of truth for the latest-build, multi-version runtime
+This SOP is the live process guide for the latest-build, multi-version runtime
 compatibility, and verification system for `io.github.fluxo-kt.fluxo-kmp-conf`.
-Keep it prescriptive, current, and useful for the next implementation phase.
+The machine-readable compatibility truth belongs in `compat/`. README,
+CHANGELOG, KDoc, CI, and release checks must be generated from or verified
+against that model. Keep this SOP prescriptive, current, and useful for the next
+implementation phase.
 Required path:
 `.ai/sop/2026-05-17-latest-build-compatibility-system.md`.
 
@@ -29,6 +32,12 @@ combinations.
   crashes or vague Gradle stacktraces.
 - Docs, KDoc, CI, release checks, and tests consume the same compatibility
   source of truth.
+- Do not bump wrapper/catalog/plugin build pins until the `compat/` model,
+  `verifyCompatibilityMatrix`, PR-profile TestKit rows, docs drift checks, and
+  local Maven marker consumption pass.
+- Each self-contained slice ends with verification evidence, a focused
+  Conventional Commit, and `git status --short` evidence showing no accumulated
+  uncommitted work except intentionally separate next-slice files.
 
 ## Compatibility Model
 
@@ -59,6 +68,13 @@ Rules:
 - AGP/Gradle compatibility comes from official Android docs.
 - Compose/Kotlin compatibility comes from official Compose Multiplatform docs.
 - The model distinguishes KGP version from Kotlin language/API version.
+- Every row has a unique ID, source references, profile membership, fixture
+  type, expected tasks, and either a promotion rationale or blocking rationale.
+- `declaredSupported` and `unsupported` rows cannot overlap on the same
+  normalized axis tuple.
+- Every public compatibility claim maps to at least one model row.
+- Generated fixture count must equal selected model row count for the active
+  profile.
 
 ## Adapter Architecture
 
@@ -99,6 +115,9 @@ Harness requirements:
 
 - Register `compatibilityTest` as a `JvmTestSuite`.
 - Add `gradleTestKit()` and JUnit/Kotlin test dependencies.
+- Add `implementation(project())` for the non-default suite when tests need this
+  plugin project's outputs; Gradle does not add project dependencies to custom
+  suites automatically.
 - Generate temporary consumer projects under build output.
 - Use `GradleRunner.withGradleVersion(...)` for the Gradle runtime axis.
 - Generate literal plugin versions for KGP/AGP/Compose in fixture
@@ -109,6 +128,9 @@ Harness requirements:
 - Run with isolated Gradle user home per test or per matrix row.
 - Capture build output and assert absence of known crash signatures, not only
   success.
+- Add negative rows for unsupported combinations. Assert exact actionable
+  failure messages and absence of `NoSuchMethodError`, `ClassCastException`,
+  `NoClassDefFoundError`, and `Could not initialize class`.
 
 Profiles:
 
@@ -141,6 +163,15 @@ Required fixtures:
   hooks and desktop main-class behavior.
 - Publication consumer: publishes to a temporary local Maven repository and
   consumes by plugin id/version through plugin marker metadata.
+- Runtime classpath leak gate: after local Maven marker consumption, inspect the
+  consumer buildscript/runtime classpath and assert this plugin does not leak
+  `org.jetbrains.kotlin:kotlin-compiler-embeddable` or
+  `io.gitlab.arturbosch.detekt:detekt-core`.
+- Configuration-cache gate: run key fixtures twice with configuration cache
+  enabled and fail on plugin-owned cache problems. If an existing check disables
+  CC for a specific diagnostic task, add a separate CC-compatible command.
+- Wire `compatibilityTest` to `check` deliberately. Gradle creates a custom
+  suite's `Test` task but does not add it to `check` by convention.
 
 ## Version Selection
 
@@ -171,6 +202,8 @@ Immediate candidates:
 - KSP `2.3.8`: candidate coupled with KGP `2.3.21`; verify artifact/version
   availability before promoting.
 - Keep Kotlin language/API default separate from KGP build pin.
+- Freeze these build-pin candidates until the generated consumer harness and
+  marker-consumption runtime classpath gate exist.
 
 ## Static Drift Prevention
 
@@ -269,6 +302,22 @@ Keep allowlists small and justified at the call site.
   `taskGraph.whenReady`; `LoadAndApplyPluginIfNotApplied.kt` uses
   `resolvedConfiguration.resolvedArtifacts`; publication setup reads signing
   and SCM-related state during configuration.
+- Minimal safe insertion points: register `compatibilityTest` in
+  `fluxo-kmp-conf/build.gradle.kts` after the existing `tasks.test` block and
+  before `buildConfig`; keep test-suite dependencies outside mirrored
+  `MIRROR-START`/`MIRROR-END` regions because `self` does not need them. Add
+  static verification tasks near `verifyBuildScriptMirror` and wire them to
+  `check` there.
+- Static verification tasks must be build-script tasks in `:plugin`, not only
+  plugin-runtime tasks, because runtime verification setup can disappear when
+  tests are disabled, `check`/`test` are excluded, or the build is included with
+  no startup tasks.
+- Existing `checks/*` builds consume the local plugin via composite
+  `includeBuild("../../")`; they do not prove published plugin marker/POM
+  behavior. Marker consumption must be a separate TestKit/release fixture.
+- `checks/kmp/gradle.properties` disables configuration cache for its diagnostic
+  graph task. Do not treat that as global KMP CC evidence; add a separate
+  CC-compatible KMP fixture command.
 - README has a stale JitPack example using Kotlin `2.0.21` while the current
   README floor says Kotlin `2.1+`; fix through model-backed docs verification,
   not an isolated text edit.
@@ -279,11 +328,17 @@ Keep allowlists small and justified at the call site.
 
 Do not remove unfinished entries. Mark entries complete only after code/docs are
 updated, verified, and committed. Add newly discovered work as separate entries.
+Current WIP limit: finish and commit one slice before starting the next. The
+next optimal slice is the compatibility model plus cheap static verifiers. Do
+not start TestKit fixtures or build-pin bumps until those verifiers exist.
 
 - [x] Correct this SOP to the required path
   `.ai/sop/2026-05-17-latest-build-compatibility-system.md`.
 - [ ] Update this SOP with every implementation slice, finding, verification
   command, failure, and commit hash that affects the compatibility system.
+- [ ] Keep this SOP process-oriented; do not turn it into a full status log.
+  Durable constraints and next-phase tasks belong here. Volatile command output
+  belongs in commits, CI artifacts, PR text, or release evidence.
 - [ ] Independently map the existing build layout, version catalog, test suites,
   workflows, docs, and plugin compatibility code paths before changing behavior.
 - [ ] Verify current upstream compatibility data from official sources before
@@ -295,6 +350,11 @@ updated, verified, and committed. Add newly discovered work as separate entries.
   concepts.
 - [ ] Validate `compat/*.tsv` shape and current build-pin alignment before
   committing the initial model.
+- [ ] Add the minimal static verifier implementation before TestKit: matrix
+  shape/build-pin alignment, doc-claim checks, unsafe-pattern allowlist checks,
+  and release-doc basics.
+- [ ] Run only targeted static verifier tasks for the verifier slice; defer full
+  `build assemble check` until the surface it is meant to validate is complete.
 - [ ] Add typed model loading for Gradle tasks without configuration-time
   dependency resolution.
 - [ ] Add `verifyCompatibilityMatrix` to reject internally inconsistent or
@@ -310,6 +370,8 @@ updated, verified, and committed. Add newly discovered work as separate entries.
   `actions-up`, excluding Claude Code action.
 - [ ] Register `compatibilityTest` as a Gradle JVM Test Suite with
   `gradleTestKit()` and JUnit/Kotlin dependencies.
+- [ ] Add `implementation(project())` for `compatibilityTest` if the suite needs
+  direct project outputs, and wire the suite's test task to `check` explicitly.
 - [ ] Build generated TestKit fixture infrastructure with isolated Gradle user
   homes and captured output assertions for known crash signatures.
 - [ ] Add Kotlin JVM consumer fixture rows for `help`, `compileKotlin`, `test`,
@@ -325,18 +387,33 @@ updated, verified, and committed. Add newly discovered work as separate entries.
   Kotlin Compose plugin versions.
 - [ ] Add publication fixture rows that consume the plugin through a temporary
   local Maven plugin marker.
+- [ ] Add negative TestKit rows for Gradle below floor, Kotlin/KGP below floor,
+  AGP 9 legacy `com.android.library` plus KMP co-application, AGP 8 attempting
+  AGP-9 KMP plugin path, unsupported KMP Android app path, unknown
+  `KMP_TARGETS`, and incompatible Compose/Kotlin rows.
+- [ ] Add exact failure-message assertions for every negative row and assert
+  absence of linkage/class-initialization crash signatures.
+- [ ] Add runtime classpath leak verification for local Maven marker
+  consumption, blocking leaks of `kotlin-compiler-embeddable` and `detekt-core`.
+- [ ] Add configuration-cache fixture evidence for key rows, including a
+  CC-compatible KMP command separate from diagnostics that intentionally disable
+  CC.
 - [ ] Remove unconditional IDE-sync marking so sync-only setup cannot run during
   normal builds.
 - [ ] Replace `taskGraph.whenReady` mutation with configuration-time predicates
   or earlier target filtering.
 - [ ] Stop configuration-time dependency resolution for dynamic plugin loading
   unless explicitly opted in.
+- [ ] Keep `compatibilityTest` dependencies outside mirrored build-script
+  regions unless `self` demonstrably needs the same dependency.
 - [ ] Move signing warnings and SCM probing to publish tasks only.
 - [ ] Locate every publication signing/SCM read path and classify whether it is
   configuration-time noise, task input, or release preflight before editing.
 - [ ] Make local publish from `check` self-check/opt-in.
 - [ ] Fix or document `fkcSetupMultiplatform(config = {})`, then lock behavior
   with TestKit.
+- [ ] Define the canonical input for "all KMP targets disabled" or revise the
+  README/AGENTS claim; then prove it configures without realizing target tasks.
 - [ ] Fix stale README JitPack commit/Kotlin version and Kotlin floor
   contradictions using the compatibility model.
 - [ ] Harden CI permissions and checkout credential persistence.
@@ -350,5 +427,16 @@ updated, verified, and committed. Add newly discovered work as separate entries.
   evidence.
 - [ ] Run each existing `checks/*` build, including `checks/intellij-platform`
   only when local prerequisites are acceptable, and record evidence or blocker.
+- [ ] End each focused slice with a clean `git status --short` check, a focused
+  Conventional Commit body, and only intentionally separate next-slice files
+  left uncommitted.
+- [ ] Verify CI YAML evidence: PR workflow runs `compat.profile=pr`, release
+  workflow runs `compat.profile=release` before publishing, checkout credential
+  persistence is disabled unless justified, and branch protection/aggregate
+  required checks are verified by GitHub readback when access is available.
+- [ ] Inventory and classify every `Class.forName`, `getMethod`,
+  `getDeclaredMethod`, `noSuchMethodSafe`, `afterEvaluate`,
+  `taskGraph.whenReady`, and `resolvedConfiguration` use against AGENTS
+  layer-1/layer-2/layer-3 compatibility rules before adapter refactors.
 - [ ] Perform adversarial self-audit against every SOP acceptance criterion
   before final response.
