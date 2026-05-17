@@ -8,7 +8,6 @@ import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.ConfigureContainers
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
-import fluxo.conf.feat.ensureUnreachableTasksDisabled
 import fluxo.conf.feat.prepareBuildConfigKmpPlugin
 import fluxo.conf.feat.prepareBuildScanPlugin
 import fluxo.conf.feat.prepareCompleteKotlinPlugin
@@ -81,8 +80,6 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         FluxoCache.bindToProjectLifecycle(target)
         ctx.prepareDependencyPinningBundle()
         ctx.prepareBuildScanPlugin()
-        ctx.ensureUnreachableTasksDisabled()
-
         if (ctx.testsDisabled) {
             return
         }

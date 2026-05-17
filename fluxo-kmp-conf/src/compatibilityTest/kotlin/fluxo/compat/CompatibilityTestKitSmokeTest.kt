@@ -36,6 +36,14 @@ internal class CompatibilityTestKitSmokeTest {
         }
 
     @TestFactory
+    fun `generated Kotlin JVM consumers honor disabled tests`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "kotlin-jvm-tests-disabled").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runKotlinJvmTestsDisabledConsumer(row)
+            }
+        }
+
+    @TestFactory
     fun `generated KMP JVM-filtered consumers run required lifecycle tasks`(): Iterable<DynamicTest> =
         selectedRows(fixture = "kmp").map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
@@ -197,6 +205,44 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun runKotlinJvmTestsDisabledConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-kotlin-jvm-tests-disabled-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerKotlinJvmBuildScript(row),
+        )
+        writeKotlinJvmSources(projectDir)
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks) + "-PDISABLE_TESTS=true")
+            .forwardOutput()
+            .build()
+
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        check(result.task(":test")?.outcome != TaskOutcome.SUCCESS) {
+            result.output
+        }
+        check(result.task(":compileTestKotlin")?.outcome != TaskOutcome.SUCCESS) {
+            result.output
+        }
+        requiredTasks.forEach {
+            check(result.task(":$it") != null) {
+                result.output
+            }
+        }
     }
 
     private fun runKmpConsumer(row: Map<String, String>) {

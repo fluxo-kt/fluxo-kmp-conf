@@ -1,4 +1,3 @@
 patternId	file	contains	rationale
-taskGraphWhenReady	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/feat/DisableUnreachableTasks.kt	project.gradle.taskGraph.whenReady	Known defect: unreachable-task disabling mutates task enabled state from task graph callback.
 runtimeGetRuntime	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/impl/ProjectUtils.kt	Runtime.getRuntime().availableProcessors()	Runtime query for CPU count; not process execution.
 runtimeGetRuntime	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/impl/ProjectUtils.kt	Runtime.getRuntime().maxMemory()	Runtime query for memory limit; not process execution.
