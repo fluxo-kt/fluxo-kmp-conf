@@ -51,6 +51,14 @@ internal class CompatibilityTestKitSmokeTest {
             }
         }
 
+    @TestFactory
+    fun `generated AGP 9 KMP consumers use KMP-aware Android path`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "android-kmp-agp9").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runAgp9KmpConsumer(row)
+            }
+        }
+
     private fun runKotlinJvmConsumer(row: Map<String, String>) {
         val projectDir = tempDir.resolve(row.getValue("id"))
         Files.createDirectories(projectDir)
@@ -186,6 +194,37 @@ internal class CompatibilityTestKitSmokeTest {
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun runAgp9KmpConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-agp9-kmp-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerAgp9KmpBuildScript(row),
+        )
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID")
+            .forwardOutput()
+            .build()
+
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
+        check("Android namespace 'compat.agp9.kmp' (KMP+Android)" in result.output) {
+            result.output
+        }
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
@@ -344,6 +383,62 @@ internal class CompatibilityTestKitSmokeTest {
                 check(forbidden.isEmpty()) {
                     "KMP_TARGETS=COMMON created platform target tasks: ${'$'}forbidden"
                 }
+            }
+        }
+        """.trimIndent()
+
+    private fun markerAgp9KmpBuildScript(row: Map<String, String>): String =
+        """
+        plugins {
+            id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}" apply false
+            id("com.android.kotlin.multiplatform.library") version "${row.getValue("agpVersion")}" apply false
+            id("${pluginId()}") version "${pluginVersion()}"
+        }
+
+        group = "compat"
+        version = "1.0.0"
+
+        fkcSetupMultiplatform(
+            config = {
+                setupVerification = false
+                enablePublication = false
+                enableGradleDoctor = false
+                setupCoroutines = false
+                androidNamespace = "compat.agp9.kmp"
+                androidCompileSdk = 35
+                androidMinSdk = 24
+            },
+            kmp = { allDefaultTargets() },
+        )
+
+        project.extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>(
+            "kotlin",
+        ) {
+            targets.named("android") {
+                (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
+                    .withHostTest {}
+            }
+        }
+
+        tasks.register("assertAgp9KmpShape") {
+            doLast {
+                check(plugins.hasPlugin("com.android.kotlin.multiplatform.library"))
+                check(plugins.hasPlugin("org.jetbrains.kotlin.multiplatform"))
+                check(!plugins.hasPlugin("com.android.library"))
+                check(project.extensions.findByName("android") == null)
+
+                val kotlin = project.extensions.getByType(
+                    org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension::class.java,
+                )
+                val androidTargets = kotlin.targets.matching { it.name == "android" }
+                check(androidTargets.size == 1) {
+                    "Expected one AGP 9 auto-created android KMP target, got ${'$'}androidTargets"
+                }
+                val androidTarget = androidTargets.single()
+                    as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+                check(androidTarget.namespace == "compat.agp9.kmp")
+                check(androidTarget.compileSdk == 35)
+                check(androidTarget.minSdk == 24)
             }
         }
         """.trimIndent()

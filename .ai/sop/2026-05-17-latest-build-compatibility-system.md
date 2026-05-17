@@ -58,6 +58,10 @@ Axes:
 - KGP version.
 - Kotlin language/API defaults.
 - AGP version and path: non-KMP Android, AGP 8 KMP legacy, AGP 9 KMP-aware.
+- Android mode is a separate axis from AGP version. Non-KMP Android uses the
+  legacy `com.android.library`/application extension path on both AGP 8 and 9;
+  KMP+Android uses legacy `com.android.library` co-application on AGP 8, and
+  the modern `com.android.kotlin.multiplatform.library` path on AGP 9.
 - Compose Multiplatform version and Kotlin Compose compiler version.
 - KSP, Detekt, Vanniktech, BCV, Dokka where plugin code touches their APIs.
 - Fixture type and required tasks.
@@ -156,8 +160,8 @@ Required fixtures:
 - AGP 9 Android/KMP consumer: `com.android.kotlin.multiplatform.library`;
   verifies auto-created Android target handling, lint, namespace/SDK
   propagation, and clear failure for unsupported KMP Android app path.
-- Non-KMP Android consumer: AGP 9 built-in Kotlin path; verifies
-  `setupAndroidCommon`, lint, compile options, and setter wrappers.
+- Non-KMP Android consumer: legacy Android extension path under AGP 8 and AGP 9;
+  verifies `setupAndroidCommon`, lint, compile options, and setter wrappers.
 - Compose Desktop consumer: Compose Multiplatform plus Kotlin Compose plugin;
   runs compile/test/package tasks relevant to the current OS; verifies shrinker
   hooks and desktop main-class behavior.
@@ -352,6 +356,18 @@ Keep allowlists small and justified at the call site.
 - Intentional KMP target-filter skips must not emit Kotlin's no-target diagnostics
   or plugin warning noise. The fixture keeps KGP on the plugin classpath with
   `apply false` and verifies `fkcSetupMultiplatform` does not apply it.
+- The first Android boundary fixture should cover AGP 9 KMP routing only:
+  KGP and AGP KMP plugins available with `apply false`, `KMP_TARGETS=ANDROID`,
+  plugin applies `com.android.kotlin.multiplatform.library`, does not apply
+  legacy `com.android.library`, and propagates namespace/compileSdk/minSdk.
+- Android KMP routing fixtures should start with `help assert...`, not `check`.
+  `check` mixes SDK/lint/variant work into the routing signal; add it only in a
+  later fixture that intentionally covers Android task execution.
+- Do not add Kotlin DSL `kotlin { android { withHostTest {} } }` to the first
+  AGP 9 routing fixture while Fluxo applies KMP dynamically; the script has no
+  generated `android` accessor at compile time. Use the named KMP extension and
+  an explicit `KotlinMultiplatformAndroidLibraryTarget` cast when the fixture
+  must prove the actual AGP 9 target shape.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -450,8 +466,10 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   `KMP_TARGETS=COMMON`; current empty `KMP_TARGETS` means all targets.
 - [ ] Add AGP 8 Android/KMP fixture rows for the legacy `com.android.library`
   plus KMP path.
-- [ ] Add AGP 9 Android/KMP fixture rows for
+- [x] Add the first AGP 9 Android/KMP routing fixture for
   `com.android.kotlin.multiplatform.library`.
+- [ ] Add AGP 9 Android/KMP execution fixture rows for lint/variant task
+  coverage without weakening the routing fixture signal.
 - [ ] Add non-KMP Android fixture rows for the AGP 9 built-in Kotlin path.
 - [ ] Add Compose Desktop fixture rows with matching Compose Multiplatform and
   Kotlin Compose plugin versions.
