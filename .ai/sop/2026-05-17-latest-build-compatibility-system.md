@@ -399,6 +399,14 @@ not start TestKit fixtures or build-pin bumps until those verifiers exist.
 - [x] Seed the Kotlin JVM fixture with the `current-build` model row, real
   Kotlin source and test files, isolated TestKit state, required lifecycle task
   outcomes, and linkage-crash absence assertions.
+- [x] Replace the seeded single-row fixture with profile-aware row selection
+  from `compat/matrix.tsv`; source-level TestKit rows may prove source
+  injection behavior, while local-Maven marker rows must separately prove
+  marker/plugin-DSL classloader behavior.
+- [ ] Source-level Kotlin JVM rows currently run the plugin-under-test with the
+  build-pin KGP on the injected plugin classpath even when the matrix row
+  declares an older KGP; treat them as Gradle/runtime-smoke coverage until the
+  local-Maven marker fixture proves exact consumer KGP classloader behavior.
 - [ ] Add KMP consumer fixture rows for `fkcSetupMultiplatform(config = {})`,
   target filtering, all-targets-disabled configuration, and source-set behavior.
 - [ ] Add AGP 8 Android/KMP fixture rows for the legacy `com.android.library`

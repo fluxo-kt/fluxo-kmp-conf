@@ -9,7 +9,8 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.io.TempDir
 
 internal class CompatibilityTestKitSmokeTest {
@@ -17,10 +18,16 @@ internal class CompatibilityTestKitSmokeTest {
     @TempDir
     lateinit var tempDir: Path
 
-    @Test
-    fun `generated Kotlin JVM consumer runs required lifecycle tasks without linkage crashes`() {
-        val row = currentBuildRow()
-        val projectDir = tempDir.resolve("kotlin-jvm-consumer")
+    @TestFactory
+    fun `generated Kotlin JVM consumers run required lifecycle tasks`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "kotlin-jvm").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runKotlinJvmConsumer(row)
+            }
+        }
+
+    private fun runKotlinJvmConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
         Files.createDirectories(projectDir)
         projectDir.resolve("settings.gradle.kts").writeText(
             """
@@ -81,24 +88,22 @@ internal class CompatibilityTestKitSmokeTest {
             """.trimIndent(),
         )
         writeKotlinJvmSources(projectDir)
-        val gradleUserHome = tempDir.resolve("gradle-user-home")
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
         Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir.toFile())
             .withTestKitDir(gradleUserHome.toFile())
             .withGradleVersion(row.getValue("gradleVersion"))
             .withPluginClasspath(pluginUnderTestClasspath())
-            .withArguments("help", "compileKotlin", "test", "check", "--stacktrace")
+            .withArguments(requiredTasks + "--stacktrace")
             .forwardOutput()
             .build()
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
-        result.assertTaskSuccess(":help")
-        result.assertTaskSuccess(":compileKotlin")
-        result.assertTaskSuccess(":test")
-        result.assertTaskSuccess(":check")
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
 
     private fun writeKotlinJvmSources(projectDir: Path) {
@@ -131,14 +136,28 @@ internal class CompatibilityTestKitSmokeTest {
         )
     }
 
-    private fun currentBuildRow(): Map<String, String> {
+    private fun selectedRows(fixture: String): List<Map<String, String>> {
+        val profile = System.getProperty("compat.profile", "pr")
+        val profiles = when (profile) {
+            "release" -> setOf("pr", "release")
+            "full" -> setOf("pr", "full")
+            else -> setOf(profile)
+        }
+        val rows = matrixRows()
+            .filter { it["fixture"] == fixture && it["profile"] in profiles }
+        check(rows.isNotEmpty()) {
+            "No $fixture compatibility rows selected for compat.profile=$profile"
+        }
+        return rows
+    }
+
+    private fun matrixRows(): List<Map<String, String>> {
         val root = Path.of(System.getProperty("fluxo.repo.root"))
         val lines = Files.readAllLines(root.resolve("compat/matrix.tsv"))
             .filter { it.isNotBlank() && !it.startsWith("#") }
         val header = lines.first().split('\t')
         return lines.drop(1)
             .map { header.zip(it.split('\t')).toMap() }
-            .single { it["id"] == "current-build" }
     }
 
     private fun pluginUnderTestClasspath(): List<File> {

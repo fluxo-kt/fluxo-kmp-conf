@@ -173,6 +173,10 @@ testing {
                     shouldRunAfter(tasks.test)
                     systemProperty("fluxo.repo.root", rootDir.absolutePath)
                     systemProperty("fluxo.plugin.id", pluginId)
+                    systemProperty(
+                        "compat.profile",
+                        providers.gradleProperty("compat.profile").orElse("pr").get(),
+                    )
                     jvmArgumentProviders.add(object : org.gradle.process.CommandLineArgumentProvider {
                         @get:org.gradle.api.tasks.Classpath
                         val classpath = files(compatibilityTestKotlinPluginClasspath)
