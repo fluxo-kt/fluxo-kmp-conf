@@ -69,7 +69,7 @@ jobs:
       - name: Run Claude Code
         id: claude
         timeout-minutes: 32
-        uses: anthropics/claude-code-action@23e4ee05df2c5aefd801f51b83c81cd4215be7e9 # v1.0.120
+        uses: anthropics/claude-code-action@d2b7d924ec4af238380e490a0d57ce6bcc85ce8d # v1.0.123
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           use_commit_signing: true
