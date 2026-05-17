@@ -236,3 +236,75 @@ Keep allowlists small and justified at the call site.
 - 2026-05-17: SOP created. No compatibility model, generated TestKit harness,
   adapter refactors, static drift tasks, CI wiring, or defect fixes have landed
   yet.
+- 2026-05-17: SOP committed as
+  `e31b4b5 docs(compat): add compatibility system SOP`.
+
+## Living Implementation Queue
+
+Do not remove unfinished entries. Mark entries complete only after code/docs are
+updated, verified, and committed. Add newly discovered work as separate entries.
+
+- [ ] Update this SOP with every implementation slice, finding, verification
+  command, failure, and commit hash that affects the compatibility system.
+- [ ] Independently map the existing build layout, version catalog, test suites,
+  workflows, docs, and plugin compatibility code paths before changing behavior.
+- [ ] Verify current upstream compatibility data from official sources before
+  writing version claims or changing build pins.
+- [ ] Create the first repo-controlled compatibility model under `compat/` with
+  explicit `buildPin`, `declaredSupported`, `forwardTested`, and `unsupported`
+  concepts.
+- [ ] Add typed model loading for Gradle tasks without configuration-time
+  dependency resolution.
+- [ ] Add `verifyCompatibilityMatrix` to reject internally inconsistent or
+  impossible declared-supported rows.
+- [ ] Add `verifyCompatibilityDocs` to compare README, CHANGELOG, AGENTS, and
+  selected KDoc compatibility claims against the model.
+- [ ] Add `verifyNoUnsafeCompatPatterns` with a small justified allowlist for
+  raw env access, raw exec, `taskGraph.whenReady`, production
+  `resolvedConfiguration`, direct variant API calls, and workflow action pins.
+- [ ] Add `verifyReleaseDocs` for README Plugin Portal/JitPack snippets,
+  changelog policy, and version/tag consistency.
+- [ ] Add `verifyLatestActionPins` or a documented local wrapper around
+  `actions-up`, excluding Claude Code action.
+- [ ] Register `compatibilityTest` as a Gradle JVM Test Suite with
+  `gradleTestKit()` and JUnit/Kotlin dependencies.
+- [ ] Build generated TestKit fixture infrastructure with isolated Gradle user
+  homes and captured output assertions for known crash signatures.
+- [ ] Add Kotlin JVM consumer fixture rows for `help`, `compileKotlin`, `test`,
+  and `check`.
+- [ ] Add KMP consumer fixture rows for `fkcSetupMultiplatform(config = {})`,
+  target filtering, all-targets-disabled configuration, and source-set behavior.
+- [ ] Add AGP 8 Android/KMP fixture rows for the legacy `com.android.library`
+  plus KMP path.
+- [ ] Add AGP 9 Android/KMP fixture rows for
+  `com.android.kotlin.multiplatform.library`.
+- [ ] Add non-KMP Android fixture rows for the AGP 9 built-in Kotlin path.
+- [ ] Add Compose Desktop fixture rows with matching Compose Multiplatform and
+  Kotlin Compose plugin versions.
+- [ ] Add publication fixture rows that consume the plugin through a temporary
+  local Maven plugin marker.
+- [ ] Remove unconditional IDE-sync marking so sync-only setup cannot run during
+  normal builds.
+- [ ] Replace `taskGraph.whenReady` mutation with configuration-time predicates
+  or earlier target filtering.
+- [ ] Stop configuration-time dependency resolution for dynamic plugin loading
+  unless explicitly opted in.
+- [ ] Move signing warnings and SCM probing to publish tasks only.
+- [ ] Make local publish from `check` self-check/opt-in.
+- [ ] Fix or document `fkcSetupMultiplatform(config = {})`, then lock behavior
+  with TestKit.
+- [ ] Fix stale README JitPack commit/Kotlin version and Kotlin floor
+  contradictions using the compatibility model.
+- [ ] Harden CI permissions and checkout credential persistence.
+- [ ] Add release workflow concurrency and repair-safe release mode.
+- [ ] Update GitHub Actions with `actions-up`, excluding Claude Code action.
+- [ ] Close stale Dependabot PRs after branch state is clean, then rerun
+  security updates if GitHub access is available and the branch state permits.
+- [ ] Run `./gradlew compatibilityTest -Pcompat.profile=pr` and record evidence.
+- [ ] Run `./gradlew help --warning-mode all` and record plugin-owned warnings.
+- [ ] Run `./gradlew build assemble check --continue --stacktrace` and record
+  evidence.
+- [ ] Run each existing `checks/*` build, including `checks/intellij-platform`
+  only when local prerequisites are acceptable, and record evidence or blocker.
+- [ ] Perform adversarial self-audit against every SOP acceptance criterion
+  before final response.
