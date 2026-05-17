@@ -11,11 +11,12 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
+import org.junit.jupiter.api.io.CleanupMode
 import org.junit.jupiter.api.io.TempDir
 
 internal class CompatibilityTestKitSmokeTest {
 
-    @TempDir
+    @TempDir(cleanup = CleanupMode.NEVER)
     lateinit var tempDir: Path
 
     @TestFactory
@@ -105,7 +106,7 @@ internal class CompatibilityTestKitSmokeTest {
             .withTestKitDir(gradleUserHome.toFile())
             .withGradleVersion(row.getValue("gradleVersion"))
             .withPluginClasspath(pluginUnderTestClasspath())
-            .withArguments(requiredTasks + "--stacktrace")
+            .withArguments(gradleArguments(requiredTasks))
             .forwardOutput()
             .build()
 
@@ -132,7 +133,7 @@ internal class CompatibilityTestKitSmokeTest {
             .withProjectDir(projectDir.toFile())
             .withTestKitDir(gradleUserHome.toFile())
             .withGradleVersion(row.getValue("gradleVersion"))
-            .withArguments(requiredTasks + "--stacktrace")
+            .withArguments(gradleArguments(requiredTasks))
             .forwardOutput()
             .build()
 
@@ -216,11 +217,31 @@ internal class CompatibilityTestKitSmokeTest {
             .resolve("io/github/fluxo-kt/fluxo-kmp-conf")
             .resolve(version)
             .resolve("fluxo-kmp-conf-$version.jar")
+        val runtimePom = runtimeJar.resolveSibling("fluxo-kmp-conf-$version.pom")
+        val runtimeModule = runtimeJar.resolveSibling("fluxo-kmp-conf-$version.module")
         check(Files.isRegularFile(markerPom)) {
             "Published plugin marker POM is missing: $markerPom"
         }
         check(Files.isRegularFile(runtimeJar)) {
             "Published plugin runtime jar is missing: $runtimeJar"
+        }
+        check(Files.isRegularFile(runtimePom)) {
+            "Published plugin runtime POM is missing: $runtimePom"
+        }
+        check(Files.isRegularFile(runtimeModule)) {
+            "Published plugin Gradle module metadata is missing: $runtimeModule"
+        }
+        assertNoForbiddenRuntimeLeaks(markerPom, runtimePom, runtimeModule)
+    }
+
+    private fun assertNoForbiddenRuntimeLeaks(vararg metadataFiles: Path) {
+        metadataFiles.forEach { file ->
+            val metadata = Files.readString(file)
+            FORBIDDEN_RUNTIME_LEAKS.forEach { forbidden ->
+                check(forbidden !in metadata) {
+                    "Published metadata leaks forbidden runtime dependency '$forbidden': $file"
+                }
+            }
         }
     }
 
@@ -288,6 +309,9 @@ internal class CompatibilityTestKitSmokeTest {
             .map { header.zip(it.split('\t')).toMap() }
     }
 
+    private fun gradleArguments(requiredTasks: List<String>): List<String> =
+        requiredTasks + "--stacktrace"
+
     private fun pluginUnderTestClasspath(): List<File> {
         val metadata = Properties()
         javaClass.classLoader
@@ -328,6 +352,10 @@ internal class CompatibilityTestKitSmokeTest {
             "Publications are unsigned",
             "setup maven POM",
             "maven publication",
+        )
+        private val FORBIDDEN_RUNTIME_LEAKS = listOf(
+            "kotlin-compiler-embeddable",
+            "detekt-core",
         )
     }
 }

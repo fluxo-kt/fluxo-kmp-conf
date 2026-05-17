@@ -327,6 +327,10 @@ Keep allowlists small and justified at the call site.
   `publishAllPublicationsToLocalDevRepository` and assert the exact marker POM
   plus runtime jar for the requested plugin id/version exist before running the
   consumer build. Do not infer marker coordinates from publication log lines.
+- Generated TestKit consumers use isolated Gradle user homes and JUnit
+  `CleanupMode.NEVER`; GradleRunner uses Tooling API and does not support
+  `--no-daemon`, while daemon-held cache files can make JUnit temp cleanup fail
+  after a successful consumer build.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -442,6 +446,12 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   absence of linkage/class-initialization crash signatures.
 - [ ] Add runtime classpath leak verification for local Maven marker
   consumption, blocking leaks of `kotlin-compiler-embeddable` and `detekt-core`.
+- [x] Add published marker/runtime metadata leak checks for
+  `kotlin-compiler-embeddable` and `detekt-core` before running marker
+  consumers.
+- [ ] Add consumer buildscript classpath leak inspection after marker
+  consumption if it can distinguish plugin leaks from Kotlin plugin's own
+  classpath without false failures.
 - [ ] Decide whether dependencyGuard baseline creation in generated consumers is
   acceptable fixture byproduct or plugin-owned noise; if noise, make the fixture
   suppress it through public DSL/config rather than ignoring output.
