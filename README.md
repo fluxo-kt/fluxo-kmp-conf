@@ -33,7 +33,7 @@ Targeted for Gradle 9.0+ and Kotlin 2.1+. Built with:<br>
 // in the `build.gradle.kts` of the target module.
 plugins {
   kotlin("multiplatform") version "2.2.21"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.14.0" // <-- add here
+  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.14.1" // <-- add here
 }
 ```
 

@@ -7,6 +7,17 @@
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
 
+## [0.14.1] - 2026-05-17
+
+### Fixed
+- Android/JVM compatibility now follows the effective current-JRE target when `jvmTarget` is left unset. This keeps Java and Android compile compatibility aligned with Kotlin's implicit target and prevents AGP/KGP target-validation failures.
+- KMP modules with every concrete target filtered out no longer emit Kotlin's "no applicable targets" warning as a normal warning. Explicit target-filter skips are reported only at verbose level, so filtered CI builds stay signal-rich.
+- Filtered `check` builds no longer fail when optional local-publication tasks are absent, and KMP check setup no longer assumes JS/Wasm Yarn extensions exist when those targets are filtered out.
+- Publication setup no longer warns about missing signing keys during non-publication task graphs. Unsigned non-snapshot remote publication still fails at the publication task boundary.
+- Dynamic optional-plugin loading no longer resolves the buildscript classpath just to decide whether a plugin id is available, avoiding configuration-time resolution and improving configuration-cache hygiene.
+- Removed stale `taskGraph.whenReady` task-graph hooks used for IDE-sync detection and unreachable-task disabling. Supported target/test filtering now relies on configuration-time wiring instead of mutating the realized execution graph.
+
+
 ## [0.14.0] - 2026-05-01
 
 ### Removed
@@ -467,6 +478,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.14.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.14.1
 [0.14.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.14.0
 [0.13.2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.2
 [0.13.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.1
