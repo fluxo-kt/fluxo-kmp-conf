@@ -731,7 +731,7 @@ internal class CompatibilityTestKitSmokeTest {
                 check(plugins.hasPlugin("org.jetbrains.kotlin.jvm"))
                 check(plugins.hasPlugin("org.jetbrains.compose"))
                 check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
-                check(tasks.names.contains("packageReleaseDistributionForCurrentOS"))
+                check(tasks.names.contains("createReleaseDistributable"))
             }
         }
         """.trimIndent()

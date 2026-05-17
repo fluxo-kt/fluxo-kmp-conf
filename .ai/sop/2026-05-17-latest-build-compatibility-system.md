@@ -396,9 +396,11 @@ Keep allowlists small and justified at the call site.
   Compose Desktop packaging requires JDK 17+, so the PR fixture uses JDK 17
   evidence unless explicit Java launcher/JAVA_HOME wiring is added.
 - Compose Desktop fixture evidence must compile a real `@Composable`, run at
-  least one Kotlin test, and execute `packageReleaseDistributionForCurrentOS`.
-  Applying `org.jetbrains.kotlin.plugin.compose` only with `apply false` is
-  acceptable only when the shape assertion proves Fluxo applied it.
+  least one Kotlin test, and execute `createReleaseDistributable`, not
+  `packageReleaseDistributionForCurrentOS`; OS package tasks can open installer
+  UI on macOS and are too invasive for compatibility tests. Applying
+  `org.jetbrains.kotlin.plugin.compose` only with `apply false` is acceptable
+  only when the shape assertion proves Fluxo applied it.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
