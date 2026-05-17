@@ -65,9 +65,9 @@ com.googlecode.javaewah:JavaEWAH:1.2.3
 com.googlecode.juniversalchardet:juniversalchardet:1.0.3
 com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin:2.1.1
 com.gradle.publish:plugin-publish-plugin:2.1.1
-com.gradle:develocity-gradle-plugin-adapters:1.0.2
-com.osacky.doctor:com.osacky.doctor.gradle.plugin:0.10.0
-com.osacky.doctor:doctor-plugin:0.10.0
+com.gradle:develocity-gradle-plugin-adapters:1.2.1
+com.osacky.doctor:com.osacky.doctor.gradle.plugin:0.12.0
+com.osacky.doctor:doctor-plugin:0.12.0
 com.squareup.moshi:moshi-kotlin:1.15.2
 com.squareup.moshi:moshi:1.15.2
 com.squareup.okhttp3:okhttp-bom:4.12.0
@@ -90,7 +90,7 @@ commons-logging:commons-logging:1.2
 dev.equo.ide:solstice:1.8.1
 io.github.java-diff-utils:java-diff-utils:4.12
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8
-io.reactivex.rxjava3:rxjava:3.1.8
+io.reactivex.rxjava3:rxjava:3.1.11
 jakarta.activation:jakarta.activation-api:1.2.1
 jakarta.xml.bind:jakarta.xml.bind-api:2.3.2
 javax.inject:javax.inject:1
