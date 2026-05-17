@@ -18,4 +18,3 @@ TSV rules:
 - Lines starting with `#` are comments.
 - Keep cells single-line and tab-separated.
 - Use `-` for intentionally absent values.
-

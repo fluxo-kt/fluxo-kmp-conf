@@ -4,4 +4,3 @@ android-agp-gradle	https://developer.android.com/build/releases/about-agp	AGP 9.
 android-kotlin-support	https://developer.android.com/build/kotlin-support	Kotlin 2.3 Android class files require AGP 8.13.2 and R8 8.13.19; 9.x versions before 9.0.28 do not support Kotlin 2.3.
 compose-compat	https://kotlinlang.org/docs/multiplatform/compose-compatibility-and-versioning.html	Compose Multiplatform 1.11.0 is compatible with latest Kotlin, needs matching Compose Compiler Gradle plugin version, and requires at least Kotlin 2.1.0.
 gradle-compat	https://docs.gradle.org/current/userguide/compatibility.html	Gradle 9.5.1 requires JVM 17-26 to run; Gradle is tested with Kotlin 2.0.0 through 2.3.20.
-
