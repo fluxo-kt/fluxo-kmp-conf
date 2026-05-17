@@ -308,6 +308,12 @@ Keep allowlists small and justified at the call site.
   `MIRROR-START`/`MIRROR-END` regions because `self` does not need them. Add
   static verification tasks near `verifyBuildScriptMirror` and wire them to
   `check` there.
+- Static verifier algorithms currently live in a repo-native
+  `VerifyCompatibilityStaticTask` class inside `fluxo-kmp-conf/build.gradle.kts`.
+  Do not use an undeclared external runtime for this gate. Do not put
+  non-trivial verifier logic in `doLast` closures: Gradle script object capture
+  breaks configuration-cache reuse. If the verifier grows beyond this local
+  scope, graduate it to included build logic instead of adding ad hoc tooling.
 - Static verification tasks must be build-script tasks in `:plugin`, not only
   plugin-runtime tasks, because runtime verification setup can disappear when
   tests are disabled, `check`/`test` are excluded, or the build is included with

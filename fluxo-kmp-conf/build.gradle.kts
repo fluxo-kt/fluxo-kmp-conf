@@ -146,6 +146,232 @@ tasks.test {
     useJUnitPlatform()
 }
 
+abstract class VerifyCompatibilityStaticTask : DefaultTask() {
+
+    @get:org.gradle.api.tasks.Input
+    abstract val rootDirPath: org.gradle.api.provider.Property<String>
+
+    @get:org.gradle.api.tasks.InputFile
+    abstract val matrixFile: org.gradle.api.file.RegularFileProperty
+
+    @get:org.gradle.api.tasks.InputFile
+    abstract val sourcesFile: org.gradle.api.file.RegularFileProperty
+
+    @get:org.gradle.api.tasks.InputFile
+    abstract val docClaimsFile: org.gradle.api.file.RegularFileProperty
+
+    @get:org.gradle.api.tasks.InputFile
+    abstract val unsafeAllowlistFile: org.gradle.api.file.RegularFileProperty
+
+    @get:org.gradle.api.tasks.InputFile
+    abstract val versionCatalogFile: org.gradle.api.file.RegularFileProperty
+
+    @get:org.gradle.api.tasks.InputFile
+    abstract val gradleWrapperFile: org.gradle.api.file.RegularFileProperty
+
+    @get:org.gradle.api.tasks.InputFile
+    abstract val readmeFile: org.gradle.api.file.RegularFileProperty
+
+    @get:org.gradle.api.tasks.InputFiles
+    abstract val sourceFiles: org.gradle.api.file.ConfigurableFileCollection
+
+    @get:org.gradle.api.tasks.InputFiles
+    abstract val workflowFiles: org.gradle.api.file.ConfigurableFileCollection
+
+    @org.gradle.api.tasks.TaskAction
+    fun verify() {
+        val failures = ArrayList<String>()
+        verifyMatrix(failures)
+        verifyDocs(failures)
+        verifyUnsafePatterns(failures)
+        verifyReleaseDocs(failures)
+        if (failures.isNotEmpty()) {
+            throw GradleException(failures.joinToString(separator = "\n"))
+        }
+        logger.lifecycle("Compatibility static checks passed.")
+    }
+
+    private fun File.relativePath(): String = relativeTo(File(rootDirPath.get())).path
+
+    private fun File.readTsvRows(failures: MutableList<String>): List<Map<String, String>> {
+        val lines = readLines().filter { it.isNotBlank() && !it.startsWith("#") }
+        if (lines.isEmpty()) return emptyList()
+        val header = lines.first().split('\t')
+        return lines.drop(1).mapIndexed { index, line ->
+            val cells = line.split('\t')
+            if (cells.size != header.size) {
+                failures += "${relativePath()}:${index + 2}: expected ${header.size} columns, got ${cells.size}"
+            }
+            header.mapIndexed { i, key -> key to cells.getOrElse(i) { "" } }.toMap()
+        }
+    }
+
+    private fun requireField(
+        row: Map<String, String>,
+        field: String,
+        path: String,
+        failures: MutableList<String>,
+    ): String {
+        val value = row[field]
+        if (value.isNullOrBlank()) {
+            failures += "$path: row ${row["id"] ?: "<unknown>"} missing $field"
+            return ""
+        }
+        return value
+    }
+
+    private fun catalogVersion(catalog: String, name: String, failures: MutableList<String>): String {
+        val prefix = "$name = \""
+        val value = catalog.lineSequence()
+            .map(String::trim)
+            .firstOrNull { it.startsWith(prefix) }
+            ?.substringAfter(prefix)
+            ?.substringBefore('"')
+        if (value == null) failures += "gradle/libs.versions.toml: missing version $name"
+        return value.orEmpty()
+    }
+
+    private fun wrapperVersion(wrapper: String, failures: MutableList<String>): String {
+        val value = wrapper.lineSequence()
+            .firstOrNull { "distributionUrl=" in it }
+            ?.substringAfter("gradle-")
+            ?.substringBefore("-bin.zip")
+        if (value.isNullOrBlank()) {
+            failures += "gradle/wrapper/gradle-wrapper.properties: missing Gradle version"
+        }
+        return value.orEmpty()
+    }
+
+    private fun verifyMatrix(failures: MutableList<String>) {
+        val matrixPath = matrixFile.asFile.get().relativePath()
+        val sources = sourcesFile.asFile.get().readTsvRows(failures).map { it["id"] }.toSet()
+        val matrix = matrixFile.asFile.get().readTsvRows(failures)
+        val duplicateIds = matrix.groupingBy { it["id"].orEmpty() }.eachCount()
+            .filterValues { it > 1 }.keys
+        if (matrix.isEmpty()) failures += "$matrixPath: matrix is empty"
+        duplicateIds.forEach { failures += "$matrixPath: duplicate id $it" }
+
+        val statuses = setOf("buildPin", "declaredSupported", "forwardTested", "unsupported")
+        matrix.forEach { row ->
+            val id = row["id"].orEmpty()
+            val status = requireField(row, "status", matrixPath, failures)
+            if (status !in statuses) failures += "$matrixPath: $id: unknown status $status"
+            requireField(row, "sourceRefs", matrixPath, failures).split(',')
+                .filter(String::isNotBlank)
+                .forEach { ref ->
+                    if (ref !in sources) failures += "$matrixPath: $id: unknown source $ref"
+                }
+        }
+
+        val currentRows = matrix.filter { it["id"] == "current-build" }
+        if (currentRows.size != 1) {
+            failures += "$matrixPath: expected exactly one current-build row, got ${currentRows.size}"
+            return
+        }
+
+        val catalog = versionCatalogFile.asFile.get().readText()
+        val wrapper = gradleWrapperFile.asFile.get().readText()
+        val expected = mapOf(
+            "gradleVersion" to wrapperVersion(wrapper, failures),
+            "kgpVersion" to catalogVersion(catalog, "kotlin", failures),
+            "kotlinLangVersion" to catalogVersion(catalog, "kotlinLangVersion", failures),
+            "kotlinApiVersion" to catalogVersion(catalog, "kotlinApiVersion", failures),
+            "agpVersion" to catalogVersion(catalog, "android-gradle-plugin", failures),
+            "composeVersion" to catalogVersion(catalog, "jetbrains-compose", failures),
+            "kspVersion" to catalogVersion(catalog, "ksp", failures),
+            "detektVersion" to catalogVersion(catalog, "detekt", failures),
+            "vanniktechVersion" to catalogVersion(catalog, "vanniktech-mvn-publish", failures),
+            "bcvVersion" to catalogVersion(catalog, "bcv", failures),
+            "dokkaVersion" to catalogVersion(catalog, "dokka", failures),
+        )
+        val current = currentRows.single()
+        expected.forEach { (field, value) ->
+            if (current[field] != value) {
+                failures += "$matrixPath: current-build $field=${current[field]} expected $value"
+            }
+        }
+    }
+
+    private fun verifyDocs(failures: MutableList<String>) {
+        val claimsPath = docClaimsFile.asFile.get().relativePath()
+        val sources = sourcesFile.asFile.get().readTsvRows(failures).map { it["id"] }.toSet()
+        docClaimsFile.asFile.get().readTsvRows(failures).forEach { row ->
+            val id = row["id"].orEmpty()
+            requireField(row, "sourceRefs", claimsPath, failures).split(',')
+                .filter(String::isNotBlank)
+                .forEach { ref ->
+                    if (ref !in sources) failures += "$claimsPath: $id: unknown source $ref"
+                }
+            val file = File(rootDirPath.get(), requireField(row, "file", claimsPath, failures))
+            val claim = requireField(row, "mustContain", claimsPath, failures)
+            if (!file.readText().contains(claim)) {
+                failures += "$claimsPath: $id: missing claim in ${file.relativePath()}"
+            }
+        }
+    }
+
+    private fun verifyUnsafePatterns(failures: MutableList<String>) {
+        val allowPath = unsafeAllowlistFile.asFile.get().relativePath()
+        val allowed = unsafeAllowlistFile.asFile.get().readTsvRows(failures)
+            .map { "${it["patternId"]}\t${it["file"]}\t${it["contains"]}" }
+            .toSet()
+        val seen = HashSet<String>()
+        val patterns = mapOf(
+            "rawSystemGetenv" to "System.getenv(",
+            "rawRuntimeExec" to "Runtime.getRuntime().exec",
+            "runtimeGetRuntime" to "Runtime.getRuntime()",
+            "taskGraphWhenReady" to "taskGraph.whenReady",
+            "resolvedConfiguration" to "resolvedConfiguration",
+        )
+        sourceFiles.files.forEach { file ->
+            val relative = file.relativePath()
+            file.readLines().forEachIndexed { index, line ->
+                patterns.forEach { (patternId, token) ->
+                    if (token !in line) return@forEach
+                    val match = allowed.firstOrNull { entry ->
+                        val parts = entry.split('\t')
+                        parts.size == 3 && parts[0] == patternId &&
+                            parts[1] == relative && parts[2] in line
+                    }
+                    if (match == null) failures += "$relative:${index + 1}: unallowlisted $patternId"
+                    else seen += match
+                }
+            }
+        }
+
+        val actionPin = Regex("""uses:\s*[^@\s]+@[0-9a-fA-F]{40}(?:\s|$)""")
+        workflowFiles.files.forEach { file ->
+            val relative = file.relativePath()
+            file.readLines().forEachIndexed { index, line ->
+                val trimmed = line.trim()
+                if (!trimmed.startsWith("uses: ") || trimmed.startsWith("uses: ./")) return@forEachIndexed
+                if ("anthropics/claude-code-action" in trimmed) return@forEachIndexed
+                if (!actionPin.containsMatchIn(trimmed)) {
+                    failures += "$relative:${index + 1}: workflow action is not SHA-pinned"
+                }
+            }
+        }
+
+        (allowed - seen).forEach { failures += "$allowPath: stale allowlist entry $it" }
+    }
+
+    private fun verifyReleaseDocs(failures: MutableList<String>) {
+        val catalog = versionCatalogFile.asFile.get().readText()
+        val readme = readmeFile.asFile.get().readText()
+        val snippets = mapOf(
+            "plugin version example" to
+                """id("io.github.fluxo-kt.fluxo-kmp-conf") version "${
+                    catalogVersion(catalog, "version", failures)
+                }"""",
+            "quick-start Kotlin version" to
+                """kotlin("multiplatform") version "${catalogVersion(catalog, "kotlin", failures)}"""",
+        )
+        snippets.forEach { (name, snippet) ->
+            if (snippet !in readme) failures += "README.md: release snippet drift: $name"
+        }
+    }
+}
+
 buildConfig {
     // MIRROR-START
     className("BuildConstants")
@@ -218,6 +444,23 @@ buildConfig {
 // `kotlin.srcDir` can't carry build-script-level config; mirroring is the
 // least invasive option, and this task structurally replaces "discipline only"
 // with a CI-enforced byte-identity invariant on the marked regions.
+
+val verifyCompatibilityStatic = tasks.register<VerifyCompatibilityStaticTask>("verifyCompatibilityStatic") {
+    group = "verification"
+    description = "Run cheap compatibility-model and static-drift checks."
+    rootDirPath.set(rootDir.absolutePath)
+    matrixFile.set(rootProject.file("compat/matrix.tsv"))
+    sourcesFile.set(rootProject.file("compat/sources.tsv"))
+    docClaimsFile.set(rootProject.file("compat/doc-claims.tsv"))
+    unsafeAllowlistFile.set(rootProject.file("compat/unsafe-pattern-allowlist.tsv"))
+    versionCatalogFile.set(rootProject.file("gradle/libs.versions.toml"))
+    gradleWrapperFile.set(rootProject.file("gradle/wrapper/gradle-wrapper.properties"))
+    readmeFile.set(rootProject.file("README.md"))
+    sourceFiles.from(rootProject.fileTree("fluxo-kmp-conf/src/main/kotlin") { include("**/*.kt") })
+    workflowFiles.from(rootProject.fileTree(".github/workflows") { include("*.yml", "*.yaml") })
+    outputs.upToDateWhen { true }
+}
+
 val verifyBuildScriptMirror = tasks.register("verifyBuildScriptMirror") {
     group = "verification"
     description =
@@ -235,7 +478,7 @@ val verifyBuildScriptMirror = tasks.register("verifyBuildScriptMirror") {
             """// MIRROR-START\s*\n(.*?)\s*// MIRROR-END""",
             RegexOption.DOT_MATCHES_ALL,
         )
-        fun regionsOf(file: java.io.File): List<String> {
+        fun regionsOf(file: File): List<String> {
             val regions = markerRegex.findAll(file.readText())
                 .map { it.groupValues[1] }
                 .toList()
@@ -266,4 +509,9 @@ val verifyBuildScriptMirror = tasks.register("verifyBuildScriptMirror") {
     }
 }
 
-tasks.named("check") { dependsOn(verifyBuildScriptMirror) }
+tasks.named("check") {
+    dependsOn(
+        verifyBuildScriptMirror,
+        verifyCompatibilityStatic,
+    )
+}
