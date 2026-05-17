@@ -31,7 +31,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
 private const val MERGE_LINT_TASK_NAME = "mergeLintSarif"
 private const val BASELINE_LINT_TASK_NAME = "updateLintBaseline"
@@ -211,14 +210,15 @@ internal fun Lint.configureAndroidLintExtension(
     textReport = !disableLint
     xmlReport = false
 
-    // Use baseline only for CI checks, show all problems in local development.
-    // Don't use if file doesn't exist, and we're running the `check` task.
+    // Missing baselines make Android Lint create a new file and fail the first run.
+    // Keep baseline creation explicit through updateLintBaseline; ordinary CI lint tasks
+    // should report issues directly instead of mutating the checkout.
     val ctx = conf.ctx
     val rootProjectDir = p.rootProject.layout.projectDirectory
     var hasBaseline = false
     if (reBaseline || ctx.isCI || ctx.isRelease) {
         val baselineFile = p.layout.projectDirectory.file(BASELINE_FILE_NAME).asFile
-        if (reBaseline || baselineFile.exists() || CHECK_TASK_NAME !in ctx.startTaskNames) {
+        if (reBaseline || baselineFile.exists()) {
             hasBaseline = true
             baseline = baselineFile
         }

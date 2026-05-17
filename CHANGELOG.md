@@ -15,6 +15,7 @@
 - Filtered `check` builds no longer fail when optional local-publication tasks are absent, and KMP check setup no longer assumes JS/Wasm Yarn extensions exist when those targets are filtered out.
 - Publication setup no longer warns about missing signing keys during non-publication task graphs. Unsigned non-snapshot remote publication still fails at the publication task boundary.
 - Dynamic optional-plugin loading no longer resolves the buildscript classpath just to decide whether a plugin id is available, avoiding configuration-time resolution and improving configuration-cache hygiene.
+- Android Lint no longer creates and then fails on a missing `lint-baseline.xml` during ordinary CI/release lint task runs. Baseline creation stays explicit through `updateLintBaseline`; existing committed baselines are still honoured.
 - Removed stale `taskGraph.whenReady` task-graph hooks used for IDE-sync detection and unreachable-task disabling. Supported target/test filtering now relies on configuration-time wiring instead of mutating the realized execution graph.
 
 
