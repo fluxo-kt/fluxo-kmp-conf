@@ -354,6 +354,7 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+        assertNoForbiddenResolvedClasspathLeaks(projectDir)
     }
 
     private fun runKotlinJvmMarkerConsumer(row: Map<String, String>) {
@@ -382,6 +383,7 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+        assertNoForbiddenResolvedClasspathLeaks(projectDir)
     }
 
     private fun markerSettingsScript(rootProjectName: String): String {
@@ -784,6 +786,20 @@ internal class CompatibilityTestKitSmokeTest {
                 check(forbidden !in metadata) {
                     "Published metadata leaks forbidden runtime dependency '$forbidden': $file"
                 }
+            }
+        }
+    }
+
+    private fun assertNoForbiddenResolvedClasspathLeaks(projectDir: Path) {
+        val classpath = projectDir.resolve("dependencies/classpath.txt")
+        check(Files.isRegularFile(classpath)) {
+            "Resolved classpath dependencyGuard output is missing: $classpath"
+        }
+        val dependencies = Files.readString(classpath)
+        FORBIDDEN_RUNTIME_LEAKS.forEach { forbidden ->
+            check(forbidden !in dependencies) {
+                "Resolved marker consumer classpath leaks forbidden dependency '$forbidden': " +
+                    classpath
             }
         }
     }

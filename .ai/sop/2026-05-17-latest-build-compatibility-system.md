@@ -525,12 +525,12 @@ static verifiers pass.
   `KMP_TARGETS`, and incompatible Compose/Kotlin rows.
 - [ ] Add exact failure-message assertions for every negative row and assert
   absence of linkage/class-initialization crash signatures.
-- [ ] Add runtime classpath leak verification for local Maven marker
+- [x] Add runtime classpath leak verification for local Maven marker
   consumption, blocking leaks of `kotlin-compiler-embeddable` and `detekt-core`.
 - [x] Add published marker/runtime metadata leak checks for
   `kotlin-compiler-embeddable` and `detekt-core` before running marker
   consumers.
-- [ ] Add consumer buildscript classpath leak inspection after marker
+- [x] Add consumer buildscript classpath leak inspection after marker
   consumption if it can distinguish plugin leaks from Kotlin plugin's own
   classpath without false failures.
 - [ ] Decide whether dependencyGuard baseline creation in generated consumers is
