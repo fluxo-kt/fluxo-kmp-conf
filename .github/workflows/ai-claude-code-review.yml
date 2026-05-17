@@ -56,7 +56,7 @@ jobs:
       - name: Run Claude Code Review
         id: claude-review
         timeout-minutes: 32
-        uses: anthropics/claude-code-action@23e4ee05df2c5aefd801f51b83c81cd4215be7e9 # v1.0.120
+        uses: anthropics/claude-code-action@0f564c8817f4c6b4fa7da9e6fa26d2c0d44ea0b0 # v1.0.96 # actions-up-ignore
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           track_progress: true
