@@ -39,13 +39,12 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 public class FluxoKmpConfPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.checkIsRootProject("\"$PLUGIN_ID\" plugin")
-        checkKotlinPlugin()
+        checkKotlinPlugin(target)
 
         // Make sure there's a `clean`, and a `check` tasks in the root project.
         checkGradleLifecycleBase(target)
@@ -176,13 +175,17 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
      * @see org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
      * @see org.jetbrains.kotlin.gradle.plugin.AbstractKotlinPlugin
      */
-    private fun checkKotlinPlugin() {
-        try {
-            KotlinVersion.DEFAULT
-        } catch (e: Throwable) {
+    private fun checkKotlinPlugin(target: Project) {
+        val kotlinVersionClass = "org.jetbrains.kotlin.gradle.dsl.KotlinVersion"
+        val classLoaders = listOf(target.buildscript.classLoader, javaClass.classLoader)
+            .distinct()
+        val missingKotlin = classLoaders.none { classLoader ->
+            classLoader.hasClass(kotlinVersionClass)
+        }
+        if (missingKotlin) {
             // TODO: Support version catalog declarations if available
             val msg = """
-                Kotlin plugin not found in classpath (${e.javaClass.simpleName}).
+                Kotlin plugin not found in classpath.
                 Please apply any Kotlin plugin before applying the "$PLUGIN_ID" plugin.
                 Example:
                 ```
@@ -192,7 +195,17 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
                 }
                 ```
             """.trimIndent()
-            throw GradleException(msg, e)
+            throw GradleException(msg)
         }
     }
 }
+
+private fun ClassLoader.hasClass(className: String): Boolean =
+    try {
+        Class.forName(className, false, this)
+        true
+    } catch (_: ClassNotFoundException) {
+        false
+    } catch (_: NoClassDefFoundError) {
+        false
+    }

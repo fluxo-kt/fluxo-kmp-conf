@@ -146,6 +146,47 @@ tasks.test {
     useJUnitPlatform()
 }
 
+val pluginUnderTestMetadataTask = tasks.named("pluginUnderTestMetadata")
+val compatibilityTestKotlinPluginClasspath = configurations.register(
+    "compatibilityTestKotlinPluginClasspath",
+) {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+
+dependencies {
+    add("compatibilityTestKotlinPluginClasspath", libs.plugin.kotlin)
+}
+
+testing {
+    suites {
+        val compatibilityTest by registering(org.gradle.api.plugins.jvm.JvmTestSuite::class) {
+            useJUnitJupiter()
+            dependencies {
+                implementation(project())
+                implementation(gradleTestKit())
+            }
+            targets.configureEach {
+                testTask.configure {
+                    dependsOn(pluginUnderTestMetadataTask)
+                    classpath += files(pluginUnderTestMetadataTask)
+                    shouldRunAfter(tasks.test)
+                    systemProperty("fluxo.repo.root", rootDir.absolutePath)
+                    systemProperty("fluxo.plugin.id", pluginId)
+                    jvmArgumentProviders.add(object : org.gradle.process.CommandLineArgumentProvider {
+                        @get:org.gradle.api.tasks.Classpath
+                        val classpath = files(compatibilityTestKotlinPluginClasspath)
+
+                        override fun asArguments(): Iterable<String> =
+                            listOf("-Dfluxo.compat.kotlinPluginClasspath=${classpath.asPath}")
+                    })
+                }
+            }
+        }
+        tasks.named("check") { dependsOn(compatibilityTest) }
+    }
+}
+
 abstract class VerifyCompatibilityStaticTask : DefaultTask() {
 
     @get:org.gradle.api.tasks.Input

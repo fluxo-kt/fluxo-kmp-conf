@@ -374,12 +374,26 @@ not start TestKit fixtures or build-pin bumps until those verifiers exist.
   changelog policy, and version/tag consistency.
 - [ ] Add `verifyLatestActionPins` or a documented local wrapper around
   `actions-up`, excluding Claude Code action.
-- [ ] Register `compatibilityTest` as a Gradle JVM Test Suite with
-  `gradleTestKit()` and JUnit/Kotlin dependencies.
-- [ ] Add `implementation(project())` for `compatibilityTest` if the suite needs
+- [x] Register `compatibilityTest` as a Gradle JVM Test Suite with
+  `gradleTestKit()` and JUnit dependencies.
+- [x] Add `implementation(project())` for `compatibilityTest` if the suite needs
   direct project outputs, and wire the suite's test task to `check` explicitly.
+- [x] Wire custom TestKit suites to the `pluginUnderTestMetadata` task output;
+  Gradle's default `withPluginClasspath()` discovery does not see that metadata
+  automatically from this repo's custom `JvmTestSuite` runtime classpath.
 - [ ] Build generated TestKit fixture infrastructure with isolated Gradle user
   homes and captured output assertions for known crash signatures.
+- [ ] Keep apply-time capability checks free of direct `compileOnly` KGP type
+  references; source-level TestKit fixtures must catch `NoClassDefFoundError`
+  before a release profile can validate marker/POM consumption.
+- [ ] Distinguish source-level TestKit fixtures that use an explicit
+  `buildscript` KGP classpath from release-like marker fixtures that use
+  `plugins { kotlin(...) apply false }`; both paths must be proven because
+  Gradle TestKit injected plugin classpaths can expose different classloader
+  visibility from marker resolution.
+- [x] Keep TestKit-only KGP classpath augmentation scoped to
+  `compatibilityTest`; it models the consumer-supplied Kotlin plugin classpath
+  without adding KGP to the published runtime dependency graph.
 - [ ] Add Kotlin JVM consumer fixture rows for `help`, `compileKotlin`, `test`,
   and `check`.
 - [ ] Add KMP consumer fixture rows for `fkcSetupMultiplatform(config = {})`,
