@@ -82,9 +82,19 @@ internal class CompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun `generated Compose Desktop consumers run required lifecycle tasks`(): Iterable<DynamicTest> =
-        selectedRows(fixture = "compose-desktop").map { row ->
+        (selectedRows(fixture = "compose-desktop") +
+            selectedRows(fixture = "compose-desktop-preapplied")).map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runComposeDesktopConsumer(row)
+            }
+        }
+
+    @TestFactory
+    fun `generated Compose KMP Android consumers run required lifecycle tasks`(): Iterable<DynamicTest> =
+        (selectedRows(fixture = "compose-kmp-agp8") +
+            selectedRows(fixture = "compose-kmp-agp9")).map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runComposeKmpAndroidConsumer(row)
             }
         }
 
@@ -367,6 +377,41 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
         assertNoForbiddenResolvedClasspathLeaks(projectDir)
+    }
+
+    private fun runComposeKmpAndroidConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-compose-kmp-android-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerComposeKmpAndroidBuildScript(row),
+        )
+        projectDir.resolve("gradle.properties").writeText(
+            "android.useAndroidX=true\n",
+        )
+        writeComposeKmpSources(projectDir)
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID,JVM")
+            .forwardOutput()
+            .build()
+
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
+        assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
+        assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
 
     private fun runKotlinJvmMarkerConsumer(row: Map<String, String>) {
@@ -681,13 +726,19 @@ internal class CompatibilityTestKitSmokeTest {
         """.trimIndent()
     }
 
-    private fun markerComposeDesktopBuildScript(row: Map<String, String>): String =
-        """
+    private fun markerComposeDesktopBuildScript(row: Map<String, String>): String {
+        val composeCompilerPlugin = when (row.getValue("fixture")) {
+            "compose-desktop-preapplied" ->
+                """id("org.jetbrains.kotlin.plugin.compose") version "${row.getValue("kgpVersion")}""""
+            else ->
+                """id("org.jetbrains.kotlin.plugin.compose") version "${row.getValue("kgpVersion")}" apply false"""
+        }
+        return """
         import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
         plugins {
             id("org.jetbrains.kotlin.jvm") version "${row.getValue("kgpVersion")}"
-            id("org.jetbrains.kotlin.plugin.compose") version "${row.getValue("kgpVersion")}" apply false
+            $composeCompilerPlugin
             id("org.jetbrains.compose") version "${row.getValue("composeVersion")}"
             id("${pluginId()}") version "${pluginVersion()}"
         }
@@ -751,6 +802,92 @@ internal class CompatibilityTestKitSmokeTest {
             }
         }
         """.trimIndent()
+    }
+
+    private fun markerComposeKmpAndroidBuildScript(row: Map<String, String>): String {
+        val isAgp9 = row.getValue("fixture") == "compose-kmp-agp9"
+        val androidPlugin = when {
+            isAgp9 -> "com.android.kotlin.multiplatform.library"
+            else -> "com.android.library"
+        }
+        val shapeTask = when {
+            isAgp9 -> "assertAgp9KmpComposeShape"
+            else -> "assertAgp8KmpComposeShape"
+        }
+        val legacyAndroidTargetAssertion = when {
+            isAgp9 -> """
+                val androidTarget = androidTargets.single()
+                    as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+                check(androidTarget.namespace == "compat.compose.agp9.kmp")
+                check(androidTarget.compileSdk == 35)
+                check(androidTarget.minSdk == 24)
+            """.trimIndent()
+            else -> """
+                check(
+                    androidTargets.single() is
+                        org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget,
+                )
+                val android = project.extensions.getByName("android")
+                    as com.android.build.api.dsl.LibraryExtension
+                check(android.namespace == "compat.compose.agp8.kmp")
+                check(android.compileSdk == 35)
+                check(android.defaultConfig.minSdk == 24)
+            """.trimIndent()
+        }
+        return """
+        plugins {
+            id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}" apply false
+            id("org.jetbrains.kotlin.plugin.compose") version "${row.getValue("kgpVersion")}" apply false
+            id("org.jetbrains.compose") version "${row.getValue("composeVersion")}"
+            id("$androidPlugin") version "${row.getValue("agpVersion")}" apply false
+            id("${pluginId()}") version "${pluginVersion()}"
+        }
+
+        group = "compat"
+        version = "1.0.0"
+
+        fkcSetupMultiplatform(
+            config = {
+                setupVerification = false
+                enablePublication = false
+                enableGradleDoctor = false
+                setupCoroutines = false
+                androidNamespace = "compat.compose.${if (isAgp9) "agp9" else "agp8"}.kmp"
+                androidCompileSdk = 35
+                androidMinSdk = 24
+            },
+            kmp = { allDefaultTargets() },
+        )
+
+        plugins.withId("org.jetbrains.kotlin.multiplatform") {
+            dependencies.add(
+                "commonMainImplementation",
+                "org.jetbrains.compose.runtime:runtime:${row.getValue("composeVersion")}",
+            )
+        }
+
+        tasks.register("$shapeTask") {
+            doLast {
+                check(plugins.hasPlugin("org.jetbrains.compose"))
+                check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
+                check(plugins.hasPlugin("$androidPlugin"))
+                check(plugins.hasPlugin("org.jetbrains.kotlin.multiplatform"))
+                check(plugins.hasPlugin("com.android.library") == ${!isAgp9})
+                check(plugins.hasPlugin("com.android.kotlin.multiplatform.library") == $isAgp9)
+
+                val kotlin = project.extensions.getByType(
+                    org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension::class.java,
+                )
+                val androidTargets = kotlin.targets.matching { it.name == "android" }
+                check(androidTargets.size == 1) {
+                    "Expected one Android KMP target, got ${'$'}androidTargets"
+                }
+                $legacyAndroidTargetAssertion
+                check(kotlin.targets.names.contains("jvm"))
+            }
+        }
+        """.trimIndent()
+    }
 
     private fun localMavenRepoPath(): String {
         val path = checkNotNull(System.getProperty("fluxo.local.maven.repo")) {
@@ -924,6 +1061,46 @@ internal class CompatibilityTestKitSmokeTest {
 
             fun androidLibraryName(value: String): String =
                 value.trim().replaceFirstChar { it.uppercase() }
+            """.trimIndent(),
+        )
+    }
+
+    private fun writeComposeKmpSources(projectDir: Path) {
+        writeAndroidLintConfig(projectDir)
+        val commonMainDir = projectDir.resolve("src/commonMain/kotlin/compat")
+        val jvmMainDir = projectDir.resolve("src/jvmMain/kotlin/compat")
+        val androidMainDir = projectDir.resolve("src/androidMain/kotlin/compat")
+        Files.createDirectories(commonMainDir)
+        Files.createDirectories(jvmMainDir)
+        Files.createDirectories(androidMainDir)
+        commonMainDir.resolve("SharedComposable.kt").writeText(
+            """
+            package compat
+
+            import androidx.compose.runtime.Composable
+
+            @Composable
+            fun SharedComposableLabel(): String = "Fluxo"
+            """.trimIndent(),
+        )
+        jvmMainDir.resolve("JvmComposeEntry.kt").writeText(
+            """
+            package compat
+
+            import androidx.compose.runtime.Composable
+
+            @Composable
+            fun JvmComposableLabel(): String = SharedComposableLabel()
+            """.trimIndent(),
+        )
+        androidMainDir.resolve("AndroidComposeEntry.kt").writeText(
+            """
+            package compat
+
+            import androidx.compose.runtime.Composable
+
+            @Composable
+            fun AndroidComposableLabel(): String = SharedComposableLabel()
             """.trimIndent(),
         )
     }
