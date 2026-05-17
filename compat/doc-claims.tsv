@@ -1,0 +1,8 @@
+id	file	mustContain	sourceRefs	note
+readme-target-line	README.md	Targeted for Gradle 9.0+ and Kotlin 2.1+. Built with:	kotlin-kgp-2.3.21	Current consumer-facing floor claim; scheduled for model-driven rewrite after floor contradictions are resolved.
+readme-build-kotlin-badge	README.md	Kotlin-2.2.21	gradle-compat	Build Kotlin badge must match current catalog until latest promotion.
+readme-build-gradle-badge	README.md	Gradle-9.3.1	gradle-compat	Build Gradle badge must match current wrapper until latest promotion.
+readme-build-agp-badge	README.md	Android--Gradle--Plugin-9.1	android-agp-gradle	Build AGP badge must match current catalog major/minor until latest promotion.
+agents-build-pin	AGENTS.md	Currently: Kotlin 2.2.21, KSP 2.2.21-2.0.5, Gradle wrapper 9.3.1, AGP 9.1.1	gradle-compat	Contributor build-pin summary must be kept in sync.
+changelog-floor	CHANGELOG.md	consumer-compat floor: Kotlin 1.9 → **2.1**, Gradle 8 → **9.0+**	kotlin-kgp-2.3.21	Current release-history claim; do not rewrite history without explicit release-note policy.
+

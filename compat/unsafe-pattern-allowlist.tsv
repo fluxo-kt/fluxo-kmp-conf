@@ -1,0 +1,6 @@
+patternId	file	contains	rationale
+taskGraphWhenReady	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/FluxoKmpConfContext.kt	p.gradle.taskGraph.whenReady	Known defect: IDE-sync detection still uses task graph callback and is queued for replacement.
+taskGraphWhenReady	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/feat/DisableUnreachableTasks.kt	project.gradle.taskGraph.whenReady	Known defect: unreachable-task disabling mutates task enabled state from task graph callback.
+resolvedConfiguration	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/deps/LoadAndApplyPluginIfNotApplied.kt	.resolvedConfiguration.resolvedArtifacts	Known defect: dynamic plugin availability check resolves buildscript classpath at configuration time.
+runtimeGetRuntime	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/impl/ProjectUtils.kt	Runtime.getRuntime().availableProcessors()	Runtime query for CPU count; not process execution.
+runtimeGetRuntime	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/impl/ProjectUtils.kt	Runtime.getRuntime().maxMemory()	Runtime query for memory limit; not process execution.
