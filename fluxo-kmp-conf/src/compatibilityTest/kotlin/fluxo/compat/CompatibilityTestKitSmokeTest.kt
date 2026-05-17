@@ -153,12 +153,14 @@ internal class CompatibilityTestKitSmokeTest {
         val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
         Files.createDirectories(gradleUserHome)
         val requiredTasks = row.getValue("requiredTasks").split(' ')
+        val pluginClasspath = pluginUnderTestClasspath()
+        seedDependencyGuardBaseline(row, projectDir, gradleUserHome, pluginClasspath = pluginClasspath)
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir.toFile())
             .withTestKitDir(gradleUserHome.toFile())
             .withGradleVersion(row.getValue("gradleVersion"))
-            .withPluginClasspath(pluginUnderTestClasspath())
+            .withPluginClasspath(pluginClasspath)
             .withEnvironment(sanitizedEnvironment())
             .withArguments(gradleArguments(requiredTasks))
             .forwardOutput()
@@ -167,6 +169,7 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
 
@@ -183,6 +186,7 @@ internal class CompatibilityTestKitSmokeTest {
         val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
         Files.createDirectories(gradleUserHome)
         val requiredTasks = row.getValue("requiredTasks").split(' ')
+        seedDependencyGuardBaseline(row, projectDir, gradleUserHome, extraArguments = listOf("-PKMP_TARGETS=JVM"))
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir.toFile())
@@ -196,6 +200,7 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
 
@@ -211,6 +216,7 @@ internal class CompatibilityTestKitSmokeTest {
         val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
         Files.createDirectories(gradleUserHome)
         val requiredTasks = row.getValue("requiredTasks").split(' ')
+        seedDependencyGuardBaseline(row, projectDir, gradleUserHome, extraArguments = listOf("-PKMP_TARGETS=COMMON"))
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir.toFile())
@@ -224,6 +230,7 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
 
@@ -256,6 +263,7 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
         assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
         assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         check("Android namespace 'compat.agp9.kmp' (KMP+Android)" in result.output) {
             result.output
         }
@@ -293,6 +301,7 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
         assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
 
@@ -325,6 +334,7 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
         assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
 
@@ -341,6 +351,7 @@ internal class CompatibilityTestKitSmokeTest {
         val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
         Files.createDirectories(gradleUserHome)
         val requiredTasks = row.getValue("requiredTasks").split(' ')
+        seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir.toFile())
@@ -353,6 +364,7 @@ internal class CompatibilityTestKitSmokeTest {
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
         assertNoForbiddenResolvedClasspathLeaks(projectDir)
     }
@@ -370,6 +382,7 @@ internal class CompatibilityTestKitSmokeTest {
         val gradleUserHome = tempDir.resolve("${row.getValue("id")}-marker-gradle-user-home")
         Files.createDirectories(gradleUserHome)
         val requiredTasks = row.getValue("requiredTasks").split(' ')
+        seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir.toFile())
@@ -382,6 +395,7 @@ internal class CompatibilityTestKitSmokeTest {
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
         assertNoForbiddenResolvedClasspathLeaks(projectDir)
     }
@@ -1008,6 +1022,32 @@ internal class CompatibilityTestKitSmokeTest {
     private fun gradleArguments(requiredTasks: List<String>): List<String> =
         requiredTasks + "--stacktrace"
 
+    private fun seedDependencyGuardBaseline(
+        row: Map<String, String>,
+        projectDir: Path,
+        gradleUserHome: Path,
+        extraArguments: List<String> = emptyList(),
+        pluginClasspath: List<File> = emptyList(),
+    ) {
+        if (CHECK_TASK !in row.getValue("requiredTasks").split(' ')) {
+            return
+        }
+
+        val runner = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(listOf(DEPENDENCY_GUARD_BASELINE_TASK)) + extraArguments)
+        if (pluginClasspath.isNotEmpty()) {
+            runner.withPluginClasspath(pluginClasspath)
+        }
+
+        val result = runner.build()
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        result.assertTaskSuccess(":$DEPENDENCY_GUARD_BASELINE_TASK")
+    }
+
     private fun sanitizedEnvironment(): Map<String, String> =
         System.getenv().filterKeys { it !in KMP_TARGET_ENV_KEYS }
 
@@ -1055,6 +1095,11 @@ internal class CompatibilityTestKitSmokeTest {
             "setup maven POM",
             "maven publication",
         )
+        private val DEPENDENCY_GUARD_BASELINE_NOISE = listOf(
+            "Dependency Guard baseline created",
+        )
+        private const val CHECK_TASK = "check"
+        private const val DEPENDENCY_GUARD_BASELINE_TASK = "dependencyGuardBaseline"
         private val KMP_NO_TARGET_DIAGNOSTICS = listOf(
             "no applicable Kotlin targets found",
             "No Kotlin Targets Declared",

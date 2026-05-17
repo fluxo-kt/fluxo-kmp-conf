@@ -512,6 +512,19 @@ static verifiers pass.
   without weakening the routing fixture signal.
 - [x] Add Compose Desktop fixture rows with matching Compose Multiplatform and
   Kotlin Compose plugin versions.
+- [ ] Expand Compose/Kotlin coverage into explicit modes: Compose Multiplatform
+  with explicit `org.jetbrains.kotlin.plugin.compose`, Kotlin versions where
+  Compose compiler integration is supplied by Kotlin itself, and mismatched
+  Compose/Kotlin rows that fail with actionable diagnostics rather than linkage
+  crashes.
+- [ ] Expand Android/Kotlin coverage into explicit modes: AGP 8 plus
+  consumer-applied Kotlin Android, AGP 9 built-in/bundled Kotlin for non-KMP,
+  AGP 8 legacy KMP Android co-application, and AGP 9 KMP-aware Android plugin.
+  Each mode must prove which plugin supplies Kotlin tasks and must avoid
+  duplicate/hidden Kotlin plugin assumptions.
+- [ ] Add cross-axis fixtures for Compose in KMP+Android where relevant:
+  Android target plus Compose plugin ordering, AGP 9 KMP-aware target plus
+  Compose configuration, and desktop/JVM Compose without Android.
 - [x] Add a Kotlin JVM marker fixture that consumes the plugin through the repo
   localDev Maven plugin marker without `withPluginClasspath()`.
 - [x] Replace repo-local marker smoke with a configurable temporary local Maven
@@ -533,7 +546,7 @@ static verifiers pass.
 - [x] Add consumer buildscript classpath leak inspection after marker
   consumption if it can distinguish plugin leaks from Kotlin plugin's own
   classpath without false failures.
-- [ ] Decide whether dependencyGuard baseline creation in generated consumers is
+- [x] Decide whether dependencyGuard baseline creation in generated consumers is
   acceptable fixture byproduct or plugin-owned noise; if noise, make the fixture
   suppress it through public DSL/config rather than ignoring output.
 - [x] Classify `detektCompatibilityTest` as a JVM Detekt task so the new
