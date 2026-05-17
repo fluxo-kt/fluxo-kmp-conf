@@ -52,6 +52,14 @@ internal class CompatibilityTestKitSmokeTest {
         }
 
     @TestFactory
+    fun `generated KMP consumers reject invalid target filters`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "kmp-invalid-target").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runKmpInvalidTargetConsumer(row)
+            }
+        }
+
+    @TestFactory
     fun `generated AGP 8 KMP consumers use legacy Android path`(): Iterable<DynamicTest> =
         (selectedRows(fixture = "android-kmp-agp8") +
             selectedRows(fixture = "android-kmp-agp8-exec")).map { row ->
@@ -242,6 +250,40 @@ internal class CompatibilityTestKitSmokeTest {
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun runKmpInvalidTargetConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-kmp-invalid-target-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerKmpBuildScript(row),
+        )
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=TYPO")
+            .forwardOutput()
+            .buildAndFail()
+
+        check("KMP_TARGETS property of 'TYPO' not recognized" in result.output) {
+            result.output
+        }
+        check("Known options are:" in result.output) {
+            result.output
+        }
+        check("ANDROID" in result.output && "IOS_SIMULATOR_ARM64" in result.output) {
+            result.output
+        }
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     }
 
     private fun runAgp9KmpConsumer(row: Map<String, String>) {

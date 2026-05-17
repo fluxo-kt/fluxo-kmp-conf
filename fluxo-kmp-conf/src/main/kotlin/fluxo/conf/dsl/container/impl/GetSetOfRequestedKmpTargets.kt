@@ -94,4 +94,8 @@ private val ALIASES = mapOf(
     Code::PLATFORM.name to Code.PLATFORM,
 )
 
-private val POSSIBLE_KEYS = ALIASES.keys.toList() + Code.SPLIT_TARGETS_PROP.uppercase()
+private val POSSIBLE_KEYS = (
+    ALIASES.keys +
+        Code.ALL.map(KmpTargetCode::name) +
+        Code.SPLIT_TARGETS_PROP.uppercase()
+    ).distinct().sorted()
