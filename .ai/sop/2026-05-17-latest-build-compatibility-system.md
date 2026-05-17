@@ -331,6 +331,10 @@ Keep allowlists small and justified at the call site.
   `CleanupMode.NEVER`; GradleRunner uses Tooling API and does not support
   `--no-daemon`, while daemon-held cache files can make JUnit temp cleanup fail
   after a successful consumer build.
+- Signing-key checks must be pure during configuration. Missing signing is
+  actionable only at remote publish task execution via
+  `validateSignedReleaseBeforeRemotePublish`; non-publish tasks must not warn
+  about unsigned publications.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -466,7 +470,10 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   unless explicitly opted in.
 - [ ] Keep `compatibilityTest` dependencies outside mirrored build-script
   regions unless `self` demonstrably needs the same dependency.
-- [ ] Move signing warnings and SCM probing to publish tasks only.
+- [x] Remove configuration-time signing warnings from publication setup while
+  keeping remote-publish task execution failure for unsigned non-snapshot
+  releases.
+- [ ] Move remaining SCM probing to publish tasks only.
 - [ ] Locate every publication signing/SCM read path and classify whether it is
   configuration-time noise, task input, or release preflight before editing.
 - [ ] Make local publish from `check` self-check/opt-in.

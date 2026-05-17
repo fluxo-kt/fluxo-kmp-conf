@@ -30,7 +30,6 @@ import fluxo.log.e
 import fluxo.log.l
 import fluxo.log.w
 import fluxo.test.formatSummary
-import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
@@ -396,15 +395,13 @@ internal fun MavenPom.setupPublicationPom(
 }
 
 
-private val signingKeyNotificationLogged = AtomicBoolean()
-
 internal fun FluxoKmpConfContext.setupPublicationRepositoryAndSigning(
     p: Project,
     config: FluxoPublicationConfig,
     publishing: PublishingExtension,
     mavenRemoteRepo: Boolean = true,
 ) {
-    val isSigningEnabled = getIfSigningEnabled(config, p)
+    val isSigningEnabled = getIfSigningEnabled(config)
     p.validateSignedReleaseBeforeRemotePublish(config)
     if (isSigningEnabled) {
         p.pluginManager.apply(SIGNING_EXT_NAME)
@@ -504,19 +501,8 @@ internal fun FluxoKmpConfContext.setupPublishingRepositories(
     }
 }
 
-internal fun getIfSigningEnabled(config: FluxoPublicationConfig, p: Project): Boolean {
-    val notify = signingKeyNotificationLogged.compareAndSet(false, true)
-    val isSigningEnabled = config.isSigningEnabled
-    if (notify) {
-        when {
-            isSigningEnabled -> p.logger.l("SIGNING_KEY SET, applying signing configuration")
-
-            // TODO: Warn only when assemble and/or publishing is really called.
-            else -> p.logger.w("SIGNING_KEY IS NOT SET! Publications are unsigned")
-        }
-    }
-    return isSigningEnabled
-}
+internal fun getIfSigningEnabled(config: FluxoPublicationConfig): Boolean =
+    config.isSigningEnabled
 
 internal fun Project.validateSignedReleaseBeforeRemotePublish(config: FluxoPublicationConfig) {
     tasks.configureEach {

@@ -112,7 +112,7 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
     conf.ctx.setupPublishingRepositories(p, config, publishing, mavenRemoteRepo = false)
     p.validateSignedReleaseBeforeRemotePublish(config)
 
-    if (getIfSigningEnabled(config, p)) {
+    if (getIfSigningEnabled(config)) {
         p.logger.l("setup publications signing configuration")
 
         // Set Vanniktech's props first as a compatibility measure.
