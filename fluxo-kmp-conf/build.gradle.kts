@@ -147,7 +147,9 @@ tasks.test {
 }
 
 val pluginUnderTestMetadataTask = tasks.named("pluginUnderTestMetadata")
-val publishPluginToLocalDevTask = tasks.named("publishAllPublicationsToLocalDevRepository")
+val publishPluginToLocalDevTasks = tasks.matching {
+    it.name == "publishAllPublicationsToLocalDevRepository"
+}
 val compatibilityTestKotlinPluginClasspath = configurations.register(
     "compatibilityTestKotlinPluginClasspath",
 ) {
@@ -170,7 +172,7 @@ testing {
             targets.configureEach {
                 testTask.configure {
                     dependsOn(pluginUnderTestMetadataTask)
-                    dependsOn(publishPluginToLocalDevTask)
+                    dependsOn(publishPluginToLocalDevTasks)
                     classpath += files(pluginUnderTestMetadataTask)
                     shouldRunAfter(tasks.test)
                     systemProperty("fluxo.repo.root", rootDir.absolutePath)

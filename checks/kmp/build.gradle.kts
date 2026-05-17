@@ -84,9 +84,11 @@ fkcSetupMultiplatform(
 // Mocha's current transitive ranges still admit vulnerable versions; keep the
 // fixture lockfile on patched versions until Mocha moves its own ranges.
 listOf("kotlinYarn", "kotlinWasmYarn").forEach { extensionName ->
-    extensions.configure<BaseYarnRootExtension>(extensionName) {
-        resolution("diff", "8.0.3")
-        resolution("js-yaml", "4.1.1")
-        resolution("serialize-javascript", "7.0.5")
+    extensions.findByName(extensionName)?.let { extension ->
+        (extension as BaseYarnRootExtension).apply {
+            resolution("diff", "8.0.3")
+            resolution("js-yaml", "4.1.1")
+            resolution("serialize-javascript", "7.0.5")
+        }
     }
 }

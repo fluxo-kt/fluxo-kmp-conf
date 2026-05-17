@@ -323,6 +323,14 @@ Keep allowlists small and justified at the call site.
   plugin-runtime tasks, because runtime verification setup can disappear when
   tests are disabled, `check`/`test` are excluded, or the build is included with
   no startup tasks.
+- Build-script wiring must tolerate included-build mode. Optional publication
+  tasks, including localDev publication tasks used by marker tests, must be
+  wired through lazy task collections rather than hard `tasks.named(...)` calls;
+  otherwise every `checks/*` build can fail during configuration before it even
+  reaches its own tasks.
+- Check builds must respect `KMP_TARGETS` filtering too. Optional JS/Wasm/Yarn
+  extension configuration must use presence checks, because an Android-only
+  filtered run legitimately has no `kotlinYarn`/`kotlinWasmYarn` extensions.
 - Existing `checks/*` builds consume the local plugin via composite
   `includeBuild("../../")`; they do not prove published plugin marker/POM
   behavior. Marker consumption must be a separate TestKit/release fixture.
