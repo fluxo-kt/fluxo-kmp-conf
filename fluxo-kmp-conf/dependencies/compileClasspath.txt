@@ -34,7 +34,7 @@ com.guardsquare:proguard-core:9.3.2
 com.guardsquare:proguard-gradle:7.9.1
 com.louiscad.complete-kotlin:com.louiscad.complete-kotlin.gradle.plugin:1.1.0
 com.louiscad.complete-kotlin:plugin:1.1.0
-com.pinterest.ktlint:ktlint-cli:1.4.1
+com.pinterest.ktlint:ktlint-cli:1.8.0
 com.savvasdalkitsis.module-dependency-graph:com.savvasdalkitsis.module-dependency-graph.gradle.plugin:0.12
 com.savvasdalkitsis:module-dependency-graph:0.12
 com.squareup.moshi:moshi-adapters:1.15.0

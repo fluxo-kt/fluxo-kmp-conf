@@ -125,7 +125,7 @@ dokka = "2.2.0"
 detekt = "1.23.8"
 
 # https://github.com/pinterest/ktlint/releases
-ktlint = "1.4.1"
+ktlint = "1.8.0"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
 spotless = "8.4.0"
