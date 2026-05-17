@@ -21,16 +21,15 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaCompilation
 @Suppress("ReturnCount")
 internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: KotlinConfig) {
     val jvmTarget = kc.jvmTarget
+    val effectiveJvmTarget = jvmTarget ?: kc.jvmTargetInt.asJvmTargetVersion()
     if (jvmTarget.isNullOrEmpty()) {
-        val jreTarget = kc.jvmTargetInt.asJvmTargetVersion()
         project.logger.l(
-            "Java compatibility is not explicitly set, current JRE ($jreTarget) will be used!",
+            "Java compatibility is not explicitly set, current JRE ($effectiveJvmTarget) will be used!",
         )
-        return
     }
 
     val jvmToolchain = kc.jvmToolchain
-    if (jvmToolchain) {
+    if (jvmToolchain && !jvmTarget.isNullOrEmpty()) {
         // Kotlin set up toolchain for java automatically
         jvmToolchain(kc.jvmTargetInt)
 
@@ -46,7 +45,7 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
     } else {
         // Java
         project.configureExtensionIfAvailable({ JavaPluginExtension::class }) {
-            jvmTarget.asJavaVersion().let { v ->
+            effectiveJvmTarget.asJavaVersion().let { v ->
                 sourceCompatibility = v
                 targetCompatibility = v
             }
@@ -68,7 +67,7 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
         // — only the getter survives — so configure via the property directly. Behaviour is
         // identical: still sets sourceCompatibility + targetCompatibility on the per-extension
         // singleton CompileOptions instance.
-        val v = jvmTarget.asJavaVersion()
+        val v = effectiveJvmTarget.asJavaVersion()
         compileOptions.sourceCompatibility = v
         compileOptions.targetCompatibility = v
         // The legacy `android.kotlinOptions` extension was removed in AGP 9 +

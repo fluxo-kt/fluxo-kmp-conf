@@ -384,6 +384,13 @@ Keep allowlists small and justified at the call site.
   AGP 8 with consumer-applied `org.jetbrains.kotlin.android`, and AGP 9 with
   built-in Kotlin where that legacy plugin remains unapplied. Both still use
   the legacy `com.android.library` extension path.
+- Android execution fixtures must compile real Kotlin sources, enable
+  verification, run variant/lint tasks, and reject noisy update-check or Detekt
+  classification output. A task existing or running `NO-SOURCE` is not enough
+  execution evidence.
+- Non-KMP Android consumers with implicit JVM target expose a real compatibility
+  invariant: Kotlin and AGP Java compile targets must be aligned to the same
+  effective JRE target even when `jvmTarget` is not explicitly configured.
 - Source-level TestKit rows can still report the build-pin KGP version because
   their injected plugin-under-test classpath includes the build-pin Kotlin
   plugin. Marker rows are the classloader-fidelity evidence for exact consumer
@@ -482,15 +489,15 @@ until PR-profile TestKit, marker consumption, and static verifiers pass.
   `KMP_TARGETS=COMMON`; current empty `KMP_TARGETS` means all targets.
 - [x] Add the first AGP 8 Android/KMP routing fixture for the legacy
   `com.android.library` plus KMP path.
-- [ ] Add AGP 8 Android/KMP execution fixture rows for lint/variant task
+- [x] Add AGP 8 Android/KMP execution fixture rows for lint/variant task
   coverage without weakening the routing fixture signal.
 - [x] Add the first AGP 9 Android/KMP routing fixture for
   `com.android.kotlin.multiplatform.library`.
-- [ ] Add AGP 9 Android/KMP execution fixture rows for lint/variant task
+- [x] Add AGP 9 Android/KMP execution fixture rows for lint/variant task
   coverage without weakening the routing fixture signal.
 - [x] Add non-KMP Android routing fixture rows for the legacy Android path
   under AGP 8 consumer-applied Kotlin Android and AGP 9 built-in Kotlin.
-- [ ] Add non-KMP Android execution fixture rows for lint/variant task coverage
+- [x] Add non-KMP Android execution fixture rows for lint/variant task coverage
   without weakening the routing fixture signal.
 - [ ] Add Compose Desktop fixture rows with matching Compose Multiplatform and
   Kotlin Compose plugin versions.

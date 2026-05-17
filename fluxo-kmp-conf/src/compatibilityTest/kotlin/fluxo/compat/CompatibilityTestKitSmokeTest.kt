@@ -53,7 +53,8 @@ internal class CompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun `generated AGP 8 KMP consumers use legacy Android path`(): Iterable<DynamicTest> =
-        selectedRows(fixture = "android-kmp-agp8").map { row ->
+        (selectedRows(fixture = "android-kmp-agp8") +
+            selectedRows(fixture = "android-kmp-agp8-exec")).map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runAgp8KmpConsumer(row)
             }
@@ -61,7 +62,8 @@ internal class CompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun `generated AGP 9 KMP consumers use KMP-aware Android path`(): Iterable<DynamicTest> =
-        selectedRows(fixture = "android-kmp-agp9").map { row ->
+        (selectedRows(fixture = "android-kmp-agp9") +
+            selectedRows(fixture = "android-kmp-agp9-exec")).map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runAgp9KmpConsumer(row)
             }
@@ -70,7 +72,9 @@ internal class CompatibilityTestKitSmokeTest {
     @TestFactory
     fun `generated Android library consumers use legacy Android path`(): Iterable<DynamicTest> =
         (selectedRows(fixture = "android-lib-agp8") +
-            selectedRows(fixture = "android-lib-agp9")).map { row ->
+            selectedRows(fixture = "android-lib-agp8-exec") +
+            selectedRows(fixture = "android-lib-agp9") +
+            selectedRows(fixture = "android-lib-agp9-exec")).map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runAndroidLibraryConsumer(row)
             }
@@ -224,6 +228,9 @@ internal class CompatibilityTestKitSmokeTest {
         projectDir.resolve("build.gradle.kts").writeText(
             markerAgp9KmpBuildScript(row),
         )
+        if (row.isExecutionFixture()) {
+            writeAndroidKmpSources(projectDir)
+        }
         val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
         Files.createDirectories(gradleUserHome)
         val requiredTasks = row.getValue("requiredTasks").split(' ')
@@ -239,6 +246,8 @@ internal class CompatibilityTestKitSmokeTest {
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
+        assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
+        assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
         check("Android namespace 'compat.agp9.kmp' (KMP+Android)" in result.output) {
             result.output
         }
@@ -255,6 +264,9 @@ internal class CompatibilityTestKitSmokeTest {
         projectDir.resolve("build.gradle.kts").writeText(
             markerAgp8KmpBuildScript(row),
         )
+        if (row.isExecutionFixture()) {
+            writeAndroidKmpSources(projectDir)
+        }
         val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
         Files.createDirectories(gradleUserHome)
         val requiredTasks = row.getValue("requiredTasks").split(' ')
@@ -270,6 +282,8 @@ internal class CompatibilityTestKitSmokeTest {
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
         assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
+        assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
+        assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
@@ -283,6 +297,9 @@ internal class CompatibilityTestKitSmokeTest {
         projectDir.resolve("build.gradle.kts").writeText(
             markerAndroidLibraryBuildScript(row),
         )
+        if (row.isExecutionFixture()) {
+            writeAndroidLibrarySources(projectDir)
+        }
         val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
         Files.createDirectories(gradleUserHome)
         val requiredTasks = row.getValue("requiredTasks").split(' ')
@@ -297,6 +314,8 @@ internal class CompatibilityTestKitSmokeTest {
             .build()
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+        assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
+        assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
     }
@@ -472,7 +491,7 @@ internal class CompatibilityTestKitSmokeTest {
 
         fkcSetupMultiplatform(
             config = {
-                setupVerification = false
+                setupVerification = ${row.isExecutionFixture()}
                 enablePublication = false
                 enableGradleDoctor = false
                 setupCoroutines = false
@@ -519,7 +538,7 @@ internal class CompatibilityTestKitSmokeTest {
 
         fkcSetupMultiplatform(
             config = {
-                setupVerification = false
+                setupVerification = ${row.isExecutionFixture()}
                 enablePublication = false
                 enableGradleDoctor = false
                 setupCoroutines = false
@@ -563,7 +582,7 @@ internal class CompatibilityTestKitSmokeTest {
         """.trimIndent()
 
     private fun markerAndroidLibraryBuildScript(row: Map<String, String>): String {
-        val isAgp8 = row.getValue("fixture") == "android-lib-agp8"
+        val isAgp8 = row.getValue("fixture").startsWith("android-lib-agp8")
         val kotlinAndroidPlugin = if (isAgp8) {
             "id(\"org.jetbrains.kotlin.android\") version \"${row.getValue("kgpVersion")}\""
         } else {
@@ -582,7 +601,7 @@ internal class CompatibilityTestKitSmokeTest {
         fkcSetupAndroidLibrary(
             namespace = "compat.${row.getValue("id").replace('-', '.')}",
             config = {
-                setupVerification = false
+                setupVerification = ${row.isExecutionFixture()}
                 enablePublication = false
                 enableGradleDoctor = false
                 setupCoroutines = false
@@ -744,6 +763,47 @@ internal class CompatibilityTestKitSmokeTest {
         )
     }
 
+    private fun writeAndroidKmpSources(projectDir: Path) {
+        writeAndroidLintConfig(projectDir)
+        val androidMainDir = projectDir.resolve("src/androidMain/kotlin/compat")
+        Files.createDirectories(androidMainDir)
+        androidMainDir.resolve("AndroidSubject.kt").writeText(
+            """
+            package compat
+
+            fun androidTargetName(value: String): String =
+                value.trim().replaceFirstChar { it.uppercase() }
+            """.trimIndent(),
+        )
+    }
+
+    private fun writeAndroidLibrarySources(projectDir: Path) {
+        writeAndroidLintConfig(projectDir)
+        val mainDir = projectDir.resolve("src/main/kotlin/compat")
+        Files.createDirectories(mainDir)
+        mainDir.resolve("AndroidSubject.kt").writeText(
+            """
+            package compat
+
+            fun androidLibraryName(value: String): String =
+                value.trim().replaceFirstChar { it.uppercase() }
+            """.trimIndent(),
+        )
+    }
+
+    private fun writeAndroidLintConfig(projectDir: Path) {
+        val configDir = projectDir.resolve("config")
+        Files.createDirectories(configDir)
+        configDir.resolve("lint.xml").writeText(
+            """
+            <lint>
+                <issue id="AndroidGradlePluginVersion" severity="ignore" />
+                <issue id="NewerVersionAvailable" severity="ignore" />
+            </lint>
+            """.trimIndent(),
+        )
+    }
+
     private fun selectedRows(fixture: String): List<Map<String, String>> {
         val profile = System.getProperty("compat.profile", "pr")
         val profiles = when (profile) {
@@ -773,6 +833,9 @@ internal class CompatibilityTestKitSmokeTest {
 
     private fun sanitizedEnvironment(): Map<String, String> =
         System.getenv().filterKeys { it !in KMP_TARGET_ENV_KEYS }
+
+    private fun Map<String, String>.isExecutionFixture(): Boolean =
+        getValue("fixture").endsWith("-exec")
 
     private fun pluginUnderTestClasspath(): List<File> {
         val metadata = Properties()
@@ -819,6 +882,16 @@ internal class CompatibilityTestKitSmokeTest {
             "no applicable Kotlin targets found",
             "No Kotlin Targets Declared",
             "Unused Kotlin Source Sets",
+        )
+        private val ANDROID_LINT_VERSION_NOISE = listOf(
+            "A newer version of com.android.library",
+            "A newer version of org.jetbrains.kotlin",
+            "AndroidGradlePluginVersion",
+            "NewerVersionAvailable",
+        )
+        private val DETEKT_CLASSIFICATION_NOISE = listOf(
+            "Unexpected Detekt task",
+            "platform UNKNOWN is disabled",
         )
         private val FORBIDDEN_RUNTIME_LEAKS = listOf(
             "kotlin-compiler-embeddable",

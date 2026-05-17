@@ -71,6 +71,8 @@ private fun detectPlatformFromString(platform: String?): DetectedTaskPlatform? =
     platform.equals("Linux", ignoreCase = true) -> DetectedTaskPlatform.LINUX
 
     platform.equals("Android", ignoreCase = true) ||
+        platform.equals("Debug", ignoreCase = true) ||
+        platform.equals("Release", ignoreCase = true) ||
         platform.equals("bundle", ignoreCase = true) ||
         platform.equals("assemble", ignoreCase = true)
     -> DetectedTaskPlatform.ANDROID
