@@ -78,6 +78,14 @@ internal class CompatibilityTestKitSmokeTest {
         }
 
     @TestFactory
+    fun `generated AGP 9 KMP app consumers fail with migration guidance`(): Iterable<DynamicTest> =
+        selectedRows(fixture = "android-kmp-agp9-app-unsupported").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runAgp9KmpAppUnsupportedConsumer(row)
+            }
+        }
+
+    @TestFactory
     fun `generated Android library consumers use legacy Android path`(): Iterable<DynamicTest> =
         (selectedRows(fixture = "android-lib-agp8") +
             selectedRows(fixture = "android-lib-agp8-exec") +
@@ -321,6 +329,40 @@ internal class CompatibilityTestKitSmokeTest {
         }
         assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
         requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+
+    private fun runAgp9KmpAppUnsupportedConsumer(row: Map<String, String>) {
+        val projectDir = tempDir.resolve(row.getValue("id"))
+        Files.createDirectories(projectDir)
+        projectDir.resolve("settings.gradle.kts").writeText(
+            markerSettingsScript(rootProjectName = "compat-agp9-kmp-app-consumer"),
+        )
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerAgp9KmpAppUnsupportedBuildScript(row),
+        )
+        val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+        Files.createDirectories(gradleUserHome)
+        val requiredTasks = row.getValue("requiredTasks").split(' ')
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir.toFile())
+            .withTestKitDir(gradleUserHome.toFile())
+            .withGradleVersion(row.getValue("gradleVersion"))
+            .withEnvironment(sanitizedEnvironment())
+            .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID")
+            .forwardOutput()
+            .buildAndFail()
+
+        check("AGP 9+ rejects `com.android.application`" in result.output) {
+            result.output
+        }
+        check("there is no KMP-aware AGP application plugin" in result.output) {
+            result.output
+        }
+        check("com.android.kotlin.multiplatform.library" in result.output) {
+            result.output
+        }
+        assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     }
 
     private fun runAgp8KmpConsumer(row: Map<String, String>) {
@@ -718,6 +760,34 @@ internal class CompatibilityTestKitSmokeTest {
                 check(androidTarget.minSdk == 24)
             }
         }
+        """.trimIndent()
+
+    private fun markerAgp9KmpAppUnsupportedBuildScript(row: Map<String, String>): String =
+        """
+        plugins {
+            id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}" apply false
+            id("com.android.application") version "${row.getValue("agpVersion")}" apply false
+            id("${pluginId()}") version "${pluginVersion()}"
+        }
+
+        group = "compat"
+        version = "1.0.0"
+
+        fkcSetupMultiplatform(
+            config = {
+                setupVerification = false
+                enablePublication = false
+                enableGradleDoctor = false
+                setupCoroutines = false
+                androidNamespace = "compat.agp9.kmp.app"
+                androidApplicationId = "compat.agp9.kmp.app"
+                androidCompileSdk = 35
+                androidMinSdk = 24
+            },
+            kmp = {
+                androidApp()
+            },
+        )
         """.trimIndent()
 
     private fun markerAndroidLibraryBuildScript(row: Map<String, String>): String {
