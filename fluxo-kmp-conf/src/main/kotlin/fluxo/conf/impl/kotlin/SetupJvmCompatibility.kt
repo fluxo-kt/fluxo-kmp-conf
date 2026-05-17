@@ -24,7 +24,8 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
     val effectiveJvmTarget = jvmTarget ?: kc.jvmTargetInt.asJvmTargetVersion()
     if (jvmTarget.isNullOrEmpty()) {
         project.logger.l(
-            "Java compatibility is not explicitly set, current JRE ($effectiveJvmTarget) will be used!",
+            "Java compatibility is not explicitly set, " +
+                "current JRE ($effectiveJvmTarget) will be used!",
         )
     }
 
