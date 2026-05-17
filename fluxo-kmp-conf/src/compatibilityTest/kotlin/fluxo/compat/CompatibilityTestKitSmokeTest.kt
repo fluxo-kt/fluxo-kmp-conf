@@ -5,6 +5,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Properties
 import kotlin.io.path.writeText
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -17,7 +18,7 @@ internal class CompatibilityTestKitSmokeTest {
     lateinit var tempDir: Path
 
     @Test
-    fun `generated Kotlin JVM consumer with buildscript Kotlin classpath runs help without linkage crashes`() {
+    fun `generated Kotlin JVM consumer runs required lifecycle tasks without linkage crashes`() {
         val row = currentBuildRow()
         val projectDir = tempDir.resolve("kotlin-jvm-consumer")
         Files.createDirectories(projectDir)
@@ -67,9 +68,19 @@ internal class CompatibilityTestKitSmokeTest {
                 setupVerification = false
                 enablePublication = false
                 enableGradleDoctor = false
+                setupCoroutines = false
+            }
+
+            dependencies {
+                add("testImplementation", "org.jetbrains.kotlin:kotlin-test-junit5:${row.getValue("kgpVersion")}")
+            }
+
+            tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+                useJUnitPlatform()
             }
             """.trimIndent(),
         )
+        writeKotlinJvmSources(projectDir)
         val gradleUserHome = tempDir.resolve("gradle-user-home")
         Files.createDirectories(gradleUserHome)
 
@@ -78,14 +89,46 @@ internal class CompatibilityTestKitSmokeTest {
             .withTestKitDir(gradleUserHome.toFile())
             .withGradleVersion(row.getValue("gradleVersion"))
             .withPluginClasspath(pluginUnderTestClasspath())
-            .withArguments("help", "--stacktrace")
+            .withArguments("help", "compileKotlin", "test", "check", "--stacktrace")
             .forwardOutput()
             .build()
 
         assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
-        require(result.task(":help")?.outcome == TaskOutcome.SUCCESS) {
-            result.output
-        }
+        assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+        result.assertTaskSuccess(":help")
+        result.assertTaskSuccess(":compileKotlin")
+        result.assertTaskSuccess(":test")
+        result.assertTaskSuccess(":check")
+    }
+
+    private fun writeKotlinJvmSources(projectDir: Path) {
+        val mainDir = projectDir.resolve("src/main/kotlin/compat")
+        val testDir = projectDir.resolve("src/test/kotlin/compat")
+        Files.createDirectories(mainDir)
+        Files.createDirectories(testDir)
+        mainDir.resolve("CompatSubject.kt").writeText(
+            """
+            package compat
+
+            fun normalizeName(value: String): String =
+                value.trim().replaceFirstChar { it.uppercase() }
+            """.trimIndent(),
+        )
+        testDir.resolve("CompatSubjectTest.kt").writeText(
+            """
+            package compat
+
+            import kotlin.test.Test
+            import kotlin.test.assertEquals
+
+            class CompatSubjectTest {
+                @Test
+                fun normalizesInput() {
+                    assertEquals("Fluxo", normalizeName(" fluxo"))
+                }
+            }
+            """.trimIndent(),
+        )
     }
 
     private fun currentBuildRow(): Map<String, String> {
@@ -120,12 +163,24 @@ internal class CompatibilityTestKitSmokeTest {
     private fun String.containsAny(needles: Iterable<String>): Boolean =
         needles.any { it in this }
 
+    private fun BuildResult.assertTaskSuccess(path: String) {
+        require(task(path)?.outcome == TaskOutcome.SUCCESS) {
+            output
+        }
+    }
+
     private companion object {
         private val KNOWN_CRASH_SIGNATURES = listOf(
             "NoSuchMethodError",
             "ClassCastException",
             "NoClassDefFoundError",
             "Could not initialize class",
+        )
+        private val PUBLICATION_NOISE_SIGNATURES = listOf(
+            "SIGNING_KEY",
+            "Publications are unsigned",
+            "setup maven POM",
+            "maven publication",
         )
     }
 }

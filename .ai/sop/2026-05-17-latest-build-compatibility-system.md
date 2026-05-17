@@ -396,6 +396,9 @@ not start TestKit fixtures or build-pin bumps until those verifiers exist.
   without adding KGP to the published runtime dependency graph.
 - [ ] Add Kotlin JVM consumer fixture rows for `help`, `compileKotlin`, `test`,
   and `check`.
+- [x] Seed the Kotlin JVM fixture with the `current-build` model row, real
+  Kotlin source and test files, isolated TestKit state, required lifecycle task
+  outcomes, and linkage-crash absence assertions.
 - [ ] Add KMP consumer fixture rows for `fkcSetupMultiplatform(config = {})`,
   target filtering, all-targets-disabled configuration, and source-set behavior.
 - [ ] Add AGP 8 Android/KMP fixture rows for the legacy `com.android.library`
