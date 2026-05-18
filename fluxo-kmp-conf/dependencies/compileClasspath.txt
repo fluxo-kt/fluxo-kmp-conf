@@ -39,8 +39,9 @@ com.savvasdalkitsis.module-dependency-graph:com.savvasdalkitsis.module-dependenc
 com.savvasdalkitsis:module-dependency-graph:0.12
 com.squareup.moshi:moshi-adapters:1.15.0
 com.squareup.moshi:moshi:1.15.1
-com.squareup.okhttp3:okhttp-bom:4.12.0
-com.squareup.okhttp3:okhttp:4.12.0
+com.squareup.okhttp3:okhttp-bom:5.3.2
+com.squareup.okhttp3:okhttp-jvm:5.3.2
+com.squareup.okhttp3:okhttp:5.3.2
 com.squareup.okio:okio-jvm:3.17.0
 com.squareup.okio:okio:3.17.0
 com.squareup.retrofit2:retrofit:2.11.0
