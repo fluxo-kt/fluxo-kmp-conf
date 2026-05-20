@@ -7,6 +7,7 @@ import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.KmpConfigurationContainerDsl
 import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.withType
+import java.util.concurrent.ConcurrentHashMap
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests
@@ -85,6 +86,15 @@ public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
     // Configure a separate test where code runs in worker thread
     // https://kotlinlang.org/docs/compiler-reference.html#generate-worker-test-runner-trw.
     targets.withType<KotlinNativeTargetWithTests<*>> {
+        val targetName = name
+        val targetId = targetName.replaceFirstChar { it.uppercase() }
+        project.tasks.configureEach {
+            if (isSimulatorTestTask(name, targetName, targetId)) {
+                onlyIf("available simulator runtime for $targetName") {
+                    hasRunnableAppleSimulatorRuntime(targetName)
+                }
+            }
+        }
         val background = "background"
         binaries {
             test(background, listOf(DEBUG)) {
@@ -94,6 +104,34 @@ public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
         testRuns.create(background) {
             setExecutionSourceFrom(binaries.getTest(background, DEBUG))
         }
+    }
+}
+
+private val appleSimulatorRuntimeCache = ConcurrentHashMap<String, Boolean>()
+
+private fun isSimulatorTestTask(taskName: String, targetName: String, targetId: String): Boolean =
+    taskName == "${targetName}Test" ||
+        taskName == "${targetName}BackgroundTest" ||
+        taskName == "compileTestKotlin$targetId" ||
+        taskName.startsWith("link") && taskName.endsWith("Test$targetId")
+
+private fun hasRunnableAppleSimulatorRuntime(targetName: String): Boolean {
+    val platform = when {
+        targetName.startsWith("iosSimulator") || targetName == "iosX64" -> "iOS"
+        targetName.startsWith("tvosSimulator") || targetName == "tvosX64" -> "tvOS"
+        targetName.startsWith("watchosSimulator") || targetName == "watchosX64" -> "watchOS"
+        else -> return true
+    }
+
+    return appleSimulatorRuntimeCache.getOrPut(platform) {
+        runCatching {
+            ProcessBuilder("xcrun", "simctl", "list", "runtimes", "available", "--json")
+                .redirectErrorStream(true)
+                .start()
+                .inputStream
+                .bufferedReader()
+                .readText()
+        }.getOrDefault("").contains("\"platform\" : \"$platform\"")
     }
 }
 
