@@ -46,7 +46,10 @@ internal fun Project.implementation(
 ) = addConfiguredDependencyTo(dh, IMPLEMENTATION, dependencyNotation, configuration)
 
 internal fun Project.implementation(dch: DependencyConstraintHandler, constraintNotation: Any) =
-    addAndLog(dch, IMPLEMENTATION, constraintNotation)
+    when {
+        configurations.findByName(IMPLEMENTATION) == null -> null
+        else -> addAndLog(dch, IMPLEMENTATION, constraintNotation)
+    }
 
 internal fun KotlinDependencyHandler.implementationAndLog(dependencyNotation: Any) =
     implementation(dependencyNotation).also {

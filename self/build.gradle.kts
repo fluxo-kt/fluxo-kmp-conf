@@ -8,6 +8,21 @@ plugins {
 val pluginDir = "fluxo-kmp-conf"
 val pluginId = libs.plugins.fluxo.conf.get().pluginId
 version = libs.versions.version.get()
+val resDir: Provider<Directory> = layout.buildDirectory
+    .dir("generated/sources/fluxo/resources").map { dir ->
+        val dirFile = dir.asFile
+        dirFile.mkdirs()
+        val targetFile = File(dirFile, "fluxo.versions.toml")
+        project.file("../gradle/libs.versions.toml").useLines { lines ->
+            targetFile.bufferedWriter().use { writer ->
+                lines.map { it.substringBefore('#').trim() }
+                    .filter { it.isNotEmpty() }
+                    .joinTo(writer, separator = "\n")
+            }
+        }
+        logger.lifecycle("   Generated: ${targetFile.relativeTo(layout.projectDirectory.asFile)}")
+        dir
+    }
 
 // FIXME: Find a way to deduplicate configuration between `self` and `plugin` modules.
 
@@ -19,6 +34,7 @@ java {
 kotlin {
     sourceSets.main {
         kotlin.srcDir("../$pluginDir/src/main/kotlin")
+        resources.srcDir(resDir.get())
     }
 
     explicitApi()

@@ -3,13 +3,11 @@
 @file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
-import fluxo.conf.impl.compileOnlyAndLog
 import fluxo.conf.impl.implementation
 import fluxo.conf.impl.implementationAndLog
 import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.kotlin.KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION
-import fluxo.conf.impl.maybeRegister
 import fluxo.conf.kmp.SourceSetBundle
 import fluxo.log.w
 import kotlin.properties.PropertyDelegateProvider
@@ -27,6 +25,8 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
+
+private const val IMPLEMENTATION_CONFIGURATION = "implementation"
 
 
 // region Named source sets and bundles
@@ -395,21 +395,10 @@ public fun <E> E.commonCompileOnly(
 
     with(p) {
         val sourceSets = sourceSets
+        // KGP cannot model common `compileOnly` for JS/Wasm; `implementation`
+        // keeps the dependency non-API while remaining valid for every target.
         sourceSets.commonMain.dependencies {
-            compileOnlyAndLog(dependencyNotation)
-        }
-
-        /*
-         * compileOnly dependencies aren't applicable for Kotlin/Native.
-         * Use `implementation` or `api` dependency type instead.
-         * Set it in the shared "native" target.
-         */
-        /** @see commonNative */
-        val sourceSetName = KmpTargetContainerImpl.NonJvm.Native.NATIVE + MAIN_SOURCE_SET_POSTFIX
-        sourceSets.maybeRegister(sourceSetName) {
-            dependencies {
-                implementationAndLog(dependencyNotation)
-            }
+            implementationAndLog(dependencyNotation)
         }
 
         if (addConstraint) {
@@ -418,7 +407,7 @@ public fun <E> E.commonCompileOnly(
                     "Dependency version is empty, " +
                         "can't add a constraint: $dependencyNotation",
                 )
-            } else {
+            } else if (configurations.findByName(IMPLEMENTATION_CONFIGURATION) != null) {
                 implementation(dependencies.constraints, dependencyNotation)
             }
         }

@@ -41,6 +41,8 @@ internal val KOTLIN_2_2 = KotlinVersion(2, 2, 0)
 
 private val KOTLIN_2_3 = KotlinVersion(2, 3, 0)
 
+private val KOTLIN_2_4 = KotlinVersion(2, 4, 0)
+
 // First Kotlin minor that is NOT yet represented in the JVM-target compatibility
 // table at `Int.toKotlinSupportedJvmMajorVersion` below. Bump in lockstep with
 // the table entries — drives a one-shot warning so the maintainer notices an
@@ -50,7 +52,7 @@ private val KOTLIN_2_3 = KotlinVersion(2, 3, 0)
 // Compared with `>=`, NOT `KotlinVersion`'s lexicographic `compareTo` against
 // `KOTLIN_2_2` (which would treat any 2.2.x patch ≥ 1 as "beyond" because patch
 // is part of the comparison key — false-positive on every consumer build).
-internal val FIRST_UNTABULATED_KOTLIN = KOTLIN_2_3
+internal val FIRST_UNTABULATED_KOTLIN = KOTLIN_2_4
 
 @Volatile
 internal var WARNED_KOTLIN_BEYOND_TABLE = false
@@ -85,6 +87,9 @@ internal fun Int.toKotlinSupportedJvmMajorVersion(
     // Align with the current Kotlin plugin supported JVM targets
     if (this > 8) {
         val maxSupportedTarget = when {
+            // 2.3.0 added support for 25
+            // https://kotlinlang.org/docs/whatsnew23.html#kotlin-jvm
+            pluginVersion >= KOTLIN_2_3 -> 25
             // 2.2.0 added support for 24
             // https://kotlinlang.org/docs/whatsnew22.html#kotlin-jvm
             pluginVersion >= KOTLIN_2_2 -> 24

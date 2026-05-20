@@ -4,7 +4,6 @@ package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.container.impl.KmpTargetCode
-import fluxo.conf.impl.closureOf
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.registerCompat
@@ -21,6 +20,7 @@ import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestDescriptor
+import org.gradle.api.tasks.testing.TestListener
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -110,12 +110,17 @@ internal fun FluxoKmpConfContext.setupTestsReport() {
             }
 
             val rootLogger = rootProject.logger
-            afterTest(
-                closureOf { desc: TestDescriptor, result: TestResult ->
-                    mergedReportService?.orNull?.registerTestResult(
-                        TestReportResult.from(testTask, desc, result, projectName),
-                        rootLogger,
-                    )
+            addTestListener(
+                object : TestListener {
+                    override fun beforeSuite(suite: TestDescriptor) = Unit
+                    override fun afterSuite(suite: TestDescriptor, result: TestResult) = Unit
+                    override fun beforeTest(testDescriptor: TestDescriptor) = Unit
+                    override fun afterTest(desc: TestDescriptor, result: TestResult) {
+                        mergedReportService?.orNull?.registerTestResult(
+                            TestReportResult.from(testTask, desc, result, projectName),
+                            rootLogger,
+                        )
+                    }
                 },
             )
         }
@@ -173,4 +178,3 @@ private fun nativeFamilyFromString(platform: String?): Family = when {
 
     else -> throw IllegalArgumentException("Unsupported family: $platform")
 }
-

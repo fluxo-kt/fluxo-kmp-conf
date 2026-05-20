@@ -1,6 +1,7 @@
 package fluxo.conf.impl.kotlin
 
 import MAIN_SOURCE_SET_NAME
+import MAIN_SOURCE_SET_POSTFIX
 import TEST_SOURCE_SET_NAME
 import com.android.build.api.dsl.CommonExtension
 import fkcSetupMultiplatform
@@ -11,6 +12,7 @@ import fluxo.conf.dsl.container.impl.ContainerKotlinAware
 import fluxo.conf.dsl.container.impl.ContainerKotlinMultiplatformAware
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.container.impl.KmpTargetContainer
+import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
 import fluxo.conf.dsl.container.impl.target.TargetAndroidContainer
 import fluxo.conf.dsl.impl.ConfigurationType.ANDROID_APP
 import fluxo.conf.dsl.impl.ConfigurationType.ANDROID_LIB
@@ -152,6 +154,14 @@ internal fun configureKotlinJvm(
     return true
 }
 
+private fun KotlinMultiplatformExtension.connectAndroidSourceSetsToCommonJvm() {
+    val sourceSets = sourceSets
+    val commonJvm = KmpTargetContainerImpl.CommonJvm.COMMON_JVM
+
+    sourceSets.findByName("androidMain")
+        ?.dependsOn(sourceSets.getByName(commonJvm + MAIN_SOURCE_SET_POSTFIX))
+}
+
 private fun KotlinProjectExtension.applyKmpContainer(
     container: TargetAndroidContainer<*>,
     project: Project,
@@ -250,6 +260,8 @@ internal fun configureKotlinMultiplatform(
             project.configureExtensionIfAvailable<CommonExtension>(ANDROID_EXT_NAME) {
                 setupAndroidCommon(conf)
             }
+        } else {
+            connectAndroidSourceSetsToCommonJvm()
         }
     }
 

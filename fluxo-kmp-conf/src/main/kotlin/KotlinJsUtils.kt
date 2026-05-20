@@ -78,8 +78,11 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
     }
 
     if (this is KotlinTargetWithNodeJsDsl) {
+        val isWasm = this is KotlinWasmTargetDsl
         nodejs {
-            testTimeout()
+            if (!isWasm) {
+                testTimeout()
+            }
 
             // https://kotlinlang.org/docs/whatsnew20.html#passing-arguments-to-the-main-function
             @OptIn(ExperimentalMainFunctionArgumentsDsl::class)

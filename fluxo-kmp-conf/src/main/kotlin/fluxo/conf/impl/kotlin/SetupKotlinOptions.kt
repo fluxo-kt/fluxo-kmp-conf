@@ -4,6 +4,7 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
 import fluxo.log.e
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
@@ -33,6 +34,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
 
     val compilerArgs = freeCompilerArgs.orElse(emptyList()).get().toMutableSet()
     compilerArgs.addAll(DEFAULT_OPTS)
+    optIn.addAll(if (isTest) kc.prepareTestOptIns() else kc.optIns)
 
     val (lang) = kc.langAndApiVersions(isTest = isTest, latestSettings = useLatestSettings)
 
@@ -104,6 +106,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
             if (kc.javaParameters) {
                 javaParameters.set(true)
             }
+            jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
 
             compilerArgs.addAll(JVM_OPTS)
             if (useLatestSettings) {
@@ -180,12 +183,11 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         // "-XXLanguage:+WhenGuards"
     }
 
-    // OPT_IN_USAGE_ERROR is a warning in K2 (consumer KGP 2.0+, unconditional under
-    // the layer-2 floor), preventing safe code gen compatible with `-Werror`.
+    // K2 reports warnings for explicit diagnostic suppressions. The suppressions remain
+    // the source-level contract; this only prevents the suppressions themselves from
+    // turning every intentional internal/compiler workaround into build output noise.
     // https://youtrack.jetbrains.com/issue/KT-66513#focus=Comments-27-9461367.0-0
-    if (warningsAsErrors) {
-        compilerArgs.add("-Xdont-warn-on-error-suppression")
-    }
+    compilerArgs.add("-Xdont-warn-on-error-suppression")
 
     // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
     if (!releaseSettings && context.useKotlinDebug) {
@@ -253,8 +255,6 @@ private val LATEST_JVM_OPTS = arrayOf(
 private val JVM_OPTS = arrayOf(
     "-Xemit-jvm-type-annotations",
     "-Xjsr305=strict",
-    "-Xjvm-default=all",
-    "-Xtype-enhancement-improvements-strict-mode",
     "-Xvalidate-bytecode",
 
     // Not supported in the Kotlin 2.1 language version.
