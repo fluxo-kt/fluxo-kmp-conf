@@ -15,10 +15,17 @@ import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.withType
 import fluxo.log.l
 import kotlinx.validation.ApiValidationExtension
+import kotlinx.validation.ExperimentalBCVApi
+import kotlinx.validation.KotlinApiBuildTask
 import kotlinx.validation.KotlinApiCompareTask
+import kotlinx.validation.api.klib.KlibSignatureVersion
 import org.gradle.api.Project
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskProvider
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import java.nio.file.Files
 
 internal fun setupBinaryCompatibilityValidator(
     conf: FluxoConfigurationExtensionImpl,
@@ -58,6 +65,7 @@ private fun Project.setupKmpBinaryCompatibilityValidator(
     ctx: FluxoKmpConfContext,
 ) {
     setupBinaryCompatibilityValidator(config, ctx)
+    setupKmpAndroidMainApiValidation(ctx)
 
     if (config?.tsApiChecks != false && ctx.isTargetEnabled(KmpTargetCode.JS)) {
         setupBinaryCompatibilityValidatorTs(config, ctx)
@@ -99,6 +107,7 @@ private fun Project.setupBinaryCompatibilityValidator(
             ignoredPackages += config.ignoredPackages
             nonPublicMarkers += config.nonPublicMarkers
             ignoredClasses += config.ignoredClasses
+            configureKlibValidation(config)
         } else {
             nonPublicMarkers.add(JVM_SYNTHETIC_CLASS)
             // Sealed classes constructors are not actually public
@@ -107,8 +116,82 @@ private fun Project.setupBinaryCompatibilityValidator(
     }
 }
 
+private fun Project.setupKmpAndroidMainApiValidation(ctx: FluxoKmpConfContext) {
+    if (!ctx.isTargetEnabled(KmpTargetCode.ANDROID)) {
+        return
+    }
+
+    plugins.withId(KOTLINX_BCV_PLUGIN_ID) {
+        if (tasks.names.contains(ANDROID_API_CHECK_TASK)) {
+            return@withId
+        }
+        val kotlin = extensions.findByName("kotlin") as? KotlinMultiplatformExtension ?: return@withId
+        kotlin.targets.matching { it.platformType == KotlinPlatformType.androidJvm }.configureEach {
+            val compilation = compilations.findByName("main") ?: return@configureEach
+            registerAndroidMainApiTasks(compilation.output.classesDirs)
+        }
+    }
+}
+
+private fun Project.registerAndroidMainApiTasks(classesDirs: ConfigurableFileCollection) {
+    val extension = extensions.getByType(ApiValidationExtension::class.java)
+    val projectName = name
+    val dumpFileName = "$projectName.api"
+    val generatedAndroidApiFile = layout.buildDirectory.file("$API_DIR/android/$dumpFileName")
+    val projectAndroidApiFile = layout.projectDirectory.file("$API_DIR/android/$dumpFileName")
+    val apiEnabled = projectName !in extension.ignoredProjects && !extension.validationDisabled
+
+    val apiBuild = tasks.register(ANDROID_API_BUILD_TASK, KotlinApiBuildTask::class.java) {
+        isEnabled = apiEnabled
+        description = "Builds Kotlin API for the Android main compilation of $projectName"
+        inputClassesDirs.from(classesDirs)
+        outputApiFile.set(generatedAndroidApiFile)
+        runtimeClasspath.from(configurations.named("bcv-rt-jvm-cp-resolver"))
+    }
+
+    val apiCheck = tasks.register(ANDROID_API_CHECK_TASK, KotlinApiCompareTask::class.java) {
+        isEnabled = apiEnabled
+        group = "verification"
+        description = "Checks Android main signatures against the golden API file for $projectName"
+        projectApiFile.set(projectAndroidApiFile)
+        generatedApiFile.set(apiBuild.flatMap { task -> task.outputApiFile })
+    }
+
+    val apiDump = tasks.register(ANDROID_API_DUMP_TASK) {
+        enabled = apiEnabled
+        group = "other"
+        description = "Syncs the Android main API file for $projectName"
+        dependsOn(apiBuild)
+        inputs.file(apiBuild.flatMap { task -> task.outputApiFile })
+        outputs.file(projectAndroidApiFile)
+        doLast {
+            val fromFile = generatedAndroidApiFile.get().asFile
+            val toFile = projectAndroidApiFile.asFile
+            if (fromFile.exists()) {
+                fromFile.copyTo(toFile, overwrite = true)
+            } else {
+                Files.deleteIfExists(toFile.toPath())
+            }
+        }
+    }
+
+    tasks.named("apiCheck") { dependsOn(apiCheck) }
+    tasks.named("apiDump") { dependsOn(apiDump) }
+}
+
+@OptIn(ExperimentalBCVApi::class)
+private fun ApiValidationExtension.configureKlibValidation(config: BinaryCompatibilityValidatorConfig) {
+    klib.enabled = config.klibValidationEnabled
+    config.klibSignatureVersion?.let {
+        klib.signatureVersion = KlibSignatureVersion.of(it)
+    }
+}
+
 private const val KOTLINX_BCV_PLUGIN_ID: String =
     "org.jetbrains.kotlinx.binary-compatibility-validator"
+private const val ANDROID_API_BUILD_TASK = "androidApiBuild"
+private const val ANDROID_API_CHECK_TASK = "androidApiCheck"
+private const val ANDROID_API_DUMP_TASK = "androidApiDump"
 
 private val KOTLINX_BCV_PLUGIN_ALIASES = arrayOf(
     "bcv",

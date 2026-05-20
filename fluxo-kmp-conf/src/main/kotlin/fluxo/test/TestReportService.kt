@@ -2,9 +2,9 @@ package fluxo.test
 
 import fluxo.log.d
 import fluxo.log.v
+import java.util.Collections
 import javax.annotation.concurrent.ThreadSafe
 import org.gradle.api.logging.Logger
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 
@@ -13,8 +13,10 @@ internal abstract class TestReportService :
     BuildService<TestReportService.Parameters>,
     AutoCloseable {
 
+    private val results = Collections.synchronizedList(ArrayList<TestReportResult>())
+
     val testResults: Array<TestReportResult>
-        get() = parameters.testResults.get().toTypedArray()
+        get() = synchronized(results) { results.toTypedArray() }
 
     @Volatile
     internal var logger: Logger? = null
@@ -27,12 +29,12 @@ internal abstract class TestReportService :
         if (logger != null && this.logger == null) {
             this.logger = logger
         }
-        parameters.testResults.add(result)
+        results += result
     }
 
     fun clear() {
         logger?.v("TestReportService clear")
-        parameters.testResults.empty()
+        results.clear()
     }
 
     override fun close() {
@@ -44,9 +46,7 @@ internal abstract class TestReportService :
     }
 
 
-    interface Parameters : BuildServiceParameters {
-        val testResults: ListProperty<TestReportResult>
-    }
+    interface Parameters : BuildServiceParameters
 
     internal companion object {
         internal const val NAME = "fluxoTestReportService"
