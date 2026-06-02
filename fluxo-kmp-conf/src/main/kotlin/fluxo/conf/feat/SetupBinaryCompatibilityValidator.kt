@@ -211,16 +211,18 @@ private val KOTLINX_BCV_PLUGIN_ALIASES = arrayOf(
     "binCompatValidator",
 )
 
-private fun getTargetForTaskName(taskName: String): ApiTarget? {
-    val targetName = taskName.removeSuffix("ApiCheck").takeUnless { it == taskName } ?: return null
-
-    return when (targetName) {
+// Maps a BCV `<target>ApiCheck` task to the ApiTarget this filter governs, or null. `takeIf`
+// yields null when there was no `ApiCheck` suffix; `else` also returns null for compare tasks
+// outside android/jvm/js — notably `klibApiCheck` once KLib validation is on. Never throws: a
+// crash here would break configuration of every KMP consumer enabling apiValidation without both
+// JVM and ANDROID present.
+private fun getTargetForTaskName(taskName: String): ApiTarget? =
+    when (taskName.removeSuffix("ApiCheck").takeIf { it != taskName }) {
         "android" -> ApiTarget.ANDROID
         "jvm" -> ApiTarget.JVM
         "js" -> ApiTarget.JS
-        else -> error("Unsupported API check task name: $taskName")
+        else -> null
     }
-}
 
 private fun FluxoKmpConfContext.isMultiplatformApiTargetAllowed(target: ApiTarget): Boolean =
     when (target) {
