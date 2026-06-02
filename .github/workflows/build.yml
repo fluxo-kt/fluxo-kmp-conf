@@ -87,7 +87,13 @@ jobs:
 
       - name: 'Build and check plugin itself'
         timeout-minutes: 18
-        run: ./gradlew build assemble check --continue --stacktrace --scan
+        # `compatibilityTest` is excluded here and runs once in `integrationChecks`
+        # instead: it spawns ~19 nested TestKit consumer builds (AGP/KMP/Compose),
+        # is OS- and daemon-JDK-independent (fixtures pin their own toolchain), and
+        # took >15 min — so running it on every OS×JDK cell is pure redundancy that
+        # blew this step's budget. `verifyCompatibilityStatic` (the OS-path check)
+        # stays in `check` and still runs on every cell.
+        run: ./gradlew build assemble check -x compatibilityTest --continue --stacktrace --scan
 
       - name: Upload sarif report (Detekt)
         if: always() && (github.event_name == 'pull_request' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
@@ -160,8 +166,21 @@ jobs:
             directory: self
             command: ./gradlew build assemble check --continue --stacktrace --scan
             timeout: 4
+          # The OS-independent compatibility TestKit harness, excluded from the
+          # per-OS×JDK `build assemble check` step and run once here instead. ~19
+          # nested consumer builds, sequential; generous timeout reflects the real
+          # cost (it outgrew the 18-min per-cell budget when run 6×). Measured
+          # ~19 min wall-time on a fast multi-core host; the budget carries ~2.4×
+          # margin for the 4-vCPU runner and the cold (read-only on non-default
+          # branches) Gradle cache that re-downloads every pinned AGP/Kotlin/Compose.
+          - name: compatibility-test
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest --continue --stacktrace --scan
+            timeout: 45
     name: 'Integration check / ${{ matrix.name }}'
-    timeout-minutes: 18
+    # Above the largest leg step (compatibility-test, 45) plus checkout/JDK/Gradle
+    # setup overhead, so a healthy-but-slow leg is never cancelled mid-flight.
+    timeout-minutes: 55
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, 'ci skip') }}
     env:
