@@ -81,6 +81,38 @@ internal fun parseKotlinPluginVersion(versionString: String): KotlinVersion {
     )
 }
 
+/** Gradle property opting out of the [kotlinStdlibSkewError] fail-fast guard. */
+internal const val ALLOW_KOTLIN_STDLIB_SKEW_PROP = "fluxo.allowKotlinStdlibSkew"
+
+/**
+ * Returns an actionable error message when [stdlibVersion] (`kotlin-stdlib` /
+ * `coreLibrariesVersion`) is **strictly newer** than [compilerVersion] (the
+ * Kotlin Gradle plugin), or `null` when they are compatible.
+ *
+ * A runtime newer than the compiler makes Kotlin emit a version-mismatch
+ * warning that `allWarningsAsErrors` turns fatal on CI/release — the footgun two
+ * independently-pinned catalog versions (`kotlin` vs `kotlinCoreLibraries`)
+ * invite. Equal or older stdlib is fine: the compiler always supports its own
+ * and older runtimes, so the check is strictly directional, not equality.
+ *
+ * [stdlibVersion] is parsed leniently via [parseKotlinPluginVersion]; a blank or
+ * unparseable value yields `null` (skip) rather than masking a real build behind
+ * a parser crash.
+ */
+internal fun kotlinStdlibSkewError(
+    compilerVersion: KotlinVersion,
+    stdlibVersion: String?,
+): String? {
+    val stdlib = stdlibVersion?.takeIf { it.isNotBlank() }
+        ?.let { runCatching { parseKotlinPluginVersion(it) }.getOrNull() }
+    if (stdlib == null || stdlib <= compilerVersion) return null
+    return "Kotlin stdlib ($stdlib) is newer than the compiler ($compilerVersion). " +
+        "Lower `kotlinCoreLibraries` to the `kotlin` version " +
+        "(libs.versions.toml / fkcSetup DSL), or pass " +
+        "-P$ALLOW_KOTLIN_STDLIB_SKEW_PROP=true. A runtime newer than the compiler " +
+        "is fatal under allWarningsAsErrors on CI/release."
+}
+
 internal fun Int.toKotlinSupportedJvmMajorVersion(
     pluginVersion: KotlinVersion = KOTLIN_PLUGIN_VERSION,
 ): Int {

@@ -2,6 +2,7 @@ package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.hasRoomPlugin
+import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.log.l
 import fluxo.log.w
 import org.gradle.api.Project
@@ -18,6 +19,14 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     val coreLibs = kotlinCoreLibraries
         ?.takeIf { it.isNotBlank() && it != "0" && it != pluginVersion.toString() }
         ?: k.coreLibrariesVersion
+
+    // Fail fast on a kotlin-stdlib newer than the compiler: otherwise the resulting
+    // version-mismatch warning only becomes fatal under allWarningsAsErrors on CI/release,
+    // surfacing far from its `kotlinCoreLibraries` vs `kotlin` root cause.
+    kotlinStdlibSkewError(pluginVersion, coreLibs)?.let { msg ->
+        require(project.envOrPropFlagValue(ALLOW_KOTLIN_STDLIB_SKEW_PROP)) { msg }
+        project.logger.w("$msg [allowed via -P$ALLOW_KOTLIN_STDLIB_SKEW_PROP]")
+    }
 
     // Note: apiVersion can't be greater than languageVersion!
     var lang = kotlinLangVersion?.toKotlinLangVersion()

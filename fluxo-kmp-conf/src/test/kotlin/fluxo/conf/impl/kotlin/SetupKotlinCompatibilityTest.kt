@@ -2,6 +2,8 @@ package fluxo.conf.impl.kotlin
 
 import kotlin.KotlinVersion
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import org.junit.jupiter.api.Test
 
 /**
@@ -145,6 +147,49 @@ internal class SetupKotlinCompatibilityTest {
         check(KotlinVersion(3, 0, 0) >= FIRST_UNTABULATED_KOTLIN) {
             "Kotlin 3.0.0 MUST trigger the warning — far beyond the table"
         }
+    }
+
+    // endregion
+
+    // region kotlinStdlibSkewError — directional stdlib>compiler fail-fast guard
+
+    @Test
+    fun `stdlib strictly newer than compiler is rejected, equal or older accepted`() {
+        val compiler = KotlinVersion(2, 3, 20)
+        // The exact production footgun: a patch-newer stdlib than the compiler
+        // (kotlin=2.3.20 vs kotlinCoreLibraries=2.3.21). Mutating the guard's `<=`
+        // to `<` (rejecting equality) flips the equal/older asserts RED; dropping
+        // the comparison entirely flips the not-null asserts RED.
+        assertNotNull(
+            kotlinStdlibSkewError(compiler, "2.3.21"),
+            "patch-newer stdlib must be rejected",
+        )
+        assertNotNull(
+            kotlinStdlibSkewError(compiler, "2.4.0"),
+            "minor-newer stdlib must be rejected",
+        )
+        assertNotNull(
+            kotlinStdlibSkewError(compiler, "3.0.0"),
+            "major-newer stdlib must be rejected",
+        )
+        assertNull(kotlinStdlibSkewError(compiler, "2.3.20"), "equal stdlib is compatible")
+        assertNull(kotlinStdlibSkewError(compiler, "2.3.19"), "older patch stdlib is compatible")
+        assertNull(kotlinStdlibSkewError(compiler, "2.2.0"), "older minor stdlib is compatible")
+    }
+
+    @Test
+    fun `skew check tolerates pre-release, missing patch, and absent or unparseable versions`() {
+        val compiler = KotlinVersion(2, 3, 20)
+        // Pre-release suffix stripped before compare: 2.3.21-RC2 > 2.3.20 → rejected.
+        assertNotNull(kotlinStdlibSkewError(compiler, "2.3.21-RC2"))
+        // Missing patch parsed as .0: 2.4 > 2.3.20 → rejected.
+        assertNotNull(kotlinStdlibSkewError(compiler, "2.4"))
+        // Equal with pre-release suffix: 2.3.20 == 2.3.20 → compatible.
+        assertNull(kotlinStdlibSkewError(compiler, "2.3.20-Beta1"))
+        // Absent / blank / unparseable → skip (null), never crash the build.
+        assertNull(kotlinStdlibSkewError(compiler, null))
+        assertNull(kotlinStdlibSkewError(compiler, "   "))
+        assertNull(kotlinStdlibSkewError(compiler, "latest"))
     }
 
     // endregion
