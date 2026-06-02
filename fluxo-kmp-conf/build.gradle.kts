@@ -262,7 +262,11 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
         logger.lifecycle("Compatibility static checks passed.")
     }
 
-    private fun File.relativePath(): String = relativeTo(File(rootDirPath.get())).path
+    // `invariantSeparatorsPath`, not `.path`: this value is compared for equality against the
+    // forward-slash paths stored in `compat/*.tsv` (notably the unsafe-pattern allowlist). `.path`
+    // yields OS-native separators, so on Windows every allowlist comparison silently mismatched.
+    private fun File.relativePath(): String =
+        relativeTo(File(rootDirPath.get())).invariantSeparatorsPath
 
     private fun File.readTsvRows(failures: MutableList<String>): List<Map<String, String>> {
         val lines = readLines().filter { it.isNotBlank() && !it.startsWith("#") }
