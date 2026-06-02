@@ -349,8 +349,20 @@ private fun KotlinProjectExtension.setupTargets(
         val isJsOrWasm = !isAndroid && platformType
             .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
 
+        // Shared-metadata (klib) compilations are the `common` platform target. They resolve the
+        // *transformed* hierarchical metadata of every dependency, and for a diamond source-set
+        // graph JetBrains' own `kotlin-stdlib` / `atomicfu` slices collide on `unique_name`,
+        // emitting `w: KLIB resolver: The same 'unique_name=…' found in more than one library`
+        // (KT-69310). It is an unsuppressable, non-actionable upstream false-positive — a nameless
+        // resolver message (so `-Xsuppress-warning` can't target it) with no silent strategy
+        // (`-Xklib-duplicated-unique-name-strategy` only offers `*-with-warning`).
+        // Excluding it from `-Werror` loses no real coverage: every leaf platform compilation
+        // recompiles the same common sources under `-Werror`, so genuine common-code warnings
+        // still fail the build.
+        val isMetadata = !isAndroid && KotlinPlatformType.common === platformType
+
         val warningsAsErrors = conf.kotlinConfig.warningsAsErrors &&
-            !isJsOrWasm && !isTest && (ctx.isCI || ctx.isRelease)
+            !isJsOrWasm && !isMetadata && !isTest && (ctx.isCI || ctx.isRelease)
 
         val compName = name
         compileTaskProvider.configure {
