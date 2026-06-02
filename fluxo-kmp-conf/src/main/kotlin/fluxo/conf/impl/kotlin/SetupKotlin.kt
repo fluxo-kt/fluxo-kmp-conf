@@ -158,8 +158,14 @@ private fun KotlinMultiplatformExtension.connectAndroidSourceSetsToCommonJvm() {
     val sourceSets = sourceSets
     val commonJvm = KmpTargetContainerImpl.CommonJvm.COMMON_JVM
 
-    sourceSets.findByName("androidMain")
-        ?.dependsOn(sourceSets.getByName(commonJvm + MAIN_SOURCE_SET_POSTFIX))
+    // `commonJvmMain` is an optional intermediate: it is present only when the hierarchy
+    // template materialised it (a JVM-family sibling exists) or dependency wiring registered
+    // it (`setupDependencies`). An android-only KMP consumer (e.g. KMP_TARGETS=ANDROID) with
+    // wiring off has neither, so there is nothing to bridge — androidMain stays linked to
+    // commonMain by KGP's default hierarchy. `getByName` would throw there; `findByName` keeps
+    // the bridge a no-op exactly where the intermediate is absent.
+    val commonJvmMain = sourceSets.findByName(commonJvm + MAIN_SOURCE_SET_POSTFIX) ?: return
+    sourceSets.findByName("androidMain")?.dependsOn(commonJvmMain)
 }
 
 private fun KotlinProjectExtension.applyKmpContainer(
