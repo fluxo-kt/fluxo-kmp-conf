@@ -1,3 +1,4 @@
 patternId	file	contains	rationale
 runtimeGetRuntime	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/impl/ProjectUtils.kt	Runtime.getRuntime().availableProcessors()	Runtime query for CPU count; not process execution.
 runtimeGetRuntime	fluxo-kmp-conf/src/main/kotlin/fluxo/conf/impl/ProjectUtils.kt	Runtime.getRuntime().maxMemory()	Runtime query for memory limit; not process execution.
+rawProcessBuilder	fluxo-kmp-conf/src/main/kotlin/FkcSetupMultiplatform.kt	ProcessBuilder("xcrun"	Execution-time Apple simulator-runtime probe inside onlyIf; Project-free (CC-safe), so Project.runCommand/providers.exec is unavailable here.

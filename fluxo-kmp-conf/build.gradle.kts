@@ -394,6 +394,7 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
         val patterns = mapOf(
             "rawSystemGetenv" to "System.getenv(",
             "rawRuntimeExec" to "Runtime.getRuntime().exec",
+            "rawProcessBuilder" to "ProcessBuilder(",
             "runtimeGetRuntime" to "Runtime.getRuntime()",
             "taskGraphWhenReady" to "taskGraph.whenReady",
             "resolvedConfiguration" to "resolvedConfiguration",
