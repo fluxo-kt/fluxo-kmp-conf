@@ -52,6 +52,23 @@ internal fun markerAgp8KmpBuildScript(row: Map<String, String>): String =
         }
     }
     """.trimIndent()
+
+// BCV isn't loaded dynamically (canLoadDynamically=false), so a consumer enabling apiValidation
+// must declare it on the classpath itself. Exec rows do; version is the matrix `bcvVersion` column.
+// Config-only rows get "" so they keep asserting shape without applying BCV.
+private fun bcvPluginDeclaration(row: Map<String, String>): String =
+    if (row.isExecutionFixture()) {
+        "\n        id(\"org.jetbrains.kotlinx.binary-compatibility-validator\") " +
+            "version \"${row.getValue("bcvVersion")}\" apply false"
+    } else {
+        ""
+    }
+
+// Inherently-long build-script template literal: the `plugins {}` block, the fkcSetupMultiplatform
+// config, and the `assertAgp9KmpShape` verification task read as one coherent consumer script.
+// Splitting across helpers would force a reader to reassemble the script from pieces — worse than
+// the length. Consistent with the codebase's @Suppress("LongMethod") on string-builder methods.
+@Suppress("LongMethod")
 internal fun markerAgp9KmpBuildScript(row: Map<String, String>): String =
     """
     plugins {
@@ -60,7 +77,7 @@ internal fun markerAgp9KmpBuildScript(row: Map<String, String>): String =
     )}" apply false
         id("com.android.kotlin.multiplatform.library") version "${row.getValue(
         "agpVersion"
-    )}" apply false
+    )}" apply false${bcvPluginDeclaration(row)}
         id("${pluginId()}") version "${pluginVersion()}"
     }
 
@@ -70,6 +87,9 @@ internal fun markerAgp9KmpBuildScript(row: Map<String, String>): String =
     fkcSetupMultiplatform(
         config = {
             setupVerification = ${row.isExecutionFixture()}
+            // Exercises the AGP-9 KMP android-main API lane (registerAndroidMainApiTasks):
+            // androidApiBuild must register off the android `main` compilation. Exec-only.
+            enableApiValidation = ${row.isExecutionFixture()}
             enablePublication = false
             enableGradleDoctor = false
             setupCoroutines = false
@@ -111,6 +131,7 @@ internal fun markerAgp9KmpBuildScript(row: Map<String, String>): String =
         }
     }
     """.trimIndent()
+
 internal fun markerAgp9KmpAppUnsupportedBuildScript(row: Map<String, String>): String =
     """
     plugins {
