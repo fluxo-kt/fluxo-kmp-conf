@@ -14,6 +14,7 @@ import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.withType
 import fluxo.log.l
+import java.nio.file.Files
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.ExperimentalBCVApi
 import kotlinx.validation.KotlinApiBuildTask
@@ -25,7 +26,6 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import java.nio.file.Files
 
 internal fun setupBinaryCompatibilityValidator(
     conf: FluxoConfigurationExtensionImpl,
@@ -125,11 +125,20 @@ private fun Project.setupKmpAndroidMainApiValidation(ctx: FluxoKmpConfContext) {
         if (tasks.names.contains(ANDROID_API_CHECK_TASK)) {
             return@withId
         }
-        val kotlin = extensions.findByName("kotlin") as? KotlinMultiplatformExtension ?: return@withId
-        kotlin.targets.matching { it.platformType == KotlinPlatformType.androidJvm }.configureEach {
-            val compilation = compilations.findByName("main") ?: return@configureEach
-            registerAndroidMainApiTasks(compilation.output.classesDirs)
-        }
+        val kotlin = extensions.findByName("kotlin") as? KotlinMultiplatformExtension
+            ?: return@withId
+        kotlin.targets
+            .matching { it.platformType == KotlinPlatformType.androidJvm }
+            .configureEach {
+                // AGP-9 KMP exposes `main`/`hostTest` compilations (no `release`); wire the
+                // Android-main API lane off the main compilation's classes.
+                // `?.let`, not `?: return@configureEach`: an elvis-return out of this inlined
+                // receiver lambda makes Kotlin's CFG mark the whole body unreachable
+                // (spurious UNREACHABLE_CODE/UNUSED_VARIABLE), silently dropping the lane.
+                compilations.findByName("main")?.let {
+                    registerAndroidMainApiTasks(it.output.classesDirs)
+                }
+            }
     }
 }
 
@@ -180,7 +189,9 @@ private fun Project.registerAndroidMainApiTasks(classesDirs: ConfigurableFileCol
 }
 
 @OptIn(ExperimentalBCVApi::class)
-private fun ApiValidationExtension.configureKlibValidation(config: BinaryCompatibilityValidatorConfig) {
+private fun ApiValidationExtension.configureKlibValidation(
+    config: BinaryCompatibilityValidatorConfig,
+) {
     klib.enabled = config.klibValidationEnabled
     config.klibSignatureVersion?.let {
         klib.signatureVersion = KlibSignatureVersion.of(it)
