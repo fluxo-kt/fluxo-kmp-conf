@@ -106,7 +106,16 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
             if (kc.javaParameters) {
                 javaParameters.set(true)
             }
-            jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
+            // The typed `jvmDefault` option exists only since KGP 2.2; the plugin is APPLIED
+            // against the consumer's KGP and the layer-2 floor is Kotlin 2.1, where calling the
+            // 2.2 getter throws NoSuchMethodError. `-Xjvm-default=all` is the 2.1 equivalent of
+            // `NO_COMPATIBILITY` but is deprecated on 2.2+ (would trip `-Werror`), so gate by
+            // the consumer's KGP version. The 2.2-only symbol is reached only on 2.2+.
+            if (context.kotlinPluginVersion >= KOTLIN_2_2) {
+                jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
+            } else {
+                compilerArgs.add("-Xjvm-default=all")
+            }
 
             compilerArgs.addAll(JVM_OPTS)
             if (useLatestSettings) {
