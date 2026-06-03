@@ -6,6 +6,9 @@
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
+
+## [0.15.0] - 2026-06-03
+
 ### Added
 - Kotlin 2.3 support in the Kotlin → max-JVM-target table: Kotlin 2.3 now maps to JVM target 25, so consumers on Kotlin 2.3 requesting JVM 25 are no longer silently capped to a lower bytecode target.
 - Binary-compatibility validation now also covers the KLib ABI and the AGP-9 KMP `android`-main API lane, not only the JVM/Android/JS API surfaces.
@@ -494,6 +497,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.15.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.15.0
 [0.14.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.14.1
 [0.14.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.14.0
 [0.13.2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.13.2

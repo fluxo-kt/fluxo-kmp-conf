@@ -35,7 +35,7 @@ Built with:<br>
 // in the root `build.gradle.kts`.
 plugins {
   kotlin("multiplatform") version "2.2.21"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.14.1" // <-- add here
+  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.15.0" // <-- add here
 }
 ```
 
