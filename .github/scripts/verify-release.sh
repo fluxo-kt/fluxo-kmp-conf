@@ -48,5 +48,18 @@ for artifact_spec in "${central_artifacts[@]}"; do
     fail "Could not verify Maven Central status for ${group}:${artifact_id}:${catalog_version} (${central_status})"
 done
 
-echo "version=${catalog_version}" >> "${GITHUB_OUTPUT}"
-echo "tag=${GITHUB_REF_NAME}" >> "${GITHUB_OUTPUT}"
+# Single source of truth for "is this a pre-release". Semver places the marker
+# after a hyphen (e.g. v0.15.0-alpha01); anchoring on `-` avoids false positives
+# like a hypothetical v1.0-march matching "rc". Consumed by gh_release
+# (release-notes labelling) and promote_main (must NOT advance the
+# consumer-facing main to a pre-release).
+prerelease=false
+if [[ "${GITHUB_REF_NAME}" =~ -(alpha|beta|rc) ]]; then
+  prerelease=true
+fi
+
+{
+  echo "version=${catalog_version}"
+  echo "tag=${GITHUB_REF_NAME}"
+  echo "prerelease=${prerelease}"
+} >> "${GITHUB_OUTPUT}"

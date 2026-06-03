@@ -23,6 +23,7 @@ jobs:
     outputs:
       version: ${{ steps.verify.outputs.version }}
       tag: ${{ steps.verify.outputs.tag }}
+      prerelease: ${{ steps.verify.outputs.prerelease }}
 
     steps:
       - name: Harden Runner
@@ -167,20 +168,15 @@ jobs:
           fetch-depth: 0
 
       - name: Prepare release settings
+        env:
+          RELEASE_PRE: ${{ needs.verify_release.outputs.prerelease }}
         run: |
-          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
-          RELEASE_PRE=false
-          RELEASE_SUFFIX=""
-          # Check release type
-          if [[ "$GITHUB_REF_NAME" =~ 'alpha' || "$GITHUB_REF_NAME" =~ 'beta' || "$GITHUB_REF_NAME" =~ 'rc' ]]; then
-            echo "This is a pre-release!"
-            RELEASE_PRE=true
-            RELEASE_SUFFIX=" (pre release)"
-          fi
-          # shellcheck disable=SC2086
-          echo "RELEASE_PRE=$RELEASE_PRE" >> $GITHUB_ENV
-          # shellcheck disable=SC2086
-          echo "RELEASE_SUFFIX=$RELEASE_SUFFIX" >> $GITHUB_ENV
+          # Pre-release detection is single-sourced in verify-release.sh.
+          [[ "$RELEASE_PRE" == "true" ]] && RELEASE_SUFFIX=" (pre release)" || RELEASE_SUFFIX=""
+          {
+            echo "RELEASE_PRE=$RELEASE_PRE"
+            echo "RELEASE_SUFFIX=$RELEASE_SUFFIX"
+          } >> "$GITHUB_ENV"
 
       - name: GitHub Release
         env:
@@ -189,3 +185,43 @@ jobs:
           RELEASE_PRE: ${{ env.RELEASE_PRE }}
           RELEASE_SUFFIX: ${{ env.RELEASE_SUFFIX }}
         run: .github/scripts/create-github-release.sh
+
+  # Keep `main` (JitPack main-SNAPSHOT + the branch main-tracking consumers
+  # follow) from rotting behind published releases. Stable releases only —
+  # pre-releases must not move the consumer-facing main. Requires the
+  # MAIN_PROMOTE_TOKEN secret (admin-capable; see promote-main.sh). When the
+  # secret is absent the job no-ops loudly instead of failing the release.
+  promote_main:
+    needs:
+      - verify_release
+      - publish_release
+      - gh_release
+    if: >-
+      github.repository == 'fluxo-kt/fluxo-kmp-conf' &&
+      needs.verify_release.outputs.prerelease == 'false'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fast-forward main to the released tag
+        env:
+          GH_TOKEN: ${{ secrets.MAIN_PROMOTE_TOKEN }}
+          TAG: ${{ needs.verify_release.outputs.tag }}
+        run: |
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "::warning::MAIN_PROMOTE_TOKEN secret is not set; skipping main promotion." \
+                 "Fast-forward main to ${TAG} manually or add the secret."
+            exit 0
+          fi
+          .github/scripts/promote-main.sh
