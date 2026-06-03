@@ -31,6 +31,45 @@ updates:
     cooldown:
       default-days: 7
       semver-major-days: 30
+    # Policy-pinned compatibility surface — promoted via the compat/matrix.tsv
+    # canary-then-graduate discipline, never a Dependabot rubber-stamp. Kotlin /
+    # KSP / AGP / Compose / Detekt-core move in lockstep with the consumer
+    # compatibility matrix (e.g. KGP 2.3.x caps at Gradle 9.3.0 < our wrapper;
+    # KSP 2.3+ is K2-only KSP2; Detekt 2.0 moved groupId to dev.detekt). okhttp
+    # 5.x is a breaking artifact split + nullability flip + KMP drop, exposed to
+    # consumers via the BOM alignment in SetupKotlinDependencies. Patch bumps
+    # within the pinned band stay allowed (same compat cell); minor/major are
+    # conscious release events done by a human. The Detekt rule extensions
+    # (compose-rules, faire) couple to Detekt core's major and graduate with it.
+    ignore:
+      # Kotlin + KSP
+      - dependency-name: "org.jetbrains.kotlin:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.jetbrains.kotlin.*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.google.devtools.ksp*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # AGP / Android build tools
+      - dependency-name: "com.android.tools.build:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.android.tools:r8"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.android.lint*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Compose Multiplatform
+      - dependency-name: "org.jetbrains.compose*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Detekt core (scoped to arturbosch coordinates — detekt-verify-implementation
+      # under dk.cachet stays bumpable; the rule extensions below couple to core)
+      - dependency-name: "io.gitlab.arturbosch.detekt*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.nlopez.compose.rules:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.faire:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # okhttp — 5.x only (4.x minor/patch within band stays allowed)
+      - dependency-name: "com.squareup.okhttp3:*"
+        update-types: ["version-update:semver-major"]
     groups:
       kotlin:
         patterns:
