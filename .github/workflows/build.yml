@@ -17,6 +17,9 @@ on:
       - '**/pr-**.yml'
       - '**/release.yml'
       - '**dependabot.yml'
+      # Release/CI helper scripts don't affect the Gradle build; they are
+      # shellchecked + unit-tested by the "Validate Workflows & Scripts" workflow.
+      - '.github/scripts/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

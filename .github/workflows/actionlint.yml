@@ -1,4 +1,4 @@
-name: Validate Workflows
+name: Validate Workflows & Scripts
 
 on:
   push:
@@ -10,12 +10,14 @@ on:
       - '.github/actions/**.yaml'
       - '.github/workflows/*.yml'
       - '.github/workflows/*.yaml'
+      - '.github/scripts/**'
   pull_request:
     paths:
       - '.github/actions/**.yml'
       - '.github/actions/**.yaml'
       - '.github/workflows/*.yml'
       - '.github/workflows/*.yaml'
+      - '.github/scripts/**'
 
 permissions:
   contents: read
@@ -46,5 +48,11 @@ jobs:
         run: |
           git ls-files '.github/actions/*.yml' '.github/actions/*.yaml' '.github/actions/**/*.yml' '.github/actions/**/*.yaml' \
             | xargs -r ruby -e 'require "yaml"; ARGV.each { |file| YAML.load_file(file) }'
+
+      - name: Shellcheck and unit-test scripts
+        shell: bash
+        run: |
+          git ls-files '.github/scripts/*.sh' | xargs -r shellcheck
+          bash .github/scripts/promote-main.test.sh
 
       - uses: ./.github/actions/actionlint

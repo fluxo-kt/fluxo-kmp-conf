@@ -188,9 +188,12 @@ jobs:
 
   # Keep `main` (JitPack main-SNAPSHOT + the branch main-tracking consumers
   # follow) from rotting behind published releases. Stable releases only —
-  # pre-releases must not move the consumer-facing main. Requires the
-  # MAIN_PROMOTE_TOKEN secret (admin-capable; see promote-main.sh). When the
-  # secret is absent the job no-ops loudly instead of failing the release.
+  # pre-releases must not move the consumer-facing main. Active by default with
+  # the built-in GITHUB_TOKEN: if it cannot fast-forward protected main, the job
+  # FAILS LOUDLY so a forgotten promotion can't pass unnoticed (the rot's root
+  # cause). Provisioning MAIN_PROMOTE_TOKEN (a main branch-protection bypass
+  # actor) upgrades that to silent auto-promotion. promote-main.sh never weakens
+  # protection. See promote-main.sh + promote-main.test.sh.
   promote_main:
     needs:
       - verify_release
@@ -200,6 +203,8 @@ jobs:
       github.repository == 'fluxo-kt/fluxo-kmp-conf' &&
       needs.verify_release.outputs.prerelease == 'false'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Harden Runner
@@ -216,12 +221,6 @@ jobs:
 
       - name: Fast-forward main to the released tag
         env:
-          GH_TOKEN: ${{ secrets.MAIN_PROMOTE_TOKEN }}
+          GH_TOKEN: ${{ secrets.MAIN_PROMOTE_TOKEN || github.token }}
           TAG: ${{ needs.verify_release.outputs.tag }}
-        run: |
-          if [[ -z "${GH_TOKEN:-}" ]]; then
-            echo "::warning::MAIN_PROMOTE_TOKEN secret is not set; skipping main promotion." \
-                 "Fast-forward main to ${TAG} manually or add the secret."
-            exit 0
-          fi
-          .github/scripts/promote-main.sh
+        run: .github/scripts/promote-main.sh
