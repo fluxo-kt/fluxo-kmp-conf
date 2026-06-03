@@ -11,6 +11,9 @@
 - Binary-compatibility validation now also covers the KLib ABI and the AGP-9 KMP `android`-main API lane, not only the JVM/Android/JS API surfaces.
 - Configuration-time guard that fails fast when the consumer's `kotlinCoreLibraries` (stdlib) version is newer than the `kotlin` compiler version. That skew otherwise surfaces as a fatal "runtime newer than compiler" diagnostic only under `allWarningsAsErrors` on CI/release, far from its root cause. Opt out with `-Pfluxo.allowKotlinStdlibSkew`.
 
+### Changed
+- The `commonCompileOnly(...)` DSL now applies the dependency to `commonMain` as `implementation` rather than `compileOnly` (so it reaches the runtime classpath). A common `compileOnly` dependency is not propagated to the JS/Wasm/Native platform compile classpaths and breaks their compilation; `implementation` is the only configuration valid for every target. Affects only direct callers of this function.
+
 ### Fixed
 - API/binary-compatibility validation no longer crashes configuration on `klibApiCheck` (and other unmodelled API-compare tasks) for KMP consumers that enable validation with native targets while JVM or Android is filtered out. Unknown API-compare tasks are skipped instead of throwing.
 - `jvmDefault` is now gated by the consumer's Kotlin Gradle plugin version — the typed `JvmDefaultMode` DSL on KGP ≥ 2.2 and the `-Xjvm-default=all` flag on KGP 2.1 — so consumers on either line no longer hit `NoSuchMethodError` or a silently-ignored setting.

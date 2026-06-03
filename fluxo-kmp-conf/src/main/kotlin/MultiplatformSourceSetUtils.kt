@@ -377,6 +377,21 @@ public infix fun Iterable<KotlinSourceSet>.dependencies(
 }
 
 
+/**
+ * Adds [dependencyNotation] to the `commonMain` source set of a KMP project.
+ *
+ * Despite the name, the dependency is applied as `implementation`, not `compileOnly`: a
+ * `commonMain` `compileOnly` dependency is not propagated onto the JS/Wasm/Native platform
+ * *compile* classpaths, so common code referencing it fails to compile for those targets.
+ * `implementation` is the only
+ * configuration valid across every target, so the dependency does reach the runtime classpath. Use
+ * it for dependencies a downstream plugin already provides at runtime (e.g. the Compose runtime),
+ * where compile-time visibility in common code — not runtime exclusion — is the goal.
+ *
+ * @param project resolved from the receiver's first target when omitted.
+ * @param addConstraint also pins the version via an `implementation` dependency constraint, when
+ *   that configuration exists (absent for an android-only KMP graph, where the pin is skipped).
+ */
 public fun <E> E.commonCompileOnly(
     dependencyNotation: Any,
     project: Project? = null,
@@ -395,8 +410,6 @@ public fun <E> E.commonCompileOnly(
 
     with(p) {
         val sourceSets = sourceSets
-        // KGP cannot model common `compileOnly` for JS/Wasm; `implementation`
-        // keeps the dependency non-API while remaining valid for every target.
         sourceSets.commonMain.dependencies {
             implementationAndLog(dependencyNotation)
         }
