@@ -6,6 +6,18 @@
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
+### Added
+- Kotlin 2.3 support in the Kotlin → max-JVM-target table: Kotlin 2.3 now maps to JVM target 25, so consumers on Kotlin 2.3 requesting JVM 25 are no longer silently capped to a lower bytecode target.
+- Binary-compatibility validation now also covers the KLib ABI and the AGP-9 KMP `android`-main API lane, not only the JVM/Android/JS API surfaces.
+- Configuration-time guard that fails fast when the consumer's `kotlinCoreLibraries` (stdlib) version is newer than the `kotlin` compiler version. That skew otherwise surfaces as a fatal "runtime newer than compiler" diagnostic only under `allWarningsAsErrors` on CI/release, far from its root cause. Opt out with `-Pfluxo.allowKotlinStdlibSkew`.
+
+### Fixed
+- API/binary-compatibility validation no longer crashes configuration on `klibApiCheck` (and other unmodelled API-compare tasks) for KMP consumers that enable validation with native targets while JVM or Android is filtered out. Unknown API-compare tasks are skipped instead of throwing.
+- `jvmDefault` is now gated by the consumer's Kotlin Gradle plugin version — the typed `JvmDefaultMode` DSL on KGP ≥ 2.2 and the `-Xjvm-default=all` flag on KGP 2.1 — so consumers on either line no longer hit `NoSuchMethodError` or a silently-ignored setting.
+- Apple-target consumers no longer fail `check` when the requested Xcode simulator runtime is not installed. The affected simulator test tasks are skipped via an `onlyIf` `simctl` availability probe.
+- KMP modules no longer break when the `androidMain` ↔ `commonJvmMain` bridge has no intermediate source set to connect (e.g. android-only KMP); the bridge is a no-op in that case.
+- `compileNativeMainKotlinMetadata` no longer fails under `allWarningsAsErrors` on the unsuppressable KLIB duplicate-`unique_name` resolver warning (KT-69310). `-Werror` is dropped for the shared-metadata (`common`) platform only; every leaf platform still recompiles the same common sources under `-Werror`, so genuine common-code warnings still fail the build.
+
 
 ## [0.14.1] - 2026-05-17
 
