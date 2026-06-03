@@ -155,6 +155,11 @@ private fun Project.registerAndroidMainApiTasks(classesDirs: ConfigurableFileCol
         description = "Builds Kotlin API for the Android main compilation of $projectName"
         inputClassesDirs.from(classesDirs)
         outputApiFile.set(generatedAndroidApiFile)
+        // Reuse BCV's own JVM runtime resolver (created unconditionally by its `configureProject`)
+        // so the android-main dump filters external classes exactly as BCV's JVM lane does — same
+        // resolution, consistent dumps. Coupling to this internal config name is acceptable because
+        // BCV is consumer-declared and effectively pinned (canLoadDynamically=false); if a future
+        // BCV renames it this `named` fails fast and loud rather than silently mis-dumping.
         runtimeClasspath.from(configurations.named("bcv-rt-jvm-cp-resolver"))
     }
 
