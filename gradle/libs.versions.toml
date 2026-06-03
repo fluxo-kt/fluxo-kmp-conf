@@ -217,7 +217,7 @@ detekt-compiler = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", ve
 #detekt-operator = { module = "io.cole.matthew.detekt.operator:detekt-operator", version = "0.0.1" }
 
 # https://github.com/cph-cachet/detekt-verify-implementation/releases
-detekt-verify-implementation = { module = "dk.cachet.detekt.extensions:detekt-verify-implementation", version = "1.2.6" }
+detekt-verify-implementation = { module = "dk.cachet.detekt.extensions:detekt-verify-implementation", version = "1.2.8" }
 
 # https://github.com/Ivy-Apps/detekt-explicit/tags
 detekt-explicit = { module = "com.github.Ivy-Apps:detekt-explicit", version = "0.0.8" }
