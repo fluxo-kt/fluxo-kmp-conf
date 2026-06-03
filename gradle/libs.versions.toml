@@ -125,7 +125,7 @@ dokka = "2.2.0"
 detekt = "1.23.8"
 
 # https://github.com/pinterest/ktlint/releases
-ktlint = "1.4.1"
+ktlint = "1.8.0"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
 spotless = "8.4.0"
@@ -389,7 +389,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 # https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "2.5.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "3.10.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
@@ -399,17 +399,17 @@ deps-guard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 # Gradle Doctor: helps diagnose and fix common build problems.
 # https://runningcode.github.io/gradle-doctor/
 # https://plugins.gradle.org/plugin/com.osacky.doctor
-gradle-doctor = { id = "com.osacky.doctor", version = "0.10.0" }
+gradle-doctor = { id = "com.osacky.doctor", version = "0.12.1" }
 
 # `taskTree` task that prints the current task graph
 # https://github.com/dorongold/gradle-task-tree/blob/master/CHANGELOG.md#changelog
 # https://plugins.gradle.org/plugin/com.dorongold.task-tree
-task-tree = { id = "com.dorongold.task-tree", version = "4.0.0" }
+task-tree = { id = "com.dorongold.task-tree", version = "4.0.1" }
 
 # Provides task metadata and dependency information, execution queue, and more
 # https://gitlab.com/barfuin/gradle-taskinfo/-/releases
 # https://plugins.gradle.org/plugin/org.barfuin.gradle.taskinfo
-task-info = { id = "org.barfuin.gradle.taskinfo", version = "2.2.0" }
+task-info = { id = "org.barfuin.gradle.taskinfo", version = "3.0.2" }
 
 # `graphModules` task to create an image with the graph of how Gradle modules depend on each other
 # https://github.com/savvasdalkitsis/module-dependency-graph/tags
@@ -419,4 +419,4 @@ module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", 
 # Generating BuildConstants for any kind of project
 # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
-build-config = { id = "com.github.gmazzo.buildconfig", version = "5.5.1" }
+build-config = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }
