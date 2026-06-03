@@ -92,9 +92,11 @@ jobs:
         timeout-minutes: 18
         # `compatibilityTest` is excluded here and runs once in `integrationChecks`
         # instead: it spawns ~19 nested TestKit consumer builds (AGP/KMP/Compose),
-        # is OS- and daemon-JDK-independent (fixtures pin their own toolchain), and
-        # took >15 min — so running it on every OS×JDK cell is pure redundancy that
-        # blew this step's budget. `verifyCompatibilityStatic` (the OS-path check)
+        # is OS- and daemon-JDK-independent — each fixture pins its inner build to the
+        # JDK its `compat/matrix.tsv` `jdkVersion` declares via the `org.gradle.java.home`
+        # property (see `compatRunner`/`resolveCompatJdkHome`), so the outer daemon JDK can't change
+        # results — and took >15 min, so running it on every OS×JDK cell is pure redundancy
+        # that blew this step's budget. `verifyCompatibilityStatic` (the OS-path check)
         # stays in `check` and still runs on every cell.
         run: ./gradlew build assemble check -x compatibilityTest --continue --stacktrace --scan
 
@@ -200,11 +202,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Set up JDK 21
+      # 21 is the daemon (last = default JAVA_HOME); 17 is installed for `compatibilityTest`
+      # inner builds, which pin per-row JDK via the `org.gradle.java.home` property, resolving
+      # the home from JAVA_HOME_17_<arch>. See `resolveCompatJdkHome` — fixtures fail loudly if
+      # their declared jdkVersion is absent.
+      - name: Set up JDKs (21 daemon, 17 for compat inner builds)
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: |
+            17
+            21
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0

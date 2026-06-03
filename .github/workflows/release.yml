@@ -63,11 +63,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Set up JDK
+      # 23 is the publish daemon (last = default JAVA_HOME); 17 is installed for the
+      # `compatibilityTest` leg of `build assemble check`, whose fixtures pin per-row JDK via the
+      # `org.gradle.java.home` property, resolving the home from JAVA_HOME_17_<arch>. Without 17 here
+      # the release verify build fails loudly in `resolveCompatJdkHome` — the inverse of the silent
+      # daemon-JDK drift that broke v0.15.0.
+      - name: Set up JDKs (23 publish daemon, 17 for compat inner builds)
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: temurin
-          java-version: 23
+          java-version: |
+            17
+            23
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
