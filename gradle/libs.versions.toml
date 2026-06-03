@@ -104,7 +104,7 @@ androidCompileSdk = "35"
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # WARNING: Remember to update the version badge in `README.md`!
-android-gradle-plugin = "9.1.1"
+android-gradle-plugin = "9.2.1"
 
 # endregion
 
