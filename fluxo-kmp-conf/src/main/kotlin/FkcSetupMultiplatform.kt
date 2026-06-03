@@ -116,7 +116,9 @@ private val appleSimulatorRuntimeCache = ConcurrentHashMap<String, Boolean>()
 
 private fun hasRunnableAppleSimulatorRuntime(targetName: String): Boolean {
     val platform = appleSimulatorPlatform(targetName) ?: return true
-    return appleSimulatorRuntimeCache.getOrPut(platform) {
+    // `computeIfAbsent`, not `getOrPut`: the latter is get-then-put and would fork `simctl` more than
+    // once per platform under concurrent native-test configuration; this guarantees a single probe.
+    return appleSimulatorRuntimeCache.computeIfAbsent(platform) {
         val output = runCatching {
             ProcessBuilder("xcrun", "simctl", "list", "runtimes", "available", "--json")
                 .redirectErrorStream(true)

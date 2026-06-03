@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test
  *
  * The headline regression: the probe matched the pretty-printed `"platform" : "iOS"` substring. If
  * `simctl` ever emits compact JSON the match silently fails and every simulator test is skipped — a
- * false green. [`compact JSON …`][compactJsonReportsRuntime] is the RED case that breaks the old
- * spacing-coupled match and passes only with whitespace normalization.
+ * false green. The compact-JSON case is the RED reproducer: it breaks the old spacing-coupled match
+ * and passes only after whitespace normalization.
  */
 internal class AppleSimulatorProbeTest {
 
@@ -38,7 +38,7 @@ internal class AppleSimulatorProbeTest {
     }
 
     @Test
-    fun compactJsonReportsRuntime() {
+    fun `compact JSON reports the runtime (the regression)`() {
         // The exact regression: old `contains("\"platform\" : \"iOS\"")` fails here;
         // whitespace normalization fixes it.
         val compact =
