@@ -53,6 +53,13 @@ jobs:
           cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
           dependency-graph: generate-and-submit
           dependency-graph-continue-on-failure: false
-          dependency-graph-include-configurations: "^(?!(classpath)).*"
+          # Scope the graph to the CONSUMER surface: the published runtime classpath.
+          # compileOnly tooling (AGP -> bundletool -> jose4j, lint -> bouncycastle,
+          # detekt, ...) resolves in compileClasspath but never ships to consumers;
+          # including it floods Dependabot with build-only CVEs that mask the real
+          # consumer-facing ones. The prior "^(?!(classpath)).*" only dropped the
+          # buildscript `classpath` config, still leaking all of compileClasspath.
+          # Anchored ^...$ so it cannot partial-match testRuntimeClasspath et al.
+          dependency-graph-include-configurations: "^runtimeClasspath$"
           dependency-graph-include-projects: "^:(?!(buildSrc|test|check)).*"
           artifact-retention-days: 1
