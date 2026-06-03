@@ -62,7 +62,7 @@ io.smallrye.common:smallrye-common-annotation:2.14.0
 io.smallrye.common:smallrye-common-constraint:2.14.0
 io.smallrye.common:smallrye-common-cpu:2.14.0
 io.smallrye.common:smallrye-common-function:2.14.0
-io.undertow:undertow-core:2.4.0.Final
+io.undertow:undertow-core:2.4.1.Final
 org.apache.maven:maven-model:3.6.3
 org.barfuin.gradle.taskinfo:gradle-taskinfo:3.0.2
 org.barfuin.gradle.taskinfo:org.barfuin.gradle.taskinfo.gradle.plugin:3.0.2

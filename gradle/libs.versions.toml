@@ -180,7 +180,7 @@ okio = "3.17.0"
 
 # HTTP server core pulled by IntelliJ Platform tooling.
 # https://repo1.maven.org/maven2/io/undertow/undertow-core/
-undertow = "2.4.0.Final"
+undertow = "2.4.1.Final"
 
 # Bouncy Castle cryptographic libraries.
 # https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on
