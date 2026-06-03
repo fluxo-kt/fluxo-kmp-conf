@@ -49,8 +49,8 @@ com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.36.0
 com.vanniktech:gradle-maven-publish-plugin:0.36.0
 commons-io:commons-io:2.20.0
 dev.zacsweers.moshix:moshi-sealed-runtime:0.30.0
-io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:1.0.0
-io.github.fluxo-kt:fluxo-bcv-ts:1.0.0
+io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:1.1.0
+io.github.fluxo-kt:fluxo-bcv-ts:1.1.0
 io.github.pdvrieze.xmlutil:serialization-jvm:0.91.3
 io.gitlab.arturbosch.detekt:detekt-api:1.23.8
 io.gitlab.arturbosch.detekt:detekt-core:1.23.8

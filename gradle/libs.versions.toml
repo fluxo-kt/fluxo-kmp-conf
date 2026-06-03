@@ -114,7 +114,7 @@ bcv = "0.18.1"
 
 # Kotlin JS/WASM TypeScript definitions API support for the KotlinX Binary Compatibility Validator.
 # https://github.com/fluxo-kt/fluxo-bcv-js/releases.
-fluxo-bcv-js = "1.0.0"
+fluxo-bcv-js = "1.1.0"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
