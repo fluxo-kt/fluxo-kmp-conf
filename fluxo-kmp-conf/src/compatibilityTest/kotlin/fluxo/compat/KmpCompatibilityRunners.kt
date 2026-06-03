@@ -3,7 +3,6 @@ package fluxo.compat
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeText
-import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Assertions.assertFalse
 
 internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
@@ -26,15 +25,10 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         extraArguments = listOf("-PKMP_TARGETS=JVM")
     )
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=JVM")
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=JVM"
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
@@ -61,14 +55,10 @@ internal fun runKmpCommonOnlyConsumer(row: Map<String, String>, tempDir: Path) {
         extraArguments = listOf("-PKMP_TARGETS=COMMON")
     )
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=COMMON")
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=COMMON"
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
+
+    result.assertInnerJdk(row)
 
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
@@ -90,15 +80,10 @@ internal fun runKmpInvalidTargetConsumer(row: Map<String, String>, tempDir: Path
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=TYPO")
-        .forwardOutput()
-        .buildAndFail()
+    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=TYPO"
+    val result = compatRunner(row, projectDir, gradleUserHome, args).buildAndFail()
 
+    result.assertInnerJdk(row)
     check("KMP_TARGETS property of 'TYPO' not recognized" in result.output) {
         result.output
     }

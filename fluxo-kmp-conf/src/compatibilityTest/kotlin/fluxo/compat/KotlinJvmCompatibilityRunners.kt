@@ -3,7 +3,6 @@ package fluxo.compat
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeText
-import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.assertFalse
 
@@ -22,16 +21,10 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
         pluginClasspath = pluginClasspath,
     )
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withPluginClasspath(pluginClasspath)
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks))
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks)
+    val result = compatRunner(row, projectDir, gradleUserHome, args, pluginClasspath).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
@@ -65,6 +58,8 @@ private fun kotlinJvmConsumerSettingsScript(): String =
     }
 
     rootProject.name = "compat-kotlin-jvm-consumer"
+
+    println("$INNER_JDK_MARKER" + System.getProperty("java.specification.version"))
     """.trimIndent()
 
 private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
@@ -119,15 +114,10 @@ internal fun runKotlinJvmTestsDisabledConsumer(row: Map<String, String>, tempDir
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks) + "-PDISABLE_TESTS=true")
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks) + "-PDISABLE_TESTS=true"
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     check(result.task(":test")?.outcome != TaskOutcome.SUCCESS) {
@@ -158,15 +148,10 @@ internal fun runKotlinJvmMarkerConsumer(row: Map<String, String>, tempDir: Path)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
     seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks))
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks)
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)

@@ -3,7 +3,6 @@ package fluxo.compat
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeText
-import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Assertions.assertFalse
 
 internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
@@ -22,15 +21,10 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID")
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID"
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
@@ -56,15 +50,10 @@ internal fun runAgp9KmpAppUnsupportedConsumer(row: Map<String, String>, tempDir:
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID")
-        .forwardOutput()
-        .buildAndFail()
+    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID"
+    val result = compatRunner(row, projectDir, gradleUserHome, args).buildAndFail()
 
+    result.assertInnerJdk(row)
     check("AGP 9+ rejects `com.android.application`" in result.output) {
         result.output
     }
@@ -93,15 +82,10 @@ internal fun runAgp8KmpConsumer(row: Map<String, String>, tempDir: Path) {
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID")
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID"
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
@@ -127,15 +111,10 @@ internal fun runAndroidLibraryConsumer(row: Map<String, String>, tempDir: Path) 
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks))
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks)
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
     assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)

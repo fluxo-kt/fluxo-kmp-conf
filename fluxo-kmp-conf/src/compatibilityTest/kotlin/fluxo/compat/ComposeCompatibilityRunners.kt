@@ -3,7 +3,6 @@ package fluxo.compat
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeText
-import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Assertions.assertFalse
 
 internal fun runComposeDesktopConsumer(row: Map<String, String>, tempDir: Path) {
@@ -21,15 +20,10 @@ internal fun runComposeDesktopConsumer(row: Map<String, String>, tempDir: Path) 
     val requiredTasks = row.getValue("requiredTasks").split(' ')
     seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks))
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks)
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
@@ -54,15 +48,10 @@ internal fun runComposeKmpAndroidConsumer(row: Map<String, String>, tempDir: Pat
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
-    val result = GradleRunner.create()
-        .withProjectDir(projectDir.toFile())
-        .withTestKitDir(gradleUserHome.toFile())
-        .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID,JVM")
-        .forwardOutput()
-        .build()
+    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=ANDROID,JVM"
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
+    result.assertInnerJdk(row)
     assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
