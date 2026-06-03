@@ -2,6 +2,7 @@ package fluxo.compat
 
 import java.io.File
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -63,6 +64,20 @@ class CompatibilityJdkResolverTest {
         assertTrue("exactly one JDK" in error.message.orEmpty(), error.message)
         val singleRow = mapOf("id" to "x", "jdkVersion" to "$SINGLE_MAJOR")
         assertEquals(SINGLE_MAJOR, singleRow.compatJdkMajor())
+    }
+
+    @Test
+    fun javaHomeEnvKeyMatchesSetupJavaConventionAndRejectsNearMisses() {
+        // The env branch reads System.getenv() (uninjectable), so the risky part — the key
+        // predicate — is verified here directly. RED if the load-bearing trailing `_` is dropped.
+        // SINGLE_MAJOR == 17. Near-miss keys (170, 1, 8) must NOT match major 17, and the 17-key
+        // must NOT match major 1 — the trailing `_` is what discriminates these.
+        assertTrue(isJavaHomeEnvKey("JAVA_HOME_17_X64", SINGLE_MAJOR))
+        assertTrue(isJavaHomeEnvKey("JAVA_HOME_17_ARM64", SINGLE_MAJOR))
+        assertFalse(isJavaHomeEnvKey("JAVA_HOME_170_X64", SINGLE_MAJOR))
+        assertFalse(isJavaHomeEnvKey("JAVA_HOME_1_X64", SINGLE_MAJOR))
+        assertFalse(isJavaHomeEnvKey("JAVA_HOME_17_X64", 1))
+        assertFalse(isJavaHomeEnvKey("JAVA_HOME_8_X64", SINGLE_MAJOR))
     }
 
     private fun withOverride(major: Int, value: String, block: () -> Unit) {

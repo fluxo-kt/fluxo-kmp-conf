@@ -61,7 +61,7 @@ internal fun resolveCompatJdkHome(major: Int): File {
             ?: error("fluxo.compat.jdk$major='$override' is not a JDK $major home.")
     }
     System.getenv().entries
-        .firstOrNull { it.key.startsWith("JAVA_HOME_${major}_") }
+        .firstOrNull { isJavaHomeEnvKey(it.key, major) }
         ?.value?.let(::File)?.takeIfMajor(major)?.let { return it }
     candidateJdkHomes().firstOrNull { it.jdkFeatureVersion() == major }?.let { return it }
     error(
@@ -70,6 +70,15 @@ internal fun resolveCompatJdkHome(major: Int): File {
             "or install JDK $major (sdkman / /usr/lib/jvm / JavaVirtualMachines).",
     )
 }
+
+/**
+ * Whether [key] is the `actions/setup-java` env var that names a JDK of feature [major]:
+ * `JAVA_HOME_<major>_<arch>` (e.g. `JAVA_HOME_17_X64`, `JAVA_HOME_17_ARM64`). The trailing `_` is
+ * load-bearing — without it `JAVA_HOME_170_*` would match `major=17` and `JAVA_HOME_17_*` would
+ * match `major=1`. A literal prefix, never a regex (this is fixed syntax, not a pattern language).
+ */
+internal fun isJavaHomeEnvKey(key: String, major: Int): Boolean =
+    key.startsWith("JAVA_HOME_${major}_")
 
 /**
  * Installed-JDK homes to scan, covering every dev platform: sdkman candidates (home = entry),
