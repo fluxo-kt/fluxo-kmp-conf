@@ -114,7 +114,7 @@ bcv = "0.18.1"
 
 # Kotlin JS/WASM TypeScript definitions API support for the KotlinX Binary Compatibility Validator.
 # https://github.com/fluxo-kt/fluxo-bcv-js/releases.
-fluxo-bcv-js = "1.0.0"
+fluxo-bcv-js = "1.1.0"
 
 # Dokka is a documentation engine for Kotlin/Java
 # https://github.com/Kotlin/dokka/releases
@@ -180,7 +180,7 @@ okio = "3.17.0"
 
 # HTTP server core pulled by IntelliJ Platform tooling.
 # https://repo1.maven.org/maven2/io/undertow/undertow-core/
-undertow = "2.4.0.Final"
+undertow = "2.4.1.Final"
 
 # Bouncy Castle cryptographic libraries.
 # https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on
@@ -378,7 +378,7 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.1.1" }
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.develocity
 # NOTE: Don't forget to edit a version in all `settings.gradle.kts` files as well!
-develocity = { id = "com.gradle.develocity", version = "4.4.1" }
+develocity = { id = "com.gradle.develocity", version = "4.4.2" }
 
 # Gradle Versions Plugin: provides a task to determine, which dependencies have updates.
 # https://github.com/ben-manes/gradle-versions-plugin/releases
@@ -389,7 +389,7 @@ deps-versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 # https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "3.10.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "3.13.0" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log

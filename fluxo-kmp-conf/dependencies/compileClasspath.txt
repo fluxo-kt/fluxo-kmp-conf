@@ -8,8 +8,8 @@ com.android.tools.build:gradle:9.1.1
 com.android.tools.build:manifest-merger:32.1.1
 com.android.tools:r8:9.1.31
 com.android:zipflinger:9.1.1
-com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:3.10.0
-com.autonomousapps:dependency-analysis-gradle-plugin:3.10.0
+com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:3.13.0
+com.autonomousapps:dependency-analysis-gradle-plugin:3.13.0
 com.diffplug.spotless:spotless-lib-extra:4.5.0
 com.diffplug.spotless:spotless-lib:4.5.0
 com.diffplug.spotless:spotless-plugin-gradle:8.4.0
@@ -25,10 +25,10 @@ com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin:6.0.9
 com.github.gmazzo.buildconfig:plugin:6.0.9
 com.google.devtools.ksp:symbol-processing-gradle-plugin:2.2.21-2.0.5
 com.google.errorprone:error_prone_annotations:2.21.1
-com.gradle.develocity:com.gradle.develocity.gradle.plugin:4.4.1
+com.gradle.develocity:com.gradle.develocity.gradle.plugin:4.4.2
 com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin:2.1.1
 com.gradle.publish:plugin-publish-plugin:2.1.1
-com.gradle:develocity-gradle-plugin:4.4.1
+com.gradle:develocity-gradle-plugin:4.4.2
 com.guardsquare:proguard-base:7.9.1
 com.guardsquare:proguard-core:9.3.2
 com.guardsquare:proguard-gradle:7.9.1
@@ -49,8 +49,8 @@ com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.36.0
 com.vanniktech:gradle-maven-publish-plugin:0.36.0
 commons-io:commons-io:2.20.0
 dev.zacsweers.moshix:moshi-sealed-runtime:0.30.0
-io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:1.0.0
-io.github.fluxo-kt:fluxo-bcv-ts:1.0.0
+io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:1.1.0
+io.github.fluxo-kt:fluxo-bcv-ts:1.1.0
 io.github.pdvrieze.xmlutil:serialization-jvm:0.91.3
 io.gitlab.arturbosch.detekt:detekt-api:1.23.8
 io.gitlab.arturbosch.detekt:detekt-core:1.23.8
@@ -62,7 +62,7 @@ io.smallrye.common:smallrye-common-annotation:2.14.0
 io.smallrye.common:smallrye-common-constraint:2.14.0
 io.smallrye.common:smallrye-common-cpu:2.14.0
 io.smallrye.common:smallrye-common-function:2.14.0
-io.undertow:undertow-core:2.4.0.Final
+io.undertow:undertow-core:2.4.1.Final
 org.apache.maven:maven-model:3.6.3
 org.barfuin.gradle.taskinfo:gradle-taskinfo:3.0.2
 org.barfuin.gradle.taskinfo:org.barfuin.gradle.taskinfo.gradle.plugin:3.0.2
