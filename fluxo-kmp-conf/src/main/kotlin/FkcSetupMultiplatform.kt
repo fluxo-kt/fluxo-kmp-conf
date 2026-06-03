@@ -6,6 +6,9 @@ import com.android.build.api.dsl.CommonExtension
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.KmpConfigurationContainerDsl
 import fluxo.conf.dsl.fluxoConfiguration
+import fluxo.conf.impl.kotlin.appleSimulatorPlatform
+import fluxo.conf.impl.kotlin.isSimulatorTestTask
+import fluxo.conf.impl.kotlin.simctlReportsRuntime
 import fluxo.conf.impl.withType
 import java.util.concurrent.ConcurrentHashMap
 import org.gradle.api.Project
@@ -107,31 +110,22 @@ public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
     }
 }
 
+// Probed once per platform per build: `simctl` is a slow external process and runtime availability
+// can't change mid-build. Pure task/platform/output logic lives in `AppleSimulatorProbe.kt`.
 private val appleSimulatorRuntimeCache = ConcurrentHashMap<String, Boolean>()
 
-private fun isSimulatorTestTask(taskName: String, targetName: String, targetId: String): Boolean =
-    taskName == "${targetName}Test" ||
-        taskName == "${targetName}BackgroundTest" ||
-        taskName == "compileTestKotlin$targetId" ||
-        taskName.startsWith("link") && taskName.endsWith("Test$targetId")
-
 private fun hasRunnableAppleSimulatorRuntime(targetName: String): Boolean {
-    val platform = when {
-        targetName.startsWith("iosSimulator") || targetName == "iosX64" -> "iOS"
-        targetName.startsWith("tvosSimulator") || targetName == "tvosX64" -> "tvOS"
-        targetName.startsWith("watchosSimulator") || targetName == "watchosX64" -> "watchOS"
-        else -> return true
-    }
-
+    val platform = appleSimulatorPlatform(targetName) ?: return true
     return appleSimulatorRuntimeCache.getOrPut(platform) {
-        runCatching {
+        val output = runCatching {
             ProcessBuilder("xcrun", "simctl", "list", "runtimes", "available", "--json")
                 .redirectErrorStream(true)
                 .start()
                 .inputStream
                 .bufferedReader()
-                .readText()
-        }.getOrDefault("").contains("\"platform\" : \"$platform\"")
+                .use { it.readText() }
+        }.getOrDefault("")
+        simctlReportsRuntime(output, platform)
     }
 }
 
