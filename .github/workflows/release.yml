@@ -151,9 +151,6 @@ jobs:
           ./gradlew publishAndReleaseToMavenCentral publishPlugins
           --no-build-cache --no-configuration-cache --stacktrace
 
-      - name: Verify Plugin Portal page
-        run: .github/scripts/verify-plugin-portal-page.sh "${{ needs.verify_release.outputs.version }}"
-
   gh_release:
     needs:
       - verify_release
@@ -193,25 +190,18 @@ jobs:
           RELEASE_SUFFIX: ${{ env.RELEASE_SUFFIX }}
         run: .github/scripts/create-github-release.sh
 
-  # Keep `main` (JitPack main-SNAPSHOT + the branch main-tracking consumers
-  # follow) from rotting behind published releases. Stable releases only —
-  # pre-releases must not move the consumer-facing main. Active by default with
-  # the built-in GITHUB_TOKEN: if it cannot fast-forward protected main, the job
-  # FAILS LOUDLY so a forgotten promotion can't pass unnoticed (the rot's root
-  # cause). Provisioning MAIN_PROMOTE_TOKEN (a main branch-protection bypass
-  # actor) upgrades that to silent auto-promotion. promote-main.sh never weakens
-  # protection. See promote-main.sh + promote-main.test.sh.
-  promote_main:
+  # Informational, NON-GATING. The publish step above is the irreversible commit
+  # point; the Plugin Portal renders its page asynchronously, so verifying it must
+  # never gate release completion (`gh_release`). A propagation delay or a Portal
+  # rendering change here would otherwise half-complete an already-published
+  # release — which it did for v0.15.0. A red here means "investigate Portal
+  # metadata", not "the release failed". `main` is promoted manually by a
+  # maintainer after a stable publish (see AGENTS.md "Release flow").
+  verify_portal_page:
     needs:
       - verify_release
       - publish_release
-      - gh_release
-    if: >-
-      github.repository == 'fluxo-kt/fluxo-kmp-conf' &&
-      needs.verify_release.outputs.prerelease == 'false'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Harden Runner
@@ -222,12 +212,6 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-          persist-credentials: false
 
-      - name: Fast-forward main to the released tag
-        env:
-          GH_TOKEN: ${{ secrets.MAIN_PROMOTE_TOKEN || github.token }}
-          TAG: ${{ needs.verify_release.outputs.tag }}
-        run: .github/scripts/promote-main.sh
+      - name: Verify Plugin Portal page
+        run: .github/scripts/verify-plugin-portal-page.sh "${{ needs.verify_release.outputs.version }}"

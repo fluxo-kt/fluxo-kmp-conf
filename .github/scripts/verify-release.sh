@@ -50,9 +50,8 @@ done
 
 # Single source of truth for "is this a pre-release". Semver places the marker
 # after a hyphen (e.g. v0.15.0-alpha01); anchoring on `-` avoids false positives
-# like a hypothetical v1.0-march matching "rc". Consumed by gh_release
-# (release-notes labelling) and promote_main (must NOT advance the
-# consumer-facing main to a pre-release).
+# like a hypothetical v1.0-march matching "rc". Consumed by gh_release to mark
+# the GitHub release as a pre-release.
 prerelease=false
 if [[ "${GITHUB_REF_NAME}" =~ -(alpha|beta|rc) ]]; then
   prerelease=true

@@ -49,10 +49,9 @@ jobs:
           git ls-files '.github/actions/*.yml' '.github/actions/*.yaml' '.github/actions/**/*.yml' '.github/actions/**/*.yaml' \
             | xargs -r ruby -e 'require "yaml"; ARGV.each { |file| YAML.load_file(file) }'
 
-      - name: Shellcheck and unit-test scripts
+      - name: Shellcheck scripts
         shell: bash
         run: |
           git ls-files '.github/scripts/*.sh' | xargs -r shellcheck
-          bash .github/scripts/promote-main.test.sh
 
       - uses: ./.github/actions/actionlint
