@@ -8,8 +8,9 @@ import org.junit.jupiter.api.io.TempDir
 
 internal class KotlinJvmCompatibilityTestKitSmokeTest {
 
-    // Keep on failure for forensics; reclaim on success (NEVER leaked multi-GB fixture dirs).
-    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    // NEVER is required: the inner build's TestKit daemon keeps gradleUserHome (under this dir)
+    // open, so ON_SUCCESS/ALWAYS cleanup throws "Failed to delete temp directory". CI is ephemeral.
+    @TempDir(cleanup = CleanupMode.NEVER)
     lateinit var tempDir: Path
 
     @TestFactory
