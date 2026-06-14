@@ -24,6 +24,9 @@
 - KMP modules no longer break when the `androidMain` ↔ `commonJvmMain` bridge has no intermediate source set to connect (e.g. android-only KMP); the bridge is a no-op in that case.
 - `compileNativeMainKotlinMetadata` no longer fails under `allWarningsAsErrors` on the unsuppressable KLIB duplicate-`unique_name` resolver warning (KT-69310). `-Werror` is dropped for the shared-metadata (`common`) platform only; every leaf platform still recompiles the same common sources under `-Werror`, so genuine common-code warnings still fail the build.
 
+### Updated
+- The default ktlint version applied by `enableSpotless` advances 1.4.1 → 1.8.0. This affects only consumers that opt into `enableSpotless` without pinning `ktlint` in their own version catalog (an explicit `ktlint` catalog entry always wins); for them, newer ktlint rules may reformat or flag code that previously passed.
+
 
 ## [0.14.1] - 2026-05-17
 
