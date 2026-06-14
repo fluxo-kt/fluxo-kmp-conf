@@ -23,7 +23,7 @@ class CompatibilityRunnerGuardTest {
         val compatDir = Path.of(System.getProperty("fluxo.repo.root"))
             .resolve("fluxo-kmp-conf/src/compatibilityTest/kotlin/fluxo/compat")
         val offenders = compatDir.walk()
-            .filter { it.extension == "kt" && it.name != "CompatibilityGradleSupport.kt" }
+            .filter { it.extension == "kt" && it.name !in INFRA_FILES_ALLOWED_TO_NAME_PATTERN }
             .filter { "GradleRunner.create(" in it.readText() }
             .map { it.name }
             .toList()
@@ -32,6 +32,21 @@ class CompatibilityRunnerGuardTest {
             offenders,
             "Construct fixtures via compatRunner(...) (pins jdkVersion + assertInnerJdk), " +
                 "not a raw GradleRunner. Offending files: $offenders",
+        )
+    }
+
+    private companion object {
+        /**
+         * Files allowed to NAME the guarded pattern — a filename allowlist, not pattern-matching
+         * heuristics, so the guard cannot be tripped (or weakened) by how comments/needles are
+         * worded:
+         *  - `CompatibilityGradleSupport.kt`: the sole construction point (`compatRunner`).
+         *  - `CompatibilityRunnerGuardTest.kt`: this guard itself necessarily contains the literal
+         *    (its KDoc and its search needle) — without this entry the scan reports itself.
+         */
+        val INFRA_FILES_ALLOWED_TO_NAME_PATTERN = setOf(
+            "CompatibilityGradleSupport.kt",
+            "CompatibilityRunnerGuardTest.kt",
         )
     }
 }
