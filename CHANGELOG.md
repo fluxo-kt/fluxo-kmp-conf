@@ -7,7 +7,7 @@
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
 
-## [0.15.0] - 2026-06-03
+## [0.15.0] - 2026-06-14
 
 ### Added
 - Kotlin 2.3 support in the Kotlin → max-JVM-target table: Kotlin 2.3 now maps to JVM target 25, so consumers on Kotlin 2.3 requesting JVM 25 are no longer silently capped to a lower bytecode target.
