@@ -8,7 +8,8 @@ import org.junit.jupiter.api.io.TempDir
 
 internal class AndroidCompatibilityTestKitSmokeTest {
 
-    @TempDir(cleanup = CleanupMode.NEVER)
+    // Keep on failure for forensics; reclaim on success (NEVER leaked multi-GB fixture dirs).
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
     lateinit var tempDir: Path
 
     @TestFactory
