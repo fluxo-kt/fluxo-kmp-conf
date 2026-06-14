@@ -64,7 +64,7 @@ pluginManagement {
   }
   resolutionStrategy.eachPlugin {
     if (requested.id.toString() == "io.github.fluxo-kt.fluxo-kmp-conf")
-      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:5b57cfecad") // ← specify a version or commit
+      useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:1a0e855c35") // ← specify a version or commit
   }
 }
 ```
