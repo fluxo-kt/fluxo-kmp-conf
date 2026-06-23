@@ -146,9 +146,21 @@ jobs:
           ./gradlew :plugin:verifyPluginPortalMetadata publishPlugins --validate-only
           --no-build-cache --no-configuration-cache --stacktrace
 
-      - name: Publish Maven Central and Plugin Portal
+      # SEPARATE sequential invocations, never one `gradlew A B`: the root build is
+      # org.gradle.parallel=true, so a combined task list could run these two
+      # IRREVERSIBLE publishes concurrently / in scheduler order. Separate steps
+      # serialize them and let a Central failure abort BEFORE the Portal publish
+      # (a failed step stops the job) → a clean full retry. Central goes first: it
+      # is the slower/flakier endpoint, so its failure is the cheap one to recover.
+      # After a SECOND-step failure, re-run only that channel — the other is done.
+      - name: Publish to Maven Central
         run: >
-          ./gradlew publishAndReleaseToMavenCentral publishPlugins
+          ./gradlew publishAndReleaseToMavenCentral
+          --no-build-cache --no-configuration-cache --stacktrace
+
+      - name: Publish to Gradle Plugin Portal
+        run: >
+          ./gradlew publishPlugins
           --no-build-cache --no-configuration-cache --stacktrace
 
   gh_release:
