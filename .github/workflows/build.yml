@@ -89,15 +89,17 @@ jobs:
           artifact-retention-days: 1
 
       - name: 'Build and check plugin itself'
-        timeout-minutes: 18
-        # `compatibilityTest` is excluded here and runs once in `integrationChecks`
-        # instead: it spawns ~19 nested TestKit consumer builds (AGP/KMP/Compose),
-        # is OS- and daemon-JDK-independent — each fixture pins its inner build to the
-        # JDK its `compat/matrix.tsv` `jdkVersion` declares via the `org.gradle.java.home`
-        # property (see `compatRunner`/`resolveCompatJdkHome`), so the outer daemon JDK can't change
-        # results — and took >15 min, so running it on every OS×JDK cell is pure redundancy
-        # that blew this step's budget. `verifyCompatibilityStatic` (the OS-path check)
-        # stays in `check` and still runs on every cell.
+        # Sized for the SLOWEST cell: macOS alone builds the Apple/native (konan) KMP targets
+        # ubuntu/windows skip, so it's the bottleneck. 18 min red-flaked macos/JDK23 on a commit
+        # green on all 5 other cells + every integration leg. Keep margin over the macOS native
+        # wall-time (~18 min + runner variance); < the 90-min job cap so a real hang still trips.
+        timeout-minutes: 45
+        # `compatibilityTest` is excluded here and runs once in `integrationChecks` instead: it
+        # spawns ~19 nested TestKit consumer builds (AGP/KMP/Compose), is OS- and daemon-JDK-
+        # independent — each fixture pins its inner build to the JDK its `compat/matrix.tsv`
+        # `jdkVersion` declares via `org.gradle.java.home` (see `compatRunner`/`resolveCompatJdkHome`),
+        # so the outer daemon JDK can't change results — and took >15 min, so running it on every
+        # OS×JDK cell is pure redundancy. `verifyCompatibilityStatic` (OS-path check) stays in `check`.
         run: ./gradlew build assemble check -x compatibilityTest --continue --stacktrace --scan
 
       - name: Upload sarif report (Detekt)
