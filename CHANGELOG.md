@@ -6,6 +6,9 @@
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
+
+## [0.15.1] - 2026-06-23
+
 ### Fixed
 - `dependencyGuard` no longer fails configuration under `-Dsplit_targets` when a module has zero guardable configurations (a target-restricted shard can leave none): the plugin is skipped on such modules instead of being applied with an empty config set, which throws "No configurations provided".
 - BCV's `klibApiCheck` is disabled under `-Dsplit_targets`, where the built target set is a strict subset and the union KLib ABI check would always fail; the full-target (non-split) lane still enforces it.
@@ -504,6 +507,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.15.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.15.1
 [0.15.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.15.0
 [0.14.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.14.1
 [0.14.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.14.0
