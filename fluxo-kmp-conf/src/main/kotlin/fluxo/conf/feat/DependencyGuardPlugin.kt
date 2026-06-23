@@ -53,20 +53,28 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
             }
 
             val project = this
-            loadAndApplyPluginIfNotApplied(project = project)
+            // Defer until configurations are populated: target-restricted variants (e.g.
+            // `-Dsplit_targets` on a CI runner) can leave *zero* configurations matching
+            // `isShouldBeGuarded`. Applying the dropbox plugin with an empty extension fails
+            // task creation ("No configurations provided to Dependency Guard Plugin"); skip the
+            // apply on those projects instead. Guarding empty graph adds no signal anyway.
+            project.afterEvaluate {
+                val matching = configurations.filter { it.isShouldBeGuarded() }
+                if (matching.isEmpty()) {
+                    logger.d("dependencyGuard skipped on $path: no matching configurations")
+                    return@afterEvaluate
+                }
+                loadAndApplyPluginIfNotApplied(project = project)
 
-            // Guard all non-test, non-benchmark, non-meta configurations
-            @Suppress("MaxLineLength")
-            /** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.validatePluginConfiguration */
-            dependencyGuard {
-                // TODO: Allow to customize configurations auto-filtration
-                //  (custom list, `allowedFilter`, callback)
-
-                project.configurations.configureEach {
-                    if (isShouldBeGuarded()) {
-                        val confName = name
-                        logger.d("Dependency guard the '$confName' configuration")
-                        this@dependencyGuard.configuration(confName, RELEASE_CONFIGURATION)
+                // Guard all non-test, non-benchmark, non-meta configurations
+                @Suppress("MaxLineLength")
+                /** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.validatePluginConfiguration */
+                dependencyGuard {
+                    // TODO: Allow to customize configurations auto-filtration
+                    //  (custom list, `allowedFilter`, callback)
+                    matching.forEach { conf ->
+                        logger.d("Dependency guard the '${conf.name}' configuration")
+                        configuration(conf.name, RELEASE_CONFIGURATION)
                     }
                 }
             }
