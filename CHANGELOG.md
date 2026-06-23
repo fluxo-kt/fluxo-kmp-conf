@@ -6,6 +6,10 @@
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
+### Fixed
+- `dependencyGuard` no longer fails configuration under `-Dsplit_targets` when a module has zero guardable configurations (a target-restricted shard can leave none): the plugin is skipped on such modules instead of being applied with an empty config set, which throws "No configurations provided".
+- BCV's `klibApiCheck` is disabled under `-Dsplit_targets`, where the built target set is a strict subset and the union KLib ABI check would always fail; the full-target (non-split) lane still enforces it.
+
 
 ## [0.15.0] - 2026-06-14
 
