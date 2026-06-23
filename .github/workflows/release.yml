@@ -146,13 +146,13 @@ jobs:
           ./gradlew :plugin:verifyPluginPortalMetadata publishPlugins --validate-only
           --no-build-cache --no-configuration-cache --stacktrace
 
-      # SEPARATE sequential invocations, never one `gradlew A B`: the root build is
-      # org.gradle.parallel=true, so a combined task list could run these two
-      # IRREVERSIBLE publishes concurrently / in scheduler order. Separate steps
-      # serialize them and let a Central failure abort BEFORE the Portal publish
-      # (a failed step stops the job) → a clean full retry. Central goes first: it
-      # is the slower/flakier endpoint, so its failure is the cheap one to recover.
-      # After a SECOND-step failure, re-run only that channel — the other is done.
+      # SEPARATE sequential invocations, never one `gradlew A B`: both are :plugin
+      # tasks with no dependency between them, so Gradle does not guarantee their
+      # command-line order — a combined list could run the Portal publish before
+      # these IRREVERSIBLE Central steps. Separate steps serialize them and let a
+      # Central failure abort BEFORE the Portal publish (a failed step stops the
+      # job) → clean full retry. Central goes first: slower/flakier endpoint, the
+      # cheap failure to recover; a 2nd-step fail leaves Central done, re-run Portal.
       - name: Publish to Maven Central
         run: >
           ./gradlew publishAndReleaseToMavenCentral
