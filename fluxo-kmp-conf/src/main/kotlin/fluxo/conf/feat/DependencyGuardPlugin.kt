@@ -53,11 +53,12 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
             }
 
             val project = this
-            // Defer until configurations are populated: target-restricted variants (e.g.
-            // `-Dsplit_targets` on a CI runner) can leave *zero* configurations matching
-            // `isShouldBeGuarded`. Applying the dropbox plugin with an empty extension fails
-            // task creation ("No configurations provided to Dependency Guard Plugin"); skip the
-            // apply on those projects instead. Guarding empty graph adds no signal anyway.
+            // Deferred to afterEvaluate until configurations are populated (revisit if dropbox
+            //  ever supports an empty config set): target-restricted variants (e.g.
+            //  `-Dsplit_targets` on a CI runner) can leave *zero* configurations matching
+            //  `isShouldBeGuarded`. Applying dropbox with an empty extension fails task
+            //  creation ("No configurations provided to Dependency Guard Plugin"), so skip the
+            //  apply on those projects instead — guarding an empty graph adds no signal anyway.
             project.afterEvaluate {
                 val matching = configurations.filter { it.isShouldBeGuarded() }
                 if (matching.isEmpty()) {
@@ -67,7 +68,6 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
                 loadAndApplyPluginIfNotApplied(project = project)
 
                 // Guard all non-test, non-benchmark, non-meta configurations
-                @Suppress("MaxLineLength")
                 /** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.validatePluginConfiguration */
                 dependencyGuard {
                     // TODO: Allow to customize configurations auto-filtration

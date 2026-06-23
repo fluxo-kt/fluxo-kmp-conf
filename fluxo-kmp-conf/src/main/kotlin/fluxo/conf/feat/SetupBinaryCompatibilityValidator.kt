@@ -2,7 +2,6 @@
 
 package fluxo.conf.feat
 
-import isSplitTargetsEnabled
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
@@ -15,6 +14,7 @@ import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.withType
 import fluxo.log.l
+import isSplitTargetsEnabled
 import java.nio.file.Files
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.ExperimentalBCVApi
@@ -95,7 +95,7 @@ private fun Project.setupKmpBinaryCompatibilityValidator(
         tasks.matching { it.name == "klibApiCheck" }.configureEach {
             if (enabled) {
                 enabled = false
-                logger.l("$this disabled under -Dsplit_targets (active target set is a strict subset)")
+                logger.l("$this disabled under -Dsplit_targets")
             }
         }
     }
