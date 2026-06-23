@@ -40,9 +40,10 @@ if [[ ! -s "$notes_file" ]]; then
 fi
 
 title="${release_tag}${RELEASE_SUFFIX:-}"
-# --draft is SETTLED policy, not a stopgap: the maintainer publishes the release by hand
-# (human-gated announcement timing — see AGENTS.md "Release flow & `main` promotion").
-# Do NOT flip to --draft=false / auto-publish here; fully-automated releases are unwanted.
+# --draft is SETTLED policy, not a stopgap: publishing is an ATTENDED maintainer step — the
+# maintainer (a human, or an agent the user authorises per-release) decides WHEN the release
+# goes public (see AGENTS.md "Release flow & `main` promotion"). Do NOT flip to --draft=false
+# here: what's rejected is UNATTENDED CI auto-publish, not agency.
 release_flags=(--draft --title "$title" --notes-file "$notes_file" --target "$target_commit")
 if [[ "${RELEASE_PRE:-false}" == "true" ]]; then
   release_flags+=(--prerelease)
