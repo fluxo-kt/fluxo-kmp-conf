@@ -2,6 +2,7 @@
 
 package fluxo.conf.feat
 
+import isSplitTargetsEnabled
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
@@ -81,6 +82,20 @@ private fun Project.setupKmpBinaryCompatibilityValidator(
                     enabled = false
                     logger.l("API check $this disabled!")
                 }
+            }
+        }
+    }
+
+    // Under `-Dsplit_targets` the active KMP target set is a strict subset of the full one
+    // (CI sharding across runner OS). BCV's `klibApiCheck` validates the *union* baseline
+    // (`<module>.klib.api`) against the *built* targets and always fails on a shard. Disable
+    // it on target-restricted runs; the full-target lane (non-split CI step) still enforces
+    // it. `apiCheck` is a lifecycle umbrella — its disabled deps are skipped, no extra wiring.
+    if (isSplitTargetsEnabled()) {
+        tasks.matching { it.name == "klibApiCheck" }.configureEach {
+            if (enabled) {
+                enabled = false
+                logger.l("$this disabled under -Dsplit_targets (active target set is a strict subset)")
             }
         }
     }
