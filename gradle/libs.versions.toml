@@ -164,7 +164,7 @@ r8 = "9.1.31"
 
 # ASM is a Java bytecode analysis and manipulation framework.
 # https://mvnrepository.com/artifact/org.ow2.asm/asm
-asm = "9.9.1"
+asm = "9.10.1"
 
 
 # region Pinned dependencies

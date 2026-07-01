@@ -139,7 +139,7 @@ org.ow2.asm:asm-analysis:9.9
 org.ow2.asm:asm-commons:9.9
 org.ow2.asm:asm-tree:9.9
 org.ow2.asm:asm-util:9.9
-org.ow2.asm:asm:9.9.1
+org.ow2.asm:asm:9.10.1
 org.reactivestreams:reactive-streams:1.0.4
 org.slf4j:slf4j-api:2.0.17
 org.tensorflow:tensorflow-lite-metadata:0.2.0

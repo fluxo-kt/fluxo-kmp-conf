@@ -26,7 +26,7 @@ org.eclipse.jgit:org.eclipse.jgit:7.5.0.202512021534-r
 org.eclipse.platform:org.eclipse.osgi:3.24.100
 org.jetbrains.kotlin:kotlin-bom:2.0.21
 org.jetbrains.kotlin:kotlin-reflect:2.0.21
-org.ow2.asm:asm:9.9.1
+org.ow2.asm:asm:9.10.1
 org.slf4j:slf4j-api:2.0.17
 org.tomlj:tomlj:1.1.1
 org.tukaani:xz:1.9
