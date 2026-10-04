@@ -1,8 +1,6 @@
 package fluxo.compat
 
-import java.io.File
 import java.nio.file.Path
-import java.util.Properties
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -60,18 +58,15 @@ internal fun compatRunner(
     projectDir: Path,
     gradleUserHome: Path,
     arguments: List<String>,
-    pluginClasspath: List<File> = emptyList(),
 ): GradleRunner {
     pinInnerJdk(projectDir, row.compatJdkMajor())
-    val runner = GradleRunner.create()
+    return GradleRunner.create()
         .withProjectDir(projectDir.toFile())
         .withTestKitDir(gradleUserHome.toFile())
         .withGradleVersion(row.getValue("gradleVersion"))
         .withEnvironment(sanitizedEnvironment() + TRIPWIRE_ENVIRONMENT)
-        .withArguments(arguments + tripwireArguments(projectDir))
+        .withArguments(arguments + tripwireArguments(projectDir, row))
         .forwardOutput()
-    if (pluginClasspath.isNotEmpty()) runner.withPluginClasspath(pluginClasspath)
-    return runner
 }
 
 /**
@@ -93,14 +88,13 @@ internal fun seedDependencyGuardBaseline(
     projectDir: Path,
     gradleUserHome: Path,
     extraArguments: List<String> = emptyList(),
-    pluginClasspath: List<File> = emptyList(),
 ) {
     if (CHECK_TASK !in row.getValue("requiredTasks").split(' ')) {
         return
     }
 
     val args = gradleArguments(listOf(DEPENDENCY_GUARD_BASELINE_TASK)) + extraArguments
-    val result = compatRunner(row, projectDir, gradleUserHome, args, pluginClasspath).build()
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
     result.assertInnerJdk(row)
     result.assertNoOwnDeprecations()
     assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
@@ -112,25 +106,6 @@ internal fun sanitizedEnvironment(): Map<String, String> =
 
 internal fun Map<String, String>.isExecutionFixture(): Boolean =
     getValue("fixture").endsWith("-exec")
-
-internal fun pluginUnderTestClasspath(): List<File> {
-    val metadata = Properties()
-    KotlinJvmCompatibilityTestKitSmokeTest::class.java.classLoader
-        .getResourceAsStream("plugin-under-test-metadata.properties")
-        .use { stream ->
-            checkNotNull(stream) { "plugin-under-test-metadata.properties not found" }
-            metadata.load(stream)
-        }
-    val implementationClasspath = metadata.getProperty("implementation-classpath")
-        .split(File.pathSeparator)
-        .map(::File)
-    val kotlinPluginClasspath = System
-        .getProperty("fluxo.compat.kotlinPluginClasspath")
-        .split(File.pathSeparator)
-        .filter(String::isNotBlank)
-        .map(::File)
-    return implementationClasspath + kotlinPluginClasspath
-}
 
 internal fun String.containsAny(needles: Iterable<String>): Boolean =
     needles.any { it in this }

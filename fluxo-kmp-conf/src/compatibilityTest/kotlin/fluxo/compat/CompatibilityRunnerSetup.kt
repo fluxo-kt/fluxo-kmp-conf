@@ -17,9 +17,21 @@ import org.gradle.testkit.runner.BuildResult
  *   on CI or release builds, hence [TRIPWIRE_ENVIRONMENT]. Going through the consumer switch keeps
  *   the plugin's deliberate exclusions (tests, metadata, JS), so a fixture fails exactly where a
  *   strict consumer would, e.g. on a compiler flag that the consumer's Kotlin no longer knows.
+ *
+ * The same script applies the row's `kotlinLangVersion`/`kotlinApiVersion` columns through the
+ * plugin's root DSL, which every module inherits; `-` keeps the consumer's KGP default. Set
+ * centrally because each fixture writes its own build scripts, and a column a fixture forgets to
+ * read would claim coverage that never ran.
  */
-internal fun tripwireArguments(projectDir: Path): List<String> {
+internal fun tripwireArguments(projectDir: Path, row: Map<String, String>): List<String> {
     val initScript = projectDir.resolve("fluxo-compat-tripwires.init.gradle.kts")
+    val versionSetters = listOf("kotlinLangVersion", "kotlinApiVersion")
+        .filter { row.getValue(it) != "-" }
+        .joinToString("\n                ") { column ->
+            val setter = "set" + column.replaceFirstChar(Char::uppercaseChar)
+            val value = row.getValue(column)
+            """conf.javaClass.getMethod("$setter", String::class.java).invoke(conf, "$value")"""
+        }
     initScript.writeText(
         """
         rootProject {
@@ -27,6 +39,7 @@ internal fun tripwireArguments(projectDir: Path): List<String> {
                 val conf = extensions.getByName("fluxoConfiguration")
                 conf.javaClass.getMethod("setAllWarningsAsErrors", java.lang.Boolean::class.java)
                     .invoke(conf, true)
+                $versionSetters
             }
         }
         """.trimIndent(),

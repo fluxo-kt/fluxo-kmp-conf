@@ -6,6 +6,11 @@ import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.assertFalse
 
+/**
+ * The consumer shape where the Kotlin plugin sits on the root `buildscript` classpath and only
+ * fluxo is in `plugins {}`. Fluxo resolves from the local Maven repository like any consumer's,
+ * so the row's `kgpVersion` is the Kotlin plugin it runs against.
+ */
 internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     val projectDir = tempDir.resolve(row.getValue("id"))
     Files.createDirectories(projectDir)
@@ -13,16 +18,10 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
-    val pluginClasspath = pluginUnderTestClasspath()
-    seedDependencyGuardBaseline(
-        row,
-        projectDir,
-        gradleUserHome,
-        pluginClasspath = pluginClasspath,
-    )
+    seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
 
     val args = gradleArguments(requiredTasks)
-    val result = compatRunner(row, projectDir, gradleUserHome, args, pluginClasspath).build()
+    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
 
@@ -35,34 +34,12 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
 }
 
 private fun writeKotlinJvmConsumerProject(projectDir: Path, row: Map<String, String>) {
-    projectDir.resolve("settings.gradle.kts").writeText(kotlinJvmConsumerSettingsScript())
+    projectDir.resolve("settings.gradle.kts").writeText(
+        markerSettingsScript(rootProjectName = "compat-kotlin-jvm-consumer"),
+    )
     projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
     writeKotlinJvmSources(projectDir)
 }
-
-private fun kotlinJvmConsumerSettingsScript(): String =
-    """
-    pluginManagement {
-        repositories {
-            google()
-            gradlePluginPortal()
-            mavenCentral()
-        }
-    }
-
-    dependencyResolutionManagement {
-        repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-        repositories {
-            google()
-            mavenCentral()
-            gradlePluginPortal()
-        }
-    }
-
-    rootProject.name = "compat-kotlin-jvm-consumer"
-
-    println("$INNER_JDK_MARKER" + System.getProperty("java.specification.version"))
-    """.trimIndent()
 
 private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
     """
@@ -78,7 +55,7 @@ private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
     }
 
     plugins {
-        id("${System.getProperty("fluxo.plugin.id")}")
+        id("${pluginId()}") version "${pluginVersion()}"
     }
 
     group = "compat"

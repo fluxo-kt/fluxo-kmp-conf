@@ -5,8 +5,12 @@ verification tasks and generated TestKit fixtures.
 
 Files:
 
-- `matrix.tsv`: rows for build pins, declared consumer support, forward-tested
-  canaries, unsupported combinations, and fixture profiles.
+- `matrix.tsv`: one row per consumer build the compatibility suite runs, either
+  declared-supported or expected to fail (`unsupported`). A version column is a
+  claim the suite must execute, so each is applied to the generated consumer
+  build: `jdkVersion` and `kotlinLangVersion`/`kotlinApiVersion` centrally in
+  `compatRunner` (`-` there means the consumer KGP's default), the tool
+  versions by each fixture's build script.
 - `sources.tsv`: official sources used by matrix rows.
 - `unsafe-pattern-allowlist.tsv`: temporary allowlist for known unsafe patterns.
 

@@ -178,7 +178,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-val pluginUnderTestMetadataTask = tasks.named("pluginUnderTestMetadata")
 val publishPluginToLocalDevTasks = tasks.matching {
     it.name == "publishAllPublicationsToLocalDevRepository"
 }
@@ -194,17 +193,6 @@ plugins.withId("maven-publish") {
     }
 }
 
-val compatibilityTestKotlinPluginClasspath = configurations.register(
-    "compatibilityTestKotlinPluginClasspath",
-) {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-}
-
-dependencies {
-    add("compatibilityTestKotlinPluginClasspath", libs.plugin.kotlin)
-}
-
 testing {
     suites {
         val compatibilityTest = register<org.gradle.api.plugins.jvm.JvmTestSuite>("compatibilityTest") {
@@ -215,9 +203,7 @@ testing {
             }
             targets.configureEach {
                 testTask.configure {
-                    dependsOn(pluginUnderTestMetadataTask)
                     dependsOn(publishPluginToLocalDevTasks)
-                    classpath += files(pluginUnderTestMetadataTask)
                     shouldRunAfter(tasks.test)
                     systemProperty("fluxo.repo.root", rootDir.absolutePath)
                     systemProperty(
@@ -239,13 +225,6 @@ testing {
                         "fluxo.compat.gradle.home",
                         rootDir.resolve(".gradle/compat-testkit").absolutePath,
                     )
-                    jvmArgumentProviders.add(object : org.gradle.process.CommandLineArgumentProvider {
-                        @get:org.gradle.api.tasks.Classpath
-                        val classpath = files(compatibilityTestKotlinPluginClasspath)
-
-                        override fun asArguments(): Iterable<String> =
-                            listOf("-Dfluxo.compat.kotlinPluginClasspath=${classpath.asPath}")
-                    })
                 }
             }
         }
