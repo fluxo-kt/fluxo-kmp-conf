@@ -3,6 +3,10 @@
 @file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl
+import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
+import fluxo.conf.impl.MAIN_SOURCE_SET_POSTFIX
+import fluxo.conf.impl.TEST_SOURCE_SET_NAME
+import fluxo.conf.impl.TEST_SOURCE_SET_POSTFIX
 import fluxo.conf.impl.implementation
 import fluxo.conf.impl.implementationAndLog
 import fluxo.conf.impl.isTestRelated
@@ -292,10 +296,6 @@ public fun KotlinSourceSetContainer.bundle(
 ): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, SourceSetBundle>> =
     sourceSets.bundle(name)
 
-internal const val MAIN_SOURCE_SET_NAME = "main"
-internal const val TEST_SOURCE_SET_NAME = "test"
-internal const val MAIN_SOURCE_SET_POSTFIX = "Main"
-internal const val TEST_SOURCE_SET_POSTFIX = "Test"
 
 // endregion
 

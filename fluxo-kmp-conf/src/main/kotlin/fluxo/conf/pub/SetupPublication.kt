@@ -2,7 +2,6 @@
 
 package fluxo.conf.pub
 
-import MAIN_SOURCE_SET_NAME
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.deps.loadPluginStaticallyError
@@ -11,6 +10,7 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.markAsMustRunAfterBuildConfigTasks
+import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
 import fluxo.conf.impl.android.DEBUG
 import fluxo.conf.impl.android.RELEASE
 import fluxo.conf.impl.configureExtension

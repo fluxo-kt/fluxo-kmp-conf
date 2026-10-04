@@ -1,8 +1,5 @@
 package fluxo.conf.impl.kotlin
 
-import MAIN_SOURCE_SET_NAME
-import MAIN_SOURCE_SET_POSTFIX
-import TEST_SOURCE_SET_NAME
 import com.android.build.api.dsl.CommonExtension
 import fkcSetupMultiplatform
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
@@ -22,6 +19,9 @@ import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.builderMethod
 import fluxo.conf.feat.setupVerification
+import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
+import fluxo.conf.impl.MAIN_SOURCE_SET_POSTFIX
+import fluxo.conf.impl.TEST_SOURCE_SET_NAME
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID

@@ -2,7 +2,6 @@
 
 package fluxo.shrink
 
-import MAIN_SOURCE_SET_NAME
 import fluxo.artifact.dsl.ProcessorConfigR8
 import fluxo.artifact.proc.JvmShrinker
 import fluxo.artifact.proc.PROCESS_TASK_PREFIX
@@ -10,6 +9,7 @@ import fluxo.artifact.proc.ProcessorSetup
 import fluxo.conf.data.BuildConstants
 import fluxo.conf.deps.detachedDependency
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
 import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.conf.impl.get
 import fluxo.conf.impl.kotlin.KOTLIN_JVM_PLUGIN_ID

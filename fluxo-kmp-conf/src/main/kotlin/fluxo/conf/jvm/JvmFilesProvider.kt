@@ -1,6 +1,6 @@
 package fluxo.conf.jvm
 
-import MAIN_SOURCE_SET_NAME
+import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection

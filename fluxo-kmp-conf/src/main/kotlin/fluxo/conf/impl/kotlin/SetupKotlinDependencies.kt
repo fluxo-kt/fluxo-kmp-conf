@@ -2,13 +2,13 @@
 
 package fluxo.conf.impl.kotlin
 
-import MAIN_SOURCE_SET_POSTFIX
-import TEST_SOURCE_SET_POSTFIX
 import commonCompileOnly
 import commonMain
 import commonTest
 import fluxo.conf.dsl.container.impl.KmpTargetContainerImpl.CommonJvm
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.MAIN_SOURCE_SET_POSTFIX
+import fluxo.conf.impl.TEST_SOURCE_SET_POSTFIX
 import fluxo.conf.impl.android.JSR305_DEPENDENCY
 import fluxo.conf.impl.android.hasAndroidAppPlugin
 import fluxo.conf.impl.compileOnlyAndLog

@@ -1,6 +1,6 @@
 package fluxo.conf.feat
 
-import MAIN_SOURCE_SET_POSTFIX
+import fluxo.conf.impl.MAIN_SOURCE_SET_POSTFIX
 import fluxo.conf.impl.splitCamelCase
 
 private const val DETEKT_TASK_NAME = "detekt"

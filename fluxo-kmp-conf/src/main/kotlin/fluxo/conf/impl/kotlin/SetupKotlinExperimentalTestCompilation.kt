@@ -1,7 +1,7 @@
 package fluxo.conf.impl.kotlin
 
-import MAIN_SOURCE_SET_NAME
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
 import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.gradle.addToCheckAndTestDependencies
 import fluxo.log.e
