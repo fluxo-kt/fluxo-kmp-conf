@@ -15,7 +15,6 @@ import fluxo.conf.impl.XMX
 import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
 import fluxo.conf.impl.tryAsBoolean
-import fluxo.log.PrintDecisionsAction
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
 import fluxo.log.e
@@ -35,14 +34,11 @@ import isMaxDebugEnabled
 import isRelease
 import isShrinkerDisabled
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentLinkedQueue
 import javax.inject.Inject
-import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.flow.FlowScope
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
-import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 import org.gradle.util.GradleVersion
 import scmTag
@@ -75,36 +71,10 @@ internal abstract class FluxoKmpConfContext
     )
 
     @get:Inject
-    internal abstract val eventsListenerRegistry: BuildEventsListenerRegistry
-
-    @get:Inject
     internal abstract val flowScope: FlowScope
 
-    /**
-     * Lines for the `FLUXO_EXPLAIN` build-end block, or `null` when the flag is off, so a
-     * normal build registers no flow action and keeps nothing. The provider is evaluated when
-     * the configuration-cache entry is stored, after every module has configured.
-     *
-     * @see fluxo.log.logDecision
-     */
-    private val explainedDecisions: MutableCollection<String>? =
-        if (!rootProject.isFluxoExplain().get()) {
-            null
-        } else {
-            ConcurrentLinkedQueue<String>().also { lines ->
-                // An explicit `Action`, not a trailing lambda: Detekt 1.23.8's IgnoredReturnValue
-                // crashes the whole analysis (NPE in `findPackage()`) on the SAM-adapted call.
-                flowScope.always(
-                    PrintDecisionsAction::class.java,
-                    Action { parameters.lines.set(rootProject.provider { lines.toList() }) },
-                )
-            }
-        }
-
-    /** Keeps [line] for the `FLUXO_EXPLAIN` block; a no-op without the flag. */
-    internal fun keepForExplain(line: String) {
-        explainedDecisions?.let { it += line }
-    }
+    internal val buildEndReport =
+        BuildEndReport(flowScope, rootProject, explain = rootProject.isFluxoExplain().get())
 
 
     @Suppress("LeakingThis")

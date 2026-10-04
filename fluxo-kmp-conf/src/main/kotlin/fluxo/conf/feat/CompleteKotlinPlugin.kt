@@ -5,7 +5,6 @@ import fluxo.conf.data.BuildConstants.COMPLETE_KOTLIN_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.COMPLETE_KOTLIN_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.COMPLETE_KOTLIN_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.onBuildFinished
 import loadKmmCodeCompletion
 
 /**
@@ -38,22 +37,20 @@ internal fun FluxoKmpConfContext.prepareCompleteKotlinPlugin() {
             catalogPluginId = COMPLETE_KOTLIN_PLUGIN_ALIAS,
         )
         if (result.applied) {
-            onBuildFinished {
-                val flag = LOAD_KMM_CODE_COMPLETION_FLAG
-                rootProject.logger.warn(
-                    """
+            val flag = LOAD_KMM_CODE_COMPLETION_FLAG
+            buildEndReport.warn(
+                """
 
-                    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-                    '$flag' is enabled.
-                    It enables the '$pluginId' Gradle plugin which downloads files with
-                    platform klibs intended for other OSes, and puts them in the right directories
-                    for auto-completion and symbol resolution for all Kotlin/Native platforms.
+                * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                '$flag' is enabled.
+                It enables the '$pluginId' Gradle plugin which downloads files with
+                platform klibs intended for other OSes, and puts them in the right directories
+                for auto-completion and symbol resolution for all Kotlin/Native platforms.
 
-                    Don't forget to disable '$flag' once all required libs are downloaded and saved!
-                    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-                    """.trimIndent(),
-                )
-            }
+                Don't forget to disable '$flag' once all required libs are downloaded and saved!
+                * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                """.trimIndent(),
+            )
         }
     }
 }
