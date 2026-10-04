@@ -1,103 +1,46 @@
 package fluxo.compat
 
-import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeText
-import org.junit.jupiter.api.Assertions.assertFalse
 
 internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
-    val projectDir = tempDir.resolve(row.getValue("id"))
-    Files.createDirectories(projectDir)
-    projectDir.resolve("settings.gradle.kts").writeText(
-        markerSettingsScript(rootProjectName = "compat-kmp-consumer"),
-    )
-    projectDir.resolve("build.gradle.kts").writeText(
-        markerKmpBuildScript(row),
-    )
-    writeKmpSources(projectDir)
-    val gradleUserHome = compatGradleUserHome()
-    Files.createDirectories(gradleUserHome)
-    val requiredTasks = row.getValue("requiredTasks").split(' ')
-    seedDependencyGuardBaseline(
+    runConsumerCase(
         row,
-        projectDir,
-        gradleUserHome,
-        extraArguments = listOf("-PKMP_TARGETS=JVM")
-    )
-
-    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=JVM"
-    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
-
-    result.assertInnerJdk(row)
-
-    result.assertNoOwnDeprecations()
-    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
-    assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
-    requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+        tempDir,
+        rootProjectName = "compat-kmp-consumer",
+        arguments = listOf("-PKMP_TARGETS=JVM"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(markerKmpBuildScript(row))
+        writeKmpSources(projectDir)
+    }
 }
 
 internal fun runKmpCommonOnlyConsumer(row: Map<String, String>, tempDir: Path) {
-    val projectDir = tempDir.resolve(row.getValue("id"))
-    Files.createDirectories(projectDir)
-    projectDir.resolve("settings.gradle.kts").writeText(
-        markerSettingsScript(rootProjectName = "compat-kmp-common-only-consumer"),
-    )
-    projectDir.resolve("build.gradle.kts").writeText(
-        markerKmpCommonOnlyBuildScript(row),
-    )
-    val gradleUserHome = compatGradleUserHome()
-    Files.createDirectories(gradleUserHome)
-    val requiredTasks = row.getValue("requiredTasks").split(' ')
-    seedDependencyGuardBaseline(
+    runConsumerCase(
         row,
-        projectDir,
-        gradleUserHome,
-        extraArguments = listOf("-PKMP_TARGETS=COMMON")
-    )
-
-    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=COMMON"
-    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
-
-    result.assertInnerJdk(row)
-
-    result.assertNoOwnDeprecations()
-
-    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
-    assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
-    requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+        tempDir,
+        rootProjectName = "compat-kmp-common-only-consumer",
+        arguments = listOf("-PKMP_TARGETS=COMMON"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(markerKmpCommonOnlyBuildScript(row))
+    }
 }
 
 internal fun runKmpInvalidTargetConsumer(row: Map<String, String>, tempDir: Path) {
-    val projectDir = tempDir.resolve(row.getValue("id"))
-    Files.createDirectories(projectDir)
-    projectDir.resolve("settings.gradle.kts").writeText(
-        markerSettingsScript(rootProjectName = "compat-kmp-invalid-target-consumer"),
-    )
-    projectDir.resolve("build.gradle.kts").writeText(
-        markerKmpBuildScript(row),
-    )
-    val gradleUserHome = compatGradleUserHome()
-    Files.createDirectories(gradleUserHome)
-    val requiredTasks = row.getValue("requiredTasks").split(' ')
-
-    val args = gradleArguments(requiredTasks) + "-PKMP_TARGETS=TYPO"
-    val result = compatRunner(row, projectDir, gradleUserHome, args).buildAndFail()
-
-    result.assertInnerJdk(row)
-
-    result.assertNoOwnDeprecations()
-    check("KMP_TARGETS property of 'TYPO' not recognized" in result.output) {
-        result.output
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kmp-invalid-target-consumer",
+        arguments = listOf("-PKMP_TARGETS=TYPO"),
+        expectFailure = listOf(
+            "KMP_TARGETS property of 'TYPO' not recognized",
+            "Known options are:",
+            "ANDROID",
+            "IOS_SIMULATOR_ARM64",
+        ),
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(markerKmpBuildScript(row))
     }
-    check("Known options are:" in result.output) {
-        result.output
-    }
-    check("ANDROID" in result.output && "IOS_SIMULATOR_ARM64" in result.output) {
-        result.output
-    }
-    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
 }

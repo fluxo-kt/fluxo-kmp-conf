@@ -1,10 +1,8 @@
 package fluxo.compat
 
-import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.jupiter.api.Assertions.assertFalse
 
 /**
  * The consumer shape where the Kotlin plugin sits on the root `buildscript` classpath and only
@@ -12,33 +10,15 @@ import org.junit.jupiter.api.Assertions.assertFalse
  * so the row's `kgpVersion` is the Kotlin plugin it runs against.
  */
 internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
-    val projectDir = tempDir.resolve(row.getValue("id"))
-    Files.createDirectories(projectDir)
-    writeKotlinJvmConsumerProject(projectDir, row)
-    val gradleUserHome = compatGradleUserHome()
-    Files.createDirectories(gradleUserHome)
-    val requiredTasks = row.getValue("requiredTasks").split(' ')
-    seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
-
-    val args = gradleArguments(requiredTasks)
-    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
-
-    result.assertInnerJdk(row)
-
-    result.assertNoOwnDeprecations()
-    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
-    assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
-    requiredTasks.forEach { result.assertTaskSuccess(":$it") }
-}
-
-private fun writeKotlinJvmConsumerProject(projectDir: Path, row: Map<String, String>) {
-    projectDir.resolve("settings.gradle.kts").writeText(
-        markerSettingsScript(rootProjectName = "compat-kotlin-jvm-consumer"),
-    )
-    projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
-    writeKotlinJvmSources(projectDir)
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kotlin-jvm-consumer",
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
+        writeKotlinJvmSources(projectDir)
+    }
 }
 
 private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
@@ -79,35 +59,26 @@ private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
         useJUnitPlatform()
     }
     """.trimIndent()
+
 internal fun runKotlinJvmTestsDisabledConsumer(row: Map<String, String>, tempDir: Path) {
-    val projectDir = tempDir.resolve(row.getValue("id"))
-    Files.createDirectories(projectDir)
-    projectDir.resolve("settings.gradle.kts").writeText(
-        markerSettingsScript(rootProjectName = "compat-kotlin-jvm-tests-disabled-consumer"),
-    )
-    projectDir.resolve("build.gradle.kts").writeText(
-        markerKotlinJvmBuildScript(row),
-    )
-    writeKotlinJvmSources(projectDir)
-    val gradleUserHome = compatGradleUserHome()
-    Files.createDirectories(gradleUserHome)
-    val requiredTasks = row.getValue("requiredTasks").split(' ')
-
-    val args = gradleArguments(requiredTasks) + "-PDISABLE_TESTS=true"
-    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
-
-    result.assertInnerJdk(row)
-
-    result.assertNoOwnDeprecations()
-    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
+    val result = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kotlin-jvm-tests-disabled-consumer",
+        arguments = listOf("-PDISABLE_TESTS=true"),
+        seedBaseline = false,
+        assertTasksSucceed = false,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(markerKotlinJvmBuildScript(row))
+        writeKotlinJvmSources(projectDir)
+    }
     check(result.task(":test")?.outcome != TaskOutcome.SUCCESS) {
         result.output
     }
     check(result.task(":compileTestKotlin")?.outcome != TaskOutcome.SUCCESS) {
         result.output
     }
-    requiredTasks.forEach {
+    row.getValue("requiredTasks").split(' ').forEach {
         check(result.task(":$it") != null) {
             result.output
         }
@@ -116,28 +87,14 @@ internal fun runKotlinJvmTestsDisabledConsumer(row: Map<String, String>, tempDir
 
 internal fun runKotlinJvmMarkerConsumer(row: Map<String, String>, tempDir: Path) {
     val projectDir = tempDir.resolve("${row.getValue("id")}-marker")
-    Files.createDirectories(projectDir)
-    projectDir.resolve("settings.gradle.kts").writeText(
-        markerSettingsScript(rootProjectName = "compat-kotlin-jvm-marker-consumer"),
-    )
-    projectDir.resolve("build.gradle.kts").writeText(
-        markerKotlinJvmBuildScript(row),
-    )
-    writeKotlinJvmSources(projectDir)
-    val gradleUserHome = compatGradleUserHome()
-    Files.createDirectories(gradleUserHome)
-    val requiredTasks = row.getValue("requiredTasks").split(' ')
-    seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
-
-    val args = gradleArguments(requiredTasks)
-    val result = compatRunner(row, projectDir, gradleUserHome, args).build()
-
-    result.assertInnerJdk(row)
-
-    result.assertNoOwnDeprecations()
-    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
-    assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
-    requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kotlin-jvm-marker-consumer",
+        projectDir = projectDir,
+    ) {
+        it.resolve("build.gradle.kts").writeText(markerKotlinJvmBuildScript(row))
+        writeKotlinJvmSources(it)
+    }
     assertNoForbiddenResolvedClasspathLeaks(projectDir)
 }

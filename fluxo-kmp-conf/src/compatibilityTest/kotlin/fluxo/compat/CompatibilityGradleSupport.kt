@@ -1,6 +1,8 @@
 package fluxo.compat
 
+import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.writeText
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -67,6 +69,63 @@ internal fun compatRunner(
         .withEnvironment(sanitizedEnvironment() + TRIPWIRE_ENVIRONMENT)
         .withArguments(arguments + tripwireArguments(projectDir, row))
         .forwardOutput()
+}
+
+/**
+ * Runs one consumer build for [row] and applies the checks every case needs, so a case states
+ * only its own project and expectations.
+ *
+ * [writeProject] fills [projectDir]; a `settings.gradle.kts` is written first from
+ * [rootProjectName] and may be overwritten. The row's `requiredTasks` run with [arguments]
+ * appended, after a dependency-guard baseline is seeded when they include `check` and
+ * [seedBaseline] is on (off where the build has no dependency-guard, as under `DISABLE_TESTS`).
+ * With [expectFailure] empty the build must pass, print none of [forbiddenOutput] and, when
+ * [assertTasksSucceed], succeed every required task; otherwise it must fail and print every
+ * [expectFailure] text. Returns the result for case-specific checks.
+ */
+@Suppress("LongParameterList")
+internal fun runConsumerCase(
+    row: Map<String, String>,
+    tempDir: Path,
+    rootProjectName: String,
+    projectDir: Path = tempDir.resolve(row.getValue("id")),
+    arguments: List<String> = emptyList(),
+    forbiddenOutput: List<String> = emptyList(),
+    expectFailure: List<String> = emptyList(),
+    assertTasksSucceed: Boolean = true,
+    seedBaseline: Boolean = true,
+    writeProject: (Path) -> Unit,
+): BuildResult {
+    Files.createDirectories(projectDir)
+    projectDir.resolve("settings.gradle.kts").writeText(markerSettingsScript(rootProjectName))
+    writeProject(projectDir)
+    val gradleUserHome = compatGradleUserHome()
+    Files.createDirectories(gradleUserHome)
+    val requiredTasks = row.getValue("requiredTasks").split(' ')
+    val args = gradleArguments(requiredTasks) + arguments
+    val runner = compatRunner(row, projectDir, gradleUserHome, args)
+
+    val result = if (expectFailure.isEmpty()) {
+        if (seedBaseline) seedDependencyGuardBaseline(row, projectDir, gradleUserHome, arguments)
+        runner.build()
+    } else {
+        runner.buildAndFail()
+    }
+    result.assertInnerJdk(row)
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
+    if (expectFailure.isNotEmpty()) {
+        expectFailure.forEach {
+            check(it in result.output) { "Expected '$it' in:\n${result.output}" }
+        }
+        return result
+    }
+    val noise = forbiddenOutput + PUBLICATION_NOISE_SIGNATURES + DEPENDENCY_GUARD_BASELINE_NOISE
+    assertFalse(result.output.containsAny(noise), result.output)
+    if (assertTasksSucceed) {
+        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+    }
+    return result
 }
 
 /**
