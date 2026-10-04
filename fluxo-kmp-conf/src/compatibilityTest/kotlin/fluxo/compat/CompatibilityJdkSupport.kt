@@ -23,12 +23,22 @@ import java.nio.file.Path
  * `.properties` safety) is the sole reliable selector. Appended (not overwritten) so a fixture's
  * own `gradle.properties` (e.g. Compose's `android.useAndroidX`) is preserved; idempotent because
  * a fixture may build twice on one dir (dependency-guard seed, then the run).
+ *
+ * The same file sets the daemon's memory limits. One TestKit daemon serves many fixtures, each
+ * with its own heavy buildscript classpath (AGP, Compose, several KGPs), and Gradle keeps those
+ * class loaders cached, so Gradle's default 384 MB Metaspace ran out mid-suite. A consumer's
+ * daemon serves one build's classpath, and repeated identical fluxo builds grow Metaspace no
+ * faster than the same build without fluxo, so the limit is a harness need, not a hidden leak.
  */
 internal fun pinInnerJdk(projectDir: Path, major: Int) {
     val home = resolveCompatJdkHome(major).absolutePath.replace('\\', '/')
-    val line = "org.gradle.java.home=$home"
+    val lines = listOf(
+        "org.gradle.java.home=$home",
+        "org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8",
+    )
     val file = projectDir.resolve("gradle.properties").toFile()
-    if (!file.exists() || line !in file.readText()) file.appendText("\n$line\n")
+    val text = if (file.exists()) file.readText() else ""
+    lines.filter { it !in text }.forEach { file.appendText("\n$it\n") }
 }
 
 /**
