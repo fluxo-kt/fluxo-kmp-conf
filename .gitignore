@@ -28,3 +28,4 @@ _/
 
 # Per-developer agent state (Claude Code session-local settings, scheduled-task locks)
 .claude/
+.omc/
