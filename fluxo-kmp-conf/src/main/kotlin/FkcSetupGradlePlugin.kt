@@ -61,30 +61,49 @@ public fun Project.fkcSetupGradlePlugin(
 
         // `gradlePlugin`: Configure Gradle plugin eagerly!
         // Otherwise, it's not available for composite builds.
-        project.gradlePluginExt.plugins.maybeCreate(pluginName).apply {
-            // TODO: Retry create pluginId from configuration if null?
+        project.declareGradlePlugin(
+            pluginName = pluginName,
+            pluginId = pluginId,
+            pluginClass = pluginClass,
+            displayName = displayName,
+            description = this@c.description,
+            tags = tags,
+        )
+    }
+}
 
-            val logger = project.logger
-            if (id.isNullOrBlank()) {
-                if (pluginId.isNullOrEmpty()) {
-                    logger.w("Plugin ID is not set for plugin '$pluginName'!")
-                } else {
-                    id = pluginId
-                    logger.l("Plugin '$pluginName' prepared with ID '$pluginId'")
-                }
+private fun Project.declareGradlePlugin(
+    pluginName: String,
+    pluginId: String?,
+    pluginClass: String?,
+    displayName: String?,
+    description: String?,
+    tags: List<String>?,
+) {
+    gradlePluginExt.plugins.maybeCreate(pluginName).apply {
+        // Gradle 9.4+ pre-fills a new declaration's id with its name, so an id equal to
+        // the name means "not set" there; earlier Gradle leaves it null.
+        // Without the name check, the requested plugin ID is silently dropped and the
+        // plugin is published under the bare declaration name.
+        if (id.isNullOrBlank() || id == name) {
+            if (pluginId.isNullOrEmpty()) {
+                logger.w("Plugin ID is not set for plugin '$pluginName'!")
+            } else {
+                id = pluginId
+                logger.l("Plugin '$pluginName' prepared with ID '$pluginId'")
             }
+        }
 
-            pluginClass?.let { implementationClass = it }
-            displayName?.let { this.displayName = it }
-            this@c.description?.let { this.description = it }
+        pluginClass?.let { implementationClass = it }
+        displayName?.let { this.displayName = it }
+        description?.let { this.description = it }
 
-            if (!tags.isNullOrEmpty()) {
-                try {
-                    @Suppress("UnstableApiUsage")
-                    this.tags.set(tags)
-                } catch (e: Throwable) {
-                    logger.e("Failed to set tags for plugin $pluginName", e)
-                }
+        if (!tags.isNullOrEmpty()) {
+            try {
+                @Suppress("UnstableApiUsage")
+                this.tags.set(tags)
+            } catch (e: Throwable) {
+                logger.e("Failed to set tags for plugin $pluginName", e)
             }
         }
     }
