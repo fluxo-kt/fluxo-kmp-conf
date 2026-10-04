@@ -1,13 +1,16 @@
 package fluxo.conf.feat
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.MergeDetektBaselinesTask
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAndLog
+import fluxo.conf.impl.android.ANDROID_KMP_LIB_PLUGIN_ID
 import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.dependencies
 import fluxo.conf.impl.disableTask
+import fluxo.conf.impl.kotlin.mppExtOrNull
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.withType
@@ -28,6 +31,7 @@ import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileTool
 
 private const val DEBUG_DETEKT_LOGS = false
 
@@ -90,6 +94,9 @@ internal fun Project.setupDetekt(
                 else -> DetektPlugin::class.java
             },
         )
+        pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) {
+            useCompilerClasspathInKmpAndroidDetekt()
+        }
     }
 
     val detektBaselineFile = layout.projectDirectory.file(DETEKT_BASELINE_FILE_NAME)
@@ -300,5 +307,33 @@ private fun DetectedTaskPlatform?.toKmpTargetCodes(): Array<KmpTargetCode> {
         DetectedTaskPlatform.WEB -> KmpTargetCode.COMMON_JS
         DetectedTaskPlatform.NON_JVM -> KmpTargetCode.NON_JVM
         null, DetectedTaskPlatform.UNKNOWN -> arrayOf()
+    }
+}
+
+/**
+ * Detekt 1.x gives a KMP compilation's type-resolution tasks `compileDependencyFiles`, the raw
+ * configuration. For the AGP 9 KMP Android target that configuration can't be resolved as is:
+ * with `withHostTest {}` the host-test classpath sees several variants of the module itself
+ * ("cannot choose between the following variants"), so `check` fails before running anything.
+ * The Kotlin compile task's `libraries` hold what the compiler actually used, resolved by AGP
+ * and KGP, which is exactly what type resolution needs. Other targets resolve fine and keep
+ * Detekt's own classpath.
+ */
+private fun Project.useCompilerClasspathInKmpAndroidDetekt() {
+    val kotlin = mppExtOrNull ?: return
+    kotlin.targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
+        val target = name.replaceFirstChar { it.uppercase() }
+        compilations.configureEach {
+            val compilation = this
+            val suffix = target + compilation.name.replaceFirstChar { it.uppercase() }
+            val libraries = files(
+                compilation.compileTaskProvider.map { (it as KotlinCompileTool).libraries },
+            )
+            tasks.namedCompat<Task, Detekt> { it == DetektPlugin.DETEKT_TASK_NAME + suffix }
+                .configureEach { classpath.setFrom(compilation.output.classesDirs, libraries) }
+            val baselineName = DetektPlugin.BASELINE_TASK_NAME + suffix
+            tasks.namedCompat<Task, DetektCreateBaselineTask> { it == baselineName }
+                .configureEach { classpath.setFrom(compilation.output.classesDirs, libraries) }
+        }
     }
 }
