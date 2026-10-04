@@ -69,7 +69,8 @@ jetbrains-compose = "1.12.1"
 #
 # String preview version keys: `androidPreviewSdk`, `androidMinSdkPreview`, or `minSdkPreview`.
 # Int version keys: `androidMinSdk`, `minSdk`.
-androidMinSdk = "21"
+# Unset: fluxo-kmp-conf defaults minSdk to 23 (current AndroidX requires it).
+#androidMinSdk = "23"
 
 # androidTargetSdk >= 33 have been required for Google Play new apps & app updates since August 31, 2023
 # https://support.google.com/googleplay/android-developer/answer/11926878
@@ -78,14 +79,15 @@ androidMinSdk = "21"
 #
 # Int version keys: `androidTargetSdk`, `targetSdk`.
 # String preview version keys: `androidPreviewSdk`, `androidTargetSdkPreview`, or `targetSdkPreview`.
-androidTargetSdk = "35"
+# Unset: fluxo-kmp-conf defaults targetSdk to the compileSdk.
+#androidTargetSdk = "36"
 
-# The last version with sources available.
 # androidCompileSdk >= 28 is required for Firebase
+# Unset: fluxo-kmp-conf defaults compileSdk to the newest the consumer's AGP supports.
 #
 # String preview version keys: `androidPreviewSdk`, `androidCompileSdkPreview`, or `compileSdkPreview`.
 # Int version keys: `androidCompileSdk`, `compileSdk`.
-androidCompileSdk = "35"
+#androidCompileSdk = "36"
 
 # Preview API for debug builds.
 # Takes precedence over all other SDK versions!
@@ -104,6 +106,10 @@ androidCompileSdk = "35"
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # The `README.md` badge reads this value directly.
 android-gradle-plugin = "9.4.1"
+
+# AGP's tools libraries (`com.android.tools:*`), versioned AGP major + 23. AGP needs them at runtime only,
+# so its compileOnly declaration hides them; the plugin compiles against `common` (`AndroidVersion`).
+android-tools = "32.4.1"
 
 # endregion
 
@@ -244,6 +250,7 @@ detekt-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-librarie
 # endregion
 
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+plugin-android-tools-common = { module = "com.android.tools:common", version.ref = "android-tools" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-intellij = { module = "org.jetbrains.intellij.platform:intellij-platform-gradle-plugin", version.ref = "intellij-platform" }
 plugin-jetbrains-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }

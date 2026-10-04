@@ -102,6 +102,8 @@ dependencies {
     compileOnly(libs.ktlint)
 
     compileOnly(libs.plugin.android)
+    // Only `AndroidVersion` is used; non-transitive keeps Guava off the compile classpath.
+    compileOnly(libs.plugin.android.tools.common) { isTransitive = false }
     compileOnly(libs.plugin.intellij)
     compileOnly(libs.plugin.jetbrains.compose)
     compileOnly(libs.plugin.kotlin)

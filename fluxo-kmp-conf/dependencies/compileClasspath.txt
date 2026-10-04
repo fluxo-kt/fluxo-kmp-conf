@@ -6,6 +6,7 @@ com.android.tools.build:gradle-api:9.4.1
 com.android.tools.build:gradle-common-api:9.4.1
 com.android.tools.build:gradle:9.4.1
 com.android.tools.build:manifest-merger:32.4.1
+com.android.tools:common:32.4.1
 com.android.tools:r8:9.4.28
 com.android:zipflinger:9.4.1
 com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:3.19.2

@@ -1,14 +1,29 @@
 package fluxo.conf.impl.android
 
+import com.android.builder.core.ToolsRevisionUtils
 import fluxo.conf.data.BuildConstants
 import fluxo.conf.impl.kotlin.KOTLIN_MPP_PLUGIN_ID
 import org.gradle.api.plugins.PluginAware
 
-internal const val DEFAULT_ANDROID_MIN_SDK: Int = 21
+/** Current AndroidX libraries declare `minSdkVersion="23"`: below it the manifest merge fails. */
+internal const val DEFAULT_ANDROID_MIN_SDK: Int = 23
 
-internal const val DEFAULT_ANDROID_TARGET_SDK: Int = 34
+/**
+ * The highest compileSdk the consumer's AGP recommends (AGP warns above it), so the default moves
+ * with their AGP instead of going stale in this plugin. Read from `ToolsRevisionUtils`, present
+ * with this name and type from AGP 8.0 to 9.4 at least (sources read 2026-10-04); a later AGP
+ * that drops it gets [FALLBACK_ANDROID_COMPILE_SDK].
+ * `apiLevel` is deprecated in AGP 9.4 for `androidApiLevel`, which AGP 8.7 lacks.
+ */
+@Suppress("DEPRECATION")
+internal fun agpMaxRecommendedCompileSdk(): Int = try {
+    ToolsRevisionUtils.MAX_RECOMMENDED_COMPILE_SDK_VERSION.apiLevel
+} catch (_: LinkageError) {
+    FALLBACK_ANDROID_COMPILE_SDK
+}
 
-internal const val DEFAULT_ANDROID_COMPILE_SDK: Int = 34
+/** Google Play has required target SDK 36 since 2026-08-31. */
+private const val FALLBACK_ANDROID_COMPILE_SDK: Int = 36
 
 /**
  * @see org.jetbrains.kotlin.gradle.utils.androidPluginIds

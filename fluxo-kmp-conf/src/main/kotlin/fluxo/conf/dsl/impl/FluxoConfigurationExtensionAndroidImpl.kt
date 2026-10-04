@@ -3,10 +3,10 @@ package fluxo.conf.dsl.impl
 import com.android.build.api.variant.VariantBuilder
 import fluxo.conf.dsl.FluxoConfigurationExtensionAndroid
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
-import fluxo.conf.impl.android.DEFAULT_ANDROID_COMPILE_SDK
 import fluxo.conf.impl.android.DEFAULT_ANDROID_MIN_SDK
-import fluxo.conf.impl.android.DEFAULT_ANDROID_TARGET_SDK
+import fluxo.conf.impl.android.agpMaxRecommendedCompileSdk
 import fluxo.conf.impl.uncheckedCast
+import fluxo.log.logDecision
 import fluxo.vc.v
 import fluxo.vc.vInt
 import java.util.Locale
@@ -63,7 +63,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     override var androidMinSdk: Any
         get() = androidMinSdkProp.orNull
             ?: parent?.androidMinSdk
-            ?: av("Min", DEFAULT_ANDROID_MIN_SDK)
+            ?: av("Min", "current AndroidX libraries require it") { DEFAULT_ANDROID_MIN_SDK }
         set(value) {
             require(value is Int || value is String) {
                 "androidMinSdk must be an Int or String"
@@ -76,7 +76,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     override var androidTargetSdk: Any
         get() = androidTargetSdkProp.orNull
             ?: parent?.androidTargetSdk
-            ?: av("Target", DEFAULT_ANDROID_TARGET_SDK)
+            ?: av("Target", "equals compileSdk, as AGP sets it when unset") { androidCompileSdk }
         set(value) {
             require(value is Int || value is String) {
                 "androidTargetSdk must be an Int or String"
@@ -89,7 +89,7 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
     override var androidCompileSdk: Any
         get() = androidCompileSdkProp.orNull
             ?: parent?.androidCompileSdk
-            ?: av("Compile", DEFAULT_ANDROID_COMPILE_SDK)
+            ?: av("Compile", "the newest your AGP supports") { agpMaxRecommendedCompileSdk() }
         set(value) {
             require(value is Int || value is String) {
                 "androidCompileSdk must be an Int or String"
@@ -97,14 +97,33 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
             androidCompileSdkProp.set(value)
         }
 
-    private fun av(type: String, default: Int): Any {
+    /**
+     * The consumer's own catalog key, else [derive]. Never the catalog bundled with the plugin:
+     * a number frozen there goes stale (Play rejects old target SDKs), while [derive] follows
+     * the consumer's AGP.
+     */
+    private fun av(type: String, reason: String, derive: () -> Any): Any {
         val lType = type[0].lowercaseChar() + type.substring(1)
-        val preview = ctx.libs
-            .v("androidPreviewSdk", "android${type}SdkPreview", "${lType}SdkPreview")
-        return when {
-            !preview.isNullOrEmpty() && preview != "0" -> preview
-            else -> ctx.libs.vInt("android${type}Sdk", "${lType}Sdk") ?: default
-        }
+        val preview = ctx.libs.v(
+            "androidPreviewSdk",
+            "android${type}SdkPreview",
+            "${lType}SdkPreview",
+            allowFallback = false,
+        )
+        return preview?.takeIf { it.isNotEmpty() && it != "0" }
+            ?: ctx.libs.vInt("android${type}Sdk", "${lType}Sdk", allowFallback = false)
+            ?: derive().also { value ->
+                // The getters run many times per module and every module inherits the root's value.
+                if (ctx.firstInBuild("derived-android-${lType}Sdk")) {
+                    ctx.logDecision(
+                        project,
+                        setting = "android${type}Sdk",
+                        value = value,
+                        reason = reason,
+                        howToChange = "set android${type}Sdk in fkcSetup* or the version catalog",
+                    )
+                }
+            }
     }
 
 

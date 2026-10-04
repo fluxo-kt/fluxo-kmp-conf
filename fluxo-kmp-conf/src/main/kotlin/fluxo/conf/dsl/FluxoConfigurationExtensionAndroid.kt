@@ -73,6 +73,8 @@ public interface FluxoConfigurationExtensionAndroid {
      * Auto set using the version names in toml version catalog:
      * `androidMinSdk`, `minSdk`, `androidMinSdkPreview`,
      * `minSdkPreview`, or `androidPreviewSdk`.
+     * Otherwise 23, the minimum current AndroidX libraries declare.
+     * `FLUXO_EXPLAIN=true` prints the value used.
      *
      * @see com.android.build.api.dsl.BaseFlavor.minSdk
      * @see com.android.build.api.dsl.BaseFlavor.minSdkPreview
@@ -88,6 +90,8 @@ public interface FluxoConfigurationExtensionAndroid {
      * Auto set using the version names in toml version catalog:
      * `androidTargetSdk`, `targetSdk`, `androidTargetSdkPreview`,
      * `targetSdkPreview`, or `androidPreviewSdk`.
+     * Otherwise equal to [androidCompileSdk]; applied to Android applications only.
+     * `FLUXO_EXPLAIN=true` prints the value used.
      *
      * @see com.android.build.api.dsl.ApplicationBaseFlavor.targetSdk
      * @see com.android.build.api.dsl.ApplicationBaseFlavor.targetSdkPreview
@@ -105,6 +109,8 @@ public interface FluxoConfigurationExtensionAndroid {
      * Auto set using the version names in toml version catalog:
      * `androidCompileSdk`, `compileSdk`, `androidCompileSdkPreview`,
      * `compileSdkPreview`, or `androidPreviewSdk`.
+     * Otherwise the newest compileSdk the build's AGP supports, so it moves with AGP upgrades.
+     * `FLUXO_EXPLAIN=true` prints the value used.
      *
      * @see com.android.build.api.dsl.CommonExtension.compileSdk
      * @see com.android.build.api.dsl.CommonExtension.compileSdkPreview

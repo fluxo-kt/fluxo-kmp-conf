@@ -189,8 +189,6 @@ internal fun markerAndroidLibraryBuildScript(row: Map<String, String>): String {
             enablePublication = false
             enableGradleDoctor = false
             setupCoroutines = false
-            androidCompileSdk = 35
-            androidMinSdk = 24
         },
     )
 
@@ -204,8 +202,11 @@ internal fun markerAndroidLibraryBuildScript(row: Map<String, String>): String {
             val android = project.extensions.getByName("android")
                 as com.android.build.api.dsl.LibraryExtension
             check(android.namespace == "compat.${row.getValue("id").replace('-', '.')}")
-            check(android.compileSdk == 35)
-            check(android.defaultConfig.minSdk == 24)
+            // No SDK levels set above: fluxo derives minSdk 23 and the AGP's newest compileSdk.
+            val agpMax = com.android.builder.core.ToolsRevisionUtils
+                .MAX_RECOMMENDED_COMPILE_SDK_VERSION.apiLevel
+            val sdk = android.compileSdk to android.defaultConfig.minSdk
+            check(sdk == (agpMax to 23)) { "compileSdk, minSdk ${'$'}sdk, want (${'$'}agpMax, 23)" }
 
             val kotlin = project.extensions.getByName("kotlin")
             check(kotlin is org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension)
