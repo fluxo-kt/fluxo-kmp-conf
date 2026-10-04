@@ -78,6 +78,25 @@ fkcSetupGradlePlugin(
     }
 }
 
+// Plugin Portal compatibility flags (shown on the plugin page and read by tooling).
+// Configuration cache: supported, and every check fixture runs with it.
+// Isolated Projects: explicitly not yet, because the plugin still reads parent-project extensions.
+// plugin-publish is provisioned at runtime by `fkcSetupGradlePlugin`, so its `compatibility`
+// DSL classes are not on this script's classpath: reach the extension by name. `withId` orders
+// this after plugin-publish applies, which is when it attaches the extension to each declaration.
+plugins.withId("com.gradle.plugin-publish") {
+    extensions.getByType<GradlePluginDevelopmentExtension>().plugins.configureEach {
+        val compatibility = (this as ExtensionAware).extensions.getByName("compatibility")
+        val features = compatibility.withGroovyBuilder { getProperty("features") }
+        features.withGroovyBuilder {
+            @Suppress("UNCHECKED_CAST")
+            (getProperty("configurationCache") as Property<Boolean>).set(true)
+            @Suppress("UNCHECKED_CAST")
+            (getProperty("isolatedProjects") as Property<Boolean>).set(false)
+        }
+    }
+}
+
 // The plugin's own main sources compile with warnings as errors on every machine, not only on CI.
 // Upstream deprecations (KGP, AGP, Gradle) are the early notice of a removal that would otherwise
 // reach consumers as a NoSuchMethodError. An API kept on purpose carries a reasoned
