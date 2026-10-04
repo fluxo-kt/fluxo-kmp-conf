@@ -5,6 +5,7 @@ import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.log.l
 import kotlin.math.max
+import kotlin.math.min
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -149,31 +150,50 @@ internal val JRE_VERSION: Int = run {
 }
 
 
+/**
+ * The highest JVM target the consumer's Kotlin compiles to, read from its own `JvmTarget` enum, so
+ * a newer Kotlin raises it with no change here; a hand-kept Kotlin→JVM table capped every Kotlin
+ * newer than the table and needed a release per Kotlin minor. `values()` exists on the whole
+ * supported range (KGP 2.1.21 ends at 23, KGP 2.4.20 at 26). The enum comes from the consumer's
+ * KGP, whose class loader also loads this class, so one value per loader is exact.
+ */
+internal val KOTLIN_MAX_JVM_TARGET: Int by lazy {
+    JvmTarget.values().maxOf { it.target.asJvmMajorVersion() }
+}
+
 private fun lastKnownJdkVersion(setupToolchain: Boolean): Int =
     if (setupToolchain) max(JRE_VERSION, LTS_JDK_VERSION) else JRE_VERSION
 
 internal fun lastSupportedJvmMajorVersion(setupToolchain: Boolean): Int =
-    lastKnownJdkVersion(setupToolchain).toKotlinSupportedJvmMajorVersion()
+    min(lastKnownJdkVersion(setupToolchain), KOTLIN_MAX_JVM_TARGET)
 
 internal fun lastSupportedJvmTargetVersion(setupToolchain: Boolean): String =
     lastSupportedJvmMajorVersion(setupToolchain).asJvmTargetVersion()
 
 
-internal fun String.toJvmMajorVersion(setupToolchain: Boolean = false): Int {
-    return when {
-        isBlank() -> 0
+/**
+ * Keywords ask for "the newest that works", so they are capped at [KOTLIN_MAX_JVM_TARGET]; an
+ * explicit number above it fails, because quietly compiling to a lower target than the one
+ * written would ship bytecode the author did not ask for.
+ */
+internal fun String.toJvmMajorVersion(setupToolchain: Boolean = false): Int = when {
+    isBlank() -> 0
 
-        equals("last", ignoreCase = true) ||
-            equals("latest", ignoreCase = true) ||
-            equals("max", ignoreCase = true) ||
-            equals("+")
-        -> lastKnownJdkVersion(setupToolchain)
+    equals("last", ignoreCase = true) ||
+        equals("latest", ignoreCase = true) ||
+        equals("max", ignoreCase = true) ||
+        equals("+")
+    -> lastSupportedJvmMajorVersion(setupToolchain)
 
-        equals("current", ignoreCase = true) || isEmpty()
-        -> JRE_VERSION
+    equals("current", ignoreCase = true) -> min(JRE_VERSION, KOTLIN_MAX_JVM_TARGET)
 
-        else -> asJvmMajorVersion()
-    }.toKotlinSupportedJvmMajorVersion()
+    else -> asJvmMajorVersion().also {
+        require(it <= KOTLIN_MAX_JVM_TARGET) {
+            "Kotlin $KOTLIN_PLUGIN_VERSION_STRING supports JVM targets up to " +
+                "$KOTLIN_MAX_JVM_TARGET, but $this was requested. Set jvmTarget " +
+                "(or javaTestsLangTarget) to $KOTLIN_MAX_JVM_TARGET or lower, or upgrade Kotlin."
+        }
+    }
 }
 
 

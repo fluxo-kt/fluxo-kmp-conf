@@ -81,7 +81,8 @@ internal fun compatRunner(
  * [rootProjectName] and may be overwritten. [tasks] (by default the row's `requiredTasks`) run
  * with [arguments] appended, after a dependency-guard baseline is seeded when they include
  * `check` and [seedBaseline] is on (off where the build has no dependency-guard, as under
- * `DISABLE_TESTS`). With [expectFailure] empty the build must pass, print none of
+ * `DISABLE_TESTS`). A row marked `unsupported` must pass a non-empty [expectFailure].
+ * With [expectFailure] empty the build must pass, print none of
  * [forbiddenOutput] and, when [assertTasksSucceed], succeed every task in [tasks]; otherwise it
  * must fail and print every [expectFailure] text. Returns the result for case-specific checks.
  * Several cases may share one [projectDir] to reuse its configuration-cache entry.
@@ -101,11 +102,12 @@ internal fun runConsumerCase(
     writeProject: (Path) -> Unit,
 ): BuildResult {
     // `status` is the row's claim; the runner's expectation is what actually gets checked.
-    val unsupported = row.getValue("status") == "unsupported"
-    check(unsupported == expectFailure.isNotEmpty()) {
-        "Row ${row.getValue("id")}: status '${row.getValue("status")}' in compat/matrix.tsv " +
-            "contradicts its runner, which expects the build to " +
-            if (unsupported) "pass" else "fail"
+    // One direction only: a supported row may still carry a case that must fail (a consumer
+    // misconfiguration the plugin rejects), and a row wrongly expected to fail is caught by
+    // `buildAndFail()` itself once the build passes.
+    check(row.getValue("status") != "unsupported" || expectFailure.isNotEmpty()) {
+        "Row ${row.getValue("id")}: status 'unsupported' in compat/matrix.tsv contradicts its " +
+            "runner, which expects the build to pass"
     }
     Files.createDirectories(projectDir)
     projectDir.resolve("settings.gradle.kts").writeText(markerSettingsScript(rootProjectName))

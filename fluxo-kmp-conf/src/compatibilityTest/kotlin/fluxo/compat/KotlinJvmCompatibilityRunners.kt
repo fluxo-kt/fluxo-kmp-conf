@@ -1,6 +1,8 @@
 package fluxo.compat
 
+import java.io.DataInputStream
 import java.nio.file.Path
+import kotlin.io.path.inputStream
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
 
@@ -45,6 +47,39 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     check(EXPLAIN_HEADER !in plain) { "Without FLUXO_EXPLAIN no block is printed:\n$plain" }
 
     runDeprecatedLanguageVersionCase(row, tempDir)
+    runJvmTarget26Case(row, tempDir)
+}
+
+/**
+ * Runs `compileKotlin` on a separate copy of the Kotlin/JVM fixture with extra [setup] lines, so a
+ * case that changes compiler settings never invalidates the main fixture's configuration cache.
+ */
+private fun runKotlinJvmVariant(
+    row: Map<String, String>,
+    tempDir: Path,
+    name: String,
+    vararg setup: String,
+    expectFailure: List<String> = emptyList(),
+): Pair<Path, String> {
+    val projectDir = tempDir.resolve("${row.getValue("id")}-$name")
+    val output = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kotlin-jvm-$name-consumer",
+        projectDir = projectDir,
+        tasks = listOf("compileKotlin"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+        expectFailure = expectFailure,
+    ) {
+        it.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row, *setup))
+        writeKotlinJvmSources(it)
+    }.output
+    return projectDir to output
+}
+
+private fun Map<String, String>.kgpMinor(): KotlinVersion {
+    val (major, minor) = getValue("kgpVersion").split('.').map(String::toInt)
+    return KotlinVersion(major, minor)
 }
 
 /**
@@ -54,43 +89,71 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
  * Kotlin where 2.1 is not deprecated nothing is printed.
  */
 private fun runDeprecatedLanguageVersionCase(row: Map<String, String>, tempDir: Path) {
-    val output = runConsumerCase(
+    val (_, output) = runKotlinJvmVariant(
         row,
         tempDir,
-        rootProjectName = "compat-kotlin-jvm-lv21-consumer",
-        projectDir = tempDir.resolve("${row.getValue("id")}-lv21"),
-        tasks = listOf("compileKotlin"),
-        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
-    ) { projectDir ->
-        val script = kotlinJvmConsumerBuildScript(row).replace(
-            "    setupCoroutines = false\n",
-            "    setupCoroutines = false\n" +
-                "    kotlinLangVersion = \"2.1\"\n" +
-                "    kotlinApiVersion = \"2.1\"\n",
-        )
-        check("kotlinLangVersion" in script) { "Build script anchor moved:\n$script" }
-        projectDir.resolve("build.gradle.kts").writeText(script)
-        writeKotlinJvmSources(projectDir)
-    }.output
-    val (major, minor) = row.getValue("kgpVersion").split('.').map(String::toInt)
-    val deprecated = KotlinVersion(major, minor) >= FIRST_KOTLIN_DEPRECATING_2_1
+        "lv21",
+        "kotlinLangVersion = \"2.1\"",
+        "kotlinApiVersion = \"2.1\"",
+    )
+    val deprecated = row.kgpMinor() >= FIRST_KOTLIN_DEPRECATING_2_1
     check((DEPRECATED_VERSION_WARNING in output) == deprecated) {
         "Expected the deprecated-version warning only when KGP deprecates 2.1:\n$output"
     }
 }
 
+/**
+ * The highest JVM target is whatever the consumer's Kotlin supports, never a table inside the
+ * plugin: Kotlin 2.4 added target 26, so there 26 must reach the class files unchanged, and an
+ * older Kotlin must reject an explicit 26 with the fix instead of quietly compiling to a lower
+ * target. `useJdkRelease = false` keeps the JDK API limit out of this case: the fixture JDK
+ * (17) has no API description for 26, which is a separate decision.
+ */
+private fun runJvmTarget26Case(row: Map<String, String>, tempDir: Path) {
+    val supported = row.kgpMinor() >= FIRST_KOTLIN_WITH_JVM_26
+    val (projectDir, output) = runKotlinJvmVariant(
+        row,
+        tempDir,
+        "jvm26",
+        "jvmTarget = \"26\"",
+        "useJdkRelease = false",
+        expectFailure = if (supported) emptyList() else listOf(JVM_TARGET_ABOVE_MAX),
+    )
+    if (!supported) return
+    val classFile = projectDir.resolve("build/classes/kotlin/main/compat/CompatSubjectKt.class")
+    // A class file starts with its magic number, minor version, then major version.
+    val major = DataInputStream(classFile.inputStream()).use {
+        it.readInt()
+        it.readUnsignedShort()
+        it.readUnsignedShort()
+    }
+    check(major == JAVA_26_CLASS_MAJOR) { "jvmTarget 26 compiled to major $major:\n$output" }
+}
+
 private const val DEPRECATED_VERSION_WARNING = "Kotlin language/API version 2.1 is deprecated"
+
+private const val JVM_TARGET_ABOVE_MAX = "supports JVM targets up to"
+
+private const val JAVA_26_CLASS_MAJOR = 70
 
 /** The first Kotlin release that deprecates language version 2.1. */
 @Suppress("MagicNumber")
 private val FIRST_KOTLIN_DEPRECATING_2_1 = KotlinVersion(2, 4)
+
+/** The first Kotlin release whose `JvmTarget` has 26 (kotlin-compiler 2.4.10 `JvmTarget.kt`). */
+@Suppress("MagicNumber")
+private val FIRST_KOTLIN_WITH_JVM_26 = KotlinVersion(2, 4)
 
 private val HELP = listOf("help")
 
 /** Copy of `fluxo.log.EXPLAIN_HEADER`: this test source set cannot see the plugin's internals. */
 private const val EXPLAIN_HEADER = "fluxo-kmp-conf derived settings (FLUXO_EXPLAIN):"
 
-private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
+/** [setup] lines go inside `fkcSetupKotlin {}`, after the fixture's own settings. */
+private fun kotlinJvmConsumerBuildScript(
+    row: Map<String, String>,
+    vararg setup: String,
+): String =
     """
     buildscript {
         repositories {
@@ -115,6 +178,7 @@ private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
         enablePublication = false
         enableGradleDoctor = false
         setupCoroutines = false
+        SETUP_SLOT
     }
 
     dependencies {
@@ -127,7 +191,7 @@ private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
     tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
         useJUnitPlatform()
     }
-    """.trimIndent()
+    """.trimIndent().replace("SETUP_SLOT", setup.joinToString("\n    "))
 
 internal fun runKotlinJvmTestsDisabledConsumer(row: Map<String, String>, tempDir: Path) {
     val result = runConsumerCase(

@@ -6,6 +6,7 @@ import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.log.l
 import fluxo.log.logDecision
 import fluxo.log.w
+import kotlin.math.min
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -49,7 +50,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     var jvmTargetInt = jvmTarget?.toJvmMajorVersion(jvmToolchain) ?: 0
     val jvmTarget: String?
     if (jvmTargetInt <= 0) {
-        jvmTargetInt = JRE_VERSION.toKotlinSupportedJvmMajorVersion()
+        jvmTargetInt = min(JRE_VERSION, KOTLIN_MAX_JVM_TARGET)
         jvmTarget = null
         context.logDecision(
             project,
@@ -78,9 +79,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     val progressive = progressiveMode ?: true
 
-    // KGP build-floor is 2.x; both pluginVersion >= KOTLIN_1_4 and
-    // lang >= KOTLIN_1_4 are tautologies. The KOTLIN_1_4 enum value
-    // was promoted to error-level deprecation in Kotlin 2.2.
+    // No Kotlin version gate: every supported Kotlin (2.1+) has the latest settings.
     val canUseLatestSettings = progressive
 
 

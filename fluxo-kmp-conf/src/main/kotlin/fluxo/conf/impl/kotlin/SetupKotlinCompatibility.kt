@@ -72,19 +72,7 @@ internal fun Logger.kotlinPluginVersion(): KotlinVersion {
     try {
         getKotlinPluginVersion(logger).let { versionString ->
             KOTLIN_PLUGIN_VERSION_STRING = versionString
-            return parseKotlinPluginVersion(versionString).also { v ->
-                KOTLIN_PLUGIN_VERSION = v
-                if (v >= FIRST_UNTABULATED_KOTLIN) {
-                    logger.warn(
-                        "[fluxo-kmp-conf] Kotlin plugin $v is at or beyond the " +
-                            "first untabulated minor ($FIRST_UNTABULATED_KOTLIN) " +
-                            "in the JVM-target compatibility table at " +
-                            "KotlinVersionTable.kt#toKotlinSupportedJvmMajorVersion. " +
-                            "JVM target may be silently capped at the last " +
-                            "tabulated value — extend the table.",
-                    )
-                }
-            }
+            return parseKotlinPluginVersion(versionString).also { KOTLIN_PLUGIN_VERSION = it }
         }
     } catch (e: Throwable) {
         logger.e("Failed to get Kotlin plugin version: $e", e)
