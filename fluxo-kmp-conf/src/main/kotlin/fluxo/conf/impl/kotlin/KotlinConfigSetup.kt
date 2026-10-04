@@ -54,17 +54,6 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         javaParameters ?: false &&
         !isApplication
 
-    // `jdk-release` requires JDK 9 or newer. The Kotlin 1.7+ guard is unconditional
-    // under the layer-2 KGP 2.0+ floor. Also, no sense to use it with the JVM
-    // toolchain.
-    //
-    // TODO: Auto detect if `-Xjdk-release` actually can be used.
-    //  Fail only for release builds if not, warn otherwise.
-    //  If there's no `ct.sym` file in JDK but `-Xjdk-release` is used,
-    //  the compiler will stop with an error._
-    //  https://youtrack.jetbrains.com/issue/KT-29974#focus=Comments-27-9458958.0-0
-    val useJdkRelease = useJdkRelease && !jvmToolchain && JRE_VERSION >= JRE_1_9
-
     val progressive = progressiveMode ?: true
 
     // No Kotlin version gate: every supported Kotlin (2.1+) has the latest settings.

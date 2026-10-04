@@ -2,7 +2,6 @@ package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
-import fluxo.log.e
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
@@ -75,45 +74,8 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
             if (jvmTargetVersion == null && isAndroid) {
                 followAndroidJavaTarget(conf.project)
             }
-            // FIXME: Move to JvmCompatibility?
-            jvmTargetVersion?.let { jvmTarget ->
-                setupJvmCompatibility(jvmTarget)
-
-                val jvmTargetInt = jvmTarget.toJvmMajorVersion()
-                // jdk-release applies in JVM non-Android builds when the JDK differs
-                // from the target. The historical lang-2.0 + KGP-1.9.x escape arm is
-                // unreachable under the layer-2 floor (KGP 2.0+); the prior
-                // `!kotlin20orUpper` defensive disable was dropped together with that
-                // floor bump.
-                // https://github.com/slackhq/slack-gradle-plugin/commit/8445dbf943c6871a27a04186772efc1c42498cda
-                val useJdkRelease = kc.useJdkRelease &&
-                    !isAndroid &&
-                    jvmTargetInt != JRE_VERSION
-
-                // ct.sym is broken for -Xjdk-release=18+ with JDK 18..22.
-                // https://bugs.openjdk.org/browse/JDK-8331027
-                // https://youtrack.jetbrains.com/issue/KT-67668
-                val jdkReleaseIsBroken = jvmTargetInt in (JRE_17 + 1) until JRE_23 &&
-                    JRE_VERSION < JRE_23
-                if (useJdkRelease && jdkReleaseIsBroken &&
-                    context.firstInBuild(BROKEN_JDK_RELEASE_KEY)
-                ) {
-                    conf.project.logger.e(
-                        "-Xjdk-release is broken for JRE 18..21 with JDK 18..22" +
-                            ", so it is disabled! \n",
-                        "https://bugs.openjdk.org/browse/JDK-8331027 \n",
-                        "https://youtrack.jetbrains.com/issue/KT-67668",
-                    )
-                }
-
-                // Compile against the specified JDK API version, similarly to javac's `-release`.
-                if (useJdkRelease && !jdkReleaseIsBroken) {
-                    compilerArgs.add("-Xjdk-release=$jvmTarget")
-
-                    // TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+
-                    //  https://youtrack.jetbrains.com/issue/KT-59098/Support-Xjdk-release1.6-with-jvm-target-1.8
-                }
-            }
+            // The JDK API limit (-Xjdk-release) is added per task by `limitKotlinJdkApi`.
+            jvmTargetVersion?.let { setupJvmCompatibility(it) }
 
             if (kc.javaParameters) {
                 javaParameters.set(true)
@@ -216,7 +178,6 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     freeCompilerArgs.set(compilerArgs.toList())
 }
 
-private const val BROKEN_JDK_RELEASE_KEY = "broken-jdk-release"
 
 /** @see org.jetbrains.kotlin.config.LanguageFeature */
 @Suppress("SameParameterValue")

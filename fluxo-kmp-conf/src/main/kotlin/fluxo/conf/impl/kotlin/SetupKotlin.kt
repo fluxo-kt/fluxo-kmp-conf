@@ -51,6 +51,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun configureKotlinJvm(
@@ -383,6 +384,10 @@ private fun KotlinProjectExtension.setupTargets(
                     isTest = isTest,
                     isMultiplatform = isMultiplatform,
                 )
+            }
+            // After setupKotlinOptions, whose `freeCompilerArgs.set()` would drop the lazy flag.
+            if (!isAndroid && kc.useJdkRelease && this is KotlinJvmCompile) {
+                jvmTargetVersion?.let { limitKotlinJdkApi(conf, it) }
             }
         }
 

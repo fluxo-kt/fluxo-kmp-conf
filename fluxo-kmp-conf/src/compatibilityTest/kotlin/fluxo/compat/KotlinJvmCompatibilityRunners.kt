@@ -1,8 +1,7 @@
 package fluxo.compat
 
-import java.io.DataInputStream
 import java.nio.file.Path
-import kotlin.io.path.inputStream
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
 
@@ -47,20 +46,22 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     check(EXPLAIN_HEADER !in plain) { "Without FLUXO_EXPLAIN no block is printed:\n$plain" }
 
     runDeprecatedLanguageVersionCase(row, tempDir)
-    runJvmTarget26Case(row, tempDir)
-    runDefaultJvmTargetCase(row, tempDir)
+    runKotlinJvmTargetCases(row, tempDir)
 }
 
 /**
  * Runs `compileKotlin` on a separate copy of the Kotlin/JVM fixture with extra [setup] lines, so a
  * case that changes compiler settings never invalidates the main fixture's configuration cache.
  */
-private fun runKotlinJvmVariant(
+internal fun runKotlinJvmVariant(
     row: Map<String, String>,
     tempDir: Path,
     name: String,
     vararg setup: String,
     jdk: Int? = null,
+    script: String = "",
+    source: String? = null,
+    arguments: List<String> = emptyList(),
     expectFailure: List<String> = emptyList(),
 ): Pair<Path, String> {
     val projectDir = tempDir.resolve("${row.getValue("id")}-$name")
@@ -72,16 +73,21 @@ private fun runKotlinJvmVariant(
         rootProjectName = "compat-kotlin-jvm-$name-consumer",
         projectDir = projectDir,
         tasks = listOf("compileKotlin"),
+        arguments = arguments,
         forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
         expectFailure = expectFailure,
     ) {
-        it.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row, *setup))
+        it.resolve("build.gradle.kts")
+            .writeText(kotlinJvmConsumerBuildScript(row, *setup) + "\n" + script)
         writeKotlinJvmSources(it)
+        // Rewritten or removed on every run, as cases share one project directory.
+        val extra = it.resolve("src/main/kotlin/compat/Extra.kt")
+        if (source == null) extra.deleteIfExists() else extra.writeText(source)
     }.output
     return projectDir to output
 }
 
-private fun Map<String, String>.kgpMinor(): KotlinVersion {
+internal fun Map<String, String>.kgpMinor(): KotlinVersion {
     val (major, minor) = getValue("kgpVersion").split('.').map(String::toInt)
     return KotlinVersion(major, minor)
 }
@@ -106,66 +112,11 @@ private fun runDeprecatedLanguageVersionCase(row: Map<String, String>, tempDir: 
     }
 }
 
-/**
- * The highest JVM target is whatever the consumer's Kotlin supports, never a table inside the
- * plugin: Kotlin 2.4 added target 26, so there 26 must reach the class files unchanged, and an
- * older Kotlin must reject an explicit 26 with the fix instead of quietly compiling to a lower
- * target. `useJdkRelease = false` keeps the JDK API limit out of this case: the fixture JDK
- * (17) has no API description for 26, which is a separate decision.
- */
-private fun runJvmTarget26Case(row: Map<String, String>, tempDir: Path) {
-    val supported = row.kgpMinor() >= FIRST_KOTLIN_WITH_JVM_26
-    val (projectDir, output) = runKotlinJvmVariant(
-        row,
-        tempDir,
-        "jvm26",
-        "jvmTarget = \"26\"",
-        "useJdkRelease = false",
-        expectFailure = if (supported) emptyList() else listOf(JVM_TARGET_ABOVE_MAX),
-    )
-    if (!supported) return
-    val major = projectDir.mainClassMajor()
-    check(major == JAVA_26_CLASS_MAJOR) { "jvmTarget 26 compiled to major $major:\n$output" }
-}
-
-/**
- * A library that sets no JVM target must compile to 17 whatever JDK runs the build: a target that
- * followed the build JDK made bytecode depend on the machine (it sank v0.15.0's first tag). The
- * fixture rows run on JDK 17, where both behaviours agree, so this case runs on JDK 21.
- */
-private fun runDefaultJvmTargetCase(row: Map<String, String>, tempDir: Path) {
-    val (projectDir, output) = runKotlinJvmVariant(row, tempDir, "jdk21", jdk = JDK_21)
-    val major = projectDir.mainClassMajor()
-    check(major == JAVA_17_CLASS_MAJOR) { "Default library target compiled to $major:\n$output" }
-}
-
-/** A class file starts with its magic number, minor version, then major version. */
-private fun Path.mainClassMajor(): Int =
-    DataInputStream(resolve(MAIN_CLASS).inputStream()).use {
-        it.readInt()
-        it.readUnsignedShort()
-        it.readUnsignedShort()
-    }
-
-private const val MAIN_CLASS = "build/classes/kotlin/main/compat/CompatSubjectKt.class"
-
-private const val JDK_21 = 21
-
-private const val JAVA_17_CLASS_MAJOR = 61
-
 private const val DEPRECATED_VERSION_WARNING = "Kotlin language/API version 2.1 is deprecated"
-
-private const val JVM_TARGET_ABOVE_MAX = "supports JVM targets up to"
-
-private const val JAVA_26_CLASS_MAJOR = 70
 
 /** The first Kotlin release that deprecates language version 2.1. */
 @Suppress("MagicNumber")
 private val FIRST_KOTLIN_DEPRECATING_2_1 = KotlinVersion(2, 4)
-
-/** The first Kotlin release whose `JvmTarget` has 26 (kotlin-compiler 2.4.10 `JvmTarget.kt`). */
-@Suppress("MagicNumber")
-private val FIRST_KOTLIN_WITH_JVM_26 = KotlinVersion(2, 4)
 
 private val HELP = listOf("help")
 
