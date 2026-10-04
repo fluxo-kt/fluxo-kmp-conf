@@ -160,26 +160,31 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
         }
 
     /**
-     * Use `-Xjdk-release` option to compile against the specified JDK API version,
-     * similarly to javac's `-release`.
+     * Limit the JDK API that Kotlin and Java sources can use to the JVM target, so code compiled
+     * for 17 on a newer JDK cannot call newer JDK methods and then fail on a Java 17 runtime with
+     * `NoSuchMethodError`. Kotlin gets `-Xjdk-release`, Java gets javac's `--release`.
      *
-     * Controls the target bytecode version and limits the API of the JDK in the
-     * classpath to the specified Java version.
+     * Decided per compile task from the JDK that task compiles with (its toolchain, else the JDK
+     * running Gradle). It applies only when that JDK is newer than the target and ships
+     * `lib/ct.sym`; otherwise nothing needs or can be limited. Skipped, with one warning naming
+     * the cause:
+     * * a compile JDK without `lib/ct.sym` (a trimmed or jlinked JDK); a `RELEASE=true` build
+     *   fails instead;
+     * * Kotlin targets 18-22 on a compile JDK below 23 (JDK-8331027, fixed in JDK 23); javac is
+     *   still limited;
+     * * javac in a module that passes `--add-exports`, `--add-reads` or `--patch-module`, which
+     *   javac rejects together with `--release`.
      *
-     * Default value: `true`.
-     * Inherited from the parent project if not set.
-     * Used only for Kotlin _1.7.0_ or newer and JDK _9_ or newer.
-     * And only for JVM non-Android builds.
+     * Android modules are never limited: the Android API comes from `android.jar` and KGP and AGP
+     * reject both options there; Lint's `NewApi` check covers calls above `minSdk`.
      *
-     * **WARN: This option isn't guaranteed to be effective for each JDK distribution!**
-     * If there's no `ct.sym` file in JDK but `-Xjdk-release` is used,
-     * the compiler will stop with an error.
+     * Default value: `true`. Inherited from the parent project if not set.
+     * Run with `FLUXO_EXPLAIN=true` to print each task's decision and its reason.
      *
      * Links:
      * * [Kotlin 1.7: JDK Release Compatibility](https://blog.jetbrains.com/kotlin/2022/02/kotlin-1-7-jdk-release-compatibility/)
      * * [KT-29974](https://youtrack.jetbrains.com/issue/KT-29974)
-     * * [Kotlin's JDK Release Compatibility Flag](https://jakewharton.com/kotlins-jdk-release-compatibility-flag/)
-     * * [slack-gradle-plugin#778](https://github.com/slackhq/slack-gradle-plugin/pull/778/files)
+     * * [JDK-8331027](https://bugs.openjdk.org/browse/JDK-8331027)
      */
     public var useJdkRelease: Boolean
 
