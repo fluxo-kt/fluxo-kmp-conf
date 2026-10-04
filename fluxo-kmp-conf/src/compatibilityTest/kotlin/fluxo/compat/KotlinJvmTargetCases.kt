@@ -79,9 +79,10 @@ private fun runJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
         "jdk21",
         jdk = JDK_21,
         source = USES_JDK_21_API,
-        expectFailure = expect,
+        // The module sets no target, so the failure must point at the new library default.
+        expectFailure = expect + DEFAULTED_TARGET_HINT,
     )
-    runKotlinJvmVariant(
+    val (_, explicitOutput) = runKotlinJvmVariant(
         row,
         tempDir,
         "toolchain21",
@@ -96,7 +97,14 @@ private fun runJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
         ),
         expectFailure = expect,
     )
+    // An explicit target is the consumer's choice, so the same failure gets no hint.
+    check(DEFAULTED_TARGET_HINT !in explicitOutput) {
+        "Hint printed for an explicit target:\n$explicitOutput"
+    }
 }
+
+/** Start of the build-end hint for a failure in a module whose JVM target was defaulted. */
+private const val DEFAULTED_TARGET_HINT = "sets no jvmTarget, so it compiles for JVM 17"
 
 /** `Thread.ofVirtual()` is JDK 21 API. */
 private const val USES_JDK_21_API = "package compat\n\nfun virtualThreads() = Thread.ofVirtual()\n"

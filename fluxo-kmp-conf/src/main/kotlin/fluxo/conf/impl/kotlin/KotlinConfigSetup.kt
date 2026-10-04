@@ -233,5 +233,29 @@ private fun FluxoConfigurationExtensionImpl.defaultJvmTarget(project: Project): 
     return target
 }
 
+/**
+ * Explains a failure of JVM compile task [taskName] in a module that sets no JVM target.
+ * Up to fluxo-kmp-conf 0.15 the target followed the JDK running Gradle, so on a newer JDK the
+ * [defaultJvmTarget] is a silent downgrade, and the compile errors it causes (an unresolved JDK
+ * API, inlining code built for a newer target) never mention it. Printed only when that task
+ * fails: a line on every build would be noise long after the upgrade.
+ */
+internal fun FluxoConfigurationExtensionImpl.hintDefaultedJvmTarget(
+    taskName: String,
+    target: String,
+) {
+    val major = target.toJvmMajorVersion()
+    if (JRE_VERSION <= major) return
+    val module = project.path
+    ctx.buildEndReport.hintOnFailure(
+        taskPath = if (module == ":") ":$taskName" else "$module:$taskName",
+        hint = "w: Module '$module' sets no jvmTarget, so it compiles for JVM $major, " +
+            "the default since fluxo-kmp-conf 0.16 (it used to follow the JDK running Gradle, " +
+            "$JRE_VERSION). " +
+            "If the failure is a JDK API newer than $major, or inlining code built for a newer " +
+            "JVM target, set jvmTarget in fkcSetup* or the version catalog.",
+    )
+}
+
 /** See [defaultJvmTarget]. */
 private const val LIBRARY_JVM_TARGET = JRE_17

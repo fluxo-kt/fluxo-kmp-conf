@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
+import org.gradle.api.flow.FlowProviders
 import org.gradle.api.flow.FlowScope
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
@@ -74,8 +75,15 @@ internal abstract class FluxoKmpConfContext
     @get:Inject
     internal abstract val flowScope: FlowScope
 
-    internal val buildEndReport =
-        BuildEndReport(flowScope, rootProject, explain = rootProject.isFluxoExplain().get())
+    @get:Inject
+    internal abstract val flowProviders: FlowProviders
+
+    internal val buildEndReport = BuildEndReport(
+        flowScope,
+        flowProviders,
+        rootProject,
+        explain = rootProject.isFluxoExplain().get(),
+    )
 
 
     @Suppress("LeakingThis")

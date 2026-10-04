@@ -1,14 +1,19 @@
 package fluxo.conf
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.Transformer
+import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction
 import org.gradle.api.flow.FlowParameters
+import org.gradle.api.flow.FlowProviders
 import org.gradle.api.flow.FlowScope
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 
@@ -21,11 +26,13 @@ import org.gradle.api.tasks.Input
  */
 internal class BuildEndReport(
     private val flowScope: FlowScope,
+    private val flowProviders: FlowProviders,
     private val rootProject: Project,
     private val explain: Boolean,
 ) {
     private val warnings = ConcurrentLinkedQueue<() -> String>()
     private val decisions = ConcurrentLinkedQueue<String>()
+    private val failureHints = ConcurrentHashMap<String, String>()
     private val registered = AtomicBoolean()
 
     init {
@@ -47,6 +54,16 @@ internal class BuildEndReport(
         if (explain) decisions += line
     }
 
+    /**
+     * Prints [hint] as a warning when the build fails in the task at [taskPath], and stays
+     * silent otherwise: a hint explains one failure, so printing it on a passing build or an
+     * unrelated failure would be noise.
+     */
+    fun hintOnFailure(taskPath: String, hint: String) {
+        register()
+        failureHints[taskPath] = hint
+    }
+
     private fun register() {
         if (!registered.compareAndSet(false, true)) return
         // An explicit `Action`, not a trailing lambda: Detekt 1.23.8's IgnoredReturnValue
@@ -57,6 +74,8 @@ internal class BuildEndReport(
                 parameters.warnings.set(rootProject.provider { warnings.map { it() } })
                 parameters.explain.set(explain)
                 parameters.decisions.set(rootProject.provider { decisions.toList() })
+                parameters.failureHints.set(rootProject.provider { failureHints.toMap() })
+                parameters.failure.set(flowProviders.buildWorkResult.map(FailureText()))
             },
         )
     }
@@ -83,17 +102,45 @@ internal abstract class BuildEndReportAction : FlowAction<BuildEndReportAction.P
 
         @get:Input
         val decisions: ListProperty<String>
+
+        /** Task path → hint, see [BuildEndReport.hintOnFailure]. */
+        @get:Input
+        val failureHints: MapProperty<String, String>
+
+        /** Messages of the build failure and its causes, empty when the build passed. */
+        @get:Input
+        val failure: Property<String>
     }
 
     override fun execute(parameters: Parameters) {
         val logger = Logging.getLogger(BuildEndReportAction::class.java)
         parameters.warnings.get().forEach(logger::warn)
+        val failure = parameters.failure.get()
+        for ((path, hint) in parameters.failureHints.get()) {
+            // Gradle names the failed task as "Execution failed for task ':lib:compileKotlin'."
+            if ("task '$path'" in failure) logger.warn(hint)
+        }
         if (parameters.explain.get()) {
             val lines = parameters.decisions.get()
             val body = if (lines.isEmpty()) "  (none)" else lines.joinToString("\n") { "  $it" }
             logger.lifecycle("$EXPLAIN_HEADER\n$body")
         }
     }
+}
+
+/**
+ * The messages of a build failure and its cause chain. Gradle wraps task failures in one
+ * multi-cause exception whose `cause` is the first failure, so a later one under `--continue`
+ * is not seen: reaching the others needs Gradle's internal `MultiCauseException`, and a hint
+ * missed there costs less than an internal API that may break on a Gradle upgrade.
+ * A class, not a lambda: the configuration cache stores this transformer and runs it after the
+ * build, and a class keeps that independent of how Kotlin compiles lambdas.
+ */
+private class FailureText : Transformer<String, BuildWorkResult> {
+    override fun transform(result: BuildWorkResult): String =
+        result.failure.map { failure ->
+            generateSequence(failure) { it.cause }.joinToString("\n") { it.message.orEmpty() }
+        }.orElse("")
 }
 
 internal const val EXPLAIN_HEADER = "fluxo-kmp-conf derived settings (FLUXO_EXPLAIN):"

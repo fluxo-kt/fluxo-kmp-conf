@@ -346,6 +346,12 @@ private fun KotlinProjectExtension.setupTargets(
             latestSettings = isExperimentalTest,
         )
         jvmTargetVersion?.let { setupJvmCompatibility(it) }
+        if (platformType === KotlinPlatformType.jvm && !kc.jvmTargetExplicit) {
+            jvmTargetVersion?.let { v ->
+                conf.hintDefaultedJvmTarget(compileTaskProvider.name, v)
+                javaCompileTaskProviderCompat?.let { conf.hintDefaultedJvmTarget(it.name, v) }
+            }
+        }
         // Android: AGP rejects javac --release (it sets up its own boot classpath).
         if (!isAndroid && kc.useJdkRelease) {
             jvmTargetVersion?.let { v ->
