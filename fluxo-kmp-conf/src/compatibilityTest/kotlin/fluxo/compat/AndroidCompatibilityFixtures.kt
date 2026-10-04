@@ -255,3 +255,18 @@ internal fun writeAndroidLintConfig(projectDir: Path) {
         """.trimIndent(),
     )
 }
+
+/** `NotificationChannel` is API 26, above the minSdk 23 fluxo defaults to: Lint `NewApi`. */
+internal fun writeNewApiCall(sourceDir: Path, fileName: String) {
+    Files.createDirectories(sourceDir)
+    sourceDir.resolve("$fileName.kt").writeText(
+        """
+        package compat
+
+        import android.app.NotificationChannel
+        import android.app.NotificationManager.IMPORTANCE_DEFAULT
+
+        fun channel$fileName(): Any = NotificationChannel("id", "name", IMPORTANCE_DEFAULT)
+        """.trimIndent() + "\n",
+    )
+}

@@ -49,4 +49,25 @@ internal class AndroidCompatibilityTestKitSmokeTest {
                 runAndroidLibraryConsumer(row, tempDir)
             }
         }
+
+    @TestFactory
+    fun generatedKmpNewApiFailsCheckAtBuildEnd(): Iterable<DynamicTest> =
+        selectedRows("android-kmp-agp8-exec", "android-kmp-agp9-exec").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                val script = if (row.getValue("fixture") == "android-kmp-agp8-exec") {
+                    markerAgp8KmpBuildScript(row)
+                } else {
+                    markerAgp9KmpBuildScript(row)
+                }
+                runKmpNewApiFailsCheck(row, tempDir, script)
+            }
+        }
+
+    @TestFactory
+    fun generatedAndroidLibraryNewApiFailsCheckAtBuildEnd(): Iterable<DynamicTest> =
+        selectedRows("android-lib-agp8-exec", "android-lib-agp9-exec").map { row ->
+            DynamicTest.dynamicTest(row.getValue("id")) {
+                runAndroidLibraryNewApiFailsCheck(row, tempDir)
+            }
+        }
 }

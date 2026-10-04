@@ -16,20 +16,22 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
+import fluxo.conf.impl.android.ANDROID_LINT_PLUGIN_ID
 import fluxo.conf.impl.android.noSuchMethodSafe
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.ifNotEmpty
 import fluxo.conf.impl.kotlin.mppExtOrNull
+import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.withType
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.l
 import fluxo.log.v
 import fluxo.log.w
-import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.TaskProvider
 
@@ -49,12 +51,14 @@ private val VERSION_CHECKS = arrayOf(
     "NewerVersionAvailable",
 )
 
-internal fun FluxoKmpConfContext.registerLintMergeRootTask(): TaskProvider<ReportMergeTask>? =
-    registerReportMergeTask(
-        name = MERGE_LINT_TASK_NAME,
-        description = "Merges all Lint reports from all modules to the root one",
-        filePrefix = "lint",
-    )
+internal fun FluxoKmpConfContext.registerLintMergeRootTask(): TaskProvider<MergeLintSarifTask>? {
+    if (testsDisabled) return null
+    return rootProject.tasks.registerCompat<MergeLintSarifTask>(MERGE_LINT_TASK_NAME) {
+        group = JavaBasePlugin.VERIFICATION_GROUP
+        description = "Merges every module's Lint report; fails on calls above minSdk (NewApi)"
+        output.set(project.layout.buildDirectory.file("lint-merged.sarif"))
+    }
+}
 
 internal fun Project.setupAndroidLint(
     conf: FluxoConfigurationExtensionImpl,
@@ -93,6 +97,11 @@ internal fun Project.setupKmpAndroidLint(
     val ctx = conf.ctx
     val disableLint = testsDisabled || !ctx.isTargetEnabled(KmpTargetCode.ANDROID)
     val isBaselineRequested = ctx.hasStartTaskCalled(BASELINE_LINT_TASK_NAME)
+
+    // AGP 9's KMP plugin creates Lint tasks for the main code only when the standalone
+    // `com.android.lint` plugin is applied (AGP 9.4.1 `KmpTaskManager`); without it `check`
+    // runs no Lint at all. It ships in the same AGP jar, so applying it downloads nothing.
+    if (!disableLint) pluginManager.apply(ANDROID_LINT_PLUGIN_ID)
 
     val mppExt = mppExtOrNull ?: return
     mppExt.targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
