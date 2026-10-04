@@ -9,6 +9,7 @@ import fluxo.conf.impl.withType
 import fluxo.log.l
 import fluxo.vc.FluxoVersionCatalog
 import fluxo.vc.onVersion
+import java.io.File
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.targets.js.NpmPackageVersion
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
@@ -61,8 +62,9 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
         }
 
         configureExtension<YarnRootExtension>(YarnRootExtension.YARN) {
-            // The lock file directory is left to KGP: its default is already
-            // `<root>/.kotlin-js-store` on the whole supported Kotlin range.
+            // Consumers commit `<root>/.kotlin-js-store/yarn.lock`; KGP's own default is
+            // `<root>/kotlin-js-store`, so leaving it to KGP would orphan that lock file silently.
+            setLockFileDirectory(rootDir.resolve(".kotlin-js-store"), ctx.kotlinPluginVersion)
 
             // yarn.lock is calculated differently without tests, ignore mismatch
             if (testsDisabled) {
@@ -120,6 +122,16 @@ private fun YarnRootExtension.setFromCatalog(
 private const val MIN_YARN = "1.22.19"
 
 private const val KJS = "KotlinJS"
+
+/** Same KGP 2.4.20 Provider-API split as [ignoreYarnLockChanges]. */
+private fun YarnRootExtension.setLockFileDirectory(dir: File, kgp: KotlinVersion) {
+    if (kgp >= KOTLIN_2_4_20) {
+        lockFileDirectoryProperty.set(dir)
+    } else {
+        @Suppress("DEPRECATION")
+        lockFileDirectory = dir
+    }
+}
 
 /**
  * Stops yarn.lock checks from failing or rewriting the lock file.
