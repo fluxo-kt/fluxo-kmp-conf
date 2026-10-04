@@ -79,7 +79,7 @@ fkcSetupGradlePlugin(
 }
 
 // Plugin Portal compatibility flags (shown on the plugin page and read by tooling).
-// Configuration cache: supported, and every check fixture runs with it.
+// Configuration cache: supported; every compat TestKit fixture runs with it and fails on any problem.
 // Isolated Projects: explicitly not yet, because the plugin still reads parent-project extensions.
 // plugin-publish is provisioned at runtime by `fkcSetupGradlePlugin`, so its `compatibility`
 // DSL classes are not on this script's classpath: reach the extension by name. `withId` orders
@@ -226,6 +226,19 @@ testing {
                     )
                     systemProperty("fluxo.plugin.id", pluginId)
                     systemProperty("fluxo.plugin.version", version.toString())
+                    // Fixture classes are independent TestKit builds, so they run concurrently;
+                    // rows inside one class stay sequential to bound the number of live daemons.
+                    systemProperty("junit.jupiter.execution.parallel.enabled", "true")
+                    systemProperty("junit.jupiter.execution.parallel.mode.default", "same_thread")
+                    systemProperty(
+                        "junit.jupiter.execution.parallel.mode.classes.default",
+                        "concurrent",
+                    )
+                    // Under `.gradle/` so it survives `clean`; see `compatGradleUserHome`.
+                    systemProperty(
+                        "fluxo.compat.gradle.home",
+                        rootDir.resolve(".gradle/compat-testkit").absolutePath,
+                    )
                     jvmArgumentProviders.add(object : org.gradle.process.CommandLineArgumentProvider {
                         @get:org.gradle.api.tasks.Classpath
                         val classpath = files(compatibilityTestKotlinPluginClasspath)

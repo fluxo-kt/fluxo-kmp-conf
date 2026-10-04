@@ -67,8 +67,8 @@ internal fun compatRunner(
         .withProjectDir(projectDir.toFile())
         .withTestKitDir(gradleUserHome.toFile())
         .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment())
-        .withArguments(arguments)
+        .withEnvironment(sanitizedEnvironment() + TRIPWIRE_ENVIRONMENT)
+        .withArguments(arguments + tripwireArguments(projectDir))
         .forwardOutput()
     if (pluginClasspath.isNotEmpty()) runner.withPluginClasspath(pluginClasspath)
     return runner
@@ -102,7 +102,8 @@ internal fun seedDependencyGuardBaseline(
     val args = gradleArguments(listOf(DEPENDENCY_GUARD_BASELINE_TASK)) + extraArguments
     val result = compatRunner(row, projectDir, gradleUserHome, args, pluginClasspath).build()
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     result.assertTaskSuccess(":$DEPENDENCY_GUARD_BASELINE_TASK")
 }
 
@@ -140,11 +141,14 @@ internal fun BuildResult.assertTaskSuccess(path: String) {
     }
 }
 
-internal val KNOWN_CRASH_SIGNATURES = listOf(
+internal val FORBIDDEN_OUTPUT_SIGNATURES = listOf(
     "NoSuchMethodError",
     "ClassCastException",
     "NoClassDefFoundError",
     "Could not initialize class",
+    // AGP's obsolete API/DSL/configuration warnings ("API 'X' is obsolete…", "DSL element 'X' is
+    // obsolete…", `DeprecationReporterImpl`) only print, so this check is what makes them fatal.
+    "' is obsolete",
 )
 
 internal val PUBLICATION_NOISE_SIGNATURES = listOf(

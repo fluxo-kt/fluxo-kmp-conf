@@ -30,8 +30,9 @@ internal fun markerAgp8KmpBuildScript(row: Map<String, String>): String =
         kmp = { allDefaultTargets() },
     )
 
-    tasks.register("assertAgp8KmpShape") {
-        doLast {
+    tasks.register("assertAgp8KmpShape") { doLast {} }
+    gradle.taskGraph.whenReady {
+        run {
             check(plugins.hasPlugin("com.android.library"))
             check(plugins.hasPlugin("org.jetbrains.kotlin.multiplatform"))
             check(!plugins.hasPlugin("com.android.kotlin.multiplatform.library"))
@@ -109,8 +110,9 @@ internal fun markerAgp9KmpBuildScript(row: Map<String, String>): String =
         }
     }
 
-    tasks.register("assertAgp9KmpShape") {
-        doLast {
+    tasks.register("assertAgp9KmpShape") { doLast {} }
+    gradle.taskGraph.whenReady {
+        run {
             check(plugins.hasPlugin("com.android.kotlin.multiplatform.library"))
             check(plugins.hasPlugin("org.jetbrains.kotlin.multiplatform"))
             check(!plugins.hasPlugin("com.android.library"))
@@ -192,8 +194,9 @@ internal fun markerAndroidLibraryBuildScript(row: Map<String, String>): String {
         },
     )
 
-    tasks.register("assertAndroidLibraryShape") {
-        doLast {
+    tasks.register("assertAndroidLibraryShape") { doLast {} }
+    gradle.taskGraph.whenReady {
+        run {
             check(plugins.hasPlugin("com.android.library"))
             check(!plugins.hasPlugin("com.android.kotlin.multiplatform.library"))
             check(plugins.hasPlugin("org.jetbrains.kotlin.android") == $isAgp8)

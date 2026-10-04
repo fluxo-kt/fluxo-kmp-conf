@@ -17,7 +17,7 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     if (row.isExecutionFixture()) {
         writeAndroidKmpSources(projectDir)
     }
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
@@ -25,7 +25,9 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
     assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
@@ -46,7 +48,7 @@ internal fun runAgp9KmpAppUnsupportedConsumer(row: Map<String, String>, tempDir:
     projectDir.resolve("build.gradle.kts").writeText(
         markerAgp9KmpAppUnsupportedBuildScript(row),
     )
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
@@ -54,6 +56,8 @@ internal fun runAgp9KmpAppUnsupportedConsumer(row: Map<String, String>, tempDir:
     val result = compatRunner(row, projectDir, gradleUserHome, args).buildAndFail()
 
     result.assertInnerJdk(row)
+
+    result.assertNoOwnDeprecations()
     check("AGP 9+ rejects `com.android.application`" in result.output) {
         result.output
     }
@@ -63,7 +67,7 @@ internal fun runAgp9KmpAppUnsupportedConsumer(row: Map<String, String>, tempDir:
     check("com.android.kotlin.multiplatform.library" in result.output) {
         result.output
     }
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
 }
 
 internal fun runAgp8KmpConsumer(row: Map<String, String>, tempDir: Path) {
@@ -78,7 +82,7 @@ internal fun runAgp8KmpConsumer(row: Map<String, String>, tempDir: Path) {
     if (row.isExecutionFixture()) {
         writeAndroidKmpSources(projectDir)
     }
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
@@ -86,7 +90,9 @@ internal fun runAgp8KmpConsumer(row: Map<String, String>, tempDir: Path) {
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
     assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
@@ -107,7 +113,7 @@ internal fun runAndroidLibraryConsumer(row: Map<String, String>, tempDir: Path) 
     if (row.isExecutionFixture()) {
         writeAndroidLibrarySources(projectDir)
     }
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
@@ -115,7 +121,9 @@ internal fun runAndroidLibraryConsumer(row: Map<String, String>, tempDir: Path) 
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
     assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)

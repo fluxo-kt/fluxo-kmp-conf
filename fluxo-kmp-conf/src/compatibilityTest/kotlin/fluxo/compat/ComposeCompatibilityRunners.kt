@@ -15,7 +15,7 @@ internal fun runComposeDesktopConsumer(row: Map<String, String>, tempDir: Path) 
         markerComposeDesktopBuildScript(row),
     )
     writeComposeDesktopSources(projectDir)
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
     seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
@@ -24,7 +24,9 @@ internal fun runComposeDesktopConsumer(row: Map<String, String>, tempDir: Path) 
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
     requiredTasks.forEach { result.assertTaskSuccess(":$it") }
@@ -44,7 +46,7 @@ internal fun runComposeKmpAndroidConsumer(row: Map<String, String>, tempDir: Pat
         "android.useAndroidX=true\n",
     )
     writeComposeKmpSources(projectDir)
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
@@ -52,7 +54,9 @@ internal fun runComposeKmpAndroidConsumer(row: Map<String, String>, tempDir: Pat
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(DETEKT_CLASSIFICATION_NOISE), result.output)
     assertFalse(result.output.containsAny(ANDROID_LINT_VERSION_NOISE), result.output)

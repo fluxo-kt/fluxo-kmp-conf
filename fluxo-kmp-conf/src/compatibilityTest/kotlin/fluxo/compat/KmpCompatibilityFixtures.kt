@@ -30,8 +30,9 @@ internal fun markerKmpBuildScript(row: Map<String, String>): String =
         }
     }
 
-    tasks.register("assertKmpShape") {
-        doLast {
+    tasks.register("assertKmpShape") { doLast {} }
+    gradle.taskGraph.whenReady {
+        run {
             val taskNames = tasks.names
             val expected = setOf("compileKotlinMetadata", "compileKotlinJvm", "jvmTest")
             check(taskNames.containsAll(expected)) {
@@ -69,8 +70,9 @@ internal fun markerKmpCommonOnlyBuildScript(row: Map<String, String>): String =
         kmp = { allDefaultTargets() },
     )
 
-    tasks.register("assertNoPlatformTargets") {
-        doLast {
+    tasks.register("assertNoPlatformTargets") { doLast {} }
+    gradle.taskGraph.whenReady {
+        run {
             val taskNames = tasks.names
             val forbidden = taskNames.filter { taskName ->
                 (taskName.startsWith("compileKotlin") && taskName != "compileKotlinMetadata") ||

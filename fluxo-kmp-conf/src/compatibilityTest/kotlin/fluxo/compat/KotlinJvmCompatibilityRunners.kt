@@ -10,7 +10,7 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     val projectDir = tempDir.resolve(row.getValue("id"))
     Files.createDirectories(projectDir)
     writeKotlinJvmConsumerProject(projectDir, row)
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
     val pluginClasspath = pluginUnderTestClasspath()
@@ -25,7 +25,9 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     val result = compatRunner(row, projectDir, gradleUserHome, args, pluginClasspath).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
@@ -110,7 +112,7 @@ internal fun runKotlinJvmTestsDisabledConsumer(row: Map<String, String>, tempDir
         markerKotlinJvmBuildScript(row),
     )
     writeKotlinJvmSources(projectDir)
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
@@ -118,7 +120,9 @@ internal fun runKotlinJvmTestsDisabledConsumer(row: Map<String, String>, tempDir
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     check(result.task(":test")?.outcome != TaskOutcome.SUCCESS) {
         result.output
@@ -143,7 +147,7 @@ internal fun runKotlinJvmMarkerConsumer(row: Map<String, String>, tempDir: Path)
         markerKotlinJvmBuildScript(row),
     )
     writeKotlinJvmSources(projectDir)
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-marker-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
     seedDependencyGuardBaseline(row, projectDir, gradleUserHome)
@@ -152,7 +156,9 @@ internal fun runKotlinJvmMarkerConsumer(row: Map<String, String>, tempDir: Path)
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
     requiredTasks.forEach { result.assertTaskSuccess(":$it") }

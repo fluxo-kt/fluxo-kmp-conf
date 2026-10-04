@@ -127,8 +127,9 @@ private val COMPOSE_DESKTOP_BUILD_SCRIPT =
         useJUnitPlatform()
     }
 
-    tasks.register("assertComposeDesktopShape") {
-        doLast {
+    tasks.register("assertComposeDesktopShape") { doLast {} }
+    gradle.taskGraph.whenReady {
+        run {
             check(plugins.hasPlugin("org.jetbrains.kotlin.jvm"))
             check(plugins.hasPlugin("org.jetbrains.compose"))
             check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
@@ -170,8 +171,9 @@ private val COMPOSE_KMP_ANDROID_BUILD_SCRIPT =
         )
     }
 
-    tasks.register("@SHAPE_TASK@") {
-        doLast {
+    tasks.register("@SHAPE_TASK@") { doLast {} }
+    gradle.taskGraph.whenReady {
+        run {
             check(plugins.hasPlugin("org.jetbrains.compose"))
             check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
             check(plugins.hasPlugin("@ANDROID_PLUGIN@"))

@@ -15,7 +15,7 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         markerKmpBuildScript(row),
     )
     writeKmpSources(projectDir)
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
     seedDependencyGuardBaseline(
@@ -29,7 +29,9 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
 
     result.assertInnerJdk(row)
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+
+    result.assertNoOwnDeprecations()
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
@@ -45,7 +47,7 @@ internal fun runKmpCommonOnlyConsumer(row: Map<String, String>, tempDir: Path) {
     projectDir.resolve("build.gradle.kts").writeText(
         markerKmpCommonOnlyBuildScript(row),
     )
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
     seedDependencyGuardBaseline(
@@ -60,7 +62,9 @@ internal fun runKmpCommonOnlyConsumer(row: Map<String, String>, tempDir: Path) {
 
     result.assertInnerJdk(row)
 
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+    result.assertNoOwnDeprecations()
+
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(KMP_NO_TARGET_DIAGNOSTICS), result.output)
     assertFalse(result.output.containsAny(PUBLICATION_NOISE_SIGNATURES), result.output)
     assertFalse(result.output.containsAny(DEPENDENCY_GUARD_BASELINE_NOISE), result.output)
@@ -76,7 +80,7 @@ internal fun runKmpInvalidTargetConsumer(row: Map<String, String>, tempDir: Path
     projectDir.resolve("build.gradle.kts").writeText(
         markerKmpBuildScript(row),
     )
-    val gradleUserHome = tempDir.resolve("${row.getValue("id")}-gradle-user-home")
+    val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val requiredTasks = row.getValue("requiredTasks").split(' ')
 
@@ -84,6 +88,8 @@ internal fun runKmpInvalidTargetConsumer(row: Map<String, String>, tempDir: Path
     val result = compatRunner(row, projectDir, gradleUserHome, args).buildAndFail()
 
     result.assertInnerJdk(row)
+
+    result.assertNoOwnDeprecations()
     check("KMP_TARGETS property of 'TYPO' not recognized" in result.output) {
         result.output
     }
@@ -93,5 +99,5 @@ internal fun runKmpInvalidTargetConsumer(row: Map<String, String>, tempDir: Path
     check("ANDROID" in result.output && "IOS_SIMULATOR_ARM64" in result.output) {
         result.output
     }
-    assertFalse(result.output.containsAny(KNOWN_CRASH_SIGNATURES), result.output)
+    assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
 }
