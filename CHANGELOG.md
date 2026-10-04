@@ -6,6 +6,43 @@
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
 
+### Changed
+- **breaking** A module without `jvmTarget` no longer compiles for whichever JDK runs Gradle (the same commit gave different bytecode on different machines). Libraries now default to JVM 17; applications to the newest target the JDK running Gradle and your Kotlin allow (with `gradle/gradle-daemon-jvm.properties`, that is the pinned daemon JDK). Android keeps AGP's own Java target. If a compile task fails in a module whose target was defaulted this way, the build ends with one warning naming the module and the fix: set `jvmTarget`.
+- **breaking** Java sources are now limited to the JDK API of the module's JVM target (`javac --release`), as Kotlin already was: a Java call to JDK 21 API in a module targeting 17 now fails to compile instead of failing at runtime with `NoSuchMethodError`. Modules passing `--add-exports`, `--add-reads` or `--patch-module` stay unlimited (javac rejects them with `--release`). `useJdkRelease = false` turns both limits off.
+- **breaking** The highest JVM target now comes from your Kotlin Gradle plugin (JVM 26 on Kotlin 2.4), not from a table inside fluxo, so a newer Kotlin needs no fluxo release. An explicit `jvmTarget` above what your Kotlin supports now fails configuration with the limit and the fix, instead of silently compiling to a lower target. `latest`/`max`/`current` still mean the newest that works.
+- **breaking** KMP target groups (`allDefaultTargets()`, `ios()`, `macos()`, `tvos()`, `watchos()`, `linux()`, `androidNative()`) add only the targets your Kotlin fully supports, read from your Kotlin at configuration time, and never `iosX64` (Compose Multiplatform dropped it). One warning per build lists the deprecated targets the groups skipped; call a target explicitly (e.g. `macosX64()`) to keep it. An explicit call to a target your Kotlin can no longer build fails with the target name and the fix.
+- **breaking** Unset Android SDK levels: minSdk defaults to 23 (current AndroidX libraries require it; 21 failed the manifest merge), compileSdk to the newest your Android Gradle plugin supports (36 on AGP 8.13, 37 on AGP 9.4), and an application's targetSdk to its compileSdk. Previously 21/35/35 came from fluxo's bundled catalog. Your own catalog keys (`androidMinSdk`, `minSdk`, …) and the DSL still win.
+- **breaking** A call above the module's minSdk (Android Lint `NewApi`) now fails `check`. Every module's Lint still runs first; `mergeLintSarif` then fails once, listing every such call with the fix (`SDK_INT` guard, `@RequiresApi`, or a higher minSdk). Accept a call with a Lint baseline (`updateLintBaseline`); turn the check off with `lint { disable += "NewApi" }`.
+- Gradle-plugin modules (`fkcSetupGradlePlugin`) without `kotlinLangVersion` now compile at the language/API version of the Kotlin embedded in the running Gradle, the rule Gradle's own `kotlin-dsl` uses. Before, Kotlin 2.4 on Gradle 9.0 built a plugin Gradle could not load. The plugin then loads on the Gradle that built it and newer; set `kotlinLangVersion` to support an older Gradle.
+- `fkcSetupIdeaPlugin` keeps an explicit `jvmTarget` below 17 instead of silently raising it to 17; an unset target gets the library default 17.
+- fluxo itself is compiled at Kotlin language/API 2.2, so it loads only on Gradle whose embedded Kotlin is 2.2 or newer: Gradle 9.0+, the documented floor.
+- A module whose Kotlin language or API version is deprecated by its own Kotlin (2.1 on Kotlin 2.4) no longer fails warnings-as-errors builds on that warning alone; the build prints one warning naming the modules and the version to move to.
+
+### Added
+- `FLUXO_EXPLAIN=true` (environment variable or Gradle property) prints, at build end, one line per setting the plugin derived for each module (JVM target, JDK API limit, SDK levels, skipped KMP targets, Gradle-plugin language version) with the reason and how to change it, also on a configuration-cache hit.
+- `js(targetName, configure)` for the Kotlin/JS target.
+- Kotlin 2.5 support: fluxo 0.15 failed configuration on Kotlin 2.5 (`NoSuchMethodError … watchosArm32`) because Kotlin 2.5 removes that target.
+- The Gradle Plugin Portal page declares configuration-cache support, and declares Isolated Projects unsupported.
+
+### Deprecated
+- `JsTarget.compilerType` and `js(compiler = …)`: Kotlin deprecates `KotlinJsCompilerType` (IR is the only compiler) and schedules it for removal in Kotlin 2.6. Use `js(targetName, configure)`.
+
+### Fixed
+- `fkcSetupGradlePlugin` dropped the requested plugin ID on Gradle 9.4+ and declared the plugin under its bare name, so composite builds failed with "plugin not found in included builds".
+- KMP modules requesting the Android target with no Android Gradle plugin on the build classpath failed configuration with a bare `NullPointerException` (or `IllegalStateException`) instead of printing how to add AGP.
+- On AGP 9's KMP plugin, `check` ran no Android Lint at all: AGP creates those Lint tasks only with `com.android.lint` applied, which fluxo now does.
+- On AGP 9's KMP plugin, Detekt's Android tasks (`detektAndroidMain`, `detektAndroidHostTest`) failed at graph build ("cannot choose between the following variants"); they now use the classpath the Kotlin compiler used.
+- On AGP 8 with Gradle 9, every module without unit tests failed `check` in `testDebugUnitTest` ("did not discover any tests"), caused by fluxo's Robolectric-friendly `isIncludeAndroidResources = true`.
+- The merged Lint report (`lint-merged.sarif`) pointed findings from all but the first module at the wrong rule; code-scanning uploads showed wrong rule names.
+- One `MAX_DEBUG`/`FLUXO_VERBOSE` build made every later build in the same Gradle daemon verbose, and once-per-build warnings appeared only once per daemon.
+- The `LOAD_KMM_CODE_COMPLETION` reminder was lost on configuration-cache hits.
+- Gradle-plugin modules loaded the sam-with-receiver Gradle plugin at fluxo's own Kotlin version instead of yours.
+- The shrinker failed on Compose Multiplatform 1.12 desktop apps: two dependencies share the jar name `runtime-saveable-desktop-1.12.1.jar`.
+
+### Updated
+- Bundled tools: Detekt 1.x rule packs compose-rules 0.4.28 and faire 0.5.4 (may report new findings), Spotless 8.10.3, gradle-versions 0.64.0 (applied by its current id `io.github.ben-manes.versions`), KSP 2.3.12 when fluxo provisions it.
+- On Kotlin 2.4.20+ the yarn lock directory (`<root>/.kotlin-js-store`, unchanged) is set through Kotlin's Provider API, replacing the setter Kotlin 2.4.20 deprecates.
+
 
 ## [0.15.1] - 2026-06-23
 
