@@ -96,6 +96,13 @@ internal fun runConsumerCase(
     seedBaseline: Boolean = true,
     writeProject: (Path) -> Unit,
 ): BuildResult {
+    // `status` is the row's claim; the runner's expectation is what actually gets checked.
+    val unsupported = row.getValue("status") == "unsupported"
+    check(unsupported == expectFailure.isNotEmpty()) {
+        "Row ${row.getValue("id")}: status '${row.getValue("status")}' in compat/matrix.tsv " +
+            "contradicts its runner, which expects the build to " +
+            if (unsupported) "pass" else "fail"
+    }
     Files.createDirectories(projectDir)
     projectDir.resolve("settings.gradle.kts").writeText(markerSettingsScript(rootProjectName))
     writeProject(projectDir)

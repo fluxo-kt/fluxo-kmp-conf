@@ -11,6 +11,8 @@ Files:
   build: `jdkVersion` and `kotlinLangVersion`/`kotlinApiVersion` centrally in
   `compatRunner` (`-` there means the consumer KGP's default), the tool
   versions by each fixture's build script.
+  `status` must match the runner: an `unsupported` row's runner expects the
+  build to fail, any other row's runner expects it to pass.
 - `sources.tsv`: official sources used by matrix rows.
 - `unsafe-pattern-allowlist.tsv`: temporary allowlist for known unsafe patterns.
 
