@@ -17,23 +17,23 @@ version = "0.15.1"
 # javaLangTarget 11 is required for Android Gradle Plugin and Android Lint.
 # javaLangTarget 17 is required for IntelliJ Platform Plugin.
 javaLangTarget = "17"
-kotlinLangVersion = "2.1"
-kotlinApiVersion = "2.1"
-kotlinCoreLibraries = "2.1.21"
+kotlinLangVersion = "2.2"
+kotlinApiVersion = "2.2"
+kotlinCoreLibraries = "2.2.0"
 
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
 # WARNING: Remember to update the version badge and examples in `README.md`!
 #  And the version in the KMP cache key in the `.github/workflows/build.yml`!
-kotlin = "2.2.21"
+kotlin = "2.4.20"
 
 # https://github.com/google/ksp/releases
-ksp = "2.2.21-2.0.5"
+ksp = "2.3.12"
 
 # Compose Multiplatform from JetBrains
 # https://github.com/JetBrains/compose-multiplatform/releases
-jetbrains-compose = "1.10.3"
+jetbrains-compose = "1.12.1"
 
 
 # region Android specific
@@ -104,13 +104,13 @@ androidCompileSdk = "35"
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 # WARNING: Remember to update the version badge in `README.md`!
-android-gradle-plugin = "9.1.1"
+android-gradle-plugin = "9.4.1"
 
 # endregion
 
 # Public API management tool
 # https://github.com/Kotlin/binary-compatibility-validator/releases
-bcv = "0.18.1"
+bcv = "0.18.2"
 
 # Kotlin JS/WASM TypeScript definitions API support for the KotlinX Binary Compatibility Validator.
 # https://github.com/fluxo-kt/fluxo-bcv-js/releases.
@@ -128,43 +128,43 @@ detekt = "1.23.8"
 ktlint = "1.8.0"
 
 # https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "8.4.0"
+spotless = "8.10.3"
 
 # Gradle plugin for building plugins for IntelliJ-based IDEs.
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij.platform
 # https://github.com/JetBrains/intellij-platform-gradle-plugin/releases
-intellij-platform = "2.16.0"
+intellij-platform = "2.19.0"
 
 # Universal Gradle plugin for artifact publication to any Maven instance.
 # https://github.com/vanniktech/gradle-maven-publish-plugin/blob/main/docs/what.md
 # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 # https://mvnrepository.com/artifact/com.vanniktech.maven.publish.base/com.vanniktech.maven.publish.base.gradle.plugin
-vanniktech-mvn-publish = "0.36.0"
+vanniktech-mvn-publish = "0.37.0"
 
 
 # Gradle plugin for ProGuard, shrinker, optimizer, obfuscator, and preverifier for the JVM bytecode.
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-gradle.
-proguard = "7.9.1"
+proguard = "7.10.0"
 
 # ProGuardCORE, a library to read, analyze, modify, and write JVM class files.
 # https://github.com/Guardsquare/proguard-core/releases
 # https://mvnrepository.com/artifact/com.guardsquare/proguard-core.
-proguard-core = "9.3.2"
+proguard-core = "9.4.0"
 
 # Kotlin JVM metadata manipulation library.
 # Used by ProGuardCORE.
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-metadata-jvm
 #noinspection GradleDependency.
-kotlin-metadata-jvm = "2.2.21"
+kotlin-metadata-jvm = "2.4.20"
 
 # R8 is a Google's code shrinker, obfuscator, and optimizer. Targeted for Android.
 # https://mvnrepository.com/artifact/com.android.tools/r8?repo=google
 # https://maven.google.com/web/index.html#com.android.tools:r8
-r8 = "9.1.31"
+r8 = "9.4.28"
 
 # ASM is a Java bytecode analysis and manipulation framework.
 # https://mvnrepository.com/artifact/org.ow2.asm/asm
-asm = "9.9.1"
+asm = "9.10.1"
 
 
 # region Pinned dependencies
@@ -176,17 +176,17 @@ okhttp = "4.12.0"
 
 # KMP I/O library.
 # https://square.github.io/okio/changelog/
-okio = "3.17.0"
+okio = "3.18.2"
 
 # HTTP server core pulled by IntelliJ Platform tooling.
 # https://repo1.maven.org/maven2/io/undertow/undertow-core/
-undertow = "2.4.1.Final"
+undertow = "2.4.4.Final"
 
 # Bouncy Castle cryptographic libraries.
 # https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on
 # https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
 # https://mvnrepository.com/artifact/org.bouncycastle/bcutil-jdk18on
-bouncycastle = "1.84"
+bouncycastle = "1.86"
 
 # endregion
 
@@ -272,7 +272,7 @@ asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 # Bump only in lockstep with the build-Kotlin bump.
 # https://github.com/ZacSweers/kotlin-compile-testing/releases
 # https://github.com/tschuchortdev/kotlin-compile-testing/releases.
-kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.10.1" }
+kotlin-compile-testing = { module = "dev.zacsweers.kctfork:core", version = "0.14.0" }
 
 # Starting from Kotlin 2.1.0, KGP doesn't depend on the `kotlin-compiler-embeddable` dependency.
 # Other plugins can bring incompatible versions of the compiler.
@@ -285,7 +285,7 @@ kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-em
 jetbrains-annotation = { module = "org.jetbrains:annotations", version = "26.1.0" }
 
 # https://github.com/tomlj/tomlj/releases
-tomlj = { module = "org.tomlj:tomlj", version = "1.1.1" }
+tomlj = { module = "org.tomlj:tomlj", version = "2.2.0" }
 
 
 # region Pinned dependencies
@@ -301,11 +301,11 @@ bcutil = { module = "org.bouncycastle:bcutil-jdk18on", version.ref = "bouncycast
 
 # Google core libraries for Java.
 # https://github.com/google/guava/releases
-guava = { module = "com.google.guava:guava", version = "33.6.0-jre" }
+guava = { module = "com.google.guava:guava", version = "33.7.2-jre" }
 
 # Douglas Crockford's reference implementation of a JSON.
 # https://github.com/stleary/JSON-java/releases
-json = { module = "org.json:json", version = "20251224" }
+json = { module = "org.json:json", version = "20260814" }
 
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
@@ -372,24 +372,24 @@ complete-kotlin = { id = "com.louiscad.complete-kotlin", version = "1.1.0" }
 
 # Publish plugins to the Gradle Plugin Portal
 # https://plugins.gradle.org/plugin/com.gradle.plugin-publish
-gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.1.1" }
+gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.2.1" }
 
 # Build scans, data to speed up the build and improve build reliability.
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.develocity
 # NOTE: Don't forget to edit a version in all `settings.gradle.kts` files as well!
-develocity = { id = "com.gradle.develocity", version = "4.4.2" }
+develocity = { id = "com.gradle.develocity", version = "4.6.0" }
 
 # Gradle Versions Plugin: provides a task to determine, which dependencies have updates.
 # https://github.com/ben-manes/gradle-versions-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
+deps-versions = { id = "com.github.ben-manes.versions", version = "0.64.0" }
 
 # Detect unused and misused dependencies. Provides advice for managing dependencies and other applied plugins.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
 # https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 # https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
-deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "3.13.0" }
+deps-analysis = { id = "com.autonomousapps.dependency-analysis", version = "3.19.2" }
 
 # Plugin that guards against unintentional dependency changes
 # https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log
@@ -404,7 +404,7 @@ gradle-doctor = { id = "com.osacky.doctor", version = "0.12.1" }
 # `taskTree` task that prints the current task graph
 # https://github.com/dorongold/gradle-task-tree/blob/master/CHANGELOG.md#changelog
 # https://plugins.gradle.org/plugin/com.dorongold.task-tree
-task-tree = { id = "com.dorongold.task-tree", version = "4.0.1" }
+task-tree = { id = "com.dorongold.task-tree", version = "4.0.2" }
 
 # Provides task metadata and dependency information, execution queue, and more
 # https://gitlab.com/barfuin/gradle-taskinfo/-/releases
@@ -419,4 +419,4 @@ module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", 
 # Generating BuildConstants for any kind of project
 # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
-build-config = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }
+build-config = { id = "com.github.gmazzo.buildconfig", version = "6.1.2" }

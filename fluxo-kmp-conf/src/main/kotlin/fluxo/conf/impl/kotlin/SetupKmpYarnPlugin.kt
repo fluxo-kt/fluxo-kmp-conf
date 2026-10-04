@@ -61,13 +61,12 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
         }
 
         configureExtension<YarnRootExtension>(YarnRootExtension.YARN) {
-            lockFileDirectory = rootDir.resolve(".kotlin-js-store")
+            // The lock file directory is left to KGP: its default is already
+            // `<root>/.kotlin-js-store` on the whole supported Kotlin range.
 
             // yarn.lock is calculated differently without tests, ignore mismatch
             if (testsDisabled) {
-                yarnLockMismatchReport = YarnLockMismatchReport.NONE
-                yarnLockAutoReplace = false
-                reportNewYarnLock = false
+                ignoreYarnLockChanges(ctx.kotlinPluginVersion)
             }
 
             if (!setupDependencies) {
@@ -121,3 +120,25 @@ private fun YarnRootExtension.setFromCatalog(
 private const val MIN_YARN = "1.22.19"
 
 private const val KJS = "KotlinJS"
+
+/**
+ * Stops yarn.lock checks from failing or rewriting the lock file.
+ *
+ * The Provider-based properties appear in KGP 2.4.20, and the legacy setters are scheduled for
+ * removal in KGP 2.7, so neither form covers the whole supported Kotlin range alone. The newer
+ * symbols are referenced only inside their own branch, so older KGP never resolves them.
+ */
+private fun YarnRootExtension.ignoreYarnLockChanges(kgp: KotlinVersion) {
+    if (kgp >= KOTLIN_2_4_20) {
+        yarnLockMismatchReportProperty.set(YarnLockMismatchReport.NONE)
+        yarnLockAutoReplaceProperty.set(false)
+        reportNewYarnLockProperty.set(false)
+    } else {
+        @Suppress("DEPRECATION")
+        yarnLockMismatchReport = YarnLockMismatchReport.NONE
+        @Suppress("DEPRECATION")
+        yarnLockAutoReplace = false
+        @Suppress("DEPRECATION")
+        reportNewYarnLock = false
+    }
+}

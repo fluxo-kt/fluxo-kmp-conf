@@ -164,6 +164,8 @@ public fun KotlinMultiplatformExtension.watchosCompat(
     arm64: String? = DEFAULT_TARGET_NAME,
     simulatorArm64: String? = DEFAULT_TARGET_NAME,
 ) {
+    // Deprecated upstream (Kotlin native tier 3), but still a working target when asked for.
+    @Suppress("DEPRECATION")
     enableTarget(name = x64, enableDefault = { watchosX64() }, enableNamed = { watchosX64(it) })
     enableTarget(
         name = arm32,
@@ -192,6 +194,8 @@ public fun KotlinMultiplatformExtension.tvosCompat(
     arm64: String? = DEFAULT_TARGET_NAME,
     simulatorArm64: String? = DEFAULT_TARGET_NAME,
 ) {
+    // Deprecated upstream (Kotlin native tier 3), but still a working target when asked for.
+    @Suppress("DEPRECATION")
     enableTarget(name = x64, enableDefault = { tvosX64() }, enableNamed = { tvosX64(it) })
     enableTarget(name = arm64, enableDefault = { tvosArm64() }, enableNamed = { tvosArm64(it) })
     enableTarget(
@@ -209,6 +213,8 @@ public fun KotlinMultiplatformExtension.macosCompat(
     x64: String? = DEFAULT_TARGET_NAME,
     arm64: String? = DEFAULT_TARGET_NAME,
 ) {
+    // Deprecated upstream (Kotlin native tier 3), but still a working target when asked for.
+    @Suppress("DEPRECATION")
     enableTarget(name = x64, enableDefault = { macosX64() }, enableNamed = { macosX64(it) })
     enableTarget(name = arm64, enableDefault = { macosArm64() }, enableNamed = { macosArm64(it) })
 }

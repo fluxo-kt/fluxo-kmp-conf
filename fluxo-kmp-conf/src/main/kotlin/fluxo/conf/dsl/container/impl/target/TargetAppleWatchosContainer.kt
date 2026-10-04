@@ -104,6 +104,8 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
     class X64(context: ContainerContext, targetName: String) :
         TargetAppleWatchosContainer<KNTS>(context, targetName) {
 
+        // Deprecated upstream (Kotlin native tier 3), but still a working target when asked for.
+        @Suppress("DEPRECATION")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::watchosX64)
     }
 

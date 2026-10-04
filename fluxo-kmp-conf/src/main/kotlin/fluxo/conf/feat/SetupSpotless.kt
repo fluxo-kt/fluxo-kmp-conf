@@ -37,6 +37,10 @@ internal fun Project.setupSpotless(
         // TODO: read base settings from .editorconfig ?
 
         if (isRootProject) {
+            // Deprecated since Spotless 8.10 in favour of declaring formats directly in
+            // `spotlessPredeclare`, but older Spotless creates that extension only after this
+            // call, and the consumer may apply any Spotless version.
+            @Suppress("DEPRECATION")
             predeclareDeps()
         }
 

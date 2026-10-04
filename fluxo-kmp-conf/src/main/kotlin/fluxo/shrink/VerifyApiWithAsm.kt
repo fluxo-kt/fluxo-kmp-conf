@@ -51,7 +51,7 @@ private const val CLASS_EXTENSION = ".class"
 private const val ASM_PARSING_OPTIONS =
     ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES
 
-private val OBJECT_CLASS = Object::class.java.name.replace('.', '/')
+private const val OBJECT_CLASS = "java/lang/Object"
 
 
 private class VerifierClassVisitor(

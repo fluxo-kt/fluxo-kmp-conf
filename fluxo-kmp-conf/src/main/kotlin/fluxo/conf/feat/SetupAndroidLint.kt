@@ -16,6 +16,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
+import fluxo.conf.impl.android.noSuchMethodSafe
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.disableTask
 import fluxo.conf.impl.ifNotEmpty
@@ -205,10 +206,17 @@ internal fun Lint.configureAndroidLintExtension(
         p.logger.v("Setup Android Lint (off=$disableLint, baseline=$reBaseline)")
     }
 
-    sarifReport = !disableLint
-    htmlReport = !disableLint
-    textReport = !disableLint
-    xmlReport = false
+    // AGP 9.x always generates every report and deprecates these switches, but AGP 8.x
+    // still needs them (SARIF is off there by default and the merged SARIF report reads it).
+    // Each setter is guarded on its own because AGP will eventually remove them.
+    @Suppress("DEPRECATION")
+    noSuchMethodSafe { sarifReport = !disableLint }
+    @Suppress("DEPRECATION")
+    noSuchMethodSafe { htmlReport = !disableLint }
+    @Suppress("DEPRECATION")
+    noSuchMethodSafe { textReport = !disableLint }
+    @Suppress("DEPRECATION")
+    noSuchMethodSafe { xmlReport = false }
 
     // Missing baselines make Android Lint create a new file and fail the first run.
     // Keep baseline creation explicit through updateLintBaseline; ordinary CI lint tasks

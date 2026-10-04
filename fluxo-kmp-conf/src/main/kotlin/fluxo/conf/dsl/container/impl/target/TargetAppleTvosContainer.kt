@@ -45,6 +45,8 @@ internal abstract class TargetAppleTvosContainer<T : KNT>(
     class X64(context: ContainerContext, targetName: String) :
         TargetAppleTvosContainer<KNTS>(context, targetName) {
 
+        // Deprecated upstream (Kotlin native tier 3), but still a working target when asked for.
+        @Suppress("DEPRECATION")
         override fun KotlinMultiplatformExtension.createTarget() = createTarget(::tvosX64)
     }
 

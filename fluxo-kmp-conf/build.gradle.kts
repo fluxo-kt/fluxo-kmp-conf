@@ -78,6 +78,14 @@ fkcSetupGradlePlugin(
     }
 }
 
+// The plugin's own main sources compile with warnings as errors on every machine, not only on CI.
+// Upstream deprecations (KGP, AGP, Gradle) are the early notice of a removal that would otherwise
+// reach consumers as a NoSuchMethodError. An API kept on purpose carries a reasoned
+// `@Suppress("DEPRECATION")` at its call site instead.
+tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
+    compilerOptions.allWarningsAsErrors = true
+}
+
 // Exclude Kotlin stdlib from the implementation classpath entirely
 configurations.implementation {
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
@@ -180,7 +188,7 @@ dependencies {
 
 testing {
     suites {
-        val compatibilityTest by registering(org.gradle.api.plugins.jvm.JvmTestSuite::class) {
+        val compatibilityTest = register<org.gradle.api.plugins.jvm.JvmTestSuite>("compatibilityTest") {
             useJUnitJupiter()
             dependencies {
                 implementation(project())

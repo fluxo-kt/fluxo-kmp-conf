@@ -43,6 +43,8 @@ private val KOTLIN_2_3 = KotlinVersion(2, 3, 0)
 
 private val KOTLIN_2_4 = KotlinVersion(2, 4, 0)
 
+internal val KOTLIN_2_4_20 = KotlinVersion(2, 4, 20)
+
 // First Kotlin minor that is NOT yet represented in the JVM-target compatibility
 // table at `Int.toKotlinSupportedJvmMajorVersion` below. Bump in lockstep with
 // the table entries — drives a one-shot warning so the maintainer notices an
