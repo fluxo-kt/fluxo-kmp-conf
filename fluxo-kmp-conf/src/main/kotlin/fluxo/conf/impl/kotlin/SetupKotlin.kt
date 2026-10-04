@@ -71,13 +71,10 @@ internal fun configureKotlinJvm(
     } else if (type === ANDROID_LIB) {
         ctx.loadAndApplyPluginIfNotApplied(id = ANDROID_LIB_PLUGIN_ID, project = project)
     } else if (type === IDEA_PLUGIN) {
+        // No JVM target override: an IDEA plugin is a library the IDE loads, so an unset target
+        // gets the library default (17, loadable on every platform IPGP 2 supports) and an
+        // explicit one is kept. IPGP's own verify task warns when a platform needs newer Java.
         ctx.loadAndApplyPluginIfNotApplied(id = INTELLIJ_PLUGIN_ID, project = project)
-
-        // IDEA plugins require Java 17
-        val jvmTarget = conf.jvmTarget
-        if (jvmTarget == null || jvmTarget.asJvmMajorVersion() < JRE_17) {
-            conf.jvmTarget = JRE_17.toString()
-        }
     }
 
     // For Android types the `kotlin` extension is already registered by the time we get here:
