@@ -1,5 +1,6 @@
 package fluxo.compat
 
+import java.io.DataInputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Properties
@@ -15,10 +16,20 @@ private const val PLUGIN_CLASS = "compat.CompatPlugin"
  * declaration name (Gradle 9.4+ pre-fills a declaration's ID with its name).
  */
 internal fun runGradlePluginConsumer(row: Map<String, String>, tempDir: Path) {
-    val projectDir = tempDir.resolve(row.getValue("id"))
-    runConsumerCase(
+    buildAndCheckGradlePlugin(row, tempDir.resolve(row.getValue("id")))
+    // A Kotlin newer than the running Gradle's embedded one is the case that breaks loading: the
+    // newest row's Gradle embeds a Kotlin as new as its KGP, so it runs once more on the oldest
+    // supported Gradle. A row that pins the language version has nothing to derive.
+    if (row.getValue("kotlinLangVersion") == "-") {
+        val oldGradle = row + ("gradleVersion" to OLDEST_SUPPORTED_GRADLE)
+        buildAndCheckGradlePlugin(oldGradle, tempDir.resolve(row.getValue("id") + "-gradle-floor"))
+    }
+}
+
+private fun buildAndCheckGradlePlugin(row: Map<String, String>, projectDir: Path) {
+    val output = runConsumerCase(
         row,
-        tempDir,
+        projectDir.parent,
         rootProjectName = "compat-gradle-plugin-consumer",
         projectDir = projectDir,
     ) {
@@ -38,9 +49,12 @@ internal fun runGradlePluginConsumer(row: Map<String, String>, tempDir: Path) {
                     target.tasks.register("compatHello") { group = "compat" }
                 }
             }
+
+            // A top-level declaration makes the compiler write META-INF/*.kotlin_module.
+            internal fun compatGreeting(): String = "compat"
             """.trimIndent(),
         )
-    }
+    }.output
 
     val jar = projectDir.resolve("build/libs").toFile().listFiles().orEmpty().single()
     val descriptor = ZipFile(jar).use { zip ->
@@ -52,7 +66,31 @@ internal fun runGradlePluginConsumer(row: Map<String, String>, tempDir: Path) {
         Properties().apply { zip.getInputStream(zip.getEntry(names.single())).use(::load) }
     }
     check(descriptor.getProperty("implementation-class") == PLUGIN_CLASS) { "$descriptor" }
+
+    // A Gradle plugin is loaded by the Gradle that runs it, whose embedded Kotlin reads metadata
+    // only up to its own version, so the plugin must compile at that version or lower: the
+    // embedded Kotlin of the building Gradle, capped by the consumer's Kotlin.
+    val embedded = output.substringAfter(EMBEDDED_KOTLIN_MARKER).substringBefore('\n')
+    val expected = listOf(embedded, row.getValue("kgpVersion"))
+        .map { it.split('.').take(2).joinToString(".") }
+        .minWith(compareBy({ it.substringBefore('.').toInt() }, { it.substringAfter('.').toInt() }))
+    val metadata = ZipFile(jar).use { zip ->
+        val entry = zip.entries().asSequence().single { it.name.endsWith(".kotlin_module") }
+        // Header: the count of version ints, then the metadata version.
+        DataInputStream(zip.getInputStream(entry)).use { data ->
+            List(data.readInt()) { data.readInt() }.take(2).joinToString(".")
+        }
+    }
+    check(metadata == expected) {
+        "Gradle plugin compiled with Kotlin metadata $metadata; Gradle embeds Kotlin $embedded, " +
+            "so it must be $expected or lower to load on the Gradle that built it.\n$output"
+    }
 }
+
+private const val EMBEDDED_KOTLIN_MARKER = "FLUXO_COMPAT_EMBEDDED_KOTLIN="
+
+/** The oldest Gradle the plugin supports (README "Targeted for"). */
+private const val OLDEST_SUPPORTED_GRADLE = "9.0"
 
 private fun gradlePluginBuildScript(row: Map<String, String>): String =
     """
@@ -64,6 +102,9 @@ private fun gradlePluginBuildScript(row: Map<String, String>): String =
 
     group = "compat"
     version = "1.0.0"
+
+    // Build scripts run on Gradle's embedded Kotlin, so this is the version Gradle loads plugins with.
+    println("$EMBEDDED_KOTLIN_MARKER" + KotlinVersion.CURRENT)
 
     fkcSetupGradlePlugin(pluginName = "compat-plugin", pluginClass = "$PLUGIN_CLASS") {
         setupVerification = false

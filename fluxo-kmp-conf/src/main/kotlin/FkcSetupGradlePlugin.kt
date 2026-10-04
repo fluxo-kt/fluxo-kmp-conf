@@ -16,6 +16,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 /**
  * Lazily configures a Gradle Plugin module (Gradle [Project]).
  *
+ * Without an explicit `kotlinLangVersion`, the plugin compiles at the Kotlin version embedded
+ * in the Gradle that builds it (capped by your Kotlin), so it loads on that Gradle and newer
+ * ones. To support an older Gradle, set `kotlinLangVersion` to that Gradle's embedded Kotlin;
+ * newer language features need an explicit version too.
+ *
  * @receiver The [Project] to configure.
  *
  * @param pluginName The name of the Gradle plugin.

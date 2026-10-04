@@ -96,6 +96,8 @@ internal fun configureKotlinJvm(
 
         // Main plugin for Gradle plugins authoring and publication
         project.setupGradlePublishPlugin(conf)
+
+        conf.deriveGradlePluginKotlinVersion()
     }
 
     // Add all plugins first, for configuring in next steps.
