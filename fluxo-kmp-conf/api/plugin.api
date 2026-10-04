@@ -562,7 +562,9 @@ public abstract interface class fluxo/conf/dsl/container/target/JsTarget : fluxo
 }
 
 public abstract interface class fluxo/conf/dsl/container/target/JsTarget$Configure {
-	public abstract fun js (Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public abstract fun js (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public fun js (Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun js$default (Lfluxo/conf/dsl/container/target/JsTarget$Configure;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static synthetic fun js$default (Lfluxo/conf/dsl/container/target/JsTarget$Configure;Lorg/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerType;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 }
 
