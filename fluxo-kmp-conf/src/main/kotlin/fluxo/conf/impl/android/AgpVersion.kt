@@ -1,6 +1,5 @@
 package fluxo.conf.impl.android
 
-import java.util.concurrent.ConcurrentHashMap
 import org.gradle.api.Project
 
 /**
@@ -30,22 +29,15 @@ internal object AgpVersion {
     val AGP_9_0: KotlinVersion = KotlinVersion(major = 9, minor = 0, patch = 0)
 
     /**
-     * Cached lookup. Keyed by classloader (the `Project` keeps a stable buildscript classloader
-     * across the configuration phase), so a single `Project` returns a stable answer across all
-     * call sites without re-running reflection.
-     */
-    private val cache: MutableMap<ClassLoader, KotlinVersion?> = ConcurrentHashMap()
-
-    /**
      * Reads AGP version from the [project]'s buildscript classloader. Returns `null` if AGP is
      * not on the classpath OR if reflective access fails.
      *
-     * Cheap on subsequent calls (per-classloader cache).
+     * Not cached: it runs about twice per Android KMP module, a few reflective lookups each,
+     * while a static per-class-loader cache would keep every build's buildscript class loader
+     * alive for the daemon's lifetime. (A `ConcurrentHashMap` cache also can't hold the `null`
+     * of a build without AGP: `getOrPut` then throws a bare NullPointerException.)
      */
-    fun current(project: Project): KotlinVersion? {
-        val cl = project.buildscript.classLoader
-        return cache.getOrPut(cl) { detect(cl) }
-    }
+    fun current(project: Project): KotlinVersion? = detect(project.buildscript.classLoader)
 
     /**
      * Convenience guard: `true` when AGP `>= 9.0` is on the classpath. `false` when AGP < 9.0
