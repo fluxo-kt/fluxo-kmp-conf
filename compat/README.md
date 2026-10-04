@@ -8,8 +8,6 @@ Files:
 - `matrix.tsv`: rows for build pins, declared consumer support, forward-tested
   canaries, unsupported combinations, and fixture profiles.
 - `sources.tsv`: official sources used by matrix rows.
-- `doc-claims.tsv`: exact compatibility claims that docs must keep in sync until
-  docs are generated from the model.
 - `unsafe-pattern-allowlist.tsv`: temporary allowlist for known unsafe patterns.
 
 TSV rules:

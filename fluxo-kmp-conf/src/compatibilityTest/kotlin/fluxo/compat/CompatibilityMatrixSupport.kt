@@ -4,17 +4,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 internal fun selectedRows(fixture: String): List<Map<String, String>> {
-    val profile = System.getProperty("compat.profile", "pr")
-    val profiles = when (profile) {
-        "release" -> setOf("pr", "release")
-        "full" -> setOf("pr", "full")
-        else -> setOf(profile)
-    }
-    val rows = matrixRows()
-        .filter { it["fixture"] == fixture && it["profile"] in profiles }
-    check(rows.isNotEmpty()) {
-        "No $fixture compatibility rows selected for compat.profile=$profile"
-    }
+    val rows = matrixRows().filter { it["fixture"] == fixture }
+    check(rows.isNotEmpty()) { "No compatibility rows for fixture '$fixture' in compat/matrix.tsv" }
     return rows
 }
 

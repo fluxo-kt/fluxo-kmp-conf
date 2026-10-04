@@ -32,9 +32,8 @@ internal fun pinInnerJdk(projectDir: Path, major: Int) {
 }
 
 /**
- * Single-valued `jdkVersion` for executed rows; the only multi-valued row (`current-build` =
- * "21,23") is informational — referenced by no `selectedRows(...)` and never run via TestKit — so a
- * comma here is a wiring mistake, not a supported case.
+ * Every row is executed by a TestKit fixture, so `jdkVersion` must name exactly one JDK major;
+ * a list here is a wiring mistake, not a supported case.
  */
 internal fun Map<String, String>.compatJdkMajor(): Int =
     getValue("jdkVersion").toIntOrNull() ?: error(

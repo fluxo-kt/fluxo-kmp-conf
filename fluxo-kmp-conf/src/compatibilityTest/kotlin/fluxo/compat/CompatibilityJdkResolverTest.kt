@@ -59,7 +59,7 @@ class CompatibilityJdkResolverTest {
     @Test
     fun multiValuedJdkVersionIsNotAnExecutableRow() {
         val error = assertThrows(IllegalStateException::class.java) {
-            mapOf("id" to "current-build", "jdkVersion" to "21,23").compatJdkMajor()
+            mapOf("id" to "multi", "jdkVersion" to "21,23").compatJdkMajor()
         }
         assertTrue("exactly one JDK" in error.message.orEmpty(), error.message)
         val singleRow = mapOf("id" to "x", "jdkVersion" to "$SINGLE_MAJOR")

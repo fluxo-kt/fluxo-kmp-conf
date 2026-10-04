@@ -23,9 +23,9 @@ Initially made for the [Fluxo][fluxo] state management framework and other libra
 Targeted for Gradle 9.0+, JDK 17+, and Kotlin 2.1+.
 AGP 8 and 9 are covered. Exact checked rows are in [`compat/matrix.tsv`](compat/matrix.tsv).
 Built with:<br>
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-7F52FF?logo=kotlin&logoWidth=10&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
-[![Gradle](https://img.shields.io/badge/Gradle-9.3.1-f68244?logo=gradle&labelColor=2B2B2B)](https://gradle.org/releases/)
-[![Android Gradle Plugin](https://img.shields.io/badge/Android--Gradle--Plugin-9.1.1-0E3B1A?logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
+[![Kotlin](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffluxo-kt%2Ffluxo-kmp-conf%2Fmain%2Fgradle%2Flibs.versions.toml&query=%24.versions.kotlin&label=Kotlin&color=7F52FF&logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
+[![Gradle](https://img.shields.io/badge/Gradle-wrapper-f68244?logo=gradle&labelColor=2B2B2B)](gradle/wrapper/gradle-wrapper.properties)
+[![Android Gradle Plugin](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffluxo-kt%2Ffluxo-kmp-conf%2Fmain%2Fgradle%2Flibs.versions.toml&query=%24.versions%5B'android-gradle-plugin'%5D&label=Android%20Gradle%20Plugin&color=0E3B1A&logo=android&labelColor=2B2B2B)](https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google)
 
 ### How to use
 
@@ -34,7 +34,7 @@ Built with:<br>
 ```kotlin
 // in the root `build.gradle.kts`.
 plugins {
-  kotlin("multiplatform") version "2.2.21"
+  kotlin("multiplatform") version "2.4.20"
   id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.15.1" // <-- add here
 }
 ```
@@ -50,7 +50,7 @@ functions below. Keep a Kotlin plugin before it in `plugins {}`; `apply false` i
 ```kotlin
 // in the root `build.gradle.kts`.
 plugins {
-  kotlin("multiplatform") version "2.2.21"
+  kotlin("multiplatform") version "2.4.20"
   id("io.github.fluxo-kt.fluxo-kmp-conf") // ← add here, no version needed for jitpack usage
 }
 ```

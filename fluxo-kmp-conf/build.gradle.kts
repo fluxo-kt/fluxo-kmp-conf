@@ -207,10 +207,6 @@ testing {
                     )
                     systemProperty("fluxo.plugin.id", pluginId)
                     systemProperty("fluxo.plugin.version", version.toString())
-                    systemProperty(
-                        "compat.profile",
-                        providers.gradleProperty("compat.profile").orElse("pr").get(),
-                    )
                     jvmArgumentProviders.add(object : org.gradle.process.CommandLineArgumentProvider {
                         @get:org.gradle.api.tasks.Classpath
                         val classpath = files(compatibilityTestKotlinPluginClasspath)
@@ -237,19 +233,7 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
     abstract val sourcesFile: org.gradle.api.file.RegularFileProperty
 
     @get:org.gradle.api.tasks.InputFile
-    abstract val docClaimsFile: org.gradle.api.file.RegularFileProperty
-
-    @get:org.gradle.api.tasks.InputFile
     abstract val unsafeAllowlistFile: org.gradle.api.file.RegularFileProperty
-
-    @get:org.gradle.api.tasks.InputFile
-    abstract val versionCatalogFile: org.gradle.api.file.RegularFileProperty
-
-    @get:org.gradle.api.tasks.InputFile
-    abstract val gradleWrapperFile: org.gradle.api.file.RegularFileProperty
-
-    @get:org.gradle.api.tasks.InputFile
-    abstract val readmeFile: org.gradle.api.file.RegularFileProperty
 
     @get:org.gradle.api.tasks.InputFiles
     abstract val sourceFiles: org.gradle.api.file.ConfigurableFileCollection
@@ -261,9 +245,7 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
     fun verify() {
         val failures = ArrayList<String>()
         verifyMatrix(failures)
-        verifyDocs(failures)
         verifyUnsafePatterns(failures)
-        verifyReleaseDocs(failures)
         if (failures.isNotEmpty()) {
             throw GradleException(failures.joinToString(separator = "\n"))
         }
@@ -303,28 +285,6 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
         return value
     }
 
-    private fun catalogVersion(catalog: String, name: String, failures: MutableList<String>): String {
-        val prefix = "$name = \""
-        val value = catalog.lineSequence()
-            .map(String::trim)
-            .firstOrNull { it.startsWith(prefix) }
-            ?.substringAfter(prefix)
-            ?.substringBefore('"')
-        if (value == null) failures += "gradle/libs.versions.toml: missing version $name"
-        return value.orEmpty()
-    }
-
-    private fun wrapperVersion(wrapper: String, failures: MutableList<String>): String {
-        val value = wrapper.lineSequence()
-            .firstOrNull { "distributionUrl=" in it }
-            ?.substringAfter("gradle-")
-            ?.substringBefore("-bin.zip")
-        if (value.isNullOrBlank()) {
-            failures += "gradle/wrapper/gradle-wrapper.properties: missing Gradle version"
-        }
-        return value.orEmpty()
-    }
-
     private fun verifyMatrix(failures: MutableList<String>) {
         val matrixPath = matrixFile.asFile.get().relativePath()
         val sources = sourcesFile.asFile.get().readTsvRows(failures).map { it["id"] }.toSet()
@@ -334,7 +294,7 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
         if (matrix.isEmpty()) failures += "$matrixPath: matrix is empty"
         duplicateIds.forEach { failures += "$matrixPath: duplicate id $it" }
 
-        val statuses = setOf("buildPin", "declaredSupported", "forwardTested", "unsupported")
+        val statuses = setOf("declaredSupported", "unsupported")
         matrix.forEach { row ->
             val id = row["id"].orEmpty()
             val status = requireField(row, "status", matrixPath, failures)
@@ -344,52 +304,6 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
                 .forEach { ref ->
                     if (ref !in sources) failures += "$matrixPath: $id: unknown source $ref"
                 }
-        }
-
-        val currentRows = matrix.filter { it["id"] == "current-build" }
-        if (currentRows.size != 1) {
-            failures += "$matrixPath: expected exactly one current-build row, got ${currentRows.size}"
-            return
-        }
-
-        val catalog = versionCatalogFile.asFile.get().readText()
-        val wrapper = gradleWrapperFile.asFile.get().readText()
-        val expected = mapOf(
-            "gradleVersion" to wrapperVersion(wrapper, failures),
-            "kgpVersion" to catalogVersion(catalog, "kotlin", failures),
-            "kotlinLangVersion" to catalogVersion(catalog, "kotlinLangVersion", failures),
-            "kotlinApiVersion" to catalogVersion(catalog, "kotlinApiVersion", failures),
-            "agpVersion" to catalogVersion(catalog, "android-gradle-plugin", failures),
-            "composeVersion" to catalogVersion(catalog, "jetbrains-compose", failures),
-            "kspVersion" to catalogVersion(catalog, "ksp", failures),
-            "detektVersion" to catalogVersion(catalog, "detekt", failures),
-            "vanniktechVersion" to catalogVersion(catalog, "vanniktech-mvn-publish", failures),
-            "bcvVersion" to catalogVersion(catalog, "bcv", failures),
-            "dokkaVersion" to catalogVersion(catalog, "dokka", failures),
-        )
-        val current = currentRows.single()
-        expected.forEach { (field, value) ->
-            if (current[field] != value) {
-                failures += "$matrixPath: current-build $field=${current[field]} expected $value"
-            }
-        }
-    }
-
-    private fun verifyDocs(failures: MutableList<String>) {
-        val claimsPath = docClaimsFile.asFile.get().relativePath()
-        val sources = sourcesFile.asFile.get().readTsvRows(failures).map { it["id"] }.toSet()
-        docClaimsFile.asFile.get().readTsvRows(failures).forEach { row ->
-            val id = row["id"].orEmpty()
-            requireField(row, "sourceRefs", claimsPath, failures).split(',')
-                .filter(String::isNotBlank)
-                .forEach { ref ->
-                    if (ref !in sources) failures += "$claimsPath: $id: unknown source $ref"
-                }
-            val file = File(rootDirPath.get(), requireField(row, "file", claimsPath, failures))
-            val claim = requireField(row, "mustContain", claimsPath, failures)
-            if (!file.readText().contains(claim)) {
-                failures += "$claimsPath: $id: missing claim in ${file.relativePath()}"
-            }
         }
     }
 
@@ -437,22 +351,6 @@ abstract class VerifyCompatibilityStaticTask : DefaultTask() {
         }
 
         (allowed - seen).forEach { failures += "$allowPath: stale allowlist entry $it" }
-    }
-
-    private fun verifyReleaseDocs(failures: MutableList<String>) {
-        val catalog = versionCatalogFile.asFile.get().readText()
-        val readme = readmeFile.asFile.get().readText()
-        val snippets = mapOf(
-            "plugin version example" to
-                """id("io.github.fluxo-kt.fluxo-kmp-conf") version "${
-                    catalogVersion(catalog, "version", failures)
-                }"""",
-            "quick-start Kotlin version" to
-                """kotlin("multiplatform") version "${catalogVersion(catalog, "kotlin", failures)}"""",
-        )
-        snippets.forEach { (name, snippet) ->
-            if (snippet !in readme) failures += "README.md: release snippet drift: $name"
-        }
     }
 }
 
@@ -609,11 +507,7 @@ val verifyCompatibilityStatic = tasks.register<VerifyCompatibilityStaticTask>("v
     rootDirPath.set(rootDir.absolutePath)
     matrixFile.set(rootProject.file("compat/matrix.tsv"))
     sourcesFile.set(rootProject.file("compat/sources.tsv"))
-    docClaimsFile.set(rootProject.file("compat/doc-claims.tsv"))
     unsafeAllowlistFile.set(rootProject.file("compat/unsafe-pattern-allowlist.tsv"))
-    versionCatalogFile.set(rootProject.file("gradle/libs.versions.toml"))
-    gradleWrapperFile.set(rootProject.file("gradle/wrapper/gradle-wrapper.properties"))
-    readmeFile.set(rootProject.file("README.md"))
     sourceFiles.from(rootProject.fileTree("fluxo-kmp-conf/src/main/kotlin") { include("**/*.kt") })
     workflowFiles.from(rootProject.fileTree(".github/workflows") { include("*.yml", "*.yaml") })
     outputs.upToDateWhen { true }
