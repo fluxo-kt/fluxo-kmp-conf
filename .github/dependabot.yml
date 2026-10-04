@@ -109,7 +109,7 @@ updates:
           - "com.gradle.develocity"
           - "com.gradle.plugin-publish"
           - "com.github.gmazzo.buildconfig"
-          - "com.github.ben-manes.versions"
+          - "io.github.ben-manes.versions"
           - "com.autonomousapps.dependency-analysis"
           - "com.dropbox.dependency-guard"
           - "com.osacky.doctor"

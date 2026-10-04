@@ -13,7 +13,7 @@ import org.gradle.api.Project
 
 // Gradle Versions Plugin, provides a task to find, which dependencies have updates.
 // https://github.com/ben-manes/gradle-versions-plugin/releases
-// https://plugins.gradle.org/plugin/com.github.ben-manes.versions
+// https://plugins.gradle.org/plugin/io.github.ben-manes.versions
 internal fun FluxoKmpConfContext.prepareDependencyUpdatesPlugin() {
     // The plugin itself does register the task only on call.
     val isCalled = hasStartTaskCalled(DEPS_VERSIONS_TASK_NAME)

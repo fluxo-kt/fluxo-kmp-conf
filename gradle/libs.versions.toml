@@ -381,8 +381,8 @@ develocity = { id = "com.gradle.develocity", version = "4.6.0" }
 
 # Gradle Versions Plugin: provides a task to determine, which dependencies have updates.
 # https://github.com/ben-manes/gradle-versions-plugin/releases
-# https://plugins.gradle.org/plugin/com.github.ben-manes.versions
-deps-versions = { id = "com.github.ben-manes.versions", version = "0.64.0" }
+# https://plugins.gradle.org/plugin/io.github.ben-manes.versions
+deps-versions = { id = "io.github.ben-manes.versions", version = "0.64.0" }
 
 # Detect unused and misused dependencies. Provides advice for managing dependencies and other applied plugins.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
