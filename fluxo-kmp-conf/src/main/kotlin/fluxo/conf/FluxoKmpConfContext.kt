@@ -304,6 +304,13 @@ internal abstract class FluxoKmpConfContext
         // Gradle 8.11+ limits lazy plugin configuration, so `onProjectInSyncRun` cannot be
         // relied on for IDE-import detection at config time. Mark eagerly. Floor is now
         // Gradle 9.x via the wrapper, so the version gate is unconditional.
+        // Keep it unconditional even though `idea.sync.active` and the requested import tasks
+        // would allow detecting a sync before configuration: since 0.14.0 every plain build
+        // has applied dependency-guard and set up publication, and has registered
+        // `dependencyUpdates`, `allDeps`, `resolveDependencies` and the `printKotlin*` tasks.
+        // Consumers reach those tasks by name abbreviation and `tasks.named`, and this repo's
+        // own `compatibilityTest` depends on the local publication. Gating any of them is a
+        // breaking change, and on `checks/kmp` sync work measured no configuration-time cost.
         markProjectInSync(reason = "${GradleVersion.current()}")
     }
 
