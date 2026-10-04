@@ -169,6 +169,8 @@ The plugin opportunistically wires in the following aliases when defined in your
                      '-- mingwX64
 ```
 
+Target groups (`allDefaultTargets()`, `ios()`, `watchos()`, …) add only the targets your Kotlin version fully supports, and never `iosX64`. To keep a target your Kotlin deprecates but still builds, call it explicitly (e.g. `macosX64()` on Kotlin 2.4).
+
 
 ### Build and development notes
 
