@@ -57,6 +57,27 @@ private fun runJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
         tempDir,
         "jdk21",
         jdk = JDK_21,
+        javaSource = USES_JDK_21_API_JAVA,
+        tasks = COMPILE_JAVA,
+        expectFailure = listOf(USES_JDK_21_API_JAVA_ERROR),
+    )
+    // javac rejects --add-exports, --add-reads and --patch-module together with --release, so a
+    // module passing them keeps compiling, unlimited. The consumer adds them after fkcSetup*().
+    runKotlinJvmVariant(
+        row,
+        tempDir,
+        "jdk21",
+        jdk = JDK_21,
+        script = "tasks.withType<JavaCompile>().configureEach { options.compilerArgs.addAll(" +
+            "listOf(\"--add-exports\", \"java.base/jdk.internal.misc=ALL-UNNAMED\")) }",
+        javaSource = USES_INTERNAL_JDK_API_JAVA,
+        tasks = COMPILE_JAVA,
+    )
+    runKotlinJvmVariant(
+        row,
+        tempDir,
+        "jdk21",
+        jdk = JDK_21,
         source = USES_JDK_21_API,
         expectFailure = expect,
     )
@@ -81,6 +102,19 @@ private fun runJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
 private const val USES_JDK_21_API = "package compat\n\nfun virtualThreads() = Thread.ofVirtual()\n"
 
 private const val USES_JDK_21_API_ERROR = "Unresolved reference 'ofVirtual'"
+
+private const val USES_JDK_21_API_JAVA =
+    "package compat;\n\npublic class Extra {\n" +
+        "    public static Object virtualThreads() { return Thread.ofVirtual(); }\n}\n"
+
+private const val USES_JDK_21_API_JAVA_ERROR = "method ofVirtual()"
+
+/** `jdk.internal.misc` is not exported by `java.base`; reaching it needs `--add-exports`. */
+private const val USES_INTERNAL_JDK_API_JAVA =
+    "package compat;\n\npublic class Extra {\n" +
+        "    public static Object vm() { return jdk.internal.misc.VM.class; }\n}\n"
+
+private val COMPILE_JAVA = listOf("compileJava")
 
 /** A class file starts with its magic number, minor version, then major version. */
 private fun Path.mainClassMajor(): Int =

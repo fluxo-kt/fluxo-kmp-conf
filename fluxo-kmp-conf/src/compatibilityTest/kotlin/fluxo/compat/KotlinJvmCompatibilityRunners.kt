@@ -1,6 +1,7 @@
 package fluxo.compat
 
 import java.nio.file.Path
+import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
@@ -61,6 +62,8 @@ internal fun runKotlinJvmVariant(
     jdk: Int? = null,
     script: String = "",
     source: String? = null,
+    javaSource: String? = null,
+    tasks: List<String> = listOf("compileKotlin"),
     arguments: List<String> = emptyList(),
     expectFailure: List<String> = emptyList(),
 ): Pair<Path, String> {
@@ -72,7 +75,7 @@ internal fun runKotlinJvmVariant(
         tempDir,
         rootProjectName = "compat-kotlin-jvm-$name-consumer",
         projectDir = projectDir,
-        tasks = listOf("compileKotlin"),
+        tasks = tasks,
         arguments = arguments,
         forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
         expectFailure = expectFailure,
@@ -83,6 +86,14 @@ internal fun runKotlinJvmVariant(
         // Rewritten or removed on every run, as cases share one project directory.
         val extra = it.resolve("src/main/kotlin/compat/Extra.kt")
         if (source == null) extra.deleteIfExists() else extra.writeText(source)
+        val javaDir = it.resolve("src/main/java/compat")
+        val javaFile = javaDir.resolve("Extra.java")
+        if (javaSource == null) {
+            javaFile.deleteIfExists()
+        } else {
+            javaDir.createDirectories()
+            javaFile.writeText(javaSource)
+        }
     }.output
     return projectDir to output
 }

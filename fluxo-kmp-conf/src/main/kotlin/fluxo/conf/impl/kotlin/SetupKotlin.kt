@@ -347,6 +347,12 @@ private fun KotlinProjectExtension.setupTargets(
             latestSettings = isExperimentalTest,
         )
         jvmTargetVersion?.let { setupJvmCompatibility(it) }
+        // Android: AGP rejects javac --release (it sets up its own boot classpath).
+        if (!isAndroid && kc.useJdkRelease) {
+            jvmTargetVersion?.let { v ->
+                javaCompileTaskProviderCompat?.configure { limitJavaJdkApi(conf, v) }
+            }
+        }
         val isJsOrWasm = !isAndroid && platformType
             .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
 

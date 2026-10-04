@@ -5,6 +5,7 @@ import fluxo.log.logDecision
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -57,7 +58,6 @@ internal fun KotlinJvmCompile.limitKotlinJdkApi(
     jvmTarget: String,
 ) {
     val project = conf.project
-    val context = conf.ctx
     val target = jvmTarget.toJvmMajorVersion()
     val compileJdk = kotlinJavaToolchain.javaVersion.get().majorVersion.toInt()
     var limit = jdkApiLimit(target, compileJdk, compileJdkHome(project))
@@ -70,13 +70,54 @@ internal fun KotlinJvmCompile.limitKotlinJdkApi(
             failsRelease = false,
         )
     }
+    conf.report(limit, "Kotlin JDK API limit ($name)", target, compileJdk)
+    if (limit == JdkApiLimit.Apply) compilerOptions.freeCompilerArgs.add("-Xjdk-release=$jvmTarget")
+}
+
+/**
+ * Sets javac's `--release` on this task when [jdkApiLimit] allows it (R12). The compile JDK comes
+ * from the task's own `javaCompiler`, which is exact with or without a toolchain.
+ *
+ * javac rejects `--add-exports`, `--add-reads` and `--patch-module` together with `--release`,
+ * and consumers add those in their own `tasks.withType<JavaCompile>()` blocks, which run after
+ * this one. So that gate is a provider over the task's live argument list, read when Gradle
+ * resolves `release`; a module passing them compiles unlimited, as before.
+ */
+internal fun JavaCompile.limitJavaJdkApi(
+    conf: FluxoConfigurationExtensionImpl,
+    jvmTarget: String,
+) {
+    val target = jvmTarget.toJvmMajorVersion()
+    val metadata = javaCompiler.get().metadata
+    val compileJdk = metadata.languageVersion.asInt()
+    val limit = jdkApiLimit(target, compileJdk, metadata.installationPath.asFile)
+    conf.report(limit, "javac JDK API limit ($name)", target, compileJdk)
+    if (limit != JdkApiLimit.Apply) return
+    val args = options.compilerArgs
+    options.release.set(
+        conf.project.providers.provider {
+            target.takeUnless { args.any { it in JAVAC_ARGS_REJECTED_WITH_RELEASE } }
+        },
+    )
+}
+
+private val JAVAC_ARGS_REJECTED_WITH_RELEASE =
+    setOf("--add-exports", "--add-reads", "--patch-module")
+
+/** One log line per task; an unavailable limit warns once per build and fails a release build. */
+private fun FluxoConfigurationExtensionImpl.report(
+    limit: JdkApiLimit,
+    setting: String,
+    target: Int,
+    compileJdk: Int,
+) {
     if (limit is JdkApiLimit.Unavailable) {
-        check(!(limit.failsRelease && context.isRelease)) { limit.reason }
-        if (context.firstInBuild(limit.reason)) project.logger.warn("w: ${limit.reason}")
+        check(!(limit.failsRelease && ctx.isRelease)) { limit.reason }
+        if (ctx.firstInBuild(limit.reason)) project.logger.warn("w: ${limit.reason}")
     }
-    context.logDecision(
+    ctx.logDecision(
         project,
-        setting = "Kotlin JDK API limit ($name)",
+        setting = setting,
         value = if (limit == JdkApiLimit.Apply) target else "off",
         reason = when (limit) {
             JdkApiLimit.Apply -> "compiling with JDK $compileJdk"
@@ -85,7 +126,6 @@ internal fun KotlinJvmCompile.limitKotlinJdkApi(
         },
         howToChange = "useJdkRelease in fkcSetup*",
     )
-    if (limit == JdkApiLimit.Apply) compilerOptions.freeCompilerArgs.add("-Xjdk-release=$jvmTarget")
 }
 
 /**
