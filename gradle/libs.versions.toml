@@ -24,8 +24,7 @@ kotlinCoreLibraries = "2.2.0"
 # Kotlin version, aligned with Compose Multiplatform
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 # https://github.com/JetBrains/kotlin/releases
-# WARNING: Remember to update the version badge and examples in `README.md`!
-#  And the version in the KMP cache key in the `.github/workflows/build.yml`!
+# WARNING: Remember to update the examples in `README.md` (its badge reads this file).
 kotlin = "2.4.20"
 
 # https://github.com/google/ksp/releases
@@ -103,7 +102,7 @@ androidCompileSdk = "35"
 # Gradle plug-in to build Android applications.
 # https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
 # https://maven.google.com/web/index.html#com.android.tools.build:gradle
-# WARNING: Remember to update the version badge in `README.md`!
+# The `README.md` badge reads this value directly.
 android-gradle-plugin = "9.4.1"
 
 # endregion
