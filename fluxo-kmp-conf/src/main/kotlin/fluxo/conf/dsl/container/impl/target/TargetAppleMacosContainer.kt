@@ -17,6 +17,10 @@ internal abstract class TargetAppleMacosContainer(
 
     interface Configure : AppleMacosTarget.Configure, ContainerHolderAware {
 
+        /** Adds only targets the consumer's Kotlin fully supports, see [ContainerHolder.group]. */
+        override fun macos(configure: AppleMacosTarget.() -> Unit) =
+            holder.group { super.macos(configure) }
+
         override fun macosArm64(targetName: String, configure: AppleMacosTarget.() -> Unit) {
             holder.configure(targetName, ::Arm64, KmpTargetCode.MACOS_ARM64, configure)
         }

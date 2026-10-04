@@ -5,7 +5,11 @@
 import com.android.build.api.dsl.CommonExtension
 import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.container.KmpConfigurationContainerDsl
+import fluxo.conf.dsl.container.impl.KmpTargetCode
+import fluxo.conf.dsl.container.impl.KotlinSupport
+import fluxo.conf.dsl.container.impl.kotlinSupport
 import fluxo.conf.dsl.fluxoConfiguration
+import fluxo.conf.impl.kotlin.KOTLIN_PLUGIN_VERSION_STRING
 import fluxo.conf.impl.kotlin.appleSimulatorPlatform
 import fluxo.conf.impl.kotlin.isSimulatorTestTask
 import fluxo.conf.impl.kotlin.simctlReportsRuntime
@@ -144,9 +148,20 @@ public fun KotlinMultiplatformExtension.iosCompat(
     arm64: String? = DEFAULT_TARGET_NAME,
     simulatorArm64: String? = DEFAULT_TARGET_NAME,
 ) {
-    enableTarget(name = x64, enableDefault = { iosX64() }, enableNamed = { iosX64(it) })
-    enableTarget(name = arm64, enableDefault = { iosArm64() }, enableNamed = { iosArm64(it) })
     enableTarget(
+        KmpTargetCode.IOS_X64,
+        name = x64,
+        enableDefault = { iosX64() },
+        enableNamed = { iosX64(it) },
+    )
+    enableTarget(
+        KmpTargetCode.IOS_ARM64,
+        name = arm64,
+        enableDefault = { iosArm64() },
+        enableNamed = { iosArm64(it) },
+    )
+    enableTarget(
+        KmpTargetCode.IOS_SIMULATOR_ARM64,
         name = simulatorArm64,
         enableDefault = { iosSimulatorArm64() },
         enableNamed = { iosSimulatorArm64(it) },
@@ -166,18 +181,26 @@ public fun KotlinMultiplatformExtension.watchosCompat(
 ) {
     // Deprecated upstream (Kotlin native tier 3), but still a working target when asked for.
     @Suppress("DEPRECATION")
-    enableTarget(name = x64, enableDefault = { watchosX64() }, enableNamed = { watchosX64(it) })
     enableTarget(
+        KmpTargetCode.WATCHOS_X64,
+        name = x64,
+        enableDefault = { watchosX64() },
+        enableNamed = { watchosX64(it) },
+    )
+    enableTarget(
+        KmpTargetCode.WATCHOS_ARM32,
         name = arm32,
         enableDefault = { watchosArm32() },
         enableNamed = { watchosArm32(it) },
     )
     enableTarget(
+        KmpTargetCode.WATCHOS_ARM64,
         name = arm64,
         enableDefault = { watchosArm64() },
         enableNamed = { watchosArm64(it) },
     )
     enableTarget(
+        KmpTargetCode.WATCHOS_SIMULATOR_ARM64,
         name = simulatorArm64,
         enableDefault = { watchosSimulatorArm64() },
         enableNamed = { watchosSimulatorArm64(it) },
@@ -196,9 +219,20 @@ public fun KotlinMultiplatformExtension.tvosCompat(
 ) {
     // Deprecated upstream (Kotlin native tier 3), but still a working target when asked for.
     @Suppress("DEPRECATION")
-    enableTarget(name = x64, enableDefault = { tvosX64() }, enableNamed = { tvosX64(it) })
-    enableTarget(name = arm64, enableDefault = { tvosArm64() }, enableNamed = { tvosArm64(it) })
     enableTarget(
+        KmpTargetCode.TVOS_X64,
+        name = x64,
+        enableDefault = { tvosX64() },
+        enableNamed = { tvosX64(it) },
+    )
+    enableTarget(
+        KmpTargetCode.TVOS_ARM64,
+        name = arm64,
+        enableDefault = { tvosArm64() },
+        enableNamed = { tvosArm64(it) },
+    )
+    enableTarget(
+        KmpTargetCode.TVOS_SIMULATOR_ARM64,
         name = simulatorArm64,
         enableDefault = { tvosSimulatorArm64() },
         enableNamed = { tvosSimulatorArm64(it) },
@@ -215,15 +249,40 @@ public fun KotlinMultiplatformExtension.macosCompat(
 ) {
     // Deprecated upstream (Kotlin native tier 3), but still a working target when asked for.
     @Suppress("DEPRECATION")
-    enableTarget(name = x64, enableDefault = { macosX64() }, enableNamed = { macosX64(it) })
-    enableTarget(name = arm64, enableDefault = { macosArm64() }, enableNamed = { macosArm64(it) })
+    enableTarget(
+        KmpTargetCode.MACOS_X64,
+        name = x64,
+        enableDefault = { macosX64() },
+        enableNamed = { macosX64(it) },
+    )
+    enableTarget(
+        KmpTargetCode.MACOS_ARM64,
+        name = arm64,
+        enableDefault = { macosArm64() },
+        enableNamed = { macosArm64(it) },
+    )
 }
 
+/**
+ * Kotlin deletes the DSL method of a target it removes (watchosArm32 in 2.5), and calling it then
+ * fails with NoSuchMethodError; a target it no longer tolerates fails the build too. So such a
+ * target is skipped when [name] is the default, and an explicit [name] fails with the reason;
+ * [code] identifies the target in the consumer's Kotlin.
+ */
 private fun KotlinMultiplatformExtension.enableTarget(
+    code: KmpTargetCode,
     name: String?,
     enableDefault: KotlinMultiplatformExtension.() -> Unit,
     enableNamed: KotlinMultiplatformExtension.(String) -> Unit,
 ) {
+    if (name != null && code.kotlinSupport() == KotlinSupport.UNSUPPORTED) {
+        require(name == DEFAULT_TARGET_NAME) {
+            "Kotlin " + KOTLIN_PLUGIN_VERSION_STRING + " no longer supports the " +
+                code.name.lowercase() + " target (requested as '" + name + "'). " +
+                "Pass null for it, or build with an older Kotlin."
+        }
+        return
+    }
     if (name != null) {
         if (name == DEFAULT_TARGET_NAME) {
             enableDefault()

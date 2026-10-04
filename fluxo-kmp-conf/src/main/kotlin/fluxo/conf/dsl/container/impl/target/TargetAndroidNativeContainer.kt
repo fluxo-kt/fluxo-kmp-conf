@@ -17,6 +17,10 @@ internal abstract class TargetAndroidNativeContainer(
 
     interface Configure : AndroidNativeTarget.Configure, ContainerHolderAware {
 
+        /** Adds only targets the consumer's Kotlin fully supports, see [ContainerHolder.group]. */
+        override fun androidNative(configure: AndroidNativeTarget.() -> Unit) =
+            holder.group { super.androidNative(configure) }
+
         override fun androidNativeArm64(
             targetName: String,
             configure: AndroidNativeTarget.() -> Unit,

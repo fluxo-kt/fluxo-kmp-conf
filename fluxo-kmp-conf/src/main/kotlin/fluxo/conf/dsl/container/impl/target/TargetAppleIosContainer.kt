@@ -21,6 +21,10 @@ internal abstract class TargetAppleIosContainer<T : KNT>(
 
     interface Configure : AppleIosTarget.Configure, ContainerHolderAware {
 
+        /** Adds only targets the consumer's Kotlin fully supports, see [ContainerHolder.group]. */
+        override fun ios(configure: AppleIosTarget<KNT>.() -> Unit) =
+            holder.group { super.ios(configure) }
+
         override fun iosArm64(targetName: String, configure: AppleIosTarget<KNT>.() -> Unit) {
             holder.configure(targetName, ::Arm64, KmpTargetCode.IOS_ARM64, configure)
         }

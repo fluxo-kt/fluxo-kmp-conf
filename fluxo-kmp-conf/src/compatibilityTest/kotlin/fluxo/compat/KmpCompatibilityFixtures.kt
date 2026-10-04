@@ -126,3 +126,40 @@ internal fun writeKmpSources(projectDir: Path) {
         """.trimIndent(),
     )
 }
+
+/**
+ * `allDefaultTargets()` with every target enabled. Prints the created targets and those of them
+ * the consumer's own Kotlin deprecates, so the case needs no target list of its own.
+ */
+internal fun markerKmpAllTargetsBuildScript(row: Map<String, String>): String =
+    """
+    plugins {
+        id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
+        id("${pluginId()}") version "${pluginVersion()}"
+    }
+
+    fkcSetupMultiplatform(
+        config = {
+            setupVerification = false
+            enablePublication = false
+            enableGradleDoctor = false
+            setupCoroutines = false
+        },
+        kmp = { allDefaultTargets() },
+    )
+
+    gradle.projectsEvaluated {
+        val deprecated = org.jetbrains.kotlin.konan.target.KonanTarget.deprecatedTargets
+        val native = kotlin.targets
+            .withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>()
+        println("$KMP_TARGETS_MARKER" + kotlin.targets.names.joinToString(","))
+        println(
+            "$KMP_DEPRECATED_TARGETS_MARKER" +
+                native.filter { it.konanTarget in deprecated }.joinToString(",") { it.name },
+        )
+    }
+    """.trimIndent()
+
+internal const val KMP_TARGETS_MARKER = "FLUXO_COMPAT_KMP_TARGETS="
+
+internal const val KMP_DEPRECATED_TARGETS_MARKER = "FLUXO_COMPAT_KMP_DEPRECATED_TARGETS="

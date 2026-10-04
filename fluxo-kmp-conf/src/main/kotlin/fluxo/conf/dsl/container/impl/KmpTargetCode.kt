@@ -93,6 +93,14 @@ internal enum class KmpTargetCode {
 
         internal val NON_JVM = COMMON_JS + NATIVE
 
+        /**
+         * Native codes are named after Kotlin's target names (`watchos_arm32` → [WATCHOS_ARM32]),
+         * so they are matched by name. Never by `KonanTarget` object: Kotlin deletes the object of
+         * a removed target (`WATCHOS_ARM32` in 2.5), and a reference to it then fails to link.
+         */
+        private fun KonanTarget.toKmpTargetCode(): KmpTargetCode? =
+            NATIVE.firstOrNull { it.name.equals(name, ignoreCase = true) }
+
         internal val PLATFORM = OperatingSystem.current().let { os ->
             when {
                 os.isMacOsX -> APPLE
@@ -125,34 +133,9 @@ internal enum class KmpTargetCode {
                 }
 
                 KotlinPlatformType.native -> {
-                    when (val konanTarget = (target as KotlinNativeTarget).konanTarget) {
-                        KonanTarget.ANDROID_ARM32 -> ANDROID_ARM32
-                        KonanTarget.ANDROID_ARM64 -> ANDROID_ARM64
-                        KonanTarget.ANDROID_X64 -> ANDROID_X64
-                        KonanTarget.ANDROID_X86 -> ANDROID_X86
-                        KonanTarget.IOS_ARM64 -> IOS_ARM64
-                        KonanTarget.IOS_SIMULATOR_ARM64 -> IOS_SIMULATOR_ARM64
-                        KonanTarget.IOS_X64 -> IOS_X64
-                        KonanTarget.LINUX_ARM32_HFP -> LINUX_ARM32_HFP
-                        KonanTarget.LINUX_ARM64 -> LINUX_ARM64
-                        KonanTarget.LINUX_X64 -> LINUX_X64
-                        KonanTarget.MACOS_ARM64 -> MACOS_ARM64
-                        KonanTarget.MACOS_X64 -> MACOS_X64
-                        KonanTarget.MINGW_X64 -> MINGW_X64
-                        KonanTarget.TVOS_ARM64 -> TVOS_ARM64
-                        KonanTarget.TVOS_SIMULATOR_ARM64 -> TVOS_SIMULATOR_ARM64
-                        KonanTarget.TVOS_X64 -> TVOS_X64
-                        KonanTarget.WATCHOS_ARM32 -> WATCHOS_ARM32
-                        KonanTarget.WATCHOS_ARM64 -> WATCHOS_ARM64
-                        KonanTarget.WATCHOS_DEVICE_ARM64 -> WATCHOS_DEVICE_ARM64
-                        KonanTarget.WATCHOS_SIMULATOR_ARM64 -> WATCHOS_SIMULATOR_ARM64
-                        KonanTarget.WATCHOS_X64 -> WATCHOS_X64
-
-                        else -> {
-                            logger?.w("Unexpected KonanTarget: $konanTarget")
-                            null
-                        }
-                    }
+                    val konanTarget = (target as KotlinNativeTarget).konanTarget
+                    konanTarget.toKmpTargetCode()
+                        ?: null.also { logger?.w("Unexpected KonanTarget: $konanTarget") }
                 }
 
                 else -> {
@@ -176,5 +159,30 @@ internal enum class KmpTargetCode {
                 else -> arrayOf()
             }
         }
+    }
+}
+
+/**
+ * How the consumer's Kotlin supports a target. [DEPRECATED] still builds, with a warning;
+ * [UNSUPPORTED] can't be built at all: removed, or deprecated past what Kotlin tolerates.
+ */
+internal enum class KotlinSupport { FULL, DEPRECATED, UNSUPPORTED }
+
+/**
+ * Read from the consumer's Kotlin, never from a list in the plugin: Kotlin deprecates native
+ * targets, stops tolerating them (an error from then on) and later removes them, and each
+ * release moves some. Non-native targets are always [KotlinSupport.FULL] here. Looked up by
+ * name: Kotlin deletes the `KonanTarget` object of a removed target, and a reference to it would
+ * fail to link.
+ */
+internal fun KmpTargetCode.kotlinSupport(): KotlinSupport {
+    val native = this in KmpTargetCode.NATIVE
+    val target = if (native) KonanTarget.predefinedTargets[name.lowercase()] else null
+    return when {
+        !native -> KotlinSupport.FULL
+        target == null || target in KonanTarget.deprecatedTargets &&
+            target !in KonanTarget.toleratedDeprecatedTargets -> KotlinSupport.UNSUPPORTED
+        target in KonanTarget.deprecatedTargets -> KotlinSupport.DEPRECATED
+        else -> KotlinSupport.FULL
     }
 }

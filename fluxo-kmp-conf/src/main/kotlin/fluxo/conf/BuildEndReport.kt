@@ -33,6 +33,7 @@ internal class BuildEndReport(
     private val warnings = ConcurrentLinkedQueue<() -> String>()
     private val decisions = ConcurrentLinkedQueue<String>()
     private val failureHints = ConcurrentHashMap<String, String>()
+    private val aggregated = ConcurrentHashMap<String, MutableSet<String>>()
     private val registered = AtomicBoolean()
 
     init {
@@ -47,6 +48,20 @@ internal class BuildEndReport(
     fun warn(message: () -> String) {
         register()
         warnings += message
+    }
+
+    /**
+     * Adds [item] to the list kept under [key], and prints one warning per build built from the
+     * whole list: one line however many modules report, instead of one line per module.
+     */
+    fun warnAggregated(key: String, item: String, message: (items: List<String>) -> String) {
+        var first = false
+        val items = aggregated.computeIfAbsent(key) {
+            first = true
+            ConcurrentHashMap.newKeySet()
+        }
+        items += item
+        if (first) warn { message(items.sorted()) }
     }
 
     /** Keeps [line] for the `FLUXO_EXPLAIN` block; a no-op without the flag. */

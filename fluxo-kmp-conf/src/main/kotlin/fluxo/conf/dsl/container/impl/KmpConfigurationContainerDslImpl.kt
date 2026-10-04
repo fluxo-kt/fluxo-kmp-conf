@@ -101,25 +101,28 @@ internal class KmpConfigurationContainerDslImpl(
         // KotlinMultiplatformExtension.targetHierarchy
         // https://kotlinlang.org/docs/whatsnew1820.html#new-approach-to-source-set-hierarchy
 
-        if (jvm) jvm()
-        if (android) androidLibrary()
-        if (js) js()
+        // A group: only targets the consumer's Kotlin fully supports (ContainerHolder.group).
+        holder.group {
+            if (jvm) jvm()
+            if (android) androidLibrary()
+            if (js) js()
 
-        if (ios) ios()
-        if (watchos) watchos()
-        if (tvos) tvos()
-        if (macos) macos()
+            if (ios) ios()
+            if (watchos) watchos()
+            if (tvos) tvos()
+            if (macos) macos()
 
-        if (linux) linux()
-        if (mingw) mingw()
+            if (linux) linux()
+            if (mingw) mingw()
 
-        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
-        if (wasm) {
-            wasmJs()
-            // WASI target has been available since Kotlin 1.9.20.
-            // Both WASI and JS can have been used together since Kotlin 2.0.
-            // Both predicates are unconditionally true under the consumer floor (Kotlin 2.1+).
-            if (wasmWasi) wasmWasi()
+            @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+            if (wasm) {
+                wasmJs()
+                // WASI target has been available since Kotlin 1.9.20.
+                // Both WASI and JS can have been used together since Kotlin 2.0.
+                // Both predicates are unconditionally true under the consumer floor (Kotlin 2.1+).
+                if (wasmWasi) wasmWasi()
+            }
         }
 
         kotlinMultiplatform {

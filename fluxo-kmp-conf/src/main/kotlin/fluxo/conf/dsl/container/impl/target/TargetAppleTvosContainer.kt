@@ -19,6 +19,10 @@ internal abstract class TargetAppleTvosContainer<T : KNT>(
 
     interface Configure : AppleTvosTarget.Configure, ContainerHolderAware {
 
+        /** Adds only targets the consumer's Kotlin fully supports, see [ContainerHolder.group]. */
+        override fun tvos(configure: AppleTvosTarget<KNT>.() -> Unit) =
+            holder.group { super.tvos(configure) }
+
         override fun tvosArm64(targetName: String, configure: AppleTvosTarget<KNT>.() -> Unit) {
             holder.configure(targetName, ::Arm64, KmpTargetCode.TVOS_ARM64, configure)
         }

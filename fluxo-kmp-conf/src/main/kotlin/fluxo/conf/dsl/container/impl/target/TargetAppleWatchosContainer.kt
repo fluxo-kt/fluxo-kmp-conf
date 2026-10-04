@@ -27,11 +27,9 @@ internal abstract class TargetAppleWatchosContainer<T : KNT>(
          * @see watchosCompat
          */
         @Suppress("MaxLineLength")
-        override fun watchos(configure: AppleWatchosTarget<KNT>.() -> Unit) {
+        override fun watchos(configure: AppleWatchosTarget<KNT>.() -> Unit) = holder.group {
             watchosArm32(configure = configure)
             watchosArm64(configure = configure)
-            // watchosDeviceArm64 has been available since KGP 1.8;
-            // unconditional under the layer-2 floor (KGP 2.0+).
             watchosDeviceArm64(configure = configure)
             watchosX64(configure = configure)
             watchosSimulatorArm64(configure = configure)

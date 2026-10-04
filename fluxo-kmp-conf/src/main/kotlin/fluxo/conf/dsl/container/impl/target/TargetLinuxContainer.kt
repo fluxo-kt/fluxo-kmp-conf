@@ -19,6 +19,10 @@ internal abstract class TargetLinuxContainer<T : KNT>(
 
     interface Configure : LinuxTarget.Configure, ContainerHolderAware {
 
+        /** Adds only targets the consumer's Kotlin fully supports, see [ContainerHolder.group]. */
+        override fun linux(configure: LinuxTarget<KNT>.() -> Unit) =
+            holder.group { super.linux(configure) }
+
         override fun linuxX64(targetName: String, configure: LinuxTarget<KNTHT>.() -> Unit) {
             holder.configure(targetName, ::X64, KmpTargetCode.LINUX_X64, configure)
         }
