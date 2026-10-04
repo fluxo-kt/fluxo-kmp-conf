@@ -11,9 +11,11 @@ internal fun Project.setupSamWithReceiver(ctx: FluxoKmpConfContext) {
     val result = ctx.loadAndApplyPluginIfNotApplied(
         id = KT_SAM_RECEIVER_PLUGIN_ID,
         className = KT_SAM_RECEIVER_PLUGIN_CLASS,
+        // A Kotlin plugin must match the consumer's KGP: its Gradle-side classes run against that
+        // KGP's API. No catalog alias is named, since fluxo's bundled catalog would then supply
+        // fluxo's own Kotlin pin; a version the consumer's own catalog declares for this ID still
+        // wins.
         version = KOTLIN_PLUGIN_VERSION_STRING,
-        catalogPluginId = KT_SAM_RECEIVER_PLUGIN_ALIAS,
-        catalogVersionIds = arrayOf("kotlin", KT_SAM_RECEIVER_PLUGIN_ALIAS),
         project = this,
     )
     if (!result.applied) {
@@ -52,5 +54,3 @@ private const val KT_SAM_RECEIVER_EXTENSION = "samWithReceiver"
 
 internal const val KT_SAM_RECEIVER_PLUGIN_ID: String =
     "org.jetbrains.kotlin.plugin.sam.with.receiver"
-
-internal const val KT_SAM_RECEIVER_PLUGIN_ALIAS: String = "kotlin-sam-receiver"
