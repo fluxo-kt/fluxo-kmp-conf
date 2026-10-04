@@ -10,16 +10,45 @@ import org.gradle.testkit.runner.TaskOutcome
  * so the row's `kgpVersion` is the Kotlin plugin it runs against.
  */
 internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
-    runConsumerCase(
-        row,
-        tempDir,
-        rootProjectName = "compat-kotlin-jvm-consumer",
-        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
-    ) { projectDir ->
+    val writeProject = { projectDir: Path ->
         projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
         writeKotlinJvmSources(projectDir)
     }
+    val case = { tasks: List<String>, arguments: List<String> ->
+        runConsumerCase(
+            row,
+            tempDir,
+            rootProjectName = "compat-kotlin-jvm-consumer",
+            tasks = tasks,
+            arguments = arguments,
+            forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+            writeProject = writeProject,
+        ).output
+    }
+    case(row.getValue("requiredTasks").split(' '), emptyList())
+
+    // FLUXO_EXPLAIN prints the derived settings at build end. The second run is a
+    // configuration-cache hit, where configuration never runs, so the block must come from
+    // the stored entry; without the flag nothing is printed.
+    val explain = listOf("-PFLUXO_EXPLAIN=true")
+    val derivedJvmTarget = "[:] jvmTarget = ${row.getValue("jdkVersion")} ("
+    for (run in listOf("configured", "cached")) {
+        val output = case(HELP, explain)
+        check(EXPLAIN_HEADER in output && derivedJvmTarget in output) {
+            "FLUXO_EXPLAIN ($run run) must print '$derivedJvmTarget…':\n$output"
+        }
+        check((run == "cached") == (CONFIGURATION_CACHE_REUSED in output)) {
+            "Only the second FLUXO_EXPLAIN run may reuse the configuration cache:\n$output"
+        }
+    }
+    val plain = case(HELP, emptyList())
+    check(EXPLAIN_HEADER !in plain) { "Without FLUXO_EXPLAIN no block is printed:\n$plain" }
 }
+
+private val HELP = listOf("help")
+
+/** Copy of `fluxo.log.EXPLAIN_HEADER`: this test source set cannot see the plugin's internals. */
+private const val EXPLAIN_HEADER = "fluxo-kmp-conf derived settings (FLUXO_EXPLAIN):"
 
 private fun kotlinJvmConsumerBuildScript(row: Map<String, String>): String =
     """

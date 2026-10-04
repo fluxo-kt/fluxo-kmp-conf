@@ -4,6 +4,7 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.hasRoomPlugin
 import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.log.l
+import fluxo.log.logDecision
 import fluxo.log.w
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -50,6 +51,13 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     if (jvmTargetInt <= 0) {
         jvmTargetInt = JRE_VERSION.toKotlinSupportedJvmMajorVersion()
         jvmTarget = null
+        context.logDecision(
+            project,
+            setting = "jvmTarget",
+            value = jvmTargetInt,
+            reason = "not set, so the JDK running Gradle decides it",
+            howToChange = "set jvmTarget in fkcSetup* or the version catalog",
+        )
     } else {
         jvmTarget = jvmTargetInt.asJvmTargetVersion()
     }

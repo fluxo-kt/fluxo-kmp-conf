@@ -52,6 +52,9 @@ public fun Project.isMaxDebugEnabled(): Provider<Boolean> = envOrPropFlag("MAX_D
 
 internal fun Project.isFluxoVerbose(): Provider<Boolean> = envOrPropFlag("FLUXO_VERBOSE")
 
+/** Prints every setting the plugin derived, one line each, when the build ends. */
+internal fun Project.isFluxoExplain(): Provider<Boolean> = envOrPropFlag("FLUXO_EXPLAIN")
+
 public fun Project.isShrinkerDisabled(): Provider<Boolean> = provider {
     val disabled = envOrPropFlagValue("DISABLE_R8") ||
         envOrPropFlagValue("DISABLE_SHRINKER") ||

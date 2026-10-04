@@ -119,6 +119,9 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      *
      * Note: the Java lang target must not be lower than the source release.
      *
+     * When nothing sets it, the plugin derives it; run with `FLUXO_EXPLAIN=true` (environment
+     * variable or Gradle property) to print the derived value and the reason for each module.
+     *
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions.jvmTarget
      * @see org.gradle.api.plugins.JavaPluginExtension.setSourceCompatibility
      * @see org.gradle.api.plugins.JavaPluginExtension.setTargetCompatibility

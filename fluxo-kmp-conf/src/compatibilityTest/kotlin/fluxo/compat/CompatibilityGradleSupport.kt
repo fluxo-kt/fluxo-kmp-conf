@@ -43,6 +43,8 @@ internal fun gradleArguments(requiredTasks: List<String>): List<String> =
 
 internal const val INNER_JDK_MARKER = "FLUXO_COMPAT_INNER_JDK="
 
+internal const val CONFIGURATION_CACHE_REUSED = "Reusing configuration cache."
+
 /**
  * Single construction point for every fixture's [GradleRunner] — the *one* place the inner-build
  * JDK is pinned to the row's declared `jdkVersion` via [pinInnerJdk]. Centralised so no runner can
@@ -76,12 +78,13 @@ internal fun compatRunner(
  * only its own project and expectations.
  *
  * [writeProject] fills [projectDir]; a `settings.gradle.kts` is written first from
- * [rootProjectName] and may be overwritten. The row's `requiredTasks` run with [arguments]
- * appended, after a dependency-guard baseline is seeded when they include `check` and
- * [seedBaseline] is on (off where the build has no dependency-guard, as under `DISABLE_TESTS`).
- * With [expectFailure] empty the build must pass, print none of [forbiddenOutput] and, when
- * [assertTasksSucceed], succeed every required task; otherwise it must fail and print every
- * [expectFailure] text. Returns the result for case-specific checks.
+ * [rootProjectName] and may be overwritten. [tasks] (by default the row's `requiredTasks`) run
+ * with [arguments] appended, after a dependency-guard baseline is seeded when they include
+ * `check` and [seedBaseline] is on (off where the build has no dependency-guard, as under
+ * `DISABLE_TESTS`). With [expectFailure] empty the build must pass, print none of
+ * [forbiddenOutput] and, when [assertTasksSucceed], succeed every task in [tasks]; otherwise it
+ * must fail and print every [expectFailure] text. Returns the result for case-specific checks.
+ * Several cases may share one [projectDir] to reuse its configuration-cache entry.
  */
 @Suppress("LongParameterList")
 internal fun runConsumerCase(
@@ -89,6 +92,7 @@ internal fun runConsumerCase(
     tempDir: Path,
     rootProjectName: String,
     projectDir: Path = tempDir.resolve(row.getValue("id")),
+    tasks: List<String> = row.getValue("requiredTasks").split(' '),
     arguments: List<String> = emptyList(),
     forbiddenOutput: List<String> = emptyList(),
     expectFailure: List<String> = emptyList(),
@@ -108,12 +112,13 @@ internal fun runConsumerCase(
     writeProject(projectDir)
     val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
-    val requiredTasks = row.getValue("requiredTasks").split(' ')
-    val args = gradleArguments(requiredTasks) + arguments
+    val args = gradleArguments(tasks) + arguments
     val runner = compatRunner(row, projectDir, gradleUserHome, args)
 
     val result = if (expectFailure.isEmpty()) {
-        if (seedBaseline) seedDependencyGuardBaseline(row, projectDir, gradleUserHome, arguments)
+        if (seedBaseline && CHECK_TASK in tasks) {
+            seedDependencyGuardBaseline(row, projectDir, gradleUserHome, arguments)
+        }
         runner.build()
     } else {
         runner.buildAndFail()
@@ -130,7 +135,7 @@ internal fun runConsumerCase(
     val noise = forbiddenOutput + PUBLICATION_NOISE_SIGNATURES + DEPENDENCY_GUARD_BASELINE_NOISE
     assertFalse(result.output.containsAny(noise), result.output)
     if (assertTasksSucceed) {
-        requiredTasks.forEach { result.assertTaskSuccess(":$it") }
+        tasks.forEach { result.assertTaskSuccess(":$it") }
     }
     return result
 }
@@ -142,6 +147,9 @@ internal fun runConsumerCase(
  * regression cannot pass silently.
  */
 internal fun BuildResult.assertInnerJdk(row: Map<String, String>) {
+    // A configuration-cache hit runs no settings script, so it cannot print the marker. The run
+    // that stored the entry was checked, and a different `org.gradle.java.home` invalidates it.
+    if (CONFIGURATION_CACHE_REUSED in output) return
     val major = row.getValue("jdkVersion")
     check("$INNER_JDK_MARKER$major" in output) {
         "Inner build did not run on declared jdkVersion=$major (compat/matrix.tsv); " +
@@ -155,10 +163,6 @@ internal fun seedDependencyGuardBaseline(
     gradleUserHome: Path,
     extraArguments: List<String> = emptyList(),
 ) {
-    if (CHECK_TASK !in row.getValue("requiredTasks").split(' ')) {
-        return
-    }
-
     val args = gradleArguments(listOf(DEPENDENCY_GUARD_BASELINE_TASK)) + extraArguments
     val result = compatRunner(row, projectDir, gradleUserHome, args).build()
     result.assertInnerJdk(row)
