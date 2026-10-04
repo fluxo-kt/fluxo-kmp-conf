@@ -198,10 +198,12 @@ ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
 # https://mrmans0n.github.io/compose-rules/detekt/#enabling-rules
 # https://github.com/mrmans0n/compose-rules/releases
 # https://mvnrepository.com/artifact/io.nlopez.compose.rules/detekt
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.19" }
+# Stays on the Detekt 1.x line: 0.5.0 and later are built against Detekt 2 (`dev.detekt`).
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.28" }
 
 # https://github.com/Faire/faire-detekt-rules/releases
-detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.4.0" }
+# Stays on the Detekt 1.x line: 0.5.5 and later are built against Detekt 2 (`dev.detekt`).
+detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.5.4" }
 
 # https://github.com/hbmartin/hbmartin-detekt-rules/releases
 detekt-hbmartin = { module = "com.github.hbmartin:hbmartin-detekt-rules", version = "0.1.7" }
