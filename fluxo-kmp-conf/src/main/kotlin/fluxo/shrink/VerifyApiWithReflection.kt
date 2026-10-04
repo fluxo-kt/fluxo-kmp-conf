@@ -151,7 +151,7 @@ private fun <M : Executable> List<M>?.filterMethodsByPTypes(pTypes: Array<String
     if (isNullOrEmpty() || size == 1) {
         return this
     }
-    return this?.filter f@{ m ->
+    return filter f@{ m ->
         if (m.parameterCount != pTypes.size) return@f false
         val t = m.parameterTypes
         for (element in t.indices) if (t[element].name != pTypes[element]) return@f false
