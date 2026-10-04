@@ -38,7 +38,7 @@ internal fun FluxoKmpConfContext.prepareCompleteKotlinPlugin() {
         )
         if (result.applied) {
             val flag = LOAD_KMM_CODE_COMPLETION_FLAG
-            buildEndReport.warn(
+            buildEndReport.warn {
                 """
 
                 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -49,8 +49,8 @@ internal fun FluxoKmpConfContext.prepareCompleteKotlinPlugin() {
 
                 Don't forget to disable '$flag' once all required libs are downloaded and saved!
                 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-                """.trimIndent(),
-            )
+                """.trimIndent()
+            }
         }
     }
 }

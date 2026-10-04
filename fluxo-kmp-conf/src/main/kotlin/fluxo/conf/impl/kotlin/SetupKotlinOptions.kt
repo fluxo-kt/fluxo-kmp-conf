@@ -51,10 +51,18 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         }
     }
 
-    // `-Xexpect-actual-classes` required for multiplatform projects since Kotlin 1.9.20;
-    // unconditional under the layer-2 floor (consumer KGP 2.1.0+).
     if (isMultiplatform) {
-        compilerArgs.add("-Xexpect-actual-classes")
+        compilerArgs.addDefault(KotlinDefault.EXPECT_ACTUAL_CLASSES)
+    }
+
+    // Read from the compile task's own options, after ours were applied, so a version the
+    // consumer set in their own `kotlin { compilerOptions }` counts too.
+    val deprecatedVersions = listOfNotNull(languageVersion.orNull, apiVersion.orNull)
+        .distinct().filter { it.isDeprecatedByKgp }
+    if (deprecatedVersions.isNotEmpty()) {
+        compilerArgs.addDefault(KotlinDefault.SUPPRESS_VERSION_WARNINGS)
+        val path = conf.project.path
+        deprecatedVersions.forEach { context.deprecatedKotlinVersions.record(it, path) }
     }
 
     val isJvm: Boolean
@@ -118,7 +126,9 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 compilerArgs.add("-Xjvm-default=all")
             }
 
-            compilerArgs.addAll(JVM_OPTS)
+            compilerArgs.addDefault(KotlinDefault.EMIT_JVM_TYPE_ANNOTATIONS)
+            compilerArgs.addDefault(KotlinDefault.JSR305)
+            compilerArgs.addDefault(KotlinDefault.VALIDATE_BYTECODE)
             if (useLatestSettings) {
                 compilerArgs.addAll(LATEST_JVM_OPTS)
             }
@@ -193,11 +203,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         // "-XXLanguage:+WhenGuards"
     }
 
-    // K2 reports warnings for explicit diagnostic suppressions. The suppressions remain
-    // the source-level contract; this only prevents the suppressions themselves from
-    // turning every intentional internal/compiler workaround into build output noise.
-    // https://youtrack.jetbrains.com/issue/KT-66513#focus=Comments-27-9461367.0-0
-    compilerArgs.add("-Xdont-warn-on-error-suppression")
+    compilerArgs.addDefault(KotlinDefault.DONT_WARN_ON_ERROR_SUPPRESSION)
 
     // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
     if (!releaseSettings && context.useKotlinDebug) {
@@ -258,16 +264,6 @@ private val LATEST_JVM_OPTS = arrayOf(
     // All class files are marked as preview-generated, thus it won't be possible to use
     //  them in the release environment.
     "-Xjvm-enable-preview",
-).asList()
-
-// https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
-private val JVM_OPTS = arrayOf(
-    "-Xemit-jvm-type-annotations",
-    "-Xjsr305=strict",
-    "-Xvalidate-bytecode",
-
-    // Not supported in the Kotlin 2.1 language version.
-    // "-Xvalidate-ir",
 ).asList()
 
 // Remove utility bytecode, eliminating names/data leaks in release obfuscated code.

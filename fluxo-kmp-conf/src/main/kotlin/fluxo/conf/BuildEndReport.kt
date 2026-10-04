@@ -24,7 +24,7 @@ internal class BuildEndReport(
     private val rootProject: Project,
     private val explain: Boolean,
 ) {
-    private val warnings = ConcurrentLinkedQueue<String>()
+    private val warnings = ConcurrentLinkedQueue<() -> String>()
     private val decisions = ConcurrentLinkedQueue<String>()
     private val registered = AtomicBoolean()
 
@@ -33,8 +33,11 @@ internal class BuildEndReport(
         if (explain) register()
     }
 
-    /** Prints [message] as a warning when the build ends, also on a configuration-cache hit. */
-    fun warn(message: String) {
+    /**
+     * Prints [message] as a warning when the build ends, also on a configuration-cache hit.
+     * Built when the report is read, so an aggregated message includes everything recorded later.
+     */
+    fun warn(message: () -> String) {
         register()
         warnings += message
     }
@@ -51,7 +54,7 @@ internal class BuildEndReport(
         flowScope.always(
             BuildEndReportAction::class.java,
             Action {
-                parameters.warnings.set(rootProject.provider { warnings.toList() })
+                parameters.warnings.set(rootProject.provider { warnings.map { it() } })
                 parameters.explain.set(explain)
                 parameters.decisions.set(rootProject.provider { decisions.toList() })
             },

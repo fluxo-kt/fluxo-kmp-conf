@@ -43,7 +43,47 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     }
     val plain = case(HELP, emptyList())
     check(EXPLAIN_HEADER !in plain) { "Without FLUXO_EXPLAIN no block is printed:\n$plain" }
+
+    runDeprecatedLanguageVersionCase(row, tempDir)
 }
+
+/**
+ * Language/API version 2.1 is in the supported range, and Kotlin 2.4 deprecates it, which is a
+ * compiler warning: under warnings-as-errors a Kotlin upgrade alone would turn the build red.
+ * The plugin suppresses that warning and prints one build-end warning naming the module; on a
+ * Kotlin where 2.1 is not deprecated nothing is printed.
+ */
+private fun runDeprecatedLanguageVersionCase(row: Map<String, String>, tempDir: Path) {
+    val output = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kotlin-jvm-lv21-consumer",
+        projectDir = tempDir.resolve("${row.getValue("id")}-lv21"),
+        tasks = listOf("compileKotlin"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+    ) { projectDir ->
+        val script = kotlinJvmConsumerBuildScript(row).replace(
+            "    setupCoroutines = false\n",
+            "    setupCoroutines = false\n" +
+                "    kotlinLangVersion = \"2.1\"\n" +
+                "    kotlinApiVersion = \"2.1\"\n",
+        )
+        check("kotlinLangVersion" in script) { "Build script anchor moved:\n$script" }
+        projectDir.resolve("build.gradle.kts").writeText(script)
+        writeKotlinJvmSources(projectDir)
+    }.output
+    val (major, minor) = row.getValue("kgpVersion").split('.').map(String::toInt)
+    val deprecated = KotlinVersion(major, minor) >= FIRST_KOTLIN_DEPRECATING_2_1
+    check((DEPRECATED_VERSION_WARNING in output) == deprecated) {
+        "Expected the deprecated-version warning only when KGP deprecates 2.1:\n$output"
+    }
+}
+
+private const val DEPRECATED_VERSION_WARNING = "Kotlin language/API version 2.1 is deprecated"
+
+/** The first Kotlin release that deprecates language version 2.1. */
+@Suppress("MagicNumber")
+private val FIRST_KOTLIN_DEPRECATING_2_1 = KotlinVersion(2, 4)
 
 private val HELP = listOf("help")
 
