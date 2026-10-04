@@ -19,12 +19,6 @@ import org.gradle.api.logging.Logger
 internal const val DETEKT_MAX_SUPPORTED_KOTLIN_VERSION = "2.1"
 internal const val DETEKT_MAX_SUPPORTED_JVM_TARGET = 22
 
-@Volatile
-private var WARNED_DETEKT_KOTLIN_CLAMP = false
-
-@Volatile
-private var WARNED_DETEKT_JVM_TARGET_CLAMP = false
-
 /**
  * Parses a Kotlin language version string (`"<major>"` or `"<major>.<minor>"`)
  * into a [kotlin.KotlinVersion] with patch = 0. Missing minor defaults to 0.
@@ -52,14 +46,15 @@ internal fun parseDetektLangVersion(s: String): KotlinVersion {
 internal fun isWithinDetektSupportedLangVersion(requested: String): Boolean =
     parseDetektLangVersion(requested) <= parseDetektLangVersion(DETEKT_MAX_SUPPORTED_KOTLIN_VERSION)
 
+/** [firstInBuild] gates the warning to once per build (a static would be once per daemon). */
 internal fun clampKotlinLangVersionForDetekt(
     requested: String,
     logger: Logger,
+    firstInBuild: (key: String) -> Boolean,
 ): String {
     if (isWithinDetektSupportedLangVersion(requested)) return requested
     val max = DETEKT_MAX_SUPPORTED_KOTLIN_VERSION
-    if (!WARNED_DETEKT_KOTLIN_CLAMP) {
-        WARNED_DETEKT_KOTLIN_CLAMP = true
+    if (firstInBuild("detekt-kotlin-clamp")) {
         logger.warn(
             "[fluxo-kmp-conf] Detekt's max-supported Kotlin language version " +
                 "($max) is older than the requested $requested. Detekt will " +
@@ -83,14 +78,15 @@ internal fun parseDetektJvmTarget(s: String): Int? {
 internal fun isWithinDetektSupportedJvmTarget(requested: String): Boolean =
     parseDetektJvmTarget(requested)?.let { it <= DETEKT_MAX_SUPPORTED_JVM_TARGET } ?: true
 
+/** [firstInBuild] gates the warning to once per build (a static would be once per daemon). */
 internal fun clampJvmTargetForDetekt(
     requested: String,
     logger: Logger,
+    firstInBuild: (key: String) -> Boolean,
 ): String {
     if (isWithinDetektSupportedJvmTarget(requested)) return requested
     val max = DETEKT_MAX_SUPPORTED_JVM_TARGET.toString()
-    if (!WARNED_DETEKT_JVM_TARGET_CLAMP) {
-        WARNED_DETEKT_JVM_TARGET_CLAMP = true
+    if (firstInBuild("detekt-jvm-target-clamp")) {
         logger.warn(
             "[fluxo-kmp-conf] Detekt's max-supported JVM target " +
                 "($max) is older than the requested $requested. Detekt will " +

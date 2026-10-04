@@ -160,14 +160,15 @@ internal fun Project.setupDetekt(
     }
 
     val kc = conf.kotlinConfig
+    val firstInBuild = context::firstInBuild
     val baselineTasks = tasks.withType<DetektCreateBaselineTask> {
         // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
 
-        kc.jvmTarget?.let { jvmTarget = clampJvmTargetForDetekt(it, logger) }
+        kc.jvmTarget?.let { jvmTarget = clampJvmTargetForDetekt(it, logger, firstInBuild) }
 
         val (lang) = kc.langAndApiVersions(isTest = false)
         lang?.let {
-            languageVersion.set(clampKotlinLangVersionForDetekt(it.version, logger))
+            languageVersion.set(clampKotlinLangVersionForDetekt(it.version, logger, firstInBuild))
         }
 
         if (mergeDetektBaselinesTask != null) {
@@ -196,11 +197,11 @@ internal fun Project.setupDetekt(
             }
         } else {
             // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
-            kc.jvmTarget?.let { jvmTarget = clampJvmTargetForDetekt(it, logger) }
+            kc.jvmTarget?.let { jvmTarget = clampJvmTargetForDetekt(it, logger, firstInBuild) }
 
             val (lang) = kc.langAndApiVersions(isTest = false)
             lang?.let {
-                languageVersion = clampKotlinLangVersionForDetekt(it.version, logger)
+                languageVersion = clampKotlinLangVersionForDetekt(it.version, logger, firstInBuild)
             }
 
             if (DEBUG_DETEKT_LOGS) {

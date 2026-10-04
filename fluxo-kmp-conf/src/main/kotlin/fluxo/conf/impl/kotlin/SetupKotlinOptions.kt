@@ -84,8 +84,9 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 // https://youtrack.jetbrains.com/issue/KT-67668
                 val jdkReleaseIsBroken = jvmTargetInt in (JRE_17 + 1) until JRE_23 &&
                     JRE_VERSION < JRE_23
-                if (useJdkRelease && jdkReleaseIsBroken && !BROKEN_JDK_RELEASE_LOGGED) {
-                    BROKEN_JDK_RELEASE_LOGGED = true
+                if (useJdkRelease && jdkReleaseIsBroken &&
+                    context.firstInBuild(BROKEN_JDK_RELEASE_KEY)
+                ) {
                     conf.project.logger.e(
                         "-Xjdk-release is broken for JRE 18..21 with JDK 18..22" +
                             ", so it is disabled! \n",
@@ -206,8 +207,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     freeCompilerArgs.set(compilerArgs.toList())
 }
 
-@Volatile
-private var BROKEN_JDK_RELEASE_LOGGED = false
+private const val BROKEN_JDK_RELEASE_KEY = "broken-jdk-release"
 
 /** @see org.jetbrains.kotlin.config.LanguageFeature */
 @Suppress("SameParameterValue")

@@ -1,6 +1,5 @@
 package fluxo.shrink
 
-import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.util.mapToArray
 import java.lang.System.currentTimeMillis
 import java.lang.reflect.Constructor
@@ -147,7 +146,9 @@ private val MethodSignature.descriptorParameterTypes
     }
 
 private fun <M : Executable> List<M>?.filterMethodsByPTypes(pTypes: Array<String>): List<M>? {
-    if (!SHOW_DEBUG_LOGS && (isNullOrEmpty() || size == 1)) {
+    // A single candidate is returned unfiltered, so `requireParamsAndPublic` reports the exact
+    // parameter mismatch instead of a bare "not found"; the verdict is the same either way.
+    if (isNullOrEmpty() || size == 1) {
         return this
     }
     return this?.filter f@{ m ->

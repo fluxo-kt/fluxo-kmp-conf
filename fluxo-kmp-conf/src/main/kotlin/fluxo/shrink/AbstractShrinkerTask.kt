@@ -27,7 +27,6 @@ import fluxo.gradle.not
 import fluxo.gradle.notNullProperty
 import fluxo.gradle.nullableProperty
 import fluxo.gradle.setProperty
-import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.e
 import fluxo.log.i
 import fluxo.log.l
@@ -481,7 +480,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         }
         if (isFailed) {
             // Info ("i: ") messages are highlighted in the IDEA console.
-            if (SHOW_DEBUG_LOGS) {
+            if (verbose.get()) {
                 logger.i(message)
             }
             if (isRelease.orNull == true) {

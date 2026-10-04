@@ -74,8 +74,7 @@ internal fun Logger.kotlinPluginVersion(): KotlinVersion {
             KOTLIN_PLUGIN_VERSION_STRING = versionString
             return parseKotlinPluginVersion(versionString).also { v ->
                 KOTLIN_PLUGIN_VERSION = v
-                if (v >= FIRST_UNTABULATED_KOTLIN && !WARNED_KOTLIN_BEYOND_TABLE) {
-                    WARNED_KOTLIN_BEYOND_TABLE = true
+                if (v >= FIRST_UNTABULATED_KOTLIN) {
                     logger.warn(
                         "[fluxo-kmp-conf] Kotlin plugin $v is at or beyond the " +
                             "first untabulated minor ($FIRST_UNTABULATED_KOTLIN) " +

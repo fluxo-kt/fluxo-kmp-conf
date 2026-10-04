@@ -32,6 +32,7 @@ import isFluxoVerbose
 import isMaxDebugEnabled
 import isRelease
 import isShrinkerDisabled
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
@@ -57,6 +58,12 @@ internal abstract class FluxoKmpConfContext
 
     private val projectInSyncFlag: DomainObjectSet<String> =
         rootProject.objects.domainObjectSet(String::class.java)
+
+    /** Keys already reported; this context lives for one build, a static for the whole daemon. */
+    private val reportedInBuild: MutableSet<String> = ConcurrentHashMap.newKeySet()
+
+    /** `true` only the first time [key] is seen in this build: for warnings due once per build. */
+    fun firstInBuild(key: String): Boolean = reportedInBuild.add(key)
 
     internal val provisioner: Provisioner = GradleProvisioner.DedupingProvisioner(
         GradleProvisioner.forProject(rootProject),
@@ -118,9 +125,9 @@ internal abstract class FluxoKmpConfContext
 
         // FIXME: Detekt and use here if CI (GitHub) debug logs are enabled.
         val isVerbose = isMaxDebug || logger.isInfoEnabled || project.isFluxoVerbose().get()
-        if (isVerbose) {
-            SHOW_DEBUG_LOGS = true
-        }
+        // Assigned on every build, never only raised: the flag is a static in a class the
+        // daemon reuses across builds, so one verbose build would leave every later one verbose.
+        SHOW_DEBUG_LOGS = isVerbose
 
         // Log environment
         run {

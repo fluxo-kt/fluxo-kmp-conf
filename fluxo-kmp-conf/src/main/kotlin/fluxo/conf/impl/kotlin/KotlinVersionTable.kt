@@ -57,9 +57,6 @@ internal val KOTLIN_2_4_20 = KotlinVersion(2, 4, 20)
 internal val FIRST_UNTABULATED_KOTLIN = KOTLIN_2_4
 
 @Volatile
-internal var WARNED_KOTLIN_BEYOND_TABLE = false
-
-@Volatile
 internal var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT
 
 @Volatile
