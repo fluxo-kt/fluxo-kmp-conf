@@ -298,13 +298,16 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         var initialSize: Long = 0
 
         // Avoid mangling mainJar
+        val outputNames = HashSet<String>()
         mainJar.ioFile.let { mainJar ->
-            inputToOutputJars[mainJar] = destinationFile.ioFile
+            val destination = destinationFile.ioFile
+            inputToOutputJars[mainJar] = destination
+            outputNames.add(destination.name.lowercase())
             initialSize += mainJar.length()
         }
 
         for (inputFile in inputFiles) {
-            val outputFile = destinationDir.resolve(inputFile.name)
+            val outputFile = destinationDir.resolve(uniqueFileName(inputFile.name, outputNames))
             if (!inputFile.name.endsWith(".jar", ignoreCase = true)) {
                 if (!processOnlyMainJar) {
                     inputFile.copyTo(outputFile)
