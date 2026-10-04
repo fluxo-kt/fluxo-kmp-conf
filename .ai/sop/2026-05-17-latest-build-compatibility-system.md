@@ -9,6 +9,35 @@ implementation phase.
 Required path:
 `.ai/sop/2026-05-17-latest-build-compatibility-system.md`.
 
+## Status (read first)
+
+This SOP predates the 0.16 modernisation (Gradle 9.8, Kotlin 2.4.20, AGP 9.4.1
+pins). Where it disagrees with the current tree, the tree and AGENTS.md win:
+
+- **Stale sections**: *Current Findings And Constraints* names old pins
+  (Kotlin 2.2.21, Gradle 9.3.1, AGP 9.1.1) — read `gradle/libs.versions.toml`
+  and `compat/matrix.tsv` instead. Per-row isolated TestKit homes were replaced
+  by one shared home, `.gradle/compat-testkit`.
+- **Withdrawn — do not do**:
+  - "Remove unconditional IDE-sync marking": every release since 0.14.0 marks
+    sync on every build, and consumers rely on the tasks it sets up, so gating
+    it is a breaking change (AGENTS.md, `onProjectInSyncRun` entry).
+  - "`verifyCompatibilityDocs`" and the doc-claim part of the static verifier:
+    checks of documentation prose were deleted (`compat/doc-claims.tsv` is
+    gone); compat tests check consumer behaviour only.
+- **Landed since**: the `compat/` model (`matrix.tsv`, `sources.tsv`,
+  `unsafe-pattern-allowlist.tsv`) with `verifyCompatibilityStatic` and
+  `verifyBuildScriptMirror` on `check`; GitHub Actions updated through
+  `actions-up`; no `taskGraph.whenReady` left in `fluxo-kmp-conf/src/main/kotlin`.
+- **Still open from the queue below**: configuration-time dependency resolution
+  in the dynamic plugin loader (`GradleProvisioner` still calls
+  `config.resolve()`); negative TestKit rows with exact messages;
+  configuration-cache evidence for key rows (the compat tripwires already fail
+  on cache problems); SCM probing and signing reads only in publish tasks;
+  release-workflow concurrency; CI permissions and checkout credentials;
+  `Class.forName`/`getMethod` inventory. Stale Dependabot PRs are the
+  maintainer's call, never closed by an agent.
+
 ## Intent
 
 Build the plugin against the latest reasonable stable toolchain so development
