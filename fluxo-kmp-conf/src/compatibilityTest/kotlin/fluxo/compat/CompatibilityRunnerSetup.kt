@@ -32,8 +32,31 @@ internal fun tripwireArguments(projectDir: Path, row: Map<String, String>): List
             val value = row.getValue(column)
             """conf.javaClass.getMethod("$setter", String::class.java).invoke(conf, "$value")"""
         }
+    // The plugin under test may come only from this tree's local repository. The working version
+    // can equal a released one, and a fixture's own `buildscript { repositories }` resolves the
+    // plugin's module from there, not from `pluginManagement`: the Kotlin/JVM fixture silently
+    // ran the Plugin Portal's 0.15.1 that way. Every other repository excludes these coordinates,
+    // so a missing local copy fails as "could not find" instead of resolving a release. Content
+    // filters, not `exclusiveContent`: Gradle rejects that in `pluginManagement` as soon as a
+    // project declares `buildscript` repositories, a consumer shape the fixtures must keep.
     initScript.writeText(
         """
+        val fluxoLocalRepo = java.io.File("${localMavenRepoPath()}").toURI().toString().trimEnd('/')
+        fun RepositoryHandler.fluxoOnlyFromLocal() = all {
+            if (this is MavenArtifactRepository && url.toString().trimEnd('/') != fluxoLocalRepo) {
+                content {
+                    excludeModule("io.github.fluxo-kt", "fluxo-kmp-conf")
+                    excludeGroup("${pluginId()}")
+                }
+            }
+        }
+        beforeSettings { pluginManagement.repositories.fluxoOnlyFromLocal() }
+        allprojects {
+            buildscript.repositories {
+                maven(fluxoLocalRepo)
+                fluxoOnlyFromLocal()
+            }
+        }
         rootProject {
             pluginManager.withPlugin("${pluginId()}") {
                 val conf = extensions.getByName("fluxoConfiguration")
