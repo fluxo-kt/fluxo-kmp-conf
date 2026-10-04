@@ -68,12 +68,13 @@ jobs:
       # `org.gradle.java.home` property, resolving the home from JAVA_HOME_17_<arch>. Without 17 here
       # the release verify build fails loudly in `resolveCompatJdkHome` — the inverse of the silent
       # daemon-JDK drift that broke v0.15.0.
-      - name: Set up JDKs (23 publish daemon, 17 for compat inner builds)
+      - name: Set up JDKs (23 publish daemon, 17 and 21 for compat inner builds)
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: |
             17
+            21
             23
 
       - name: Setup Gradle

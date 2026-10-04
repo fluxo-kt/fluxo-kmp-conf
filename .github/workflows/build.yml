@@ -208,7 +208,7 @@ jobs:
       # inner builds, which pin per-row JDK via the `org.gradle.java.home` property, resolving
       # the home from JAVA_HOME_17_<arch>. See `resolveCompatJdkHome` — fixtures fail loudly if
       # their declared jdkVersion is absent.
-      - name: Set up JDKs (21 daemon, 17 for compat inner builds)
+      - name: Set up JDKs (21 daemon and compat inner builds, 17 for compat inner builds)
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
