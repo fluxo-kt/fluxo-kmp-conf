@@ -152,6 +152,11 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         )
     }
 
+    // AGP 8 counts the generated Android-resources config as test sources, so on Gradle 9 a module
+    // with no unit tests fails `testDebugUnitTest` ("test sources present … did not discover any
+    // tests") once resources are included. AGP 9 doesn't. A convention, so a consumer can still
+    // set it back to true; Gradle 8 never had the check, so AGP 8 loses nothing it had.
+    val noTestsIsFine = !AgpVersion.isAgp9OrLater(conf.project)
     testOptions.unitTests {
         // Required for Robolectric
         isIncludeAndroidResources = true
@@ -159,7 +164,10 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
 
         // JUnit4 should be used to discover and execute the tests
         // It's the most compatible for now.
-        all { it.useJUnit() }
+        all {
+            it.useJUnit()
+            if (noTestsIsFine) it.failOnNoDiscoveredTests.convention(false)
+        }
     }
 
     // `CommonExtension.buildTypes` exposes a wildcard-bounded
