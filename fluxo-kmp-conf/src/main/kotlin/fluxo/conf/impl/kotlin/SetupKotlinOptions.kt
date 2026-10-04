@@ -72,6 +72,9 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
             isJvm = true
             isJs = false
 
+            if (jvmTargetVersion == null && isAndroid) {
+                followAndroidJavaTarget(conf.project)
+            }
             // FIXME: Move to JvmCompatibility?
             jvmTargetVersion?.let { jvmTarget ->
                 setupJvmCompatibility(jvmTarget)

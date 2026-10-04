@@ -3,7 +3,6 @@ package fluxo.conf.impl.kotlin
 import com.android.build.api.dsl.CommonExtension
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.configureExtensionIfAvailable
-import fluxo.log.l
 import kotlin.math.max
 import kotlin.math.min
 import org.gradle.api.JavaVersion
@@ -21,17 +20,8 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaCompilation
 
 @Suppress("ReturnCount")
 internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: KotlinConfig) {
-    val jvmTarget = kc.jvmTarget
-    val effectiveJvmTarget = jvmTarget ?: kc.jvmTargetInt.asJvmTargetVersion()
-    if (jvmTarget.isNullOrEmpty()) {
-        project.logger.l(
-            "Java compatibility is not explicitly set, " +
-                "current JRE ($effectiveJvmTarget) will be used!",
-        )
-    }
-
-    val jvmToolchain = kc.jvmToolchain
-    if (jvmToolchain && !jvmTarget.isNullOrEmpty()) {
+    val effectiveJvmTarget = kc.jvmTarget
+    if (kc.jvmToolchain) {
         // Kotlin set up toolchain for java automatically
         jvmToolchain(kc.jvmTargetInt)
 
@@ -64,6 +54,8 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
     // `ClassCastException`. `CommonExtension` is the stable parent of both
     // `LibraryExtension` and `BaseAppModuleExtension` across AGP 8 and 9 and exposes
     // `compileOptions` directly.
+    // An unset target leaves Android to AGP's own default (R10).
+    if (!kc.jvmTargetExplicit) return
     project.configureExtensionIfAvailable<CommonExtension>(ANDROID_EXT_NAME) {
         // AGP 9 dropped the action-form `compileOptions { }` helper from `CommonExtension`
         // — only the getter survives — so configure via the property directly. Behaviour is
@@ -77,6 +69,23 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
         // `compilerOptions` (configured per-compilation in `setupTargets`),
         // and Android source/target compatibility is set above via
         // `compileOptions`. Nothing to do here.
+    }
+}
+
+/**
+ * An Android module without an explicit target keeps AGP's Java target (R10), and Kotlin must
+ * match it: AGP 9's built-in Kotlin aligns itself, but KGP on the AGP 8 path defaults to the build
+ * JDK and its JVM-target validation then fails the build ('compileDebugJavaWithJavac' (1.8) vs
+ * 'compileDebugKotlin' (17)). Lazy, so `compileOptions` written after `fkcSetup*()` still count.
+ * Found by type, not by name: on the AGP 9 KMP path `android` is not a `CommonExtension`, and that
+ * path's Kotlin target is AGP's own already.
+ */
+internal fun KotlinJvmCompilerOptions.followAndroidJavaTarget(project: Project) {
+    project.configureExtensionIfAvailable({ CommonExtension::class }) {
+        val options = compileOptions
+        jvmTarget.set(
+            project.provider { JvmTarget.fromTarget(options.targetCompatibility.toString()) },
+        )
     }
 }
 
@@ -166,9 +175,6 @@ private fun lastKnownJdkVersion(setupToolchain: Boolean): Int =
 
 internal fun lastSupportedJvmMajorVersion(setupToolchain: Boolean): Int =
     min(lastKnownJdkVersion(setupToolchain), KOTLIN_MAX_JVM_TARGET)
-
-internal fun lastSupportedJvmTargetVersion(setupToolchain: Boolean): String =
-    lastSupportedJvmMajorVersion(setupToolchain).asJvmTargetVersion()
 
 
 /**

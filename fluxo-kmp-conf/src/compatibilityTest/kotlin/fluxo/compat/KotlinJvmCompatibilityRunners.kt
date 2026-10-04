@@ -33,7 +33,7 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     // configuration-cache hit, where configuration never runs, so the block must come from
     // the stored entry; without the flag nothing is printed.
     val explain = listOf("-PFLUXO_EXPLAIN=true")
-    val derivedJvmTarget = "[:] jvmTarget = ${row.getValue("jdkVersion")} ("
+    val derivedJvmTarget = "[:] jvmTarget = 17 ("
     for (run in listOf("configured", "cached")) {
         val output = case(HELP, explain)
         check(EXPLAIN_HEADER in output && derivedJvmTarget in output) {
@@ -48,6 +48,7 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
 
     runDeprecatedLanguageVersionCase(row, tempDir)
     runJvmTarget26Case(row, tempDir)
+    runDefaultJvmTargetCase(row, tempDir)
 }
 
 /**
@@ -59,11 +60,14 @@ private fun runKotlinJvmVariant(
     tempDir: Path,
     name: String,
     vararg setup: String,
+    jdk: Int? = null,
     expectFailure: List<String> = emptyList(),
 ): Pair<Path, String> {
     val projectDir = tempDir.resolve("${row.getValue("id")}-$name")
+    // The inner JDK is the row's `jdkVersion`, so a case on another JDK runs on a row copy;
+    // the pin and its end-to-end check then cover that JDK unchanged.
     val output = runConsumerCase(
-        row,
+        if (jdk == null) row else row + ("jdkVersion" to jdk.toString()),
         tempDir,
         rootProjectName = "compat-kotlin-jvm-$name-consumer",
         projectDir = projectDir,
@@ -120,15 +124,34 @@ private fun runJvmTarget26Case(row: Map<String, String>, tempDir: Path) {
         expectFailure = if (supported) emptyList() else listOf(JVM_TARGET_ABOVE_MAX),
     )
     if (!supported) return
-    val classFile = projectDir.resolve("build/classes/kotlin/main/compat/CompatSubjectKt.class")
-    // A class file starts with its magic number, minor version, then major version.
-    val major = DataInputStream(classFile.inputStream()).use {
+    val major = projectDir.mainClassMajor()
+    check(major == JAVA_26_CLASS_MAJOR) { "jvmTarget 26 compiled to major $major:\n$output" }
+}
+
+/**
+ * A library that sets no JVM target must compile to 17 whatever JDK runs the build: a target that
+ * followed the build JDK made bytecode depend on the machine (it sank v0.15.0's first tag). The
+ * fixture rows run on JDK 17, where both behaviours agree, so this case runs on JDK 21.
+ */
+private fun runDefaultJvmTargetCase(row: Map<String, String>, tempDir: Path) {
+    val (projectDir, output) = runKotlinJvmVariant(row, tempDir, "jdk21", jdk = JDK_21)
+    val major = projectDir.mainClassMajor()
+    check(major == JAVA_17_CLASS_MAJOR) { "Default library target compiled to $major:\n$output" }
+}
+
+/** A class file starts with its magic number, minor version, then major version. */
+private fun Path.mainClassMajor(): Int =
+    DataInputStream(resolve(MAIN_CLASS).inputStream()).use {
         it.readInt()
         it.readUnsignedShort()
         it.readUnsignedShort()
     }
-    check(major == JAVA_26_CLASS_MAJOR) { "jvmTarget 26 compiled to major $major:\n$output" }
-}
+
+private const val MAIN_CLASS = "build/classes/kotlin/main/compat/CompatSubjectKt.class"
+
+private const val JDK_21 = 21
+
+private const val JAVA_17_CLASS_MAJOR = 61
 
 private const val DEPRECATED_VERSION_WARNING = "Kotlin language/API version 2.1 is deprecated"
 

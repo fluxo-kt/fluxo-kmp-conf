@@ -47,21 +47,9 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     // TODO: Detect if JVM toolchains are already enabled in the project.
     val jvmToolchain = setupJvmToolchain
-    var jvmTargetInt = jvmTarget?.toJvmMajorVersion(jvmToolchain) ?: 0
-    val jvmTarget: String?
-    if (jvmTargetInt <= 0) {
-        jvmTargetInt = min(JRE_VERSION, KOTLIN_MAX_JVM_TARGET)
-        jvmTarget = null
-        context.logDecision(
-            project,
-            setting = "jvmTarget",
-            value = jvmTargetInt,
-            reason = "not set, so the JDK running Gradle decides it",
-            howToChange = "set jvmTarget in fkcSetup* or the version catalog",
-        )
-    } else {
-        jvmTarget = jvmTargetInt.asJvmTargetVersion()
-    }
+    val explicitJvmTarget = jvmTarget?.toJvmMajorVersion(jvmToolchain)?.takeIf { it > 0 }
+    val jvmTargetInt = explicitJvmTarget ?: defaultJvmTarget(project)
+    val jvmTarget = jvmTargetInt.asJvmTargetVersion()
     val javaParameters = jvmTargetInt >= JRE_1_8 &&
         javaParameters ?: false &&
         !isApplication
@@ -130,6 +118,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
         jvmTarget = jvmTarget,
         jvmTargetInt = jvmTargetInt,
+        jvmTargetExplicit = explicitJvmTarget != null,
         jvmTestTarget = jvmTests,
         jvmToolchain = jvmToolchain,
         useJdkRelease = useJdkRelease,
@@ -193,12 +182,11 @@ private fun Logger.logKotlinProjectCompatibility(
             append(')')
         }
 
-        val jv = kc.jvmTarget
         val jt = kc.jvmTestTarget
-        if (jv != null || jt != null) {
+        run {
             append(", JVM ")
             if (kc.jvmToolchain) append("toolchain ")
-            append(jv ?: kc.jvmTargetInt.asJvmTargetVersion())
+            append(kc.jvmTarget)
 
             if (jt != null) {
                 append(" (")
@@ -221,3 +209,40 @@ private fun Logger.logKotlinProjectCompatibility(
         )
     }
 }
+
+/**
+ * The JVM target of a module that sets none (R10). It must not follow whichever JDK happens to run
+ * the build: that made bytecode machine-dependent and sank v0.15.0's first release tag.
+ * - Libraries get 17, the oldest JDK Gradle 9 runs on, so any consumer can load them.
+ * - Applications ship with their own runtime, so they get the newest target the JDK running Gradle
+ *   and Kotlin allow. With `gradle/gradle-daemon-jvm.properties` that JDK is the criteria JDK:
+ *   Gradle starts the daemon on it over `JAVA_HOME` and `org.gradle.java.home` (Gradle 9.8,
+ *   measured 2026-10-04), so the project's pin is honoured with no file read.
+ * A consumer's own Java toolchain is not consulted: `fkcSetup*()` applies the Kotlin plugin, so a
+ * toolchain is set after this runs. A toolchain below the derived target fails loudly in the
+ * compiler ("invalid target release"), and setting `jvmTarget` fixes it.
+ * Android ignores this value and keeps AGP's default ([KotlinConfig.jvmTargetExplicit]).
+ */
+private fun FluxoConfigurationExtensionImpl.defaultJvmTarget(project: Project): Int {
+    val target: Int
+    val reason: String
+    if (isApplication) {
+        target = min(JRE_VERSION, KOTLIN_MAX_JVM_TARGET)
+        reason = "application: the newest that JDK $JRE_VERSION running Gradle and " +
+            "Kotlin $KOTLIN_PLUGIN_VERSION_STRING allow"
+    } else {
+        target = LIBRARY_JVM_TARGET
+        reason = "library default, loadable on every JDK Gradle 9 runs on"
+    }
+    ctx.logDecision(
+        project,
+        setting = "jvmTarget",
+        value = target,
+        reason = reason,
+        howToChange = "set jvmTarget in fkcSetup* or the version catalog",
+    )
+    return target
+}
+
+/** See [defaultJvmTarget]. */
+private const val LIBRARY_JVM_TARGET = JRE_17

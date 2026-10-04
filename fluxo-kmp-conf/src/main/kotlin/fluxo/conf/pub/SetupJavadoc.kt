@@ -10,7 +10,6 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.has
 import fluxo.conf.impl.kotlin.JRE_11
 import fluxo.conf.impl.kotlin.asJavaVersion
-import fluxo.conf.impl.kotlin.asJvmTargetVersion
 import fluxo.conf.impl.namedOrNull
 import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.withType
@@ -68,8 +67,7 @@ internal fun vanniktechJavaDocOption(
             /** @see com.vanniktech.maven.publish.javaVersion */
             val kc = conf.kotlinConfig
             val javaInt = kc.jvmTargetInt
-            val jvmTarget = kc.jvmTarget ?: javaInt.asJvmTargetVersion()
-            val javaVersion = jvmTarget.asJavaVersion()
+            val javaVersion = kc.jvmTarget.asJavaVersion()
 
             if (javaVersion.isJava9Compatible) {
                 options.addBooleanOption("html5", true)

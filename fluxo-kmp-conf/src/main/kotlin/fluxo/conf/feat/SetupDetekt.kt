@@ -164,7 +164,7 @@ internal fun Project.setupDetekt(
     val baselineTasks = tasks.withType<DetektCreateBaselineTask> {
         // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
 
-        kc.jvmTarget?.let { jvmTarget = clampJvmTargetForDetekt(it, logger, firstInBuild) }
+        jvmTarget = clampJvmTargetForDetekt(kc.jvmTarget, logger, firstInBuild)
 
         val (lang) = kc.langAndApiVersions(isTest = false)
         lang?.let {
@@ -197,7 +197,7 @@ internal fun Project.setupDetekt(
             }
         } else {
             // FIXME: Use kotlin settings directly from the linked kotlin compilation task?
-            kc.jvmTarget?.let { jvmTarget = clampJvmTargetForDetekt(it, logger, firstInBuild) }
+            jvmTarget = clampJvmTargetForDetekt(kc.jvmTarget, logger, firstInBuild)
 
             val (lang) = kc.langAndApiVersions(isTest = false)
             lang?.let {

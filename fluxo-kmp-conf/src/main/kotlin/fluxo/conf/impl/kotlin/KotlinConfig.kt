@@ -19,8 +19,11 @@ internal class KotlinConfig(
     val tests: KotlinLangVersion?,
     val coreLibs: String,
 
-    val jvmTarget: String?,
+    /** Explicit, or derived when unset (see `defaultJvmTarget`). */
+    val jvmTarget: String,
     val jvmTargetInt: Int,
+    /** `false` when [jvmTarget] was derived: Android then keeps AGP's own default (R10). */
+    val jvmTargetExplicit: Boolean,
     val jvmTestTarget: String?,
     val jvmToolchain: Boolean,
     val useJdkRelease: Boolean,
@@ -60,10 +63,14 @@ internal class KotlinConfig(
 
     fun jvmTargetVersion(
         isTest: Boolean,
+        isAndroid: Boolean,
         latestSettings: Boolean = false,
     ): String? {
+        if (isAndroid && !jvmTargetExplicit) {
+            return null
+        }
         if (latestSettings) {
-            return lastSupportedJvmTargetVersion(jvmToolchain)
+            return lastSupportedJvmMajorVersion(jvmToolchain).asJvmTargetVersion()
         }
         if (isTest) {
             jvmTestTarget?.let { return it }

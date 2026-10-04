@@ -88,7 +88,7 @@ internal fun Project.registerShrinkerTask(
     callFallbackOrder.set(settings.callFallbackOrder)
 
     (conf.androidMinSdk as? Int)?.let { androidMinSdk.set(it) }
-    conf.kotlinConfig.jvmTarget?.let { jvmTarget.set(it) }
+    jvmTarget.set(conf.kotlinConfig.jvmTarget)
 
     mainClasses.set(mainClassesProvider)
 

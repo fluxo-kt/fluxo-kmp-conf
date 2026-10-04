@@ -337,15 +337,15 @@ private fun KotlinProjectExtension.setupTargets(
         val isTest = isExperimentalTest || isTestRelated()
 
         val kc = conf.kotlinConfig
-        val jvmTargetVersion = kc.jvmTargetVersion(
-            isTest = isTest,
-            latestSettings = isExperimentalTest,
-        )
-        jvmTargetVersion?.let { setupJvmCompatibility(it) }
-
         val ctx = conf.ctx
         val platformType = target.platformType
         val isAndroid = platformType.let { KotlinPlatformType.androidJvm === it }
+        val jvmTargetVersion = kc.jvmTargetVersion(
+            isTest = isTest,
+            isAndroid = isAndroid,
+            latestSettings = isExperimentalTest,
+        )
+        jvmTargetVersion?.let { setupJvmCompatibility(it) }
         val isJsOrWasm = !isAndroid && platformType
             .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
 
