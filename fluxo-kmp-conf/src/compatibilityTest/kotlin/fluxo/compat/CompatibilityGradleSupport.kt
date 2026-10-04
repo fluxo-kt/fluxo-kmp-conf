@@ -129,8 +129,15 @@ internal fun runConsumerCase(
     result.assertNoOwnDeprecations()
     assertFalse(result.output.containsAny(FORBIDDEN_OUTPUT_SIGNATURES), result.output)
     if (expectFailure.isNotEmpty()) {
-        expectFailure.forEach {
-            check(it in result.output) { "Expected '$it' in:\n${result.output}" }
+        // A failure without the expected text is a third outcome, not the expected one: usually
+        // the case's own setup broke. Lead with Gradle's cause, so a reader of the first lines
+        // cannot take it for the reproduced defect.
+        val missing = expectFailure.filter { it !in result.output }
+        check(missing.isEmpty()) {
+            val cause = result.output.substringAfter("* What went wrong:", "(none printed)")
+                .substringBefore("* Try:").trim()
+            "Build failed for a different reason than expected (missing $missing). Cause:\n" +
+                cause + "\n\nFull output:\n" + result.output
         }
         return result
     }
