@@ -53,6 +53,7 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     runToolInjectionCase(row, tempDir)
     runBundledToolVersionCase(row, tempDir)
     runDetektTypeResolutionCase(row, tempDir)
+    runTaskInfoCase(row, tempDir)
 }
 
 /**
@@ -81,6 +82,29 @@ private fun runFetchedToolCase(row: Map<String, String>, tempDir: Path) {
             "Configuration cache must be $run:\n$output"
         }
     }
+}
+
+/**
+ * taskinfo's newest release reads a Gradle-internal method signature that Gradle 9.8 dropped
+ * (`NoSuchMethodError` in `tiTree`). Where it is gone fluxo skips the tool and says why; where it
+ * exists (the 9.0 floor) `tiTree` must still work, so the probe can't over-skip.
+ */
+private fun runTaskInfoCase(row: Map<String, String>, tempDir: Path) {
+    val supported = row.getValue("gradleVersion").startsWith("9.0")
+    val result = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kotlin-jvm-taskinfo",
+        projectDir = tempDir.resolve(row.getValue("id") + "-taskinfo"),
+        tasks = listOf("tiTree", "help"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+        expectFailure = if (supported) emptyList() else listOf("Gradle changed the internal API"),
+        assertTasksSucceed = false,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
+        writeKotlinJvmSources(projectDir)
+    }
+    if (supported) result.assertTaskSuccess(":tiTree")
 }
 
 /**
