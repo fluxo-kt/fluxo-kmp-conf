@@ -25,9 +25,9 @@ internal fun Project.setupBinaryCompatibilityValidatorTs(
     logger.l("Setup Fluxo TS-based BinaryCompatibilityValidator for JS")
     ctx.loadAndApplyPluginIfNotApplied(
         id = FLUXO_BCV_TS_PLUGIN_ID,
-        className = FLUXO_BCV_TS_PLUGIN_CLASS_NAME,
         catalogPluginIds = CATALOG_PLUGIN_IDS,
         catalogVersionIds = CATALOG_PLUGIN_IDS,
+        fetchWithGradle = true,
         project = this,
     )
 }
@@ -39,6 +39,4 @@ private val CATALOG_PLUGIN_IDS = arrayOf(
     "fluxo-bcv-ts",
 )
 
-/** @see fluxo.bcvjs.FluxoBcvJsPlugin */
-private const val FLUXO_BCV_TS_PLUGIN_CLASS_NAME = "fluxo.bcvts.FluxoBcvTsPlugin"
 private const val FLUXO_BCV_TS_PLUGIN_ID = "io.github.fluxo-kt.binary-compatibility-validator-js"

@@ -17,15 +17,12 @@ internal fun FluxoKmpConfContext.prepareModuleDependencyGraphPlugin() {
         )
         loadAndApplyPluginIfNotApplied(
             id = MODULE_DEPENDENCY_GRAPH_PLUGIN_ID,
-            className = MODULE_DEPENDENCY_GRAPH_CLASS_NAME,
             version = MODULE_DEPENDENCY_GRAPH_PLUGIN_VERSION,
             catalogPluginId = MODULE_DEPENDENCY_GRAPH_PLUGIN_ALIAS,
+            fetchWithGradle = true,
         )
     }
 }
 
 private const val MODULE_DEPENDENCY_GRAPH_TASK_NAME = "graphModules"
 
-/** @see com.savvasdalkitsis.module.deps.graph.ModuleDependencyGraphPlugin */
-private const val MODULE_DEPENDENCY_GRAPH_CLASS_NAME =
-    "com.savvasdalkitsis.module.deps.graph.ModuleDependencyGraphPlugin"

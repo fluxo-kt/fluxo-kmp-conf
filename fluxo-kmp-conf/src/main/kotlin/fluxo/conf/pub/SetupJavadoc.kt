@@ -95,6 +95,7 @@ private fun FluxoKmpConfContext.loadAndApplyDokkaIfNotApplied(project: Project):
             id = BuildConstants.DOKKA_PLUGIN_ID,
             version = BuildConstants.DOKKA_PLUGIN_VERSION,
             catalogPluginId = BuildConstants.DOKKA_PLUGIN_ALIAS,
+            fetchWithGradle = true,
             project = project,
         )
         if (result.applied) {

@@ -15,14 +15,12 @@ internal fun FluxoKmpConfContext.prepareTaskTreePlugin() {
         rootProject.logger.l("prepareTaskTreePlugin, register :$TASK_TREE_TASK_NAME task")
         loadAndApplyPluginIfNotApplied(
             id = TASK_TREE_PLUGIN_ID,
-            className = TASK_TREE_CLASS_NAME,
             version = TASK_TREE_PLUGIN_VERSION,
             catalogPluginId = TASK_TREE_PLUGIN_ALIAS,
+            fetchWithGradle = true,
         )
     }
 }
 
 private const val TASK_TREE_TASK_NAME = TaskTreePlugin.TASK_TREE_TASK_NAME
 
-/** @see com.dorongold.gradle.tasktree.TaskTreePlugin */
-private const val TASK_TREE_CLASS_NAME = "com.dorongold.gradle.tasktree.TaskTreePlugin"

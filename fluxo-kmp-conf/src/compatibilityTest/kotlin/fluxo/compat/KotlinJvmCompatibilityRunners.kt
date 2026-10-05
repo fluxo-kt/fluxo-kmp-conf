@@ -49,6 +49,35 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     runDeprecatedLanguageVersionCase(row, tempDir)
     runKotlinJvmTargetCases(row, tempDir)
     runRootClasspathPinCase(row, tempDir)
+    runFetchedToolCase(row, tempDir)
+}
+
+/**
+ * An optional tool the consumer didn't declare (here task-tree, requested by its task name) is
+ * fetched by fluxo. Loaded into fluxo's own class loader, its tasks broke the configuration cache
+ * ("could not be encoded"); Gradle must fetch it, so the cache stores the build and reuses it.
+ */
+private fun runFetchedToolCase(row: Map<String, String>, tempDir: Path) {
+    for (run in listOf("stored", "reused")) {
+        val result = runConsumerCase(
+            row,
+            tempDir,
+            rootProjectName = "compat-kotlin-jvm-fetched-tool",
+            projectDir = tempDir.resolve(row.getValue("id") + "-fetched-tool"),
+            tasks = listOf("help", "taskTree"),
+            forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+            // taskTree skips every other requested task by design.
+            assertTasksSucceed = false,
+        ) { projectDir ->
+            projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
+            writeKotlinJvmSources(projectDir)
+        }
+        val output = result.output
+        result.assertTaskSuccess(":taskTree")
+        check((run == "reused") == (CONFIGURATION_CACHE_REUSED in output)) {
+            "Configuration cache must be $run:\n$output"
+        }
+    }
 }
 
 /**

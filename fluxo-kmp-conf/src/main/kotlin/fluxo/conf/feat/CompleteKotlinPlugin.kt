@@ -32,9 +32,9 @@ internal fun FluxoKmpConfContext.prepareCompleteKotlinPlugin() {
         val pluginId = COMPLETE_KOTLIN_PLUGIN_ID
         val result = loadAndApplyPluginIfNotApplied(
             id = pluginId,
-            className = COMPLETE_KOTLIN_CLASS_NAME,
             version = COMPLETE_KOTLIN_PLUGIN_VERSION,
             catalogPluginId = COMPLETE_KOTLIN_PLUGIN_ALIAS,
+            fetchWithGradle = true,
         )
         if (result.applied) {
             val flag = LOAD_KMM_CODE_COMPLETION_FLAG
@@ -55,7 +55,5 @@ internal fun FluxoKmpConfContext.prepareCompleteKotlinPlugin() {
     }
 }
 
-/** @see com.louiscad.complete_kotlin.CompleteKotlinPlugin */
-private const val COMPLETE_KOTLIN_CLASS_NAME = "com.louiscad.complete_kotlin.CompleteKotlinPlugin"
 
 internal const val LOAD_KMM_CODE_COMPLETION_FLAG = "LOAD_KMM_CODE_COMPLETION"
