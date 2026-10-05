@@ -28,7 +28,7 @@ internal val Project.mppExt: KotlinMultiplatformExtension
     get() = mppExtOrNull ?: error("Could not find KotlinMultiplatformExtension ($project)")
 
 internal val Project.mppExtOrNull: KotlinMultiplatformExtension?
-    get() = kotlinExtension as KotlinMultiplatformExtension?
+    get() = kotlinExtension as? KotlinMultiplatformExtension
 
 internal val Project.javaSourceSets: SourceSetContainer
     get() = the<JavaPluginExtension>().sourceSets
