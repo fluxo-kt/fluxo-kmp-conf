@@ -2,6 +2,7 @@ package fluxo.compat
 
 import java.nio.file.Path
 import kotlin.io.path.writeText
+import org.gradle.testkit.runner.TaskOutcome
 
 internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
     runConsumerCase(
@@ -20,6 +21,33 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
     if (row.getValue("kotlinLangVersion") == "-") {
         runKmpAllTargetsCase(row, tempDir)
         runKmpAllTargetsCase(row + ("kgpVersion" to NEXT_KOTLIN), tempDir)
+        runKmpWasiFilterCase(row, tempDir)
+    }
+}
+
+/**
+ * `KMP_TARGETS=WASM_WASI` must keep the WASI target enabled: fluxo disables every target outside
+ * the filter, so a WASI target classified as Wasm-JS would disable the very target asked for.
+ * The project has no sources: an enabled compile reports NO-SOURCE, a disabled one SKIPPED.
+ */
+private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
+    val task = ":compileKotlinWasmWasi"
+    val kgp = row.getValue("kgpVersion")
+    val result = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kmp-all-targets-consumer",
+        projectDir = tempDir.resolve("${row.getValue("id")}-all-targets-$kgp"),
+        tasks = listOf(task.removePrefix(":")),
+        arguments = listOf("-PKMP_TARGETS=WASM_WASI"),
+        assertTasksSucceed = false,
+    ) { projectDir ->
+        // WASI is not among the default targets: consumers declare it.
+        projectDir.resolve("build.gradle.kts")
+            .writeText(markerKmpAllTargetsBuildScript(row, extraTargets = "; wasmWasi()"))
+    }
+    check(result.task(task)?.outcome == TaskOutcome.NO_SOURCE) {
+        "KMP_TARGETS=WASM_WASI: $task was ${result.task(task)?.outcome}\n${result.output}"
     }
 }
 

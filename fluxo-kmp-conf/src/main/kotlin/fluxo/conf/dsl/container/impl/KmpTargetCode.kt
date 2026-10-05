@@ -121,15 +121,9 @@ internal enum class KmpTargetCode {
                 KotlinPlatformType.androidJvm -> ANDROID
                 KotlinPlatformType.js -> JS
 
-                KotlinPlatformType.wasm -> {
-                    try {
-                        // Kotlin 1.9.20+
-                        if (target is KotlinWasmWasiTargetDsl) {
-                            WASM_WASI
-                        }
-                    } catch (_: Throwable) {
-                    }
-                    WASM_JS
+                KotlinPlatformType.wasm -> when (target) {
+                    is KotlinWasmWasiTargetDsl -> WASM_WASI
+                    else -> WASM_JS
                 }
 
                 KotlinPlatformType.native -> {

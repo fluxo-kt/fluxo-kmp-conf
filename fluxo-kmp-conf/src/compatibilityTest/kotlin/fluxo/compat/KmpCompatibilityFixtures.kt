@@ -131,7 +131,10 @@ internal fun writeKmpSources(projectDir: Path) {
  * `allDefaultTargets()` with every target enabled. Prints the created targets and those of them
  * the consumer's own Kotlin deprecates, so the case needs no target list of its own.
  */
-internal fun markerKmpAllTargetsBuildScript(row: Map<String, String>): String =
+internal fun markerKmpAllTargetsBuildScript(
+    row: Map<String, String>,
+    extraTargets: String = "",
+): String =
     """
     plugins {
         id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
@@ -145,7 +148,7 @@ internal fun markerKmpAllTargetsBuildScript(row: Map<String, String>): String =
             enableGradleDoctor = false
             setupCoroutines = false
         },
-        kmp = { allDefaultTargets() },
+        kmp = { allDefaultTargets()$extraTargets },
     )
 
     gradle.projectsEvaluated {
