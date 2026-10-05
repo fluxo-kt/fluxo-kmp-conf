@@ -9,6 +9,7 @@ import fluxo.log.d
 import fluxo.log.l
 import fluxo.log.v
 import fluxo.vc.b
+import java.math.BigInteger
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ModuleIdentifier
@@ -48,22 +49,60 @@ internal fun FluxoKmpConfContext.prepareDependencyPinningBundle() {
         return
     }
 
-    pinDependencies(pinnedDeps, project = p)
+    // Gradle resolves and loads the root build-script classpath before any plugin applies, so a
+    // pin registered there now changes no loaded class; it only made later re-resolutions
+    // (`buildEnvironment`, dependency-guard's classpath report) show versions that never ran.
+    // The root's mismatches are reported with the fix instead. Subprojects resolve their
+    // build-script classpath after this point, so their pins work.
+    reportUnpinnableRootClasspath(pinnedDeps, root = p)
+    pinDependencies(pinnedDeps, project = p, buildscript = false)
     p.subprojects {
-        pinDependencies(pinnedDeps, project = this)
+        pinDependencies(pinnedDeps, project = this, buildscript = true)
     }
 }
 
 private fun pinDependencies(
     pinnedDeps: PinnedDeps,
     project: Project,
+    buildscript: Boolean,
 ) {
-    project.buildscript.configurations.configureEach {
-        pinDependencies(pinnedDeps, project, conf = this)
+    if (buildscript) {
+        project.buildscript.configurations.configureEach {
+            pinDependencies(pinnedDeps, project, conf = this)
+        }
     }
     project.configurations.configureEach {
         pinDependencies(pinnedDeps, project, conf = this)
     }
+}
+
+/**
+ * One build-end warning listing every pinned module the root build classpath holds at an OLDER
+ * version, each as the `buildscript` constraint line that applies before resolution. Pins are
+ * mostly security minimums, so an older jar is the risk; a constraint only raises a version (the
+ * highest wins), so it fixes exactly that case, while a newer jar already in use needs no action.
+ * Reads the classpath Gradle already resolved for the root build script, so it costs no resolution.
+ */
+private fun FluxoKmpConfContext.reportUnpinnableRootClasspath(
+    pinnedDeps: PinnedDeps,
+    root: Project,
+) {
+    val classpath = root.buildscript.configurations.findByName(CLASSPATH) ?: return
+    classpath.incoming.resolutionResult.allComponents.asSequence()
+        .mapNotNull { it.moduleVersion }
+        .mapNotNull { m ->
+            val pinned = pinnedDeps[m.module]?.first
+            if (pinned != null && isOlder(m.version, pinned)) m to pinned else null
+        }
+        .forEach { (module, pinned) ->
+            val line = "classpath(\"${module.module}:$pinned\") // in use: ${module.version}"
+            buildEndReport.warnAggregated(UNPINNABLE_ROOT_CLASSPATH, line) { lines ->
+                "Pinned versions can't change the root build classpath: Gradle loads it before " +
+                    "any plugin runs, so these modules run at older versions. Add to the root " +
+                    "build.gradle.kts:\nbuildscript { dependencies { constraints {\n    " +
+                    lines.joinToString("\n    ") + "\n} } }"
+            }
+        }
 }
 
 private fun pinDependencies(
@@ -108,7 +147,24 @@ private fun FluxoKmpConfContext.collectPinnedDependencies(
     }
 }
 
+/** Compares the numeric parts in order ("1.80.2" < "1.86", "33.4.0-jre" < "33.7.2-jre"). */
+private fun isOlder(version: String, than: String): Boolean {
+    val a = version.split(NON_DIGITS).filter { it.isNotEmpty() }.map { it.toBigInteger() }
+    val b = than.split(NON_DIGITS).filter { it.isNotEmpty() }.map { it.toBigInteger() }
+    for (i in 0 until maxOf(a.size, b.size)) {
+        val c = (a.getOrNull(i) ?: BigInteger.ZERO).compareTo(b.getOrNull(i) ?: BigInteger.ZERO)
+        if (c != 0) return c < 0
+    }
+    return false
+}
+
+private val NON_DIGITS = Regex("[^0-9]+")
+
 private const val DEBUG_PINS = false
+
+private const val CLASSPATH = "classpath"
+
+private const val UNPINNABLE_ROOT_CLASSPATH = "unpinnable-root-classpath"
 
 private const val ALIAS = VC_PINNED_BUNDLE_ALIAS
 

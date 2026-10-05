@@ -48,6 +48,44 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
 
     runDeprecatedLanguageVersionCase(row, tempDir)
     runKotlinJvmTargetCases(row, tempDir)
+    runRootClasspathPinCase(row, tempDir)
+}
+
+/**
+ * A `pinned` catalog bundle can't change the root build classpath: Gradle loads it before any
+ * plugin runs. Pinning it anyway only made `buildEnvironment` show versions that never ran (a
+ * security pin reported as applied while the old jar was in use). The build must instead name
+ * each module in use at an older version with the constraint line that does apply. okio is on
+ * the root classpath (3.6.0) through fluxo's bundled Spotless; the pin is newer.
+ */
+private fun runRootClasspathPinCase(row: Map<String, String>, tempDir: Path) {
+    val pin = "com.squareup.okio:okio:3.18.2"
+    val output = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kotlin-jvm-pins",
+        projectDir = tempDir.resolve(row.getValue("id") + "-pins"),
+        tasks = listOf("buildEnvironment"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
+        writeKotlinJvmSources(projectDir)
+        projectDir.resolve("settings.gradle.kts").toFile().appendText(
+            """
+
+            dependencyResolutionManagement {
+                versionCatalogs {
+                    create("libs") {
+                        library("okio", "$pin")
+                        bundle("pinned", listOf("okio"))
+                    }
+                }
+            }
+            """.trimIndent(),
+        )
+    }.output
+    check("classpath(\"$pin\") // in use: " in output) { "No root pin warning:\n$output" }
+    check("-> 3.18.2" !in output) { "buildEnvironment shows a pin that never loaded:\n$output" }
 }
 
 /**
