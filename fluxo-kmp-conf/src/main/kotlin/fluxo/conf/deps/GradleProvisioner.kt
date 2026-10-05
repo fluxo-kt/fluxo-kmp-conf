@@ -13,16 +13,6 @@ internal object GradleProvisioner {
         return forConfigurationContainer(project, project.configurations, project.dependencies)
     }
 
-    fun forRootProjectBuildscript(project: Project): Provisioner {
-        val rootProject = project.rootProject
-        val buildscript = rootProject.buildscript
-        return forConfigurationContainer(
-            rootProject,
-            buildscript.configurations,
-            buildscript.dependencies,
-        )
-    }
-
     private fun forConfigurationContainer(
         project: Project,
         configurations: ConfigurationContainer,
@@ -72,31 +62,6 @@ internal object GradleProvisioner {
         }
     }
 
-    internal enum class Policy {
-        INDEPENDENT,
-        ROOT_PROJECT,
-        ROOT_BUILDSCRIPT,
-        ;
-
-        fun dedupingProvisioner(project: Project): DedupingProvisioner {
-            return when (this) {
-                ROOT_PROJECT -> DedupingProvisioner(
-                    forProject(
-                        project,
-                    ),
-                )
-
-                ROOT_BUILDSCRIPT -> DedupingProvisioner(
-                    forRootProjectBuildscript(
-                        project,
-                    ),
-                )
-
-                else -> throw UnsupportedOperationException(name)
-            }
-        }
-    }
-
     internal class DedupingProvisioner(private val provisioner: Provisioner) : Provisioner {
         private val cache: MutableMap<Request, Set<File>> = HashMap()
 
@@ -121,17 +86,6 @@ internal object GradleProvisioner {
                 return r
             }
         }
-
-        /** A child [Provisioner] which retries cached elements only.  */
-        val cachedOnly =
-            Provisioner { withTransitives: Boolean, mavenCoordinates: Collection<String> ->
-                val req = Request(withTransitives, mavenCoordinates)
-                synchronized(cache) { cache[req] }
-                    ?: throw GradleException(
-                        "Add a step with ${req.mavenCoords} into the " +
-                            "`spotlessPredeclare` block in the root project.",
-                    )
-            }
     }
 
     /** Models a request to the provisioner.  */

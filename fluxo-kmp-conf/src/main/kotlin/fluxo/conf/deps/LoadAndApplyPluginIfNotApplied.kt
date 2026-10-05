@@ -38,15 +38,16 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
         return ApplyPluginResult.TRUE
     }
 
+    // Only "not on the classpath" falls through to loading it. A plugin that is found but whose
+    // own apply throws (e.g. Compose Multiplatform rejecting the consumer's Kotlin) is a real
+    // failure: every call here is a feature the consumer turned on, and continuing without the
+    // plugin turns a red build green with the feature missing.
     try {
         pluginManager.apply(id)
         logger.d("Plugin '$id' is applied dynamically by id in '${project.path}'")
         return ApplyPluginResult.TRUE
-    } catch (e: Throwable) {
-        @Suppress("InstanceOfCheckForException")
-        if (e !is UnknownPluginException) {
-            logger.e("Failed to apply plugin '$id' in '${project.path}': $e", e)
-        } else if (onBuildClasspath) {
+    } catch (_: UnknownPluginException) {
+        if (onBuildClasspath) {
             missingFromBuildClasspath(project, id, version)
         }
     }

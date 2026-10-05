@@ -49,6 +49,7 @@
 - The merged Lint report (`lint-merged.sarif`) pointed findings from all but the first module at the wrong rule; code-scanning uploads showed wrong rule names.
 - One `MAX_DEBUG`/`FLUXO_VERBOSE` build made every later build in the same Gradle daemon verbose, and once-per-build warnings appeared only once per daemon.
 - The `LOAD_KMM_CODE_COMPLETION` reminder was lost on configuration-cache hits.
+- When a plugin fluxo applies (the Kotlin plugin, kapt, KSP, publication tools) failed inside its own setup, fluxo printed an error line and the build went on without it, often green with the feature missing; the build now fails with the plugin's error. Example: Compose Multiplatform 1.11+ on Kotlin 2.1 ("Minimal supported Kotlin Gradle Plugin version is 2.2.0") configured a KMP module with no Kotlin plugin applied.
 - Detekt tasks of KMP targets with a custom name (e.g. `jvm("desktop")`) were disabled with an error line and never ran; only targets removed by `KMP_TARGETS` now disable their Detekt tasks.
 - `detektBaselineMerge` trimmed whitespace from baseline IDs, so findings whose ID ends in a space (ktlint `Indentation`) stayed reported however often the baseline was regenerated.
 - Gradle-plugin modules loaded the sam-with-receiver Gradle plugin at fluxo's own Kotlin version instead of yours.
