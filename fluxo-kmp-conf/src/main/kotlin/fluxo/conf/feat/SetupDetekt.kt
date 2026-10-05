@@ -14,7 +14,7 @@ import fluxo.conf.impl.kotlin.mppExtOrNull
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.withType
-import fluxo.log.e
+import fluxo.log.d
 import fluxo.log.l
 import fluxo.vc.onLibrary
 import io.github.detekt.gradle.DetektKotlinCompilerPlugin
@@ -199,7 +199,9 @@ internal fun Project.setupDetekt(
                     testsAreDisabled -> "tests are disabled"
                     else -> "platform ${taskPlatform()} is disabled"
                 }
-                logger.e("Unexpected Detekt task {}, disabling as $reason", path)
+                // Expected whenever `KMP_TARGETS` filters out a target Detekt still sees,
+                // so it is no warning: the consumer has nothing to fix.
+                logger.d("Detekt task {} disabled: $reason", path)
                 disableTask()
             }
         } else {
@@ -235,8 +237,17 @@ internal fun Project.setupDetekt(
             .configureEach { dependsOn(detektAll) }
 
         context.mergeDetektTask?.configure {
-            dependsOn(detektTasks)
-            input.from(detektTasks.map { it.sarifReportFile })
+            // Only tasks that write a SARIF report: Detekt's report property is empty when the
+            // report is off (tasks disabled for a `KMP_TARGETS`-filtered target, or a consumer's
+            // `sarif.required = false`), and an empty one fails `check` while Gradle builds
+            // the task graph.
+            for (task in detektTasks) {
+                val sarif = task.sarifReportFile
+                if (sarif.isPresent) {
+                    dependsOn(task)
+                    input.from(sarif)
+                }
+            }
         }
 
         context.libs.run {

@@ -2,6 +2,7 @@ package fluxo.compat
 
 import java.nio.file.Path
 import kotlin.io.path.writeText
+import org.gradle.testkit.runner.TaskOutcome
 
 private val ANDROID_NOISE = DETEKT_CLASSIFICATION_NOISE + ANDROID_LINT_VERSION_NOISE
 
@@ -21,6 +22,36 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     check("Android namespace 'compat.agp9.kmp' (KMP+Android)" in result.output) {
         result.output
     }
+    if (row.isExecutionFixture()) runAgp9KmpAndroidFilteredOutCase(row, tempDir)
+}
+
+/**
+ * A per-platform CI job (`KMP_TARGETS=JVM`) on a consumer that applies AGP 9's KMP plugin
+ * itself, so the `android` target exists but is filtered out. The root report merges must still
+ * build their task graph: Detekt's failed on the disabled Android task's empty report, and Lint
+ * is off here. The target, created outside fluxo's containers, must be disabled in every build
+ * (it once was only in verbose ones). Real sources make an enabled compile report SUCCESS.
+ */
+private fun runAgp9KmpAndroidFilteredOutCase(row: Map<String, String>, tempDir: Path) {
+    val compile = ":compileAndroidMain"
+    val merges = listOf(":mergeDetektSarif", ":mergeLintSarif")
+    val result = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-agp9-kmp-consumer",
+        tasks = (merges + compile).map { it.removePrefix(":") },
+        arguments = listOf("-PKMP_TARGETS=JVM"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
+        assertTasksSucceed = false,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts")
+            .writeText(markerAgp9KmpBuildScript(row, consumerAppliesAgp = true))
+        writeAndroidKmpSources(projectDir)
+    }
+    check(result.task(compile)?.outcome == TaskOutcome.SKIPPED) {
+        "KMP_TARGETS=JVM left $compile enabled: ${result.task(compile)?.outcome}\n${result.output}"
+    }
+    merges.forEach { result.assertTaskSuccess(it) }
 }
 
 internal fun runAgp9KmpAppUnsupportedConsumer(row: Map<String, String>, tempDir: Path) {
@@ -100,8 +131,11 @@ internal fun runAndroidLibraryNewApiFailsCheck(row: Map<String, String>, tempDir
         } else {
             ""
         }
+        // An ignored variant disables that variant's Lint tasks; the root report merge must
+        // still build its task graph and keep the other variant's findings.
         second.resolve("build.gradle.kts").writeText(
-            kotlinAndroid + "fkcSetupAndroidLibrary(namespace = \"compat.second\")\n",
+            kotlinAndroid + "fkcSetupAndroidLibrary(namespace = \"compat.second\", " +
+                "config = { noVerificationBuildTypes = listOf(\"release\") })\n",
         )
     }
 }

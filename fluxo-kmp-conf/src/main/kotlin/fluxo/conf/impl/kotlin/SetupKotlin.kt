@@ -36,6 +36,7 @@ import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.uncheckedCast
 import fluxo.conf.pub.setupGradlePublishPlugin
 import fluxo.log.SHOW_DEBUG_LOGS
+import fluxo.log.d
 import fluxo.log.e
 import fluxo.log.l
 import fluxo.log.v
@@ -411,10 +412,9 @@ private fun KotlinProjectExtension.setupTargets(
     //  it will fail due to the wrong phase.
     setupExperimentalLatestCompilation(conf, isMultiplatform = isMultiplatform)
 
-    // Verify that all unneeded targets are disabled.
-    if (SHOW_DEBUG_LOGS) {
-        checkForDisabledTarget(conf)
-    }
+    // Targets fluxo didn't create (AGP 9's KMP plugin creates `android` itself; consumers may
+    // declare targets directly) must honour `KMP_TARGETS` too, in every build, not only verbose.
+    disableIfFilteredOut(conf)
 }
 
 private fun KotlinProjectExtension.setupTargets(action: Action<in KotlinTarget>) {
@@ -425,7 +425,7 @@ private fun KotlinProjectExtension.setupTargets(action: Action<in KotlinTarget>)
 }
 
 
-private fun KotlinTarget.checkForDisabledTarget(conf: FluxoConfigurationExtensionImpl) {
+private fun KotlinTarget.disableIfFilteredOut(conf: FluxoConfigurationExtensionImpl) {
     val target = this
     val project = conf.project
     val logger = project.logger
@@ -434,7 +434,7 @@ private fun KotlinTarget.checkForDisabledTarget(conf: FluxoConfigurationExtensio
         return
     }
 
-    logger.e("Unexpected target {}, disabling", target)
+    logger.d("Target '{}' is not in KMP_TARGETS, disabling its compilations", target.name)
     disableCompilations()
     if (platformType != KotlinPlatformType.js) {
         return

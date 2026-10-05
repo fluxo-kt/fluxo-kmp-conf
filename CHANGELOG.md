@@ -28,6 +28,8 @@
 - `JsTarget.compilerType` and `js(compiler = …)`: Kotlin deprecates `KotlinJsCompilerType` (IR is the only compiler) and schedules it for removal in Kotlin 2.6. Use `js(targetName, configure)`.
 
 ### Fixed
+- A `KMP_TARGETS` filter made `check` fail before any task ran ("Could not determine the dependencies of task ':mergeDetektSarif'") when a filtered-out target still existed, such as the Android target AGP 9's KMP plugin creates.
+- `KMP_TARGETS` disabled targets fluxo didn't create (AGP 9's `android`, targets declared directly in `kotlin {}`) only in verbose builds, so a filtered build still compiled them; in verbose builds it also disabled `wasmWasi` when asked for `WASM_WASI`, and printed an error line for each target it disabled.
 - `fkcSetupGradlePlugin` dropped the requested plugin ID on Gradle 9.4+ and declared the plugin under its bare name, so composite builds failed with "plugin not found in included builds".
 - KMP modules requesting the Android target with no Android Gradle plugin on the build classpath failed configuration with a bare `NullPointerException` (or `IllegalStateException`) instead of printing how to add AGP.
 - On AGP 9's KMP plugin, `check` ran no Android Lint at all: AGP creates those Lint tasks only with `com.android.lint` applied, which fluxo now does.

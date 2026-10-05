@@ -69,8 +69,13 @@ private fun bcvPluginDeclaration(row: Map<String, String>): String =
 // config, and the `assertAgp9KmpShape` verification task read as one coherent consumer script.
 // Splitting across helpers would force a reader to reassemble the script from pieces — worse than
 // the length. Consistent with the codebase's @Suppress("LongMethod") on string-builder methods.
+// `consumerAppliesAgp`: the consumer applies AGP 9's KMP plugin itself (AGP's documented setup),
+// so AGP creates the `android` target even when `KMP_TARGETS` filters Android out.
 @Suppress("LongMethod")
-internal fun markerAgp9KmpBuildScript(row: Map<String, String>): String =
+internal fun markerAgp9KmpBuildScript(
+    row: Map<String, String>,
+    consumerAppliesAgp: Boolean = false,
+): String =
     """
     plugins {
         id("org.jetbrains.kotlin.multiplatform") version "${row.getValue(
@@ -78,7 +83,7 @@ internal fun markerAgp9KmpBuildScript(row: Map<String, String>): String =
     )}" apply false
         id("com.android.kotlin.multiplatform.library") version "${row.getValue(
         "agpVersion"
-    )}" apply false${bcvPluginDeclaration(row)}
+    )}"${if (consumerAppliesAgp) "" else " apply false"}${bcvPluginDeclaration(row)}
         id("${pluginId()}") version "${pluginVersion()}"
     }
 
