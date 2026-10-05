@@ -82,25 +82,58 @@ private fun runJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
         // The module sets no target, so the failure must point at the new library default.
         expectFailure = expect + DEFAULTED_TARGET_HINT,
     )
+    runToolchainJdkApiLimitCases(row, tempDir)
+    // The switch-off lifts both limits: the same calls compile at target 17 on JDK 21.
+    runKotlinJvmVariant(
+        row,
+        tempDir,
+        "jdk21",
+        "jvmTarget = \"17\"",
+        "useJdkRelease = false",
+        jdk = JDK_21,
+        source = USES_JDK_21_API,
+        javaSource = USES_JDK_21_API_JAVA,
+        tasks = listOf("compileKotlin") + COMPILE_JAVA,
+    )
+}
+
+/**
+ * A JDK 21 Java toolchain with the build on JDK 17: both compilers' limits follow the compiler
+ * the task uses, never the JDK running Gradle.
+ */
+private fun runToolchainJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
+    // Gradle API form: fluxo applies the Kotlin plugin, so no `kotlin {}` accessor exists here.
+    val toolchain = "configure<JavaPluginExtension> { " +
+        "toolchain.languageVersion.set(JavaLanguageVersion.of($JDK_21)) }"
+    val installations = listOf(
+        "-Porg.gradle.java.installations.paths=" + resolveCompatJdkHome(JDK_21).absolutePath,
+        "-Porg.gradle.java.installations.auto-download=false",
+    )
     val (_, explicitOutput) = runKotlinJvmVariant(
         row,
         tempDir,
         "toolchain21",
         "jvmTarget = \"17\"",
-        // Gradle API form: fluxo applies the Kotlin plugin, so no `kotlin {}` accessor exists here.
-        script = "configure<JavaPluginExtension> { " +
-            "toolchain.languageVersion.set(JavaLanguageVersion.of($JDK_21)) }",
+        script = toolchain,
         source = USES_JDK_21_API,
-        arguments = listOf(
-            "-Porg.gradle.java.installations.paths=" + resolveCompatJdkHome(JDK_21).absolutePath,
-            "-Porg.gradle.java.installations.auto-download=false",
-        ),
-        expectFailure = expect,
+        arguments = installations,
+        expectFailure = listOf(USES_JDK_21_API_ERROR),
     )
     // An explicit target is the consumer's choice, so the same failure gets no hint.
     check(DEFAULTED_TARGET_HINT !in explicitOutput) {
         "Hint printed for an explicit target:\n$explicitOutput"
     }
+    runKotlinJvmVariant(
+        row,
+        tempDir,
+        "toolchain21",
+        "jvmTarget = \"17\"",
+        script = toolchain,
+        javaSource = USES_JDK_21_API_JAVA,
+        tasks = COMPILE_JAVA,
+        arguments = installations,
+        expectFailure = listOf(USES_JDK_21_API_JAVA_ERROR),
+    )
 }
 
 /** Start of the build-end hint for a failure in a module whose JVM target was defaulted. */
