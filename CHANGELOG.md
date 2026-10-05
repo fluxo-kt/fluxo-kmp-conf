@@ -55,7 +55,6 @@
 ## [0.15.1] - 2026-06-23
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - `dependencyGuard` no longer fails configuration under `-Dsplit_targets` when a module has zero guardable configurations (a target-restricted shard can leave none): the plugin is skipped on such modules instead of being applied with an empty config set, which throws "No configurations provided".
 - BCV's `klibApiCheck` is disabled under `-Dsplit_targets`, where the built target set is a strict subset and the union KLib ABI check would always fail; the full-target (non-split) lane still enforces it.
 
@@ -71,7 +70,6 @@
 - The `commonCompileOnly(...)` DSL now applies the dependency to `commonMain` as `implementation` rather than `compileOnly` (so it reaches the runtime classpath). A common `compileOnly` dependency is not propagated to the JS/Wasm/Native platform compile classpaths and breaks their compilation; `implementation` is the only configuration valid for every target. Affects only direct callers of this function.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - API/binary-compatibility validation no longer crashes configuration on `klibApiCheck` (and other unmodelled API-compare tasks) for KMP consumers that enable validation with native targets while JVM or Android is filtered out. Unknown API-compare tasks are skipped instead of throwing.
 - `jvmDefault` is now gated by the consumer's Kotlin Gradle plugin version — the typed `JvmDefaultMode` DSL on KGP ≥ 2.2 and the `-Xjvm-default=all` flag on KGP 2.1 — so consumers on either line no longer hit `NoSuchMethodError` or a silently-ignored setting.
 - Apple-target consumers no longer fail `check` when the requested Xcode simulator runtime is not installed. The affected simulator test tasks are skipped via an `onlyIf` `simctl` availability probe.
@@ -85,7 +83,6 @@
 ## [0.14.1] - 2026-05-17
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - Android/JVM compatibility now follows the effective current-JRE target when `jvmTarget` is left unset. This keeps Java and Android compile compatibility aligned with Kotlin's implicit target and prevents AGP/KGP target-validation failures.
 - KMP modules with every concrete target filtered out no longer emit Kotlin's "no applicable targets" warning as a normal warning. Explicit target-filter skips are reported only at verbose level, so filtered CI builds stay signal-rich.
 - Filtered `check` builds no longer fail when optional local-publication tasks are absent, and KMP check setup no longer assumes JS/Wasm Yarn extensions exist when those targets are filtered out.
@@ -126,7 +123,6 @@
 - `fkcSetupIdeaPlugin`: new `extension: (IntelliJPlatformExtension.() -> Unit)?` parameter for direct IntelliJ Platform extension configuration.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - `JRE_17` internal constant had the value `11` (copy-paste from `JRE_11 = 11`). Two consumer-visible effects: (1) when using `fkcSetupIdeaPlugin`, the plugin's JVM-target floor was enforced at JDK 11 instead of the required JDK 17, silently producing JDK-11-level bytecode in IDE-plugin builds that mandate JDK 17+; (2) the `-Xjdk-release` compiler flag was applied to JVM targets in the range `12..22` (should be `18..22`), meaning consumers requesting JVM target 12–17 received superfluous `-Xjdk-release` arguments that could alter codegen in unexpected ways.
 - the Kotlin → max-JVM-target compatibility table was missing the Kotlin 2.1 (JVM 23) and Kotlin 2.2 (JVM 24) entries. Consumers on Kotlin 2.1+ requesting a JVM target of 23 or 24 were silently capped at JVM 22; they would see no error but the compiled bytecode targeted a lower JVM version than requested.
 - `FluxoPublicationConfig.projectUrl` was never used as the POM URL fallback. `MavenPom.url` is a non-null `Property<String>` — calling `.get()` on an unset property returns `""`, which the `?: config.projectUrl` Elvis arm never reached. Changed to `.orNull` so the three-level fallback (`publicationUrl → existing POM url → projectUrl`) works as documented.
@@ -155,7 +151,6 @@
 ## [0.13.2] - 2024-11-26
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - fix publication config by handling SonatypeHost in the FluxoPublicationConfig dynamically.
 - don't try to setup browser target for Wasm WASI.
 
@@ -174,7 +169,6 @@
 - add JVM compatibility and Kotlin options flags to disable a corresponding autoconfiguration.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 -  pin `kotlin-compiler-embeddable` dependency in support for Kotlin 2.1 ([more details](https://kotlinlang.slack.com/archives/C0KLZSCHF/p1729256644747559?thread_ts=1729151089.194689&cid=C0KLZSCHF))
 
 
@@ -184,7 +178,6 @@
 - allow not setting up `fluxo-kmp-conf` containers and use the default KMP hierarchy instead.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - return support for Kotlin's `-Xjdk-release=18+` in JDK 23+.
 - fix bundled shrinker loading.
 
@@ -224,7 +217,6 @@
 ## [0.12.0] - 2024-06-29
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - fix the broken test-main dependencies in the intermediate KMP source sets.
 
 ### Added
@@ -272,7 +264,6 @@
 - revise the hierarchy of the source sets using both the new `KotlinHierarchyTemplate` and the old way. **Can be a BREAKING CHANGE!**
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - don't apply Android Lint when an old Gradle is used (min supported Gradle is 8.7).
 
 ### Updated
@@ -288,7 +279,6 @@
 - update the list of pinned build-time dependencies.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - fix the dependency pinning logic for buildscript dependencies.
 
 
@@ -331,7 +321,6 @@ _**0.9.0** was skipped due to the release publication issues!_
 - tune Kotlin compilation configuration a bit.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - auto-disable `-Xjdk-release` for the broken configurations (_JRE 18..21_).
 - fix Detekt BaselineProvider loading and restore `detektBaselineMerge` usage.
 
@@ -360,7 +349,6 @@ _You need to replace `setup*` calls to `fkcSetup*` ones like this: <br>
 - unify `setupKotlin` API.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - connect Gmazzo's `BuildConfigTask` to `prepareKotlinBuildScriptModel`.
 - do not use `-Xjdk-release` when compiled against the current JDK version.
 
@@ -393,7 +381,6 @@ _You need to replace `setup*` calls to `fkcSetup*` ones like this: <br>
 - verify shrunken artifacts for all public declarations.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - prevent double escaping of cli arguments.
 - fail build when shrinker fails to save size for release artifact.
 - prevent double calculation of scmTag with GIT commands execution.
@@ -419,7 +406,6 @@ _You need to replace `setup*` calls to `fkcSetup*` ones like this: <br>
 - log R8 compatibility mode (full vs. compat).
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - don't run in-memory shrinking if there is not enough memory available.
 - don't mark the project as in IDE sync mode when no tasks where called and no composite build detected.
 - remove invalid checks for composite mode.
@@ -451,7 +437,6 @@ _You need to replace `setup*` calls to `fkcSetup*` ones like this: <br>
 - support R8 or ProgGuard available in the classpath (bundled) and support loading in the classpath as a more stable alternative to external run in [07af4372](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/07af4372).
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - Fix `TestReportResult` Gradle compatibility in [1923b815](https://github.com/fluxo-kt/fluxo-kmp-conf/commit/1923b815).
 
 ### Changed
@@ -492,7 +477,6 @@ _Important release that adds advanced shrinking functionality!_
 - add minor improvements for `BinaryCompatibilityValidator` configuration safety.
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - move `kotlinConfig` computed property to the project-level configuration extension from the root-level context.
 - remove MemoizedProvider incompatibility with Gradle 8.6, prevent crashes on future usage, but log the errors.
 - correct apiDump/apiCheck tasks dependency and finalize API reports generation with keep rules generation.
@@ -515,7 +499,6 @@ _Important release that adds advanced shrinking functionality!_
 ## [0.5.0] - 2023-12-24
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - correct publication configuration.
 - workaround Gradle 8+ problems with publication.
 - correct the Gradle Versions Plugin setup.
@@ -527,7 +510,6 @@ _Important release that adds advanced shrinking functionality!_
 ## [0.4.0] - 2023-12-20
 
 ### Fixed
-- Optional tools fluxo applies when you didn't declare them (task-tree, module-dependency-graph, Dokka, fluxo-bcv-js, complete-kotlin) are now resolved by Gradle itself, so its repositories, dependency verification and offline mode apply and the configuration cache stores and reuses those builds. Before, fluxo loaded them into its own class loader: without a repository in the root `buildscript {}` they failed to load (`taskTree` did not exist), and plugins that add tasks broke the configuration cache.
 - correct search for non-available extensions, handle more edge-cases overall.
 - correct setup for the Binary Compatibility Validator.
 - configure the Gradle plugin eagerly to avoid issues with composite builds.
