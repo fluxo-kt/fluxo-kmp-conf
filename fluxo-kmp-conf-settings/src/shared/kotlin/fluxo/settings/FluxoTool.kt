@@ -80,9 +80,19 @@ internal fun Project.addFluxoTools(
     val needed = tools.filterNot { onParentClasspath(it.id) }
     if (needed.isEmpty()) return
     val handler = buildscript
-    // A build script without repositories resolves through the settings plugin repositories,
-    // and Gradle forbids adding any when those use `exclusiveContent`.
-    if (handler.repositories.isNotEmpty()) handler.repositories.addMissing(repositories)
+    // Gradle resolves a build script's classpath through its own repositories, or, when it has
+    // none, through the settings plugin repositories, which forbid any build-script repository
+    // when they use `exclusiveContent`. So ours go in only next to the project's own, including
+    // ones its build script declares after this runs.
+    val own = handler.repositories
+    var added = false
+    val addOnce = {
+        if (!added) {
+            added = true
+            own.addMissing(repositories)
+        }
+    }
+    if (own.isNotEmpty()) addOnce() else own.whenObjectAdded { addOnce() }
     for (tool in needed) {
         val dependency = handler.dependencies.add("classpath", tool.marker)
         (dependency as ExternalModuleDependency).version { prefer(tool.version) }
