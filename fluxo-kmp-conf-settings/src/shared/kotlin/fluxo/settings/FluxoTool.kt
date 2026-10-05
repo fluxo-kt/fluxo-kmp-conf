@@ -80,7 +80,9 @@ internal fun Project.addFluxoTools(
     val needed = tools.filterNot { onParentClasspath(it.id) }
     if (needed.isEmpty()) return
     val handler = buildscript
-    handler.repositories.addMissing(repositories)
+    // A build script without repositories resolves through the settings plugin repositories,
+    // and Gradle forbids adding any when those use `exclusiveContent`.
+    if (handler.repositories.isNotEmpty()) handler.repositories.addMissing(repositories)
     for (tool in needed) {
         val dependency = handler.dependencies.add("classpath", tool.marker)
         (dependency as ExternalModuleDependency).version { prefer(tool.version) }
