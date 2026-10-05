@@ -235,6 +235,14 @@ internal fun Project.setupDetekt(
         }
         tasks.namedCompat { it == CHECK_TASK_NAME }
             .configureEach { dependsOn(detektAll) }
+        // In KMP modules Detekt's own `detekt` task has no sources (the code lives in per-target
+        // source sets), so the command people type passed on zero files while `check` failed.
+        // It runs every other Detekt task instead (not `detektAll`, which includes it).
+        if (mppExtOrNull != null) {
+            tasks.namedCompat { it == DetektPlugin.DETEKT_TASK_NAME }.configureEach {
+                dependsOn(detektTasks.matching { it.name != DetektPlugin.DETEKT_TASK_NAME })
+            }
+        }
 
         context.mergeDetektTask?.configure {
             // Only tasks that write a SARIF report: Detekt's report property is empty when the

@@ -26,6 +26,31 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     if (row.isExecutionFixture()) {
         runAgp9KmpAndroidFilteredOutCase(row, tempDir)
         runAgp9KmpSiblingDetektCase(row, tempDir)
+        runKmpPlainDetektCase(row, tempDir)
+    }
+}
+
+/**
+ * Plain `detekt` is what people type. In a KMP module Detekt's own `detekt` task has no sources
+ * (KMP code lives in per-target source sets), so it passed on zero files while `check` failed on
+ * the same code. It must give `check`'s verdict.
+ */
+private fun runKmpPlainDetektCase(row: Map<String, String>, tempDir: Path) {
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kmp-plain-detekt",
+        projectDir = tempDir.resolve(row.getValue("id") + "-plain-detekt"),
+        tasks = listOf("detekt"),
+        arguments = listOf("-PKMP_TARGETS=ANDROID"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
+        expectFailure = listOf("Planted.kt", "[NewLineAtEndOfFile]"),
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(markerAgp9KmpBuildScript(row))
+        writeAndroidKmpSources(projectDir)
+        val common = projectDir.resolve("src/commonMain/kotlin/compat")
+        Files.createDirectories(common)
+        common.resolve("Planted.kt").writeText("package compat\n\nfun planted(): Int = 1")
     }
 }
 
