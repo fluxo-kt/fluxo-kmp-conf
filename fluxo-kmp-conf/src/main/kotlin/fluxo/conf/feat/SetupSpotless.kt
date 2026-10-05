@@ -9,6 +9,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.isRootProject
 import fluxo.log.l
+import fluxo.log.w
 import fluxo.vc.v
 import org.gradle.api.Project
 
@@ -23,8 +24,29 @@ internal fun Project.setupSpotless(
 ) {
     logger.l("setup Spotless")
 
-    // SpotlessPlugin is always availabe in the classpath as it's a dependency.
+    // The bundled Spotless is published as preferred, so an older one the consumer declares wins.
+    // The formats below need Spotless 7.0+ API; before it, task creation failed with a
+    // NoSuchMethodError, so Spotless is skipped there with one warning.
+    val hasSpotless7Api = runCatching {
+        FormatExtension::class.java.getMethod("leadingTabsToSpaces", Int::class.javaPrimitiveType)
+    }.isSuccess
+    if (!hasSpotless7Api) {
+        if (ctx.firstInBuild("spotless-too-old")) {
+            logger.w(
+                "Spotless on the build classpath is older than 7.0, which fluxo's formatting " +
+                    "setup needs, so Spotless is not set up. Declare Spotless 7.0 or newer, or " +
+                    "remove your Spotless version to use the bundled one.",
+            )
+        }
+        return
+    }
+
+    // SpotlessPlugin is always available in the classpath as it's a dependency.
     pluginManager.apply(SpotlessPlugin::class.java)
+
+    // Predeclared steps must match the format steps exactly, or the configuration cache fails
+    // ("Add a step with [ktlint-cli:<version>] into the `spotlessPredeclare` block").
+    val ktlintVersion = ctx.libs.v("ktlint") ?: KtLintStep.defaultVersion()
 
     @Suppress("SpreadOperator", "MagicNumber")
     configureExtension<SpotlessExtension>("spotless") {
@@ -51,14 +73,16 @@ internal fun Project.setupSpotless(
             endWithNewline()
         }
 
-        val editorConfigPath = rootProject.file(".editorconfig")
+        // Spotless rejects a path to a missing file, which failed `check` in every build without
+        // a root `.editorconfig`; null keeps ktlint's own defaults.
+        val editorConfigPath = rootProject.file(".editorconfig").takeIf { it.isFile }
         kotlin {
             target("**/*.kt", "**/*.kts")
 
             // TODO: Use ktlint directly?
             // https://github.com/search?q=setEditorConfigPath+path%3A*.kt&type=code
             try {
-                ktlint(ctx.libs.v("ktlint") ?: KtLintStep.defaultVersion())
+                ktlint(ktlintVersion)
             } catch (e: Throwable) {
                 logger.warn("ktlint version error: $e", e)
                 ktlint()
@@ -81,7 +105,7 @@ internal fun Project.setupSpotless(
         }
         kotlinGradle {
             try {
-                ktlint(ctx.libs.v("ktlint") ?: KtLintStep.defaultVersion())
+                ktlint(ktlintVersion)
             } catch (e: Throwable) {
                 logger.warn("ktlint version error: $e", e)
                 ktlint()
@@ -143,13 +167,13 @@ internal fun Project.setupSpotless(
     if (isRootProject) {
         configureExtension<SpotlessExtension>("spotlessPredeclare") {
             kotlin {
-                ktlint()
+                runCatching { ktlint(ktlintVersion) }.getOrElse { ktlint() }
                 if (enableDiktat) {
                     diktat()
                 }
             }
             kotlinGradle {
-                ktlint()
+                runCatching { ktlint(ktlintVersion) }.getOrElse { ktlint() }
                 if (enableDiktat) {
                     diktat()
                 }

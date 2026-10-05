@@ -72,11 +72,18 @@ dependencies {
     // MIRROR-START / MIRROR-END markers must stay byte-identical in both files.
     // Verified by the `verifyBuildScriptMirror` task (runs as part of `check`).
     // MIRROR-START
+    // Bundled tool plugins are published as `prefers`, not `requires`: a version the consumer
+    // declares wins, older or newer (a `requires` replaced any lower one), so fluxo's code meets
+    // the consumer's tool version. With none declared, ours is used.
+    fun preferred(module: String, v: String) = implementation(module) { version { prefer(v) } }
+    fun preferred(p: Provider<MinimalExternalModuleDependency>) =
+        p.get().run { preferred("$module", versionConstraint.requiredVersion) }
+
     implementation(libs.tomlj)
     // Spotless util classes are used internally
-    implementation(libs.plugin.spotless)
+    preferred(libs.plugin.spotless)
     // Detekt ReportMergeTask is used internally
-    implementation(libs.plugin.detekt)
+    preferred(libs.plugin.detekt)
     // `kotlin-compiler-embeddable` is `compileOnly` so it stays off the published plugin's
     // runtime classpath. It conflicts with KGP-bundled compiler internals on the consumer's
     // buildscript classpath (KGP since 2.1.0 no longer drags it in transitively, and the
@@ -147,9 +154,11 @@ buildConfig {
             buildConfigField("String", "${name}_PLUGIN_VERSION", "\"$version\"")
         }
 
-        p.toModuleDependency().let { dependency ->
+        p.get().toModuleDependency().let { dependency ->
             when {
-                implementation -> dependencies.implementation(dependency)
+                implementation -> dependencies.implementation(dependency.substringBeforeLast(':')) {
+                    version { prefer(dependency.substringAfterLast(':')) }
+                }
                 else -> dependencies.compileOnly(dependency)
             }
         }

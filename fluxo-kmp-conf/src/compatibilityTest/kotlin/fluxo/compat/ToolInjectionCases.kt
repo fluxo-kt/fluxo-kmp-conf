@@ -120,4 +120,4 @@ gradle.projectsEvaluated {
 """
 
 @Suppress("MagicNumber")
-private val NEWEST_TESTED_KOTLIN = KotlinVersion(2, 4)
+internal val NEWEST_TESTED_KOTLIN = KotlinVersion(2, 4)
