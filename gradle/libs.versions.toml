@@ -239,7 +239,6 @@ detekt-explicit = { module = "com.github.Ivy-Apps:detekt-explicit", version = "0
 #  https://github.com/thewisenerd/detekt-sidekt
 #detekt-sidekt = { module = "detekt-sidekt", version = "0.0.0" }
 
-detekt-core = { module = "io.gitlab.arturbosch.detekt:detekt-core", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
 # `detekt-ruleauthors` is a rule pack for projects authoring Detekt rules — not us.

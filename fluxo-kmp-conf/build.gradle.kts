@@ -143,12 +143,6 @@ dependencies {
     // and Detekt brings `kotlin-compiler-embeddable` transitively at the consumer-applied
     // version, so reflective callers see a self-consistent classpath.
     compileOnly(libs.kotlin.compiler.embeddable)
-    // `detekt-core` is `compileOnly`: the only direct compile-time use is the
-    // `io.github.detekt.tooling.api.BaselineProvider` import in `MergeDetektBaselinesTask`,
-    // plus the reflective fallback resolved via `Class.forName`. Consumer builds that apply
-    // the Detekt plugin pull detekt-core transitively via detekt-gradle-plugin, so the
-    // consumer-facing runtime surface stays self-consistent without us republishing it.
-    compileOnly(libs.detekt.core)
     // ASM for bytecode verification.
     implementation(libs.asm)
 
@@ -172,10 +166,6 @@ dependencies {
     compileOnly(libs.plugins.fluxo.bcv.js.toModuleDependency())
     // MIRROR-END
 
-    // Test scope re-declares `detekt-core` so the reflective-fallback unit test
-    // (`MergeDetektBaselinesReflectiveTest`) keeps it on testRuntimeClasspath even though
-    // the plugin scope above carries it as `compileOnly`.
-    testImplementation(libs.detekt.core)
 
     testCompileOnly(libs.jetbrains.annotation)
     testImplementation(libs.kotlin.compile.testing)

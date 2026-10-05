@@ -53,12 +53,7 @@ io.github.ben-manes:gradle-versions-plugin:0.64.0
 io.github.fluxo-kt.binary-compatibility-validator-js:io.github.fluxo-kt.binary-compatibility-validator-js.gradle.plugin:1.1.0
 io.github.fluxo-kt:fluxo-bcv-ts:1.1.0
 io.github.pdvrieze.xmlutil:serialization-jvm:1.0.2.1
-io.gitlab.arturbosch.detekt:detekt-api:1.23.8
-io.gitlab.arturbosch.detekt:detekt-core:1.23.8
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8
-io.gitlab.arturbosch.detekt:detekt-parser:1.23.8
-io.gitlab.arturbosch.detekt:detekt-psi-utils:1.23.8
-io.gitlab.arturbosch.detekt:detekt-tooling:1.23.8
 io.smallrye.common:smallrye-common-annotation:2.14.0
 io.smallrye.common:smallrye-common-constraint:2.14.0
 io.smallrye.common:smallrye-common-cpu:2.14.0
