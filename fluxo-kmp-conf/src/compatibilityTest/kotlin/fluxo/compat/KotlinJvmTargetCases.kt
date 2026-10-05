@@ -106,8 +106,8 @@ private fun runToolchainJdkApiLimitCases(row: Map<String, String>, tempDir: Path
     val toolchain = "configure<JavaPluginExtension> { " +
         "toolchain.languageVersion.set(JavaLanguageVersion.of($JDK_21)) }"
     val installations = listOf(
-        "-Porg.gradle.java.installations.paths=" + resolveCompatJdkHome(JDK_21).absolutePath,
-        "-Porg.gradle.java.installations.auto-download=false",
+        "-Dorg.gradle.java.installations.paths=" + resolveCompatJdkHome(JDK_21).absolutePath,
+        "-Dorg.gradle.java.installations.auto-download=false",
     )
     val (_, explicitOutput) = runKotlinJvmVariant(
         row,
