@@ -2,14 +2,17 @@
 
 package fluxo.conf.impl.android
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.kotlin.ksp
 import fluxo.conf.impl.kotlin.mppExtOrNull
 import fluxo.conf.impl.withType
 import fluxo.log.e
 import fluxo.log.l
+import fluxo.log.logDecision
 import org.gradle.api.Project
 
 /**
@@ -39,11 +42,66 @@ internal fun Project.setupKmpAndroidExtension(conf: FluxoConfigurationExtensionI
             return@withPlugin
         }
 
-        mppExt.targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
+        val androidTargets = mppExt.targets.withType<KotlinMultiplatformAndroidLibraryTarget>()
+        androidTargets.configureEach {
             // The target IS the extension on the AGP-9 KMP+Android plugin.
             applyFluxoDefaults(conf)
+            enableResourcesWhenPresent(conf)
+        }
+        // A second `withHostTest` throws ("Android host tests have already been enabled"), so it
+        // must wait for the consumer's script; and AGP creates the test component right after
+        // its DSL finalization blocks, so later (our own `afterEvaluate`) gives a compilation
+        // without a test task.
+        if (!conf.ctx.testsDisabled) {
+            extensions.findByType(KotlinMultiplatformAndroidComponentsExtension::class.java)
+                ?.finalizeDsl { androidTargets.forEach { it.enableHostTestsWhenAbsent(conf) } }
         }
     }
+}
+
+/**
+ * AGP 9's KMP Android plugin turns Android resources off by default, and with them the AAR's
+ * assets, where Compose Multiplatform puts its resources (AGP 9.4.1 `KmpTaskManager` creates the
+ * asset tasks only when resources are on). On AGP 8 the same module packaged them, so a module
+ * with resource dirs gets them on; set before the consumer's script runs, so their own setting
+ * wins. Detection by the conventional dirs: a module with custom dirs sets it itself.
+ */
+private fun KotlinMultiplatformAndroidLibraryTarget.enableResourcesWhenPresent(
+    conf: FluxoConfigurationExtensionImpl,
+) = noSuchMethodSafe {
+    val src = conf.project.file("src")
+    val hasResources = src.resolve("androidMain/res").isDirectory ||
+        src.resolve("androidMain/assets").isDirectory ||
+        src.listFiles().orEmpty().any { it.resolve("composeResources").isDirectory }
+    if (!hasResources || androidResources.enable) return@noSuchMethodSafe
+    androidResources.enable = true
+    conf.ctx.logDecision(
+        conf.project,
+        setting = "Android resources",
+        value = "on",
+        reason = "the module has Android or Compose resource dirs",
+        howToChange = "kotlin { android { androidResources.enable = false } }",
+    )
+}
+
+/**
+ * AGP 9's KMP Android plugin creates no host (unit) test compilation unless asked, so tests that
+ * ran on AGP 8 stopped running without a word (and KGP warns that `commonTest` is unused).
+ */
+private fun KotlinMultiplatformAndroidLibraryTarget.enableHostTestsWhenAbsent(
+    conf: FluxoConfigurationExtensionImpl,
+) = noSuchMethodSafe {
+    if (compilations.withType<KotlinMultiplatformAndroidHostTestCompilation>().isNotEmpty()) {
+        return@noSuchMethodSafe
+    }
+    withHostTest {}
+    conf.ctx.logDecision(
+        conf.project,
+        setting = "Android host tests",
+        value = "on",
+        reason = "AGP 9's KMP Android plugin runs no unit tests unless enabled",
+        howToChange = "DISABLE_TESTS=true, or configure them with withHostTestBuilder {}",
+    )
 }
 
 /**

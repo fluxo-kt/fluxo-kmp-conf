@@ -5,7 +5,7 @@ import java.nio.file.Path
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
 
-private val ANDROID_NOISE = DETEKT_CLASSIFICATION_NOISE + ANDROID_LINT_VERSION_NOISE
+internal val ANDROID_NOISE = DETEKT_CLASSIFICATION_NOISE + ANDROID_LINT_VERSION_NOISE
 
 internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     val result = runConsumerCase(
@@ -27,6 +27,7 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
         runAgp9KmpAndroidFilteredOutCase(row, tempDir)
         runAgp9KmpSiblingDetektCase(row, tempDir)
         runKmpPlainDetektCase(row, tempDir)
+        runAgp9KmpResourcesAndHostTestsCase(row, tempDir)
     }
 }
 
