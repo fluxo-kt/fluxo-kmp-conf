@@ -57,3 +57,6 @@ rootProject.name = "fluxo-kmp-conf"
     // NOTE: Name is used in the `jitpack.yml`!
     project(it).name = "plugin"
 }
+
+// Published as `io.github.fluxo-kt.fluxo-kmp-conf.settings`, the settings part of the plugin.
+include(":fluxo-kmp-conf-settings")

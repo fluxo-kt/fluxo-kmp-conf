@@ -11,6 +11,7 @@ import fluxo.conf.data.VersionCatalogConstants.VC_SQUARE_PLUMBER_ALIAS
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.impl.configureExtension
 import fluxo.log.l
+import fluxo.settings.DEPENDENCY_ANALYSIS_TASKS
 import fluxo.vc.onLibrary
 
 // Detect unused and misused dependencies.
@@ -19,7 +20,7 @@ import fluxo.vc.onLibrary
 // https://plugins.gradle.org/plugin/com.autonomousapps.dependency-analysis
 // https://mvnrepository.com/artifact/com.autonomousapps/dependency-analysis-gradle-plugin
 internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
-    if (!hasStartTaskCalled(DEPS_ANALYSIS_TASK_NAMES)) {
+    if (DEPENDENCY_ANALYSIS_TASKS.none { hasStartTaskCalled(it) }) {
         return
     }
 
@@ -29,6 +30,7 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
         className = DEPS_ANALYSIS_CLASS_NAME,
         version = DEPS_ANALYSIS_PLUGIN_VERSION,
         catalogPluginId = DEPS_ANALYSIS_PLUGIN_ALIAS,
+        onBuildClasspath = true,
     )
     if (!result.applied) {
         return
@@ -75,15 +77,6 @@ internal fun FluxoKmpConfContext.prepareDependencyAnalysisPlugin() {
         }
     }
 }
-
-private val DEPS_ANALYSIS_TASK_NAMES = arrayOf(
-    // public plugin tasks
-    "buildHealth",
-    "projectHealth",
-    "reason",
-    // internal plugin tasks
-    // "computeDuplicateDependencies", "printDuplicateDependencies", "postProcess",
-)
 
 /** @see com.autonomousapps.DependencyAnalysisPlugin */
 private const val DEPS_ANALYSIS_CLASS_NAME = "com.autonomousapps.DependencyAnalysisPlugin"

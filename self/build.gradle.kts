@@ -34,6 +34,7 @@ java {
 kotlin {
     sourceSets.main {
         kotlin.srcDir("../$pluginDir/src/main/kotlin")
+        kotlin.srcDir("../fluxo-kmp-conf-settings/src/shared/kotlin")
         resources.srcDir(resDir.get())
     }
 
@@ -164,6 +165,8 @@ buildConfig {
     buildConfigField("TASK_INFO", libs.plugins.task.info)
     buildConfigField("MODULE_DEPENDENCY_GRAPH", libs.plugins.module.dependency.graph)
     buildConfigField("BUILD_CONFIG", libs.plugins.build.config)
+    // KSP has no plugin alias in the catalog, only its version.
+    buildConfigField("String", "KSP_PLUGIN_VERSION", "\"${libs.versions.ksp.get()}\"")
 
     fun buildConfigField(
         fieldName: String,

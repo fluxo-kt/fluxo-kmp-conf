@@ -1,6 +1,9 @@
 package fluxo.conf
 
 import fluxo.artifact.proc.setupArtifactsProcessing
+import fluxo.conf.data.BuildConstants.DEPS_ANALYSIS_PLUGIN_VERSION
+import fluxo.conf.data.BuildConstants.GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION
+import fluxo.conf.data.BuildConstants.KSP_PLUGIN_VERSION
 import fluxo.conf.data.BuildConstants.PLUGIN_ID
 import fluxo.conf.deps.FluxoCache
 import fluxo.conf.dsl.FluxoConfigurationExtension
@@ -33,10 +36,16 @@ import fluxo.conf.impl.kotlin.configureKotlinJvm
 import fluxo.conf.impl.kotlin.configureKotlinMultiplatform
 import fluxo.conf.impl.kotlin.setupKmpYarnPlugin
 import fluxo.conf.pub.setupPublication
+import fluxo.settings.SETTINGS_PLUGIN_MARKER
+import fluxo.settings.addFluxoTools
+import fluxo.settings.fluxoTools
+import fluxo.settings.resolvableFluxoTools
 import isShrinkerDisabled
+import java.net.URI
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 public class FluxoKmpConfPlugin : Plugin<Project> {
@@ -49,6 +58,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         checkGradleLifecycleBase(target)
 
         val ctx = FluxoKmpConfContext.getFor(target)
+        addToolsWithoutSettingsPlugin(target)
 
         target.allprojects {
             val configureContainers: ConfigureContainers = ::configureContainers
@@ -135,6 +145,45 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         // Generic custom lazy configuration
         conf.onConfiguration?.let { action ->
             project.configureExtension(KOTLIN_EXT, action = action)
+        }
+    }
+
+    /**
+     * Without the fluxo settings line, does what the settings plugin does ([addFluxoTools]) for
+     * subprojects: the root project is already being evaluated, so a tool it needs itself gets
+     * the line to add instead. Dependency analysis is applied to the root only, so it is left out.
+     *
+     * Reads the parent project's class loader, a cross-project access Isolated Projects forbid.
+     * Kept because setups without the settings line must keep working; the settings plugin is
+     * the Isolated-Projects-safe route, and this hook goes once they are supported.
+     */
+    private fun addToolsWithoutSettingsPlugin(root: Project) {
+        val gradle = root.gradle
+        if (gradle.extensions.extraProperties.has(SETTINGS_PLUGIN_MARKER)) return
+        val allTools = fluxoTools(
+            ksp = KSP_PLUGIN_VERSION,
+            pluginPublish = GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION,
+            dependencyAnalysis = DEPS_ANALYSIS_PLUGIN_VERSION,
+        ).filter { it.tasks.isEmpty() }
+        // Plugin repositories aren't visible from a project; the root build-script ones are
+        // the consumer's closest choice, the Portal is Gradle's default for plugins.
+        val repositories = root.buildscript.repositories
+            .withType(MavenArtifactRepository::class.java).map { it.url } +
+            URI("https://plugins.gradle.org/m2")
+        val tools = gradle.resolvableFluxoTools(
+            allTools,
+            repositories,
+            probe = root.buildscript,
+            rootDir = root.rootDir,
+        )
+        if (tools.isEmpty()) return
+        gradle.beforeProject {
+            val parentLoader = parent?.buildscript?.classLoader
+            if (parentLoader != null) {
+                addFluxoTools(tools, repositories) { id ->
+                    parentLoader.getResource("META-INF/gradle-plugins/$id.properties") != null
+                }
+            }
         }
     }
 

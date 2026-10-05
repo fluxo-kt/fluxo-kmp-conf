@@ -46,6 +46,8 @@ fkcSetupGradlePlugin(
     kotlin = {
         sourceSets.main {
             resources.srcDir(resDir.get())
+            // The settings plugin's tool injector, run here for root-only setups.
+            kotlin.srcDir("../fluxo-kmp-conf-settings/src/shared/kotlin")
         }
     },
 ) {
@@ -206,6 +208,7 @@ testing {
             targets.configureEach {
                 testTask.configure {
                     dependsOn(publishPluginToLocalDevTasks)
+                    dependsOn(":fluxo-kmp-conf-settings:publishAllPublicationsToLocalDevRepository")
                     shouldRunAfter(tasks.test)
                     systemProperty("fluxo.repo.root", rootDir.absolutePath)
                     systemProperty(
@@ -498,6 +501,8 @@ buildConfig {
     buildConfigField("TASK_INFO", libs.plugins.task.info)
     buildConfigField("MODULE_DEPENDENCY_GRAPH", libs.plugins.module.dependency.graph)
     buildConfigField("BUILD_CONFIG", libs.plugins.build.config)
+    // KSP has no plugin alias in the catalog, only its version.
+    buildConfigField("String", "KSP_PLUGIN_VERSION", "\"${libs.versions.ksp.get()}\"")
 
     fun buildConfigField(
         fieldName: String,

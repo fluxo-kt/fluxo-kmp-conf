@@ -29,6 +29,7 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     lookupClassName: Boolean = LOOKUP_CLASS_NAME_IN_CLASS_LOADER,
     canLoadDynamically: Boolean = true,
     fetchWithGradle: Boolean = false,
+    onBuildClasspath: Boolean = false,
 ): ApplyPluginResult {
     val logger = project.logger
     val pluginManager = project.pluginManager
@@ -45,6 +46,8 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
         @Suppress("InstanceOfCheckForException")
         if (e !is UnknownPluginException) {
             logger.e("Failed to apply plugin '$id' in '${project.path}': $e", e)
+        } else if (onBuildClasspath) {
+            missingFromBuildClasspath(project, id, version)
         }
     }
 

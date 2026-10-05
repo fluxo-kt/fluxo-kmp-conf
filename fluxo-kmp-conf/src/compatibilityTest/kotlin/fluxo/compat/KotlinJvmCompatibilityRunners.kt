@@ -50,6 +50,7 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     runKotlinJvmTargetCases(row, tempDir)
     runRootClasspathPinCase(row, tempDir)
     runFetchedToolCase(row, tempDir)
+    runToolInjectionCase(row, tempDir)
 }
 
 /**

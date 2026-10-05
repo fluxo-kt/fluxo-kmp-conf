@@ -2,6 +2,7 @@ package fluxo.conf.impl.kotlin
 
 import com.android.build.api.dsl.CommonExtension
 import fkcSetupMultiplatform
+import fluxo.conf.data.BuildConstants.KSP_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.container.Container
 import fluxo.conf.dsl.container.impl.ContainerImpl
@@ -321,7 +322,14 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     val kc = conf.KotlinConfig(project, k = this)
     conf.kotlinConfig = kc
 
-    if (kc.setupKsp) ctx.loadAndApplyPluginIfNotApplied(id = KSP_PLUGIN_ID, project = project)
+    if (kc.setupKsp) {
+        ctx.loadAndApplyPluginIfNotApplied(
+            id = KSP_PLUGIN_ID,
+            version = KSP_PLUGIN_VERSION,
+            project = project,
+            onBuildClasspath = true,
+        )
+    }
     if (kc.setupKapt) applyKapt(conf)
 
     if (conf.setupJvmCompatibility) {

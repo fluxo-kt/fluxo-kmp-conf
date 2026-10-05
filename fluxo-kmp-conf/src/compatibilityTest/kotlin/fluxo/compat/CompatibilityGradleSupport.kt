@@ -8,8 +8,14 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.assertFalse
 
-internal fun markerSettingsScript(rootProjectName: String): String {
+/** [settingsPlugin] off: the setup with fluxo in the root build script only. */
+internal fun markerSettingsScript(rootProjectName: String, settingsPlugin: Boolean = true): String {
     val localMavenRepo = localMavenRepoPath()
+    val plugins = when {
+        settingsPlugin ->
+            "plugins { id(\"${pluginId()}.settings\") version \"${pluginVersion()}\" }"
+        else -> ""
+    }
     return """
         pluginManagement {
             repositories {
@@ -19,6 +25,8 @@ internal fun markerSettingsScript(rootProjectName: String): String {
                 mavenCentral()
             }
         }
+
+        $plugins
 
         dependencyResolutionManagement {
             repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
