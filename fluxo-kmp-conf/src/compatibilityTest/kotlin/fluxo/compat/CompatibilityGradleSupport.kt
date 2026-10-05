@@ -234,7 +234,6 @@ internal val ANDROID_LINT_VERSION_NOISE = listOf(
 )
 
 internal val DETEKT_CLASSIFICATION_NOISE = listOf(
-    "Unexpected Detekt task",
     "platform UNKNOWN is disabled",
 )
 

@@ -230,6 +230,7 @@ internal fun writeAndroidKmpSources(projectDir: Path) {
 
         fun androidTargetName(value: String): String =
             value.trim().replaceFirstChar { it.uppercase() }
+
         """.trimIndent(),
     )
 }

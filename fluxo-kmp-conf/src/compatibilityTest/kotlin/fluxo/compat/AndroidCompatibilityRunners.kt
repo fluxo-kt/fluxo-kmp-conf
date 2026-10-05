@@ -1,5 +1,6 @@
 package fluxo.compat
 
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
@@ -22,7 +23,71 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     check("Android namespace 'compat.agp9.kmp' (KMP+Android)" in result.output) {
         result.output
     }
-    if (row.isExecutionFixture()) runAgp9KmpAndroidFilteredOutCase(row, tempDir)
+    if (row.isExecutionFixture()) {
+        runAgp9KmpAndroidFilteredOutCase(row, tempDir)
+        runAgp9KmpSiblingDetektCase(row, tempDir)
+    }
+}
+
+/**
+ * Detekt's Android type-resolution task in a KMP+Android module that depends on another
+ * KMP+Android module. Detekt 1.x resolves the raw compile classpath configuration, where AGP 9
+ * offers the sibling as several variants ("cannot choose between … android-classes-jar /
+ * android-lint / android-lint-local-aar"), so its classpath must be the one the compiler used.
+ */
+private fun runAgp9KmpSiblingDetektCase(row: Map<String, String>, tempDir: Path) {
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-agp9-kmp-siblings",
+        projectDir = tempDir.resolve(row.getValue("id") + "-siblings"),
+        tasks = listOf("detektAndroidMain"),
+        arguments = listOf("-PKMP_TARGETS=ANDROID"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerAgp9KmpBuildScript(row) + "\n\n" +
+                "project.extensions.configure<" +
+                "org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>(\"kotlin\") {\n" +
+                "    sourceSets.named(\"commonMain\") {\n" +
+                "        dependencies { implementation(project(\":lib\")) }\n" +
+                "    }\n" +
+                "}\n",
+        )
+        writeAndroidKmpSources(projectDir)
+        projectDir.resolve("settings.gradle.kts").toFile().appendText("\ninclude(\":lib\")\n")
+        val lib = projectDir.resolve("lib")
+        Files.createDirectories(lib.resolve("src/commonMain/kotlin/compat"))
+        lib.resolve("src/commonMain/kotlin/compat/LibSubject.kt")
+            .writeText("package compat\n\nfun libName(): String = \"lib\"\n")
+        lib.resolve("build.gradle.kts").writeText(
+            """
+            fkcSetupMultiplatform(
+                config = {
+                    enableApiValidation = false
+                    enablePublication = false
+                    enableGradleDoctor = false
+                    setupCoroutines = false
+                    androidNamespace = "compat.lib"
+                    androidCompileSdk = 35
+                    androidMinSdk = 24
+                },
+                kmp = { allDefaultTargets() },
+            )
+
+            // Like the root module: without a host-test compilation `commonTest` is unused and
+            // KGP warns about it.
+            project.extensions.configure<
+                org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension,
+            >("kotlin") {
+                targets.named("android") {
+                    (this as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget)
+                        .withHostTest {}
+                }
+            }
+            """.trimIndent(),
+        )
+    }
 }
 
 /**
