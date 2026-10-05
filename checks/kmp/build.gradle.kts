@@ -3,6 +3,16 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate
 import org.jetbrains.kotlin.gradle.targets.web.yarn.BaseYarnRootExtension
 
+// The `pinned` bundle holds security minimums, but fluxo applies it only after Gradle has loaded
+// this build's classpath. Constraints here apply while it resolves; they only raise versions.
+buildscript {
+    dependencies {
+        constraints {
+            for (dep in libs.bundles.pinned.get()) add("classpath", dep.toString())
+        }
+    }
+}
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     // AGP 9.0+ rejects `com.android.library` + `kotlin("multiplatform")` co-application

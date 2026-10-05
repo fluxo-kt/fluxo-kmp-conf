@@ -1,3 +1,13 @@
+// The `pinned` bundle holds security minimums, but fluxo applies it only after Gradle has loaded
+// this build's classpath. Constraints here apply while it resolves; they only raise versions.
+buildscript {
+    dependencies {
+        constraints {
+            for (dep in libs.bundles.pinned.get()) add("classpath", dep.toString())
+        }
+    }
+}
+
 plugins {
     // Plain `com.android.library` (NOT `com.android.kotlin.multiplatform.library`) — this check
     // exists specifically to exercise the legacy AGP `LibraryExtension`-based `setupAndroidCommon`
