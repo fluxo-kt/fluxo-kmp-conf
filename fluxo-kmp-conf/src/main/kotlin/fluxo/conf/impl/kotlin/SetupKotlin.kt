@@ -330,6 +330,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
             project = project,
             onBuildClasspath = true,
         )
+        project.checkKspFitsKotlin(ctx.kotlinPluginVersion)
     }
     if (kc.setupKapt) applyKapt(conf)
 

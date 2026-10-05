@@ -57,7 +57,7 @@
 - The shrinker failed on Compose Multiplatform 1.12 desktop apps: two dependencies share the jar name `runtime-saveable-desktop-1.12.1.jar`.
 
 ### Updated
-- Bundled tools: Detekt 1.x rule packs compose-rules 0.4.28 and faire 0.5.4 (may report new findings), Spotless 8.10.3, gradle-versions 0.64.0 (applied by its current id `io.github.ben-manes.versions`), KSP 2.3.12 when fluxo provisions it.
+- Bundled tools: Detekt 1.x rule packs compose-rules 0.4.28 and faire 0.5.4 (may report new findings), Spotless 8.10.3, gradle-versions 0.64.0 (applied by its current id `io.github.ben-manes.versions`), KSP 2.3.12 when fluxo provisions it. That KSP needs Kotlin 2.2+, so on Kotlin 2.1 the build stops at configuration and names the Kotlin-tied KSP release to declare (`2.1.21-<ksp version>`), instead of failing inside `kspKotlin` with `NoSuchMethodError`.
 - On Kotlin 2.4.20+ the yarn lock directory (`<root>/.kotlin-js-store`, unchanged) is set through Kotlin's Provider API, replacing the setter Kotlin 2.4.20 deprecates.
 
 
