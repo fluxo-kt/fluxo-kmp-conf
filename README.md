@@ -32,15 +32,28 @@ Built with:<br>
 [![Gradle Plugin Portal][badge-plugin]][plugin]
 
 ```kotlin
+// in `settings.gradle.kts`, after `pluginManagement {}`.
+plugins {
+  id("io.github.fluxo-kt.fluxo-kmp-conf.settings") version "0.15.1" // <-- add here
+}
+```
+
+```kotlin
 // in the root `build.gradle.kts`.
 plugins {
   kotlin("multiplatform") version "2.4.20"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.15.1" // <-- add here
+  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.15.1" // <-- and here
 }
 ```
 
 Apply the plugin in the root project. Configure modules separately with the setup
 functions below. Keep a Kotlin plugin before it in `plugins {}`; `apply false` is fine.
+
+The settings line puts the plugins fluxo applies for you (KSP, plugin-publish, dependency
+analysis) on each module's build classpath, so they work with the configuration cache and need
+no `plugins {}` lines of their own; a version you declare yourself wins. Without it, the root
+line alone covers subprojects, but not the root project itself: a single-module build that uses
+KSP gets the exact line to add.
 
 <details>
 <summary>How to use snapshots from JitPack repository</summary>
