@@ -48,6 +48,7 @@
 - The merged Lint report (`lint-merged.sarif`) pointed findings from all but the first module at the wrong rule; code-scanning uploads showed wrong rule names.
 - One `MAX_DEBUG`/`FLUXO_VERBOSE` build made every later build in the same Gradle daemon verbose, and once-per-build warnings appeared only once per daemon.
 - The `LOAD_KMM_CODE_COMPLETION` reminder was lost on configuration-cache hits.
+- `detektBaselineMerge` trimmed whitespace from baseline IDs, so findings whose ID ends in a space (ktlint `Indentation`) stayed reported however often the baseline was regenerated.
 - Gradle-plugin modules loaded the sam-with-receiver Gradle plugin at fluxo's own Kotlin version instead of yours.
 - The shrinker failed on Compose Multiplatform 1.12 desktop apps: two dependencies share the jar name `runtime-saveable-desktop-1.12.1.jar`.
 

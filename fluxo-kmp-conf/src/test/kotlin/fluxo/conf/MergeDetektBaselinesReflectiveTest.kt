@@ -196,6 +196,16 @@ internal class MergeDetektBaselinesReflectiveTest {
     }
 
     @Test
+    fun `whitespace inside an ID survives the merge`() {
+        // Detekt compares IDs exactly, and a signature can end in whitespace
+        // (ktlint Indentation reports the indent itself), so a trimmed ID matches nothing.
+        val id = "Indentation:File.kt:File\$ "
+        val out = mergeFiles(baseline("a.xml", current = setOf(id)))
+        val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(out)
+        assertEquals(id, doc.getElementsByTagName("ID").item(0).textContent)
+    }
+
+    @Test
     fun `output is valid XML readable by DocumentBuilder`() {
         val a = baseline(
             "a.xml",

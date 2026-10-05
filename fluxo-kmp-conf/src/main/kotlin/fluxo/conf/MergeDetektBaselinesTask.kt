@@ -141,8 +141,9 @@ private fun readBaselineXml(
 private fun addIds(element: Element, target: SortedSet<String>) {
     val ids = element.getElementsByTagName("ID")
     for (j in 0 until ids.length) {
-        val id = ids.item(j).textContent.trim()
-        if (id.isNotEmpty()) target.add(id)
+        // Never trim: Detekt matches IDs exactly, and a signature may end in whitespace.
+        val id = ids.item(j).textContent
+        if (id.isNotBlank()) target.add(id)
     }
 }
 
