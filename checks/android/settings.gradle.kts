@@ -26,6 +26,8 @@ pluginManagement {
 
 plugins {
     id("com.gradle.develocity") version "4.6.0"
+    // fluxo's settings part, from the included root build (no version needed).
+    id("io.github.fluxo-kt.fluxo-kmp-conf.settings")
 }
 
 dependencyResolutionManagement {
