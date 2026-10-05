@@ -227,6 +227,17 @@ testing {
                         "fluxo.compat.gradle.home",
                         rootDir.resolve(".gradle/compat-testkit").absolutePath,
                     )
+                    // Fixture projects run to hundreds of MB per run. A failed run keeps its own
+                    // for debugging; a green run, and the next run's start, delete them. They are
+                    // deleted here, not by JUnit: TestKit daemons hold files in them until the test
+                    // JVM exits, which fails deletion on Windows.
+                    val projects = layout.buildDirectory.dir("compat-projects")
+                    systemProperty(
+                        "fluxo.compat.projects.dir",
+                        projects.get().asFile.absolutePath,
+                    )
+                    doFirst { projects.get().asFile.deleteRecursively() }
+                    doLast { projects.get().asFile.deleteRecursively() }
                 }
             }
         }

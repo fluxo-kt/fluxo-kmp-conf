@@ -1,5 +1,6 @@
 package fluxo.compat
 
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.BuildResult
@@ -137,4 +138,18 @@ internal fun compatGradleUserHome(): Path {
         "fluxo.compat.gradle.home system property is missing"
     }
     return Path.of(dir)
+}
+
+/**
+ * A fresh directory for one test's fixture projects, under the build dir the `compatibilityTest`
+ * task deletes before each run and after a green one (see the task's comment for why there and
+ * not JUnit's `@TempDir`).
+ */
+internal fun newCompatProjectsDir(): Path {
+    val root = Path.of(
+        checkNotNull(System.getProperty("fluxo.compat.projects.dir")) {
+            "fluxo.compat.projects.dir system property is missing"
+        },
+    )
+    return Files.createTempDirectory(Files.createDirectories(root), "case")
 }
