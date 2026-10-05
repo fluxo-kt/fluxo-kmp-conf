@@ -60,7 +60,12 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
 
     /**
      * Flag to set up the Kapt plugin.
-     * Auto-detected by the presence of the `kotlin-kapt` plugin.
+     * Auto-detected by the presence of the `kotlin-kapt` or `com.android.legacy-kapt` plugin.
+     *
+     * Android modules on AGP 9's built-in Kotlin get `com.android.legacy-kapt` instead of
+     * `kotlin-kapt`, which AGP rejects there. It isn't part of AGP's own dependencies, so declare
+     * `id("com.android.legacy-kapt") version "<AGP version>" apply false` in the root
+     * `plugins {}`; without it the build fails naming that line.
      *
      * Inherited from the parent project if not set.
      * Default value: `false`.

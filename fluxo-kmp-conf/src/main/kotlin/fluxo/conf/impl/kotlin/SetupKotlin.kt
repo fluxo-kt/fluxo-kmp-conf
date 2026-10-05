@@ -26,6 +26,7 @@ import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_EXT_NAME
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_PLUGIN_NOT_IN_CLASSPATH_ERROR
+import fluxo.conf.impl.android.AgpVersion
 import fluxo.conf.impl.android.setupAndroidCommon
 import fluxo.conf.impl.android.setupKmpAndroidExtension
 import fluxo.conf.impl.configureExtension
@@ -42,6 +43,7 @@ import fluxo.log.l
 import fluxo.log.v
 import fluxo.log.w
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.Named
 import org.gradle.api.Project
 import org.gradle.api.plugins.UnknownPluginException
@@ -272,6 +274,35 @@ internal fun configureKotlinMultiplatform(
     return true
 }
 
+/**
+ * AGP 9's built-in Kotlin (an Android module without `org.jetbrains.kotlin.android`) fails
+ * configuration on `org.jetbrains.kotlin.kapt`; its kapt is `com.android.legacy-kapt`. That id
+ * ships in `com.android.tools.build:gradle-kotlin`, which AGP doesn't depend on, so it can be
+ * applied only when the consumer put it on the build classpath. Failing then is deliberate: kapt
+ * that silently doesn't run leaves annotation processors' code missing from the build.
+ */
+private fun KotlinProjectExtension.applyKapt(conf: FluxoConfigurationExtensionImpl) {
+    val project = conf.project
+    val builtInKotlin = this is KotlinAndroidProjectExtension &&
+        !project.pluginManager.hasPlugin(KOTLIN_ANDROID_PLUGIN_ID)
+    if (!builtInKotlin) {
+        conf.ctx.loadAndApplyPluginIfNotApplied(id = KAPT_PLUGIN_ID, project = project)
+        return
+    }
+    try {
+        project.pluginManager.apply(ANDROID_KAPT_PLUGIN_ID)
+    } catch (e: UnknownPluginException) {
+        throw GradleException(
+            "kapt in $project needs '$ANDROID_KAPT_PLUGIN_ID' with AGP 9's built-in " +
+                "Kotlin, and it is not on the build classpath. Add " +
+                "`id(\"$ANDROID_KAPT_PLUGIN_ID\") version \"<your AGP version>\" apply false` " +
+                "to the root `plugins {}` (AGP ${AgpVersion.current(project)} here), " +
+                "or move the annotation processors to KSP.",
+            e,
+        )
+    }
+}
+
 private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     conf: FluxoConfigurationExtensionImpl,
 ) {
@@ -291,7 +322,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     conf.kotlinConfig = kc
 
     if (kc.setupKsp) ctx.loadAndApplyPluginIfNotApplied(id = KSP_PLUGIN_ID, project = project)
-    if (kc.setupKapt) ctx.loadAndApplyPluginIfNotApplied(id = KAPT_PLUGIN_ID, project = project)
+    if (kc.setupKapt) applyKapt(conf)
 
     if (conf.setupJvmCompatibility) {
         setupJvmCompatibility(project, kc)

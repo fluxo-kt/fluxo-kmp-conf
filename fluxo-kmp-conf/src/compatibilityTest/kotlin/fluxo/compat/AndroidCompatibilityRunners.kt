@@ -188,7 +188,37 @@ internal fun runAndroidLibraryConsumer(row: Map<String, String>, tempDir: Path) 
             writeAndroidLibrarySources(projectDir)
         }
     }
+
+    // AGP 9's built-in Kotlin fails configuration on `org.jetbrains.kotlin.kapt`; its kapt is
+    // `com.android.legacy-kapt`, from an artifact AGP doesn't depend on. `setupKapt` must apply
+    // it when the consumer declared it, and otherwise name the line to add.
+    if (row.getValue("fixture") != "android-lib-agp9-exec") return
+    for (declared in listOf(false, true)) {
+        val output = runConsumerCase(
+            row,
+            tempDir,
+            rootProjectName = "compat-android-kapt",
+            projectDir = tempDir.resolve(row.getValue("id") + "-kapt"),
+            tasks = listOf("help"),
+            forbiddenOutput = ANDROID_NOISE,
+            expectFailure = if (declared) emptyList() else listOf(LEGACY_KAPT_LINE),
+        ) { projectDir ->
+            val plugin = "$LEGACY_KAPT_LINE \"${row.getValue("agpVersion")}\" apply false"
+            projectDir.resolve("build.gradle.kts").writeText(
+                markerAndroidLibraryBuildScript(row)
+                    .replace("plugins {", if (declared) "plugins {\n    $plugin" else "plugins {")
+                    .replace(NO_COROUTINES, "$NO_COROUTINES\nsetupKapt = true") +
+                    "\nprintln(\"legacy-kapt applied: \" + " +
+                    "pluginManager.hasPlugin(\"com.android.legacy-kapt\"))\n",
+            )
+        }.output
+        check(!declared || "legacy-kapt applied: true" in output) { output }
+    }
 }
+
+private const val LEGACY_KAPT_LINE = "id(\"com.android.legacy-kapt\") version"
+
+private const val NO_COROUTINES = "setupCoroutines = false"
 
 /**
  * A call above minSdk (Lint `NewApi`) must fail `check`, once, at the end of the build, listing

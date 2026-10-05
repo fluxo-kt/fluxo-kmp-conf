@@ -15,7 +15,8 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 internal val PluginAware.hasKsp: Boolean get() = pluginManager.hasPlugin(KSP_PLUGIN_ID)
 
-internal val PluginAware.hasKapt: Boolean get() = pluginManager.hasPlugin(KAPT_PLUGIN_ID)
+internal val PluginAware.hasKapt: Boolean
+    get() = pluginManager.run { hasPlugin(KAPT_PLUGIN_ID) || hasPlugin(ANDROID_KAPT_PLUGIN_ID) }
 
 internal val PluginAware.hasKmpCompose: Boolean
     get() = pluginManager.hasPlugin(KMP_COMPOSE_PLUGIN_ID)

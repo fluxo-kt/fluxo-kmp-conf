@@ -5,6 +5,10 @@ internal const val KOTLIN_MPP_PLUGIN_ID = "org.jetbrains.kotlin.multiplatform"
 internal const val KOTLIN_COMPOSE_PLUGIN_ID = "org.jetbrains.kotlin.plugin.compose"
 internal const val KMP_COMPOSE_PLUGIN_ID = "org.jetbrains.compose"
 internal const val KAPT_PLUGIN_ID = "org.jetbrains.kotlin.kapt"
+
+/** kapt for AGP 9 built-in Kotlin, which rejects [KAPT_PLUGIN_ID]. */
+internal const val ANDROID_KAPT_PLUGIN_ID = "com.android.legacy-kapt"
+internal const val KOTLIN_ANDROID_PLUGIN_ID = "org.jetbrains.kotlin.android"
 internal const val KSP_PLUGIN_ID = "com.google.devtools.ksp"
 internal const val INTELLIJ_PLUGIN_ID = "org.jetbrains.intellij.platform"
 
