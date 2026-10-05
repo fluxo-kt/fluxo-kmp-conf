@@ -395,8 +395,12 @@ private fun KotlinProjectExtension.setupTargets(
                 )
             }
             // After setupKotlinOptions, whose `freeCompilerArgs.set()` would drop the lazy flag.
-            if (!isAndroid && kc.useJdkRelease && this is KotlinJvmCompile) {
-                jvmTargetVersion?.let { limitKotlinJdkApi(conf, it) }
+            if (kc.useJdkRelease && this is KotlinJvmCompile) {
+                when {
+                    !isAndroid -> jvmTargetVersion?.let { limitKotlinJdkApi(conf, it) }
+                    // Host tests run on a JDK, so they keep its API.
+                    !isTest -> hideJdkFromAndroidCode(conf)
+                }
             }
         }
 

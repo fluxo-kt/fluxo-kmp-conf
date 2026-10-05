@@ -175,8 +175,11 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * * javac in a module that passes `--add-exports`, `--add-reads` or `--patch-module`, which
      *   javac rejects together with `--release`.
      *
-     * Android modules are never limited: the Android API comes from `android.jar` and KGP and AGP
-     * reject both options there; Lint's `NewApi` check covers calls above `minSdk`.
+     * Android code gets no JVM-target limit, as its API is the device's, not the JDK's: Kotlin in
+     * main (non-test) Android compilations stops seeing the JDK at all (`noJdk`, what KGP already
+     * does for AGP 8's `kotlin-android`), so only `android.jar` is visible; Java is compiled by
+     * AGP against the Android SDK. Lint's `NewApi` check covers calls above `minSdk`. Host tests
+     * run on a JDK and keep its API.
      *
      * Default value: `true`. Inherited from the parent project if not set.
      * Run with `FLUXO_EXPLAIN=true` to print each task's decision and its reason.

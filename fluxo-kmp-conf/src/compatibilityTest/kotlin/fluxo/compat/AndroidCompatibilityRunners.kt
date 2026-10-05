@@ -196,19 +196,8 @@ internal fun runAndroidLibraryConsumer(row: Map<String, String>, tempDir: Path) 
  * module after the first one found something.
  */
 internal fun runAndroidLibraryNewApiFailsCheck(row: Map<String, String>, tempDir: Path) {
-    runConsumerCase(
-        row,
-        tempDir,
-        rootProjectName = "compat-android-library-newapi",
-        projectDir = tempDir.resolve(row.getValue("id") + "-newapi"),
-        tasks = listOf(CHECK_TASK),
-        forbiddenOutput = ANDROID_NOISE,
-        expectFailure = listOf(
-            "Android Lint found 2 calls above minSdk (NewApi)",
-            "src/main/kotlin/compat/RootNewApi.kt",
-            "second/src/main/kotlin/compat/SecondNewApi.kt",
-        ),
-    ) { projectDir ->
+    val dir = tempDir.resolve(row.getValue("id") + "-newapi")
+    val writeProject = { projectDir: Path ->
         projectDir.resolve("build.gradle.kts").writeText(markerAndroidLibraryBuildScript(row))
         writeAndroidLintConfig(projectDir)
         writeNewApiCall(projectDir.resolve("src/main/kotlin/compat"), "RootNewApi")
@@ -228,23 +217,59 @@ internal fun runAndroidLibraryNewApiFailsCheck(row: Map<String, String>, tempDir
                 "config = { noVerificationBuildTypes = listOf(\"release\") })\n",
         )
     }
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-android-library-newapi",
+        projectDir = dir,
+        tasks = listOf(CHECK_TASK),
+        forbiddenOutput = ANDROID_NOISE,
+        expectFailure = listOf(
+            "Android Lint found 2 calls above minSdk (NewApi)",
+            "src/main/kotlin/compat/RootNewApi.kt",
+            "second/src/main/kotlin/compat/SecondNewApi.kt",
+        ),
+        writeProject = writeProject,
+    )
+    runJdkOnlyApiFailsCase(row, tempDir, dir, "src/main/kotlin/compat", writeProject = writeProject)
+}
+
+/**
+ * Android code runs against the device's API (`android.jar`), never the JDK's. KGP hides the JDK
+ * only on AGP 8's `kotlin-android` path, so elsewhere a call to JDK-only API compiled and then
+ * failed on a device. Main code must not see the JDK on any Android path.
+ */
+private fun runJdkOnlyApiFailsCase(
+    row: Map<String, String>,
+    tempDir: Path,
+    dir: Path,
+    sourceDir: String,
+    arguments: List<String> = emptyList(),
+    writeProject: (Path) -> Unit,
+) {
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-android-jdk-only-api",
+        projectDir = dir,
+        tasks = listOf("assemble"),
+        arguments = arguments,
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
+        expectFailure = listOf("Unresolved reference 'constant'"),
+    ) {
+        writeProject(it)
+        // `java.lang.constant` (JDK 12) is not part of the Android API.
+        it.resolve(sourceDir).resolve("JdkOnly.kt").writeText(
+            "package compat\n\nfun jdkOnly(): Any = java.lang.constant.ClassDesc.of(\"x\")\n",
+        )
+    }
 }
 
 /** The KMP Android paths name their Lint tasks differently; their reports must reach the check. */
 internal fun runKmpNewApiFailsCheck(row: Map<String, String>, tempDir: Path, buildScript: String) {
-    runConsumerCase(
-        row,
-        tempDir,
-        rootProjectName = "compat-kmp-newapi",
-        projectDir = tempDir.resolve(row.getValue("id") + "-newapi"),
-        tasks = listOf(CHECK_TASK),
-        arguments = listOf("-PKMP_TARGETS=ANDROID"),
-        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
-        expectFailure = listOf(
-            "Android Lint found 1 call above minSdk (NewApi)",
-            "src/androidMain/kotlin/compat/KmpNewApi.kt",
-        ),
-    ) { projectDir ->
+    val dir = tempDir.resolve(row.getValue("id") + "-newapi")
+    val arguments = listOf("-PKMP_TARGETS=ANDROID")
+    val writeProject = { projectDir: Path ->
         // ABI validation would fail `check` first on the missing API dump; it is not the subject.
         projectDir.resolve("build.gradle.kts").writeText(
             buildScript.replace("enableApiValidation = true", "enableApiValidation = false"),
@@ -252,4 +277,26 @@ internal fun runKmpNewApiFailsCheck(row: Map<String, String>, tempDir: Path, bui
         writeAndroidLintConfig(projectDir)
         writeNewApiCall(projectDir.resolve("src/androidMain/kotlin/compat"), "KmpNewApi")
     }
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kmp-newapi",
+        projectDir = dir,
+        tasks = listOf(CHECK_TASK),
+        arguments = arguments,
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
+        expectFailure = listOf(
+            "Android Lint found 1 call above minSdk (NewApi)",
+            "src/androidMain/kotlin/compat/KmpNewApi.kt",
+        ),
+        writeProject = writeProject,
+    )
+    runJdkOnlyApiFailsCase(
+        row,
+        tempDir,
+        dir,
+        sourceDir = "src/androidMain/kotlin/compat",
+        arguments = arguments,
+        writeProject = writeProject,
+    )
 }

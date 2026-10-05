@@ -75,6 +75,27 @@ internal fun KotlinJvmCompile.limitKotlinJdkApi(
 }
 
 /**
+ * Android code runs against the device's API, described by `android.jar` on the classpath, and
+ * the JDK's own API is not on a device. KGP hides the JDK (`noJdk`) only for AGP 8's
+ * `kotlin-android` plugin, so on AGP 9 and in KMP Android targets a call to JDK-only API compiled
+ * and then failed at runtime. `-Xjdk-release` is no substitute: it still shows the JDK API up to
+ * the target, and fails outright where KGP already hides the JDK ("JDK_HOME path is not
+ * specified"). Java sources need nothing: AGP gives javac the Android SDK's own core library
+ * image, never the JDK's.
+ */
+internal fun KotlinJvmCompile.hideJdkFromAndroidCode(conf: FluxoConfigurationExtensionImpl) {
+    // KGP sets and locks it on the `kotlin-android` path; nothing to change there.
+    if (compilerOptions.noJdk.orNull != true) compilerOptions.noJdk.set(true)
+    conf.ctx.logDecision(
+        conf.project,
+        setting = "Kotlin JDK API ($name)",
+        value = "android.jar only",
+        reason = "Android code runs against the device's API, not the JDK's",
+        howToChange = "useJdkRelease in fkcSetup*",
+    )
+}
+
+/**
  * Sets javac's `--release` on this task when [jdkApiLimit] allows it (R12). The compile JDK comes
  * from the task's own `javaCompiler`, which is exact with or without a toolchain.
  *
