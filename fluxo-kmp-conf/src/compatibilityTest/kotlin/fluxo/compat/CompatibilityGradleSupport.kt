@@ -38,8 +38,12 @@ internal fun markerSettingsScript(rootProjectName: String): String {
     """.trimIndent()
 }
 
+// `--no-watch-fs`: cases rewrite a build script and start the next build at once, and with file
+// watching on, the change event could arrive after Gradle checked its configuration-cache inputs,
+// so the build reused the previous case's configuration (seen as a flaky `--add-exports` case
+// compiling with `--release`). Without watching, Gradle hashes the inputs on every build.
 internal fun gradleArguments(requiredTasks: List<String>): List<String> =
-    requiredTasks + "--stacktrace"
+    requiredTasks + "--stacktrace" + "--no-watch-fs"
 
 internal const val INNER_JDK_MARKER = "FLUXO_COMPAT_INNER_JDK="
 
