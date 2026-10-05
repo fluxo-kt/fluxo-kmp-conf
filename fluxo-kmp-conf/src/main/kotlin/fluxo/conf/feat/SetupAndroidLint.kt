@@ -51,12 +51,13 @@ private val VERSION_CHECKS = arrayOf(
     "NewerVersionAvailable",
 )
 
-internal fun FluxoKmpConfContext.registerLintMergeRootTask(): TaskProvider<MergeLintSarifTask>? {
+internal fun FluxoKmpConfContext.registerLintMergeRootTask(): TaskProvider<MergeSarifTask>? {
     if (testsDisabled) return null
-    return rootProject.tasks.registerCompat<MergeLintSarifTask>(MERGE_LINT_TASK_NAME) {
+    return rootProject.tasks.registerCompat<MergeSarifTask>(MERGE_LINT_TASK_NAME) {
         group = JavaBasePlugin.VERIFICATION_GROUP
         description = "Merges every module's Lint report; fails on calls above minSdk (NewApi)"
         output.set(project.layout.buildDirectory.file("lint-merged.sarif"))
+        failOnNewApi.set(true)
     }
 }
 

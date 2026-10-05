@@ -52,6 +52,7 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     runFetchedToolCase(row, tempDir)
     runToolInjectionCase(row, tempDir)
     runBundledToolVersionCase(row, tempDir)
+    runDetektTypeResolutionCase(row, tempDir)
 }
 
 /**

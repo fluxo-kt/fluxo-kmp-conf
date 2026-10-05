@@ -19,6 +19,7 @@ import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.builderMethod
+import fluxo.conf.feat.disableDetektTasks
 import fluxo.conf.feat.setupVerification
 import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
 import fluxo.conf.impl.MAIN_SOURCE_SET_POSTFIX
@@ -460,7 +461,7 @@ private fun KotlinProjectExtension.setupTargets(
     disableIfFilteredOut(conf)
 }
 
-private fun KotlinProjectExtension.setupTargets(action: Action<in KotlinTarget>) {
+internal fun KotlinProjectExtension.setupTargets(action: Action<in KotlinTarget>) {
     when (this) {
         is KotlinSingleTargetExtension<*> -> action.execute(target)
         is KotlinMultiplatformExtension -> targets.configureEach(action)
@@ -479,6 +480,7 @@ private fun KotlinTarget.disableIfFilteredOut(conf: FluxoConfigurationExtensionI
 
     logger.d("Target '{}' is not in KMP_TARGETS, disabling its compilations", target.name)
     disableCompilations()
+    disableDetektTasks(project)
     if (platformType != KotlinPlatformType.js) {
         return
     }

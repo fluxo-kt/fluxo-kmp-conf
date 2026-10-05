@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 
-internal class MergeLintSarifTest {
+internal class MergeSarifTest {
 
     // Lint lists per report only the rules that fired, so the same rule has different indexes.
     private val app = report("NewApi", "app/A.kt", "InlinedApi", "app/A.kt")

@@ -83,9 +83,12 @@ com.sun.xml.fastinfoset:FastInfoset:1.2.16
 commons-codec:commons-codec:1.22.1
 commons-io:commons-io:2.20.0
 commons-logging:commons-logging:1.2
+dev.detekt:detekt-gradle-plugin:2.0.0-alpha.6
 dev.equo.ide:solstice:1.8.2
 io.github.ben-manes.versions:io.github.ben-manes.versions.gradle.plugin:0.64.0
 io.github.ben-manes:gradle-versions-plugin:0.64.0
+io.github.detekt.sarif4k:sarif4k-jvm:0.6.0
+io.github.detekt.sarif4k:sarif4k:0.6.0
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8
 io.reactivex.rxjava3:rxjava:3.1.11
 jakarta.activation:jakarta.activation-api:1.2.1
@@ -138,6 +141,10 @@ org.jetbrains.kotlin:kotlin-util-klib:2.2.10
 org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.9.0
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.9.0
 org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0
+org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.4.1
+org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1
+org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.4.1
+org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1
 org.jetbrains:annotations:13.0
 org.jspecify:jspecify:1.0.1
 org.jvnet.staxex:stax-ex:1.8.1

@@ -47,6 +47,7 @@ com.squareup:javawriter:2.5.0
 com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.37.0
 com.vanniktech:gradle-maven-publish-plugin:0.37.0
 commons-io:commons-io:2.20.0
+dev.detekt:detekt-gradle-plugin:2.0.0-alpha.6
 dev.zacsweers.moshix:moshi-sealed-runtime:0.37.0
 io.github.ben-manes.versions:io.github.ben-manes.versions.gradle.plugin:0.64.0
 io.github.ben-manes:gradle-versions-plugin:0.64.0

@@ -76,7 +76,8 @@ com.osacky.doctor:doctor-plugin:0.12.1
 com.squareup.moshi:moshi-kotlin:1.15.2
 com.squareup.moshi:moshi:1.15.2
 com.squareup.okhttp3:okhttp-bom:4.12.0
-com.squareup.okhttp3:okhttp:4.12.0
+com.squareup.okhttp3:okhttp-jvm:5.1.0
+com.squareup.okhttp3:okhttp:5.1.0
 com.squareup.okio:okio-jvm:3.18.2
 com.squareup.okio:okio:3.18.2
 com.squareup.retrofit2:converter-moshi:3.0.0
@@ -92,9 +93,12 @@ com.vanniktech:gradle-maven-publish-plugin:0.37.0
 commons-codec:commons-codec:1.22.1
 commons-io:commons-io:2.20.0
 commons-logging:commons-logging:1.2
+dev.detekt:detekt-gradle-plugin:2.0.0-alpha.6
 dev.equo.ide:solstice:1.8.2
 io.github.ben-manes.versions:io.github.ben-manes.versions.gradle.plugin:0.64.0
 io.github.ben-manes:gradle-versions-plugin:0.64.0
+io.github.detekt.sarif4k:sarif4k-jvm:0.6.0
+io.github.detekt.sarif4k:sarif4k:0.6.0
 io.github.java-diff-utils:java-diff-utils:4.12
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8
 io.reactivex.rxjava3:rxjava:3.1.11

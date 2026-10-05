@@ -5,7 +5,7 @@ import java.nio.file.Path
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
 
-internal val ANDROID_NOISE = DETEKT_CLASSIFICATION_NOISE + ANDROID_LINT_VERSION_NOISE
+internal val ANDROID_NOISE = ANDROID_LINT_VERSION_NOISE
 
 internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     val result = runConsumerCase(
@@ -25,7 +25,8 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
     }
     if (row.isExecutionFixture()) {
         runAgp9KmpAndroidFilteredOutCase(row, tempDir)
-        runAgp9KmpSiblingDetektCase(row, tempDir)
+        runAgp9KmpSiblingDetektCase(row, tempDir, detekt1 = true)
+        runAgp9KmpSiblingDetektCase(row, tempDir, detekt1 = false)
         runKmpPlainDetektCase(row, tempDir)
         runAgp9KmpResourcesAndHostTestsCase(row, tempDir)
     }
@@ -60,19 +61,33 @@ private fun runKmpPlainDetektCase(row: Map<String, String>, tempDir: Path) {
  * KMP+Android module. Detekt 1.x resolves the raw compile classpath configuration, where AGP 9
  * offers the sibling as several variants ("cannot choose between … android-classes-jar /
  * android-lint / android-lint-local-aar"), so its classpath must be the one the compiler used.
+ * Run on both Detekt lines: fluxo derives Detekt 2 here (stdlib 2.2+), whose task takes the
+ * compiler's classpath by convention; Detekt 1 stays reachable by applying it, and its task names
+ * put the target first.
  */
-private fun runAgp9KmpSiblingDetektCase(row: Map<String, String>, tempDir: Path) {
+private fun runAgp9KmpSiblingDetektCase(
+    row: Map<String, String>,
+    tempDir: Path,
+    detekt1: Boolean,
+) {
     runConsumerCase(
         row,
         tempDir,
         rootProjectName = "compat-agp9-kmp-siblings",
-        projectDir = tempDir.resolve(row.getValue("id") + "-siblings"),
-        tasks = listOf("detektAndroidMain"),
+        projectDir = tempDir.resolve(row.getValue("id") + "-siblings" + if (detekt1) 1 else 2),
+        tasks = listOf(if (detekt1) "detektAndroidMain" else "detektMainAndroid"),
         arguments = listOf("-PKMP_TARGETS=ANDROID"),
         forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
     ) { projectDir ->
+        // Applied before fkcSetup*, which keeps the line a module already applied. A missed
+        // replace leaves the module on Detekt 2, where `detektAndroidMain` doesn't exist.
+        val group = "group = \"compat\""
+        val script = markerAgp9KmpBuildScript(row).let {
+            if (!detekt1) return@let it
+            it.replace(group, "apply(plugin = \"io.gitlab.arturbosch.detekt\"); $group")
+        }
         projectDir.resolve("build.gradle.kts").writeText(
-            markerAgp9KmpBuildScript(row) + "\n\n" +
+            script + "\n\n" +
                 "project.extensions.configure<" +
                 "org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>(\"kotlin\") {\n" +
                 "    sourceSets.named(\"commonMain\") {\n" +
@@ -85,7 +100,7 @@ private fun runAgp9KmpSiblingDetektCase(row: Map<String, String>, tempDir: Path)
         val lib = projectDir.resolve("lib")
         Files.createDirectories(lib.resolve("src/commonMain/kotlin/compat"))
         lib.resolve("src/commonMain/kotlin/compat/LibSubject.kt")
-            .writeText("package compat\n\nfun libName(): String = \"lib\"\n")
+            .writeText("package compat\n\nfun libName(prefix: String): String = prefix + \"lib\"\n")
         lib.resolve("build.gradle.kts").writeText(
             """
             fkcSetupMultiplatform(

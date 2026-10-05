@@ -49,11 +49,16 @@ naming:
     # False positives with SAM receiver usage
     active: false
 
-formatting:
+# Detekt 2's ktlint wrapper; Detekt 1 named this rule set `formatting`.
+ktlint:
   excludes:
     - '**/fluxo/conf/data/BuildConstants.kt'
     - '**/build/generated/**'
   ArgumentListWrapping:
+    maxLineLength: 100
+  ClassSignature:
+    maxLineLength: 100
+  FunctionExpressionBody:
     maxLineLength: 100
   FunctionSignature:
     maxLineLength: 100

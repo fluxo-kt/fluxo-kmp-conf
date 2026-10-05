@@ -2,234 +2,397 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>ArgumentListWrapping:SetupAndroid.kt$( "shell", "monkey", "-p", appIdProvider.get(), "-c", "android.intent.category.LAUNCHER", "1", )</ID>
-    <ID>AvoidFirstOrLastOnList:AbstractShrinkerTask.kt$AbstractShrinkerTask$first</ID>
-    <ID>AvoidFirstOrLastOnList:SetupJvmCompatibility.kt$first</ID>
-    <ID>CompilerWarning:AbstractShrinkerTask.kt$AbstractShrinkerTask$output != null</ID>
-    <ID>CompilerWarning:CompilationUtils.kt$compilations</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$because(reason)</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$if (DEBUG_PINS) { project.logger.v("Pinning ${requested.module} to $version in $path") }</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$reason</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$useVersion(version)</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$val compilerEmbeddable = object : ModuleIdentifier { override fun getGroup() = "org.jetbrains.kotlin" override fun getName() = "kotlin-compiler-embeddable" }</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$val path = project.path + "::${conf.name}"</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$val reason = "$PIN_REASON from bundle '$alias'"</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$val version = KOTLIN_PLUGIN_VERSION_STRING</ID>
-    <ID>CompilerWarning:DependencyPinningBundle.kt$version</ID>
-    <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$ctx.scmTag ?: defaultGitBranchName</ID>
-    <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$descriptionProp.orNull ?: project.description?.takeIf { it.isNotBlank() } ?: parent?.description</ID>
-    <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$groupProp.orNull ?: parent?.group?.takeIf { it.isNotBlank() } ?: ctx.libs.v("group", "package", allowFallback = false)</ID>
-    <ID>CompilerWarning:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$versionProp.orNull ?: parent?.version?.takeIf { it.isNotBlank() } ?: ctx.libs.v("version", "versionName", "app", "appVersion", "v", allowFallback = false)</ID>
-    <ID>CompilerWarning:GradleProvisioner.kt$GradleProvisioner$setVisible</ID>
-    <ID>CompilerWarning:JarState.kt$JarState.Companion$mavenCoordinate: String</ID>
-    <ID>CompilerWarning:JarState.kt$JarState.Companion$provisioner: Provisioner</ID>
-    <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$target.compilations</ID>
-    <ID>CompilerWarning:KotlinSetupDiagnosticTasks.kt$withJavaEnabled</ID>
-    <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$if (SHOW_DEBUG_LOGS) { val msg = "Detected plugin '$pluginId' class name: '$className' (via $url)" logger.v(msg) }</ID>
-    <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$logger: Logger</ID>
-    <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$val className = l.substring(IMPLEMENTATION_CLASS.length).trim() .takeIf { it.isNotEmpty() } ?: continue</ID>
-    <ID>CompilerWarning:LoadAndApplyPluginIfNotApplied.kt$yield(className)</ID>
-    <ID>CompilerWarning:MultiplatformSourceSetUtils.kt$compilations</ID>
-    <ID>CompilerWarning:MultiplatformSourceSetUtils.kt$project ?: targets.firstOrNull()?.project ?: throw NullPointerException("Please, provide project")</ID>
-    <ID>CompilerWarning:ProjectUtils.kt$javaClass.getMethod("getTotalMemorySize").invoke(this) as Long</ID>
-    <ID>CompilerWarning:SetupAndroidSigning.kt$alias</ID>
-    <ID>CompilerWarning:SetupArtifactsProcessing.kt$inputFiles</ID>
-    <ID>CompilerWarning:SetupBinaryCompatibilityValidator.kt$return when (targetName) { "android" -&gt; ApiTarget.ANDROID "jvm" -&gt; ApiTarget.JVM "js" -&gt; ApiTarget.JS else -&gt; error("Unsupported API check task name: $taskName") }</ID>
-    <ID>CompilerWarning:SetupBinaryCompatibilityValidator.kt$val targetName = taskName.removeSuffix("ApiCheck").takeUnless { it == taskName } ?: return null</ID>
-    <ID>CompilerWarning:SetupCompose.kt$enableIntrinsicRemember</ID>
-    <ID>CompilerWarning:SetupCompose.kt$enableNonSkippingGroupOptimization</ID>
-    <ID>CompilerWarning:SetupCompose.kt$enableStrongSkippingMode</ID>
-    <ID>CompilerWarning:SetupCompose.kt$generateFunctionKeyMetaClasses</ID>
-    <ID>CompilerWarning:SetupCompose.kt$stabilityConfigurationFile</ID>
-    <ID>CompilerWarning:SetupFinalizeAndroidDsl.kt$a.buildTypes</ID>
-    <ID>CompilerWarning:SetupJvmCompatibility.kt$this is KotlinJvmTarget</ID>
-    <ID>CompilerWarning:SetupJvmCompatibility.kt$withJavaEnabled</ID>
-    <ID>CompilerWarning:SetupKotlinCompatibility.kt$as?</ID>
-    <ID>CompilerWarning:SetupKotlinDependencies.kt$runtime</ID>
-    <ID>CompilerWarning:SetupKotlinExperimentalTestCompilation.kt$compilations</ID>
-    <ID>CompilerWarning:SetupKotlinOptions.kt$isJs = false</ID>
-    <ID>CompilerWarning:SetupKotlinOptions.kt$isJs = true</ID>
-    <ID>CompilerWarning:SetupKotlinOptions.kt$val isJs: Boolean</ID>
-    <ID>CompilerWarning:SetupPublication.kt$LibraryExtension</ID>
-    <ID>CompilerWarning:SetupPublication.kt$config: FluxoPublicationConfig</ID>
-    <ID>CompilerWarning:SetupPublication.kt$project: Project</ID>
-    <ID>CompilerWarning:SetupSpotless.kt$indentWithSpaces</ID>
-    <ID>CompilerWarning:SetupTestsReport.kt$mergedReportService == null</ID>
-    <ID>CompilerWarning:SetupTestsReport.kt$this is Test</ID>
-    <ID>CompilerWarning:TestReportResult.kt$TestReportResult.Companion$kmpTarget != null</ID>
-    <ID>CompilerWarning:TomlResultCatalog.kt$TomlResultCatalog$logger: Logger</ID>
-    <ID>CompilerWarning:VerifyApiWithAsm.kt$VerifierClassVisitor$expectedSuper != null</ID>
-    <ID>CompilerWarning:VerifyApiWithReflection.kt$if (!requireParamsAndPublic(method, pTypes, className, member)) { checked = false }</ID>
-    <ID>CompilerWarning:VerifyApiWithReflection.kt$method == null</ID>
-    <ID>CompilerWarning:VerifyApiWithReflection.kt$requireNotNull</ID>
-    <ID>CompilerWarning:VerifyApiWithReflection.kt$return if (checked) null else TestResult.ResultType.FAILURE</ID>
-    <ID>CompilerWarning:VerifyApiWithReflection.kt$val actualReturnType = method.returnType.name</ID>
-    <ID>CompilerWarning:VerifyApiWithReflection.kt$var checked = requireEquals(expected = returnType, actual = actualReturnType) { "Method return type mismatch (actual=$actualReturnType): $className#${member.signature}" }</ID>
-    <ID>CompilerWarning:VersionCatalogUtils.kt$alias</ID>
-    <ID>CyclomaticComplexMethod:AbstractShrinkerTask.kt$AbstractShrinkerTask$@Suppress("LongMethod") private fun writeRootConfiguration( file: File, reportsDir: Directory, jarsConfigurationFile: File, shrinker: JvmShrinker, )</ID>
-    <ID>CyclomaticComplexMethod:SetupFinalizeAndroidDsl.kt$internal fun Project.setupFinalizeAndroidDsl(ctx: FluxoKmpConfContext)</ID>
-    <ID>DataClassTypedIDs:FluxoPublicationConfig.kt$FluxoPublicationConfig$/** PGP signing key ID */ public var signingKeyId: String? = null</ID>
-    <ID>DataClassTypedIDs:FluxoPublicationConfig.kt$FluxoPublicationConfig$public var developerId: String? = null</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$// TODO: Move into a separate file, loaded from resources</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Add automatic main class detection from the main jar manifest</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Benchmark and adjust best options for R8/ProGuard.</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Make all dirs to use the chain and id in chain!</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: Setup JDK here from the toolchain or jvmTarget/jdk-release.</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Debugging</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Process output and print only main information if not verbose</ID>
-    <ID>ForbiddenComment:AbstractShrinkerTask.kt$AbstractShrinkerTask$// TODO: Shared obfuscation dictionaries</ID>
-    <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget$// FIXME: Implement API for source sets.</ID>
-    <ID>ForbiddenComment:AndroidTarget.kt$AndroidTarget.Configure$// TODO: Detect applied plugin (lib/app) and use appropriate container?</ID>
-    <ID>ForbiddenComment:ContainerImpl.kt$ContainerImpl$// TODO: Utilize version available from PluginDependency</ID>
-    <ID>ForbiddenComment:DependencyAnalysisPlugin.kt$// TODO: no need to declare transitive dependencies for the final app module</ID>
-    <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Allow to customize configurations auto-filtration</ID>
-    <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Allow to customize projects auto-filtration</ID>
-    <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Opt-out configurable switch via `fluxoKmpConf { depsGuard = false }`</ID>
-    <ID>ForbiddenComment:DependencyGuardPlugin.kt$// TODO: Update when resolved (https://github.com/dropbox/dependency-guard/issues/3)</ID>
-    <ID>ForbiddenComment:DependencyUtils.kt$// TODO: Support rich VersionConstraint</ID>
-    <ID>ForbiddenComment:FkcSetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>
-    <ID>ForbiddenComment:FkcSetupAndroid.kt$// FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }</ID>
-    <ID>ForbiddenComment:FkcSetupGradlePlugin.kt$// TODO: Retry create pluginId from configuration if null?</ID>
-    <ID>ForbiddenComment:FkcSetupGradlePlugin.kt$// TODO: Support for multiple plugins</ID>
-    <ID>ForbiddenComment:FkcSetupKotlin.kt$// TODO: Support JVM application with `application` plugin</ID>
-    <ID>ForbiddenComment:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$// TODO: Avoid casting</ID>
-    <ID>ForbiddenComment:FluxoConfigurationExtensionKotlin.kt$FluxoConfigurationExtensionKotlin$// FIXME: koverReport settings</ID>
-    <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$// TODO: Add validation for githubProject value.</ID>
-    <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// FIXME: Detekt and use here if CI (GitHub) debug logs are enabled.</ID>
-    <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.</ID>
-    <ID>ForbiddenComment:FluxoKmpConfContext.kt$FluxoKmpConfContext$// TODO: GC stats</ID>
-    <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// FIXME: Prepare lazy APIs to avoid afterEvaluate in such cases.</ID>
-    <ID>ForbiddenComment:FluxoKmpConfPlugin.kt$FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
-    <ID>ForbiddenComment:FluxoPublicationConfig.kt$// TODO: Make an immutable resulting class</ID>
-    <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt$// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
-    <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Add env flag for dynamic switch-on when needed</ID>
-    <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Auto detect if `-Xjdk-release` actually can be used.</ID>
-    <ID>ForbiddenComment:KotlinConfigSetup.kt$// TODO: Detect if JVM toolchains are already enabled in the project.</ID>
-    <ID>ForbiddenComment:KotlinSourceSetsReportTask.kt$// TODO: Mark source sets with deprecated or 3rd tier targets</ID>
-    <ID>ForbiddenComment:LoadAndApplyPluginIfNotApplied.kt$// TODO: Check version for correctness</ID>
-    <ID>ForbiddenComment:MultiplatformSourceSetUtils.kt$// TODO: Create bundles once and reuse or at least make them lazy evaluatable.</ID>
-    <ID>ForbiddenComment:NodeGraphsRenderer.kt$NodeGraphsRenderer.LegendRenderer$// FIXME: This is not implemented yet.</ID>
-    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Called 3 times with same error when no git installed or global config error.</ID>
-    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Consider using `GIT_BRANCH` (JitPack) or similar env var instead!</ID>
-    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Consider using `GIT_COMMIT` (JitPack) or similar env var instead!</ID>
-    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Don't allow commit/branch for the release.</ID>
-    <ID>ForbiddenComment:PropsAndEnv.kt$// FIXME: Don't check tag for the snapshot publication.</ID>
-    <ID>ForbiddenComment:PropsAndEnv.kt$// TODO: Optimize, make lazy accessible via root project including current branch name</ID>
-    <ID>ForbiddenComment:RegisterShrinkerTask.kt$// FIXME: Avoid duplicate logging between similar tasks</ID>
-    <ID>ForbiddenComment:RegisterShrinkerTask.kt$// TODO: note dependency in the (root?) project classpath</ID>
-    <ID>ForbiddenComment:SetupAndroid.kt$// FIXME: Automatic per-app language support</ID>
-    <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Support bundletool codeTransparency here.</ID>
-    <ID>ForbiddenComment:SetupAndroid.kt$// TODO: Test for libraries bytecode.</ID>
-    <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Cache the Lint configuration file?</ID>
-    <ID>ForbiddenComment:SetupAndroidLint.kt$// TODO: Check variantName instead of the task name?</ID>
-    <ID>ForbiddenComment:SetupAndroidSigning.kt$// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Create a marker task for the main processing chain with a stable name.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Ensure the obfuscation mapping incrementality and compatibility when double-shrinking.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Provide unporcessed artifacts alongside the processed ones as a variant.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Publish the debug non-shrunken artifacts alongside the release shrunken ones.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Run tests with minified artifacts.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Shrinkers loose JARs reproducibility,</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support KMP JVM target minification with ProGuard.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support auto-loading of the shrinking rules from the classpath for the ProGuard.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support final artifact filtration step similar to the Android packaging options.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support other shadowing/relocation processors in the chain.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Support shadow jar generation before shrinking artifacts.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// FIXME: Verify proper replacement of the original artifact with the processed one (map by file?).</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Allow to call shrinker by task name even if it's disabled.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support Android minification with Fluxo processing chain.</ID>
-    <ID>ForbiddenComment:SetupArtifactsProcessing.kt$// TODO: Support auto-disabling kotlin null checks generation for the shrunken release builds.</ID>
-    <ID>ForbiddenComment:SetupCompose.kt$// TODO: Make Compose Compiler metrics in HTML automatically with Gradle.</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable Detekt for the experimentalLatest test compilation.</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup checks for the non source set kotlin files (e.g., *.kts scripts).</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup the "InvalidPackageDeclaration" rule for each module,</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Setup the light-weight mode for the git hooks, to run only on the changed files.</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Add option to ignore baselines completely and fail on anything,</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Cache the config dir?</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$// TODO: Improve detekt task platform detection.</ID>
-    <ID>ForbiddenComment:SetupDetekt.kt$DetectedTaskPlatform$// TODO: Detect common/metadata tasks?</ID>
-    <ID>ForbiddenComment:SetupKotlin.kt$// FIXME: Configure common compilerOptions via KotlinProjectExtension.compilerOptions</ID>
-    <ID>ForbiddenComment:SetupKotlin.kt$// TODO: Check KSP setup for KMP modules</ID>
-    <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.</ID>
-    <ID>ForbiddenComment:SetupKotlinDependencies.kt$// TODO: With coil-bom:2.2.2 doesn't work as enforcedPlatform for Android and/or KMP</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// FIXME: Move to JvmCompatibility?</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: -Xwasm-use-new-exception-proposal</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Allow -Xjdk-release=1.6 with -jvm-target 1.8 for Kotlin 2.0+</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Guard conditions for when-with-subject (Kotlin 2.0.20)</ID>
-    <ID>ForbiddenComment:SetupKotlinOptions.kt$// TODO: Support for -Xemit-jvm-type-annotations</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// FIXME: Disambiguate existing javadoc and sources tasks</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// FIXME: provide sources for KMP publications</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple developers</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Add support for multiple licenses</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Avoid publication setup when possible</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Decorate the build logs with maven coordinates of published artifacts</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Distinguish between common and platform-specific publications</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Make configurable (+ sanitize/verify)</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Protect publication tasks from invalid GIT state (dirty, untracked files, etc.)</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Set RC/alpha/beta releases status to Ivy's: milestone/integration when it will be possible</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Should wrap `setupPublicationExtension` in afterEvaluate?</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Take jar tasks from project outputs instead of tasks?</ID>
-    <ID>ForbiddenComment:SetupPublication.kt$// TODO: Warn only when assemble and/or publishing is really called.</ID>
-    <ID>ForbiddenComment:SetupSpotless.kt$// TODO: Freshmark</ID>
-    <ID>ForbiddenComment:SetupSpotless.kt$// TODO: Git pre-commit hook</ID>
-    <ID>ForbiddenComment:SetupSpotless.kt$// TODO: Licenses</ID>
-    <ID>ForbiddenComment:SetupSpotless.kt$// TODO: Only if java plugin is enabled?</ID>
-    <ID>ForbiddenComment:SetupSpotless.kt$// TODO: Use ktlint directly?</ID>
-    <ID>ForbiddenComment:SetupSpotless.kt$// TODO: read base settings from .editorconfig ?</ID>
-    <ID>ForbiddenComment:SetupTestsReport.kt$// TODO: Support Gradle before 8.0 (set service parameter and usesService) ?</ID>
-    <ID>ForbiddenComment:SetupValidatePluginTasks.kt$// TODO: Multiset configuration</ID>
-    <ID>ForbiddenComment:SetupVanniktechPublication.kt$// TODO: Distinguish between common and platform-specific publications</ID>
-    <ID>ForbiddenComment:SetupVanniktechPublication.kt$// TODO: https://github.com/gmazzo/gradle-report-publications-plugin</ID>
-    <ID>ForbiddenComment:SetupVerification.kt$// FIXME: Setup Android Lint for non-Android targets in KMP</ID>
-    <ID>ForbiddenComment:SetupVerification.kt$// TODO: Test separate ktlint setup with gradle plugin</ID>
-    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// FIXME: Warn on data classes in public API!</ID>
-    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: Optionally keep $EntriesMappings and $DefaultImpls classes</ID>
-    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt$ShrinkerKeepRulesFromApiTask$// TODO: auto-detect synthetic methods that can be removed from the rules.</ID>
-    <ID>ForbiddenComment:ShrinkerTestBase.kt$// TODO: Optimized bytcode tests.</ID>
-    <ID>ForbiddenComment:ShrinkerVerificationTestTask.kt$ShrinkerVerificationTestTask.ShrinkerVerificationTest$// TODO: Verify the jar itself (artifact signature, reproducibility, etc.)</ID>
-    <ID>ForbiddenComment:TargetAndroidContainer.kt$TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
-    <ID>ForbiddenComment:TomlResultCatalog.kt$TomlResultCatalog$// TODO: Parse bundles</ID>
-    <ID>ForbiddenComment:VerifyApiWithReflection.kt$// TODO: Check parent classes and interfaces.</ID>
-    <ID>ForbiddenPublicDataClass:FluxoPublicationConfig.kt$FluxoPublicationConfig</ID>
-    <ID>ImportOrdering:WasmTarget.kt$import DEFAULT_COMMON_JS_CONFIGURATION as DEFAULT_CONF import fluxo.conf.dsl.container.KotlinTargetContainer import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithWasmPresetFunctions import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl</ID>
-    <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt$FluxoConfigurationExtensionAndroidImpl$ </ID>
-    <ID>LongMethod:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>MutableTypeShouldBePrivate:LoadAndApplyPluginIfNotApplied.kt$val classNames: MutableSet&lt;String&gt;</ID>
-    <ID>NestedBlockDepth:TestReportsMergeTask.kt$TestReportsMergeTask$@TaskAction fun merge()</ID>
-    <ID>NoNotNullOperator:AbstractShrinkerTask.kt$AbstractShrinkerTask$callFallbackOrder.last()!!</ID>
-    <ID>NoUnusedImports:SetupAndroid.kt$fluxo.conf.impl.android.SetupAndroid.kt</ID>
-    <ID>NoUnusedImports:SetupPublication.kt$fluxo.conf.pub.SetupPublication.kt</ID>
-    <ID>SpacingAroundComma:SetupAndroid.kt$,</ID>
-    <ID>SpreadOperator:GradleFileUtils.kt$(*dirs.ioFiles())</ID>
-    <ID>UnnecessaryPassThroughClass:InteroperabilityUtils.kt$KotlinClosure2&lt;in T : Any, in U : Any, V : Any&gt; : Closure</ID>
-    <ID>UnnecessaryPassThroughClass:KotlinMultiplatformActionContainer.kt$KotlinMultiplatformActionContainer : CustomTypeContainerContainerKotlinMultiplatformAware</ID>
-    <ID>UnnecessaryPassThroughClass:KotlinProjectActionContainer.kt$KotlinProjectActionContainer : CustomTypeContainerContainerKotlinAware</ID>
-    <ID>UnreachableCode:DependencyPinningBundle.kt$because(reason)</ID>
-    <ID>UnreachableCode:DependencyPinningBundle.kt$if (DEBUG_PINS) { project.logger.v("Pinning ${requested.module} to $version in $path") }</ID>
-    <ID>UnreachableCode:DependencyPinningBundle.kt$reason</ID>
-    <ID>UnreachableCode:DependencyPinningBundle.kt$useVersion(version)</ID>
-    <ID>UnreachableCode:DependencyPinningBundle.kt$version</ID>
-    <ID>UnreachableCode:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$ctx.scmTag ?: defaultGitBranchName</ID>
-    <ID>UnreachableCode:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$descriptionProp.orNull ?: project.description?.takeIf { it.isNotBlank() } ?: parent?.description</ID>
-    <ID>UnreachableCode:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$groupProp.orNull ?: parent?.group?.takeIf { it.isNotBlank() } ?: ctx.libs.v("group", "package", allowFallback = false)</ID>
-    <ID>UnreachableCode:FluxoConfigurationExtensionPublicationImpl.kt$FluxoConfigurationExtensionPublicationImpl$versionProp.orNull ?: parent?.version?.takeIf { it.isNotBlank() } ?: ctx.libs.v("version", "versionName", "app", "appVersion", "v", allowFallback = false)</ID>
-    <ID>UnreachableCode:LoadAndApplyPluginIfNotApplied.kt$if (SHOW_DEBUG_LOGS) { val msg = "Detected plugin '$pluginId' class name: '$className' (via $url)" logger.v(msg) }</ID>
-    <ID>UnreachableCode:LoadAndApplyPluginIfNotApplied.kt$val className = l.substring(IMPLEMENTATION_CLASS.length).trim() .takeIf { it.isNotEmpty() } ?: continue</ID>
-    <ID>UnreachableCode:LoadAndApplyPluginIfNotApplied.kt$yield(className)</ID>
-    <ID>UnreachableCode:MultiplatformSourceSetUtils.kt$project ?: targets.firstOrNull()?.project ?: throw NullPointerException("Please, provide project")</ID>
-    <ID>UnreachableCode:SetupBinaryCompatibilityValidator.kt$return when (targetName) { "android" -&gt; ApiTarget.ANDROID "jvm" -&gt; ApiTarget.JVM "js" -&gt; ApiTarget.JS else -&gt; error("Unsupported API check task name: $taskName") }</ID>
-    <ID>UnreachableCode:SetupBinaryCompatibilityValidator.kt$val targetName = taskName.removeSuffix("ApiCheck").takeUnless { it == taskName } ?: return null</ID>
-    <ID>UnreachableCode:VerifyApiWithReflection.kt$if (!requireParamsAndPublic(method, pTypes, className, member)) { checked = false }</ID>
-    <ID>UnreachableCode:VerifyApiWithReflection.kt$return if (checked) null else TestResult.ResultType.FAILURE</ID>
-    <ID>UnreachableCode:VerifyApiWithReflection.kt$val actualReturnType = method.returnType.name</ID>
-    <ID>UnreachableCode:VerifyApiWithReflection.kt$var checked = requireEquals(expected = returnType, actual = actualReturnType) { "Method return type mismatch (actual=$actualReturnType): $className#${member.signature}" }</ID>
-    <ID>UnusedPrivateMember:AbstractShrinkerTask.kt$AbstractShrinkerTask$private fun Writer.ln()</ID>
-    <ID>UnusedPrivateMember:AbstractShrinkerTask.kt$AbstractShrinkerTask$private fun Writer.ln(s: String)</ID>
-    <ID>UnusedPrivateMember:SetupAndroid.kt$private fun Project.configureMonkeyLauncherTasks()</ID>
+    <ID>AbstractClassCanBeConcreteClass:BuildEndReport.kt:BuildEndReportAction$BuildEndReportAction</ID>
+    <ID>AbstractClassCanBeConcreteClass:ShrinkerTestBase.kt:ShrinkerTestBase$ShrinkerTestBase</ID>
+    <ID>AbstractClassCanBeConcreteClass:TargetAndroidNativeContainer.kt:TargetAndroidNativeContainer$TargetAndroidNativeContainer</ID>
+    <ID>AbstractClassCanBeConcreteClass:TargetAppleIosContainer.kt:TargetAppleIosContainer$TargetAppleIosContainer</ID>
+    <ID>AbstractClassCanBeConcreteClass:TargetAppleMacosContainer.kt:TargetAppleMacosContainer$TargetAppleMacosContainer</ID>
+    <ID>AbstractClassCanBeConcreteClass:TargetAppleTvosContainer.kt:TargetAppleTvosContainer$TargetAppleTvosContainer</ID>
+    <ID>AbstractClassCanBeConcreteClass:TargetAppleWatchosContainer.kt:TargetAppleWatchosContainer$TargetAppleWatchosContainer</ID>
+    <ID>AbstractClassCanBeConcreteClass:TargetLinuxContainer.kt:TargetLinuxContainer$TargetLinuxContainer</ID>
+    <ID>AbstractClassCanBeConcreteClass:TargetMingwContainer.kt:TargetMingwContainer$TargetMingwContainer</ID>
+    <ID>AbstractClassCanBeConcreteClass:TargetWasmContainer.kt:TargetWasmContainer$TargetWasmContainer</ID>
+    <ID>AbstractClassCanBeInterface:JvmFilesProvider.kt:JvmFilesProvider$JvmFilesProvider</ID>
+    <ID>ArgumentListWrapping:AbstractShrinkerTask.kt:AbstractShrinkerTask$( rootConfigFile, outJars, reportsDir, javaHome, external = false, )</ID>
+    <ID>ArgumentListWrapping:DependencyGuardPlugin.kt:( "metadata", "scriptdef", "compilerplugin", )</ID>
+    <ID>ArgumentListWrapping:FluxoConfigurationExtensionKotlinImpl.kt:FluxoConfigurationExtensionKotlinImpl$( "jvmTarget", "javaLangTarget", "javaLangSource", "javaToolchain", "sourceCompatibility", "targetCompatibility", allowFallback = false, )</ID>
+    <ID>ArgumentListWrapping:FluxoConfigurationExtensionKotlinImpl.kt:FluxoConfigurationExtensionKotlinImpl$( "jvmTestsTarget", "javaTestsLangTarget", allowFallback = false, )</ID>
+    <ID>ArgumentListWrapping:FluxoConfigurationExtensionKotlinImpl.kt:FluxoConfigurationExtensionKotlinImpl$( "kotlinApiVersion", "kotlinApi", allowFallback = false, )</ID>
+    <ID>ArgumentListWrapping:FluxoConfigurationExtensionKotlinImpl.kt:FluxoConfigurationExtensionKotlinImpl$( "kotlinCoreLibraries", "kotlinCoreLibrariesVersion", "kotlinStdlib", "kotlin", "kotlinVersion", allowFallback = false, )</ID>
+    <ID>ArgumentListWrapping:FluxoConfigurationExtensionKotlinImpl.kt:FluxoConfigurationExtensionKotlinImpl$( "kotlinLangVersion", "kotlinLang", "kotlinLanguage", allowFallback = false, )</ID>
+    <ID>ArgumentListWrapping:FluxoConfigurationExtensionKotlinImpl.kt:FluxoConfigurationExtensionKotlinImpl$( "testsKotlinLangVersion", "testsKotlinLang", allowFallback = false, )</ID>
+    <ID>ArgumentListWrapping:SetupAndroid.kt:( "shell", "monkey", "-p", appIdProvider.get(), "-c", "android.intent.category.LAUNCHER", "1", )</ID>
+    <ID>BlankLineBetweenWhenConditions:AbstractShrinkerTask.kt:AbstractShrinkerTask$when (shrinker) { ProGuard -&gt; getJmods(javaHome) else -&gt; { // R8 don't need jmods val r8Mode = if (r8Compat) "compat " else "full-" logger.l("R8 in ${r8Mode}mode") null } }</ID>
+    <ID>BlankLineBetweenWhenConditions:AbstractShrinkerTask.kt:AbstractShrinkerTask$when { callType != ProcessorCallType.BUNDLED -&gt; REMOTE_SHRINKER_VERSION[shrinker] else -&gt; when (shrinker) { ProGuard -&gt; BUNDLED_PROGUARD_VERSION R8 -&gt; BUNDLED_R8_VERSION } }</ID>
+    <ID>BlankLineBetweenWhenConditions:CompatibilityGradleSupport.kt:when { settingsPlugin -&gt; "plugins { id(\"${pluginId()}.settings\") version \"${pluginVersion()}\" }" else -&gt; "" }</ID>
+    <ID>BlankLineBetweenWhenConditions:FluxoKmpConfContext.kt:FluxoKmpConfContext$when (val parent = gradle.parent) { null -&gt; false else -&gt; { val noTasks = startTaskNames.isEmpty() if (noTasks) logger.l("INCLUDED BUILD!") val pDir = parent.startParameter.run { projectDir ?: currentDir } val dir = pDir.run { val relDir = relativeTo(start.projectDir ?: project.projectDir) if (relDir.path.startsWith("..")) pDir else relDir } logger.l("Parent Gradle build: $dir") noTasks } }</ID>
+    <ID>BlankLineBetweenWhenConditions:FluxoKmpConfContext.kt:FluxoKmpConfContext$when { isIncludedBuild -&gt; "INCLUDED BUILD" project.disableTests().get() -&gt; "DISABLE_TESTS flag" start.excludedTaskNames.let { CHECK_TASK_NAME in it || TEST_TASK_NAME in it } -&gt; { "EXCLUDED_TASKS${start.excludedTaskNames}" } else -&gt; null }</ID>
+    <ID>BlankLineBetweenWhenConditions:GradleProvisioner.kt:GradleProvisioner.Request$when { this === other -&gt; true other is Request -&gt; { val o: Request = other o.withTransitives == withTransitives &amp;&amp; o.mavenCoords == mavenCoords } else -&gt; false }</ID>
+    <ID>BlankLineBetweenWhenConditions:KmpHierarchyTemplate.kt:when (it.platformType) { KotlinPlatformType.jvm, KotlinPlatformType.common, KotlinPlatformType.androidJvm -&gt; false else -&gt; true }</ID>
+    <ID>BlankLineBetweenWhenConditions:KmpTargetCode.kt:KmpTargetCode.Companion$when (family) { Family.ANDROID -&gt; ANDROID_NATIVE Family.MINGW -&gt; MINGW Family.LINUX -&gt; LINUX Family.OSX -&gt; OSX Family.IOS -&gt; IOS Family.TVOS -&gt; TVOS Family.WATCHOS -&gt; WATCHOS else -&gt; arrayOf() }</ID>
+    <ID>BlankLineBetweenWhenConditions:KmpTargetCode.kt:KmpTargetCode.Companion$when (val platformType = target.platformType) { KotlinPlatformType.common -&gt; COMMON KotlinPlatformType.jvm -&gt; JVM KotlinPlatformType.androidJvm -&gt; ANDROID KotlinPlatformType.js -&gt; JS KotlinPlatformType.wasm -&gt; when (target) { is KotlinWasmWasiTargetDsl -&gt; WASM_WASI else -&gt; WASM_JS } KotlinPlatformType.native -&gt; { val konanTarget = (target as KotlinNativeTarget).konanTarget konanTarget.toKmpTargetCode() ?: null.also { logger?.w("Unexpected KonanTarget: $konanTarget") } } else -&gt; { logger?.w("Unexpected KotlinPlatformType: $platformType") null } }</ID>
+    <ID>BlankLineBetweenWhenConditions:KmpTargetCode.kt:when { !native -&gt; KotlinSupport.FULL target == null || target in KonanTarget.deprecatedTargets &amp;&amp; target !in KonanTarget.toleratedDeprecatedTargets -&gt; KotlinSupport.UNSUPPORTED target in KonanTarget.deprecatedTargets -&gt; KotlinSupport.DEPRECATED else -&gt; KotlinSupport.FULL }</ID>
+    <ID>BlankLineBetweenWhenConditions:ParseJvmApiDump.kt:when (arrayLevels) { 0 -&gt; descriptorTypeFromNameConvert(name, javaName, isArray = false) else -&gt; "[".repeat(arrayLevels) + descriptorTypeFromNameConvert( name = name.substring(0, i + 2), javaName = javaName, isArray = true, ) }</ID>
+    <ID>BlankLineBetweenWhenConditions:ParseJvmApiDump.kt:when (name) { "boolean" -&gt; if (isArray || !javaName) "Z" else name "byte" -&gt; if (isArray || !javaName) "B" else name "char" -&gt; if (isArray || !javaName) "C" else name "short" -&gt; if (isArray || !javaName) "S" else name "int" -&gt; if (isArray || !javaName) "I" else name "long" -&gt; if (isArray || !javaName) "J" else name "float" -&gt; if (isArray || !javaName) "F" else name "double" -&gt; if (isArray || !javaName) "D" else name "void", "" -&gt; if (isArray || !javaName) "V" else name else -&gt; { val prefix = if (isArray || !javaName) "L" else "" val n = if (javaName) name else name.replace('.', '/') val suffix = if (isArray || !javaName) ";" else "" "$prefix$n$suffix" } }</ID>
+    <ID>BlankLineBetweenWhenConditions:RegisterShrinkerTask.kt:when (version) { null -&gt; version = prev else -&gt; { if (version != prev) { project.logger.l( "Override $shrinker version by libs.versions.toml " + "to $version from $prev", ) } coords = "${parts[0]}:${parts[1]}:$version" } }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupAndroid.kt:when (this) { is LibraryExtension -&gt; buildTypes { maybeCreate(DEBUG).apply { matchingFallbacks.addAll(listOf("test", DEBUG, "qa")) } maybeCreate(RELEASE).apply { matchingFallbacks.addAll(listOf(RELEASE, "prod", "production")) } } is ApplicationExtension -&gt; buildTypes { maybeCreate(DEBUG).apply { matchingFallbacks.addAll(listOf("test", DEBUG, "qa")) // UI localization testing. // Generate resources for pseudo-locales: en-XA and ar-XB. // https://developer.android.com/guide/topics/resources/pseudolocales // `isPseudoLocalesEnabled` is on `ApplicationBuildType`, not // `LibraryBuildType` — it's the app that bundles resources. if (pseudoLocales) { isPseudoLocalesEnabled = true } } maybeCreate(RELEASE).apply { matchingFallbacks.addAll(listOf(RELEASE, "prod", "production")) } } }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupDetekt.kt:when { DETEKT2_IDS.any(pluginManager::hasPlugin) -&gt; true to "applied by the module" DETEKT1_IDS.any(pluginManager::hasPlugin) -&gt; false to "applied by the module" AgpVersion.current(this)?.let { it &lt; DETEKT2_MIN_AGP } == true -&gt; false to "Detekt 2 needs AGP $DETEKT2_MIN_AGP or newer" parseDetektLangVersion(conf.kotlinConfig.coreLibs) &gt;= DETEKT2_MIN_STDLIB -&gt; { conf.ctx.buildEndReport.hintOnDetekt2Failure(this) true to "stdlib ${conf.kotlinConfig.coreLibs}: Detekt 1 can't read stdlib " + "$DETEKT2_MIN_STDLIB_TEXT+, so its type-resolved rules would go silent" } else -&gt; false to "stdlib ${conf.kotlinConfig.coreLibs} is readable by Detekt 1" }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupDetekt.kt:when { task.name == DETEKT_TASK_NAME -&gt; false !task.name.endsWith(SOURCE_SET_SUFFIX) -&gt; true // In a single-target module every source set belongs to a JVM/Android compilation. covered == null -&gt; false else -&gt; sourceSet !in covered }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupDetekt.kt:when { testsDisabled || !context.hasStartTaskCalled(MergeDetektBaselinesTask.TASK_NAME) -&gt; null else -&gt; tasks.registerCompat&lt;MergeDetektBaselinesTask&gt;(MergeDetektBaselinesTask.TASK_NAME) { outputFile.set(detektBaselineFile) } }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupJvmCompatibility.kt:when (this) { is KotlinJvmAndroidCompilation -&gt; compileJavaTaskProvider is KotlinWithJavaCompilation&lt;*, *&gt; -&gt; compileJavaTaskProvider // nullable for Kotlin-only JVM target in KMP-module is KotlinJvmCompilation -&gt; compileJavaTaskProvider else -&gt; null }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupKmpAndroidExtension.kt:when (val v = conf.androidCompileSdk) { is Int -&gt; compileSdk = v is String -&gt; compileSdkPreview = v else -&gt; conf.project.logger.e( "Unsupported `androidCompileSdk` type ${v::class.simpleName}; " + "expected Int or String preview. Ignored.", ) }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupKmpAndroidExtension.kt:when (val v = conf.androidMinSdk) { is Int -&gt; minSdk = v is String -&gt; minSdkPreview = v else -&gt; conf.project.logger.e( "Unsupported `androidMinSdk` type ${v::class.simpleName}; " + "expected Int or String preview. Ignored.", ) }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupKotlin.kt:when { !isAndroid -&gt; jvmTargetVersion?.let { limitKotlinJdkApi(conf, it) } // Host tests run on a JDK, so they keep its API. !isTest -&gt; hideJdkFromAndroidCode(conf) }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupPublication.kt:when { !isSigningEnabled -&gt; null else -&gt; tasks.withType&lt;Sign&gt; { // logger.v("setup signing task '$name' ('$path')") jarTasks.forEach { mustRunAfter(it) } } }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupTestsReport.kt:when { platform.equals("watchos", ignoreCase = true) -&gt; Family.WATCHOS platform.equals("tvos", ignoreCase = true) -&gt; Family.TVOS platform.equals("ios", ignoreCase = true) -&gt; Family.IOS platform.equals("darwin", ignoreCase = true) || platform.equals("apple", ignoreCase = true) || platform.equals("macos", ignoreCase = true) -&gt; Family.OSX platform.equals("android", ignoreCase = true) -&gt; Family.ANDROID platform.equals("linux", ignoreCase = true) -&gt; Family.LINUX platform.equals("mingw", ignoreCase = true) || platform.equals("win", ignoreCase = true) || platform.equals("windows", ignoreCase = true) -&gt; Family.MINGW else -&gt; throw IllegalArgumentException("Unsupported family: $platform") }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupTestsReport.kt:when { testsDisabled -&gt; null else -&gt; try { project.gradle.sharedServices.registerIfAbsent( TestReportService.NAME, TestReportService::class.java, ) { // TODO: Support Gradle before 8.0 (set service parameter and usesService) ? } } catch (e: Throwable) { project.logger.e("Failed to register TestReportService: $e", e) null } }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupTestsReport.kt:when { testsDisabled || mergedReportService == null -&gt; null else -&gt; { project.logger.l("setupTestsReport, register :$TEST_REPORTS_TASK_NAME task") project.tasks.registerCompat&lt;TestReportsMergeTask&gt;(TEST_REPORTS_TASK_NAME) { output.set(project.layout.buildDirectory.file(TEST_REPORTS_FILE_NAME)) } } }</ID>
+    <ID>BlankLineBetweenWhenConditions:SetupVanniktechPublication.kt:when { mode == ConfigurationType.GRADLE_PLUGIN || plugins.hasPlugin(GRADLE_PLUGIN_PUBLISH_PLUGIN_ID) -&gt; configure(GradlePublishPlugin()) mode == ConfigurationType.KOTLIN_JVM || plugins.hasPlugin(KOTLIN_JVM_PLUGIN_ID) -&gt; setupVanniktechKotlinJvmPublication(p, config, conf) plugins.hasPlugin("java-gradle-plugin") -&gt; configure(GradlePlugin(vanniktechJavaDocOption(p, config, conf))) plugins.hasPlugin("java-library") || plugins.hasPlugin("java") -&gt; configure(JavaLibrary(vanniktechJavaDocOption(p, config, conf))) plugins.hasPlugin("java-platform") -&gt; configure(JavaPlatform()) plugins.hasPlugin("version-catalog") -&gt; configure(VersionCatalog()) else -&gt; p.logger.w("No compatible plugin found in project ${p.path} for publishing") }</ID>
+    <ID>BlankLineBetweenWhenConditions:ShrinkerReflectiveCaller.kt:ShrinkerReflectiveCaller$when { !it.startsWith('"') -&gt; it // Required for R8 else -&gt; it.trim('"').replace("\\\\", "\\") }</ID>
+    <ID>BlankLineBetweenWhenConditions:ShrinkerTestBase.kt:ShrinkerTestBase$when { !addNoArgConstructorForR8Compat -&gt; expect // R8 compat always keeps no-argument constructor for kept classes! else -&gt; addNoArgConstructorsForR8Compat(expect) }</ID>
+    <ID>BlankLineBetweenWhenConditions:TestReportResult.kt:TestReportResult.Companion$when { !hasKmpTarget -&gt; null else -&gt; name.substringAfterLast('[', "") .trimEnd(']') .takeIf { it.isNotEmpty() } }</ID>
+    <ID>BlankLineBetweenWhenConditions:VerifyApiWithAsm.kt:VerifierClassVisitor$when (superName) { null, OBJECT_CLASS -&gt; interfaces?.asList() else -&gt; when { interfaces.isNullOrEmpty() -&gt; listOf(superName) else -&gt; MutableList(interfaces.size + 1) { if (it == 0) superName else interfaces[it - 1] } } }</ID>
+    <ID>BlankLineBetweenWhenConditions:VerifyApiWithAsm.kt:VerifierClassVisitor$when { interfaces.isNullOrEmpty() -&gt; listOf(superName) else -&gt; MutableList(interfaces.size + 1) { if (it == 0) superName else interfaces[it - 1] } }</ID>
+    <ID>BlankLineBetweenWhenConditions:VerifyApiWithReflection.kt:when (member) { is FieldSignature -&gt; verifyField(clazz, name, returnType, className, member) is MethodSignature -&gt; when (name) { "&lt;init&gt;" -&gt; verifyConstructor(declaredConstructors, className, member) else -&gt; verifyMethod(declaredMethods, name, returnType, className, member) } }</ID>
+    <ID>BlankLineBetweenWhenConditions:VerifyApiWithReflection.kt:when (methods.size) { 1 -&gt; methods.single() else -&gt; methods.firstOrNull { it.returnType.name == returnType } }</ID>
+    <ID>BlankLineBetweenWhenConditions:VerifyApiWithReflection.kt:when { methods.isNullOrEmpty() -&gt; null else -&gt; when (methods.size) { 1 -&gt; methods.single() else -&gt; methods.firstOrNull { it.returnType.name == returnType } } }</ID>
+    <ID>ClassSignature:ContainerContext.kt:ContainerContext</ID>
+    <ID>ClassSignature:ContainerImpl.kt:ContainerImpl : ContainerNamed</ID>
+    <ID>ClassSignature:CustomTypeContainer.kt:CustomTypeContainer&lt;T&gt; : ContainerImpl</ID>
+    <ID>ClassSignature:FluxoKmpConfContext.kt:FluxoKmpConfContext</ID>
+    <ID>ClassSignature:GraphNode.kt:GraphNode : RenderableNode</ID>
+    <ID>ClassSignature:JarState.kt:JarState : Serializable</ID>
+    <ID>ClassSignature:JvmFilesProvider.kt:JvmFilesProvider$FromGradleSourceSet : GradleJvmFilesProvider</ID>
+    <ID>ClassSignature:KmpConfigurationContainerDslImpl.kt:KmpConfigurationContainerDslImpl : KmpConfigurationContainerDslConfigureConfigureConfigureConfigureConfigureConfigureConfigureConfigureConfigureConfigureConfigure</ID>
+    <ID>ClassSignature:KmpTargetContainerImpl.kt:KmpTargetContainerImpl&lt;T : KotlinTarget&gt; : ContainerImplKmpTargetContainer</ID>
+    <ID>ClassSignature:NodeGraphsRenderer.kt:NodeGraphsRenderer$LegendRenderer</ID>
+    <ID>ClassSignature:RenderableNode.kt:RenderableNode : NamedComparable</ID>
+    <ID>ClassSignature:ShrinkerVerificationTestTask.kt:ShrinkerVerificationTestTask$ShrinkerVerificationTest : TestExecuter</ID>
+    <ID>ClassSignature:ShrinkerVerifier.kt:ShrinkerVerifier : ApiVerifierAutoCloseable</ID>
+    <ID>ClassSignature:SimpleNodeRenderer.kt:SimpleNodeRenderer : NodeRenderer</ID>
+    <ID>ClassSignature:TargetAndroidContainer.kt:TargetAndroidContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetAndroidNativeContainer.kt:TargetAndroidNativeContainer : KmpTargetContainerImplAndroidNativeAndroidNativeTarget</ID>
+    <ID>ClassSignature:TargetAndroidNativeContainer.kt:TargetAndroidNativeContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetAppleIosContainer.kt:TargetAppleIosContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetAppleIosContainer.kt:TargetAppleIosContainer&lt;T : KNT&gt; : KmpTargetContainerImplIosAppleIosTarget</ID>
+    <ID>ClassSignature:TargetAppleMacosContainer.kt:TargetAppleMacosContainer : KmpTargetContainerImplMacosAppleMacosTarget</ID>
+    <ID>ClassSignature:TargetAppleMacosContainer.kt:TargetAppleMacosContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetAppleTvosContainer.kt:TargetAppleTvosContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetAppleWatchosContainer.kt:TargetAppleWatchosContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetJsContainer.kt:TargetJsContainer : KmpTargetContainerImplCommonJsJsTarget</ID>
+    <ID>ClassSignature:TargetJsContainer.kt:TargetJsContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetJvmContainer.kt:TargetJvmContainer : KmpTargetContainerImplCommonJvmJvmTarget</ID>
+    <ID>ClassSignature:TargetJvmContainer.kt:TargetJvmContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetLinuxContainer.kt:TargetLinuxContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetLinuxContainer.kt:TargetLinuxContainer&lt;T : KNT&gt; : KmpTargetContainerImplLinuxLinuxTarget</ID>
+    <ID>ClassSignature:TargetMingwContainer.kt:TargetMingwContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TargetMingwContainer.kt:TargetMingwContainer&lt;T : KNT&gt; : KmpTargetContainerImplMingwMingwTarget</ID>
+    <ID>ClassSignature:TargetWasmContainer.kt:TargetWasmContainer$Configure : ConfigureContainerHolderAware</ID>
+    <ID>ClassSignature:TomlResultCatalog.kt:TomlResultCatalog</ID>
+    <ID>ClassSignature:VerifyApiWithAsm.kt:VerifierClassVisitor : ClassVisitorApiVerifier</ID>
+    <ID>CompilerDiagnostics:AbstractShrinkerTask.kt:AbstractShrinkerTask$chainForLog.isNullOrBlank()</ID>
+    <ID>CompilerDiagnostics:SetupKmpAndroidExtension.kt:buildToolsVersion.isNullOrBlank()</ID>
+    <ID>CompilerDiagnostics:SetupKotlinCompatibility.kt:this as? AbstractKotlinSourceSet</ID>
+    <ID>CompilerDiagnostics:SetupKotlinOptions.kt:isJs</ID>
+    <ID>CompilerDiagnostics:SetupKotlinOptions.kt:val isJs: Boolean</ID>
+    <ID>CompilerDiagnostics:TestReportResult.kt:TestReportResult.Companion$desc.displayName.orEmpty()</ID>
+    <ID>CyclomaticComplexMethod:AbstractShrinkerTask.kt:AbstractShrinkerTask$@Suppress("LongMethod") private fun writeRootConfiguration</ID>
+    <ID>CyclomaticComplexMethod:SetupDetekt.kt:@Suppress("LongMethod") internal fun Project.setupDetekt</ID>
+    <ID>CyclomaticComplexMethod:SetupFinalizeAndroidDsl.kt:internal fun Project.setupFinalizeAndroidDsl</ID>
+    <ID>CyclomaticComplexMethod:SetupKotlinOptions.kt:@Suppress("LongParameterList", "ComplexMethod", "LongMethod") internal fun KotlinCommonCompilerOptions.setupKotlinOptions</ID>
+    <ID>EnumWrapping:ExternalToolRunner.kt:ExternalToolRunner$LogToConsole</ID>
+    <ID>EnumWrapping:KmpTargetCode.kt:KmpTargetCode</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:// TODO: Before Java 9, the runtime classes were packaged in a single jar file.</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:// TODO: Move into a separate file, loaded from resources</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// FIXME: Add automatic main class detection from the main jar manifest</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// FIXME: Benchmark and adjust best options for R8/ProGuard.</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// FIXME: Make all dirs to use the chain and id in chain!</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// FIXME: Setup JDK here from the toolchain or jvmTarget/jdk-release.</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// FIXME: When java toolchain used or JDK target is specified, read the specified JDK.</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// TODO: Can be cached for a JDK.</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// TODO: Debugging</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// TODO: Process output and print only main information if not verbose</ID>
+    <ID>ForbiddenComment:AbstractShrinkerTask.kt:AbstractShrinkerTask$// TODO: Shared obfuscation dictionaries</ID>
+    <ID>ForbiddenComment:AndroidTarget.kt:AndroidTarget$// FIXME: Implement API for source sets.</ID>
+    <ID>ForbiddenComment:AndroidTarget.kt:AndroidTarget.Configure$// TODO: Detect applied plugin (lib/app) and use appropriate container?</ID>
+    <ID>ForbiddenComment:ContainerImpl.kt:ContainerImpl$// TODO: Utilize version available from PluginDependency</ID>
+    <ID>ForbiddenComment:DependencyAnalysisPlugin.kt:// TODO: no need to declare transitive dependencies for the final app module</ID>
+    <ID>ForbiddenComment:DependencyGuardPlugin.kt:// TODO: Allow to customize configurations auto-filtration</ID>
+    <ID>ForbiddenComment:DependencyGuardPlugin.kt:// TODO: Allow to customize projects auto-filtration</ID>
+    <ID>ForbiddenComment:DependencyGuardPlugin.kt:// TODO: Opt-out configurable switch via `fluxoKmpConf { depsGuard = false }`</ID>
+    <ID>ForbiddenComment:DependencyGuardPlugin.kt:// TODO: Update when resolved (https://github.com/dropbox/dependency-guard/issues/3)</ID>
+    <ID>ForbiddenComment:DependencyUtils.kt:// TODO: Support rich VersionConstraint</ID>
+    <ID>ForbiddenComment:FkcSetupAndroid.kt:// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>
+    <ID>ForbiddenComment:FkcSetupAndroid.kt:// FIXME: Implement cleaner 2-levels lazy API: asAndroidLib { android { ... } }</ID>
+    <ID>ForbiddenComment:FkcSetupGradlePlugin.kt:// TODO: Support for multiple plugins</ID>
+    <ID>ForbiddenComment:FkcSetupKotlin.kt:// TODO: Support JVM application with `application` plugin</ID>
+    <ID>ForbiddenComment:FluxoConfigurationExtensionAndroidImpl.kt:FluxoConfigurationExtensionAndroidImpl$// TODO: Avoid casting</ID>
+    <ID>ForbiddenComment:FluxoConfigurationExtensionKotlin.kt:FluxoConfigurationExtensionKotlin$// FIXME: koverReport settings</ID>
+    <ID>ForbiddenComment:FluxoConfigurationExtensionPublicationImpl.kt:FluxoConfigurationExtensionPublicationImpl$// TODO: Add validation for githubProject value.</ID>
+    <ID>ForbiddenComment:FluxoKmpConfContext.kt:FluxoKmpConfContext$// FIXME: Detekt and use here if CI (GitHub) debug logs are enabled.</ID>
+    <ID>ForbiddenComment:FluxoKmpConfContext.kt:FluxoKmpConfContext$// TODO: Better integration with `gradle-idea-ext-plugin` or `idea` plugins.</ID>
+    <ID>ForbiddenComment:FluxoKmpConfContext.kt:FluxoKmpConfContext$// TODO: GC stats</ID>
+    <ID>ForbiddenComment:FluxoKmpConfPlugin.kt:FluxoKmpConfPlugin$// FIXME: Prepare lazy APIs to avoid afterEvaluate in such cases.</ID>
+    <ID>ForbiddenComment:FluxoKmpConfPlugin.kt:FluxoKmpConfPlugin$// TODO: Support version catalog declarations if available</ID>
+    <ID>ForbiddenComment:FluxoPublicationConfig.kt:// TODO: Make an immutable resulting class</ID>
+    <ID>ForbiddenComment:GetSetOfRequestedKmpTargets.kt:// TODO: Support "metadata_only"/metadataOnly mode (see arkivanov/gradle-setup-plugin)</ID>
+    <ID>ForbiddenComment:KotlinConfigSetup.kt:// TODO: Add env flag for dynamic switch-on when needed</ID>
+    <ID>ForbiddenComment:KotlinConfigSetup.kt:// TODO: Detect if JVM toolchains are already enabled in the project.</ID>
+    <ID>ForbiddenComment:KotlinSourceSetsReportTask.kt:// TODO: Mark source sets with deprecated or 3rd tier targets</ID>
+    <ID>ForbiddenComment:LoadAndApplyPluginIfNotApplied.kt:// TODO: Check version for correctness</ID>
+    <ID>ForbiddenComment:MultiplatformSourceSetUtils.kt:// TODO: Create bundles once and reuse or at least make them lazy evaluatable.</ID>
+    <ID>ForbiddenComment:NodeGraphsRenderer.kt:NodeGraphsRenderer.LegendRenderer$// FIXME: This is not implemented yet.</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt:// FIXME: Called 3 times with same error when no git installed or global config error.</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt:// FIXME: Consider using `GIT_BRANCH` (JitPack) or similar env var instead!</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt:// FIXME: Consider using `GIT_COMMIT` (JitPack) or similar env var instead!</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt:// FIXME: Don't allow commit/branch for the release.</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt:// FIXME: Don't check tag for the snapshot publication.</ID>
+    <ID>ForbiddenComment:PropsAndEnv.kt:// TODO: Optimize, make lazy accessible via root project including current branch name</ID>
+    <ID>ForbiddenComment:RegisterShrinkerTask.kt:// FIXME: Avoid duplicate logging between similar tasks</ID>
+    <ID>ForbiddenComment:RegisterShrinkerTask.kt:// TODO: note dependency in the (root?) project classpath</ID>
+    <ID>ForbiddenComment:SetupAndroid.kt:// FIXME: Automatic per-app language support</ID>
+    <ID>ForbiddenComment:SetupAndroid.kt:// TODO: Support bundletool codeTransparency here.</ID>
+    <ID>ForbiddenComment:SetupAndroid.kt:// TODO: Test for libraries bytecode.</ID>
+    <ID>ForbiddenComment:SetupAndroidLint.kt:// TODO: Cache the Lint configuration file?</ID>
+    <ID>ForbiddenComment:SetupAndroidLint.kt:// TODO: Check variantName instead of the task name?</ID>
+    <ID>ForbiddenComment:SetupAndroidSigning.kt:// TODO: Support for ENV variables instead of file for more straightforward CI/CD</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Check 'reproducibleArtifacts' with shrinker enabled.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Create a marker task for the main processing chain with a stable name.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Ensure the obfuscation mapping incrementality and compatibility when double-shrinking.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Provide unporcessed artifacts alongside the processed ones as a variant.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Publish the debug non-shrunken artifacts alongside the release shrunken ones.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Run tests with minified artifacts.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Shrinkers loose JARs reproducibility,</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Support KMP JVM target minification with ProGuard.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Support auto-loading of the shrinking rules from the classpath for the ProGuard.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Support final artifact filtration step similar to the Android packaging options.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Support other shadowing/relocation processors in the chain.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Support shadow jar generation before shrinking artifacts.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// FIXME: Verify proper replacement of the original artifact with the processed one (map by file?).</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// TODO: Allow to call shrinker by task name even if it's disabled.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// TODO: Support Android minification with Fluxo processing chain.</ID>
+    <ID>ForbiddenComment:SetupArtifactsProcessing.kt:// TODO: Support auto-disabling kotlin null checks generation for the shrunken release builds.</ID>
+    <ID>ForbiddenComment:SetupCompose.kt:// TODO: Make Compose Compiler metrics in HTML automatically with Gradle.</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt:// FIXME: Disable Detekt for the experimentalLatest test compilation.</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt:// FIXME: Disable non-resolving tasks if resolving version is available.</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt:// FIXME: Setup checks for the non source set kotlin files (e.g., *.kts scripts).</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt:// FIXME: Setup the "InvalidPackageDeclaration" rule for each module,</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt:// FIXME: Setup the light-weight mode for the git hooks, to run only on the changed files.</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt:// FIXME: Use kotlin settings directly from the linked kotlin compilation task?</ID>
+    <ID>ForbiddenComment:SetupDetekt.kt:// TODO: Add option to ignore baselines completely and fail on anything,</ID>
+    <ID>ForbiddenComment:SetupKotlin.kt:// TODO: Check KSP setup for KMP modules</ID>
+    <ID>ForbiddenComment:SetupKotlinDependencies.kt:// TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.</ID>
+    <ID>ForbiddenComment:SetupKotlinDependencies.kt:// TODO: With coil-bom:2.2.2 doesn't work as enforcedPlatform for Android and/or KMP</ID>
+    <ID>ForbiddenComment:SetupKotlinOptions.kt:// TODO: -Xwasm-use-new-exception-proposal</ID>
+    <ID>ForbiddenComment:SetupKotlinOptions.kt:// TODO: Guard conditions for when-with-subject (Kotlin 2.0.20)</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// FIXME: Disambiguate existing javadoc and sources tasks</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// FIXME: provide sources for KMP publications</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Add support for multiple developers</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Add support for multiple licenses</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Avoid publication setup when possible</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Decorate the build logs with maven coordinates of published artifacts</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Distinguish between common and platform-specific publications</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Make configurable (+ sanitize/verify)</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Protect publication tasks from invalid GIT state (dirty, untracked files, etc.)</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Set RC/alpha/beta releases status to Ivy's: milestone/integration when it will be possible</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Should wrap `setupPublicationExtension` in afterEvaluate?</ID>
+    <ID>ForbiddenComment:SetupPublication.kt:// TODO: Take jar tasks from project outputs instead of tasks?</ID>
+    <ID>ForbiddenComment:SetupSpotless.kt:// TODO: Freshmark</ID>
+    <ID>ForbiddenComment:SetupSpotless.kt:// TODO: Git pre-commit hook</ID>
+    <ID>ForbiddenComment:SetupSpotless.kt:// TODO: Licenses</ID>
+    <ID>ForbiddenComment:SetupSpotless.kt:// TODO: Only if java plugin is enabled?</ID>
+    <ID>ForbiddenComment:SetupSpotless.kt:// TODO: Use ktlint directly?</ID>
+    <ID>ForbiddenComment:SetupSpotless.kt:// TODO: read base settings from .editorconfig ?</ID>
+    <ID>ForbiddenComment:SetupTestsReport.kt:// TODO: Support Gradle before 8.0 (set service parameter and usesService) ?</ID>
+    <ID>ForbiddenComment:SetupValidatePluginTasks.kt:// TODO: Multiset configuration</ID>
+    <ID>ForbiddenComment:SetupVanniktechPublication.kt:// TODO: Distinguish between common and platform-specific publications</ID>
+    <ID>ForbiddenComment:SetupVanniktechPublication.kt:// TODO: https://github.com/gmazzo/gradle-report-publications-plugin</ID>
+    <ID>ForbiddenComment:SetupVerification.kt:// FIXME: Setup Android Lint for non-Android targets in KMP</ID>
+    <ID>ForbiddenComment:SetupVerification.kt:// TODO: Test separate ktlint setup with gradle plugin</ID>
+    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt:ShrinkerKeepRulesFromApiTask$// FIXME: Warn on data classes in public API!</ID>
+    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt:ShrinkerKeepRulesFromApiTask$// TODO: Optionally keep $EntriesMappings and $DefaultImpls classes</ID>
+    <ID>ForbiddenComment:ShrinkerKeepRulesFromApiTask.kt:ShrinkerKeepRulesFromApiTask$// TODO: auto-detect synthetic methods that can be removed from the rules.</ID>
+    <ID>ForbiddenComment:ShrinkerTestBase.kt:// TODO: Optimized bytcode tests.</ID>
+    <ID>ForbiddenComment:ShrinkerVerificationTestTask.kt:ShrinkerVerificationTestTask.ShrinkerVerificationTest$// TODO: Verify the jar itself (artifact signature, reproducibility, etc.)</ID>
+    <ID>ForbiddenComment:TargetAndroidContainer.kt:TargetAndroidContainer$// FIXME: Implement API for source sets.</ID>
+    <ID>ForbiddenComment:TomlResultCatalog.kt:TomlResultCatalog$// TODO: Parse bundles</ID>
+    <ID>ForbiddenComment:VerifyApiWithReflection.kt:// TODO: Check parent classes and interfaces.</ID>
+    <ID>ForbiddenPublicDataClass:FluxoPublicationConfig.kt:FluxoPublicationConfig</ID>
+    <ID>FunctionExpressionBody:AbstractShrinkerTask.kt:AbstractShrinkerTask${ return arrayListOf&lt;String&gt;().apply { if (external) { maxHeapSize.orNull?.let { add("-Xmx:$it") } maxStackSize.orNull?.takeIf(String::isNotBlank)?.let { add("-Xss$it") } if (vmOptions.get()) { // FIXME: Benchmark and adjust best options for R8/ProGuard. add("-XX:+TieredCompilation") } cliArg( "-cp", toolJars.joinToString(File.pathSeparator) { it.normalizedPath() }, ) } when (checkNotNull(shrinker.get())) { ProGuard -&gt; { /** * @see proguard.ProGuard * @see proguard.ProGuard.main */ add("proguard.ProGuard") cliArg("-include", rootConfigurationFile, base = workDir) } R8 -&gt; { // R8 is not command line compatible with ProGuard // https://r8.googlesource.com/r8/#running-r8 /** * @see com.android.tools.r8.R8 * @see com.android.builder.dexing.runR8 */ add("com.android.tools.r8.R8") add("--release") // (default) vs --debug add("--classfile") // vs --dex (default) cliArg("--lib", javaHome) cliArg("--output", outJars.first(), base = workDir) // Only for DEX output // androidMinSdk.orNull?.let { cliArg("--min-api", it) } cliArg("--pg-conf", rootConfigurationFile, base = workDir) // Output the collective configuration to &lt;file&gt;. cliArg("--pg-conf-output", getFinalConfigFile(reportsDir, base = workDir)) cliArg("--pg-map-output", getMappingFile(base = workDir)) // Force disable minification of names. cliArg("--no-minification", dontobfuscate.orNull == true) // Force disable tree shaking of unreachable classes. cliArg("--no-tree-shaking", dontoptimize.orNull == true) // Compile with R8 in Proguard compatibility mode. // Opposite of non-compat mode, also called "full mode". // 'android.enableR8.fullMode' controls it for android builds. // https://r8.googlesource.com/r8/+/refs/heads/main/compatibility-faq.md#r8-full-mode cliArg("--pg-compat", r8Compat) } } } }</ID>
+    <ID>FunctionExpressionBody:ApiVerifier.kt:{ return require( value = expected == actual, expected = expected, actual = actual, lazyMessage = lazyMessage, ) }</ID>
+    <ID>FunctionExpressionBody:CliArgUtils.kt:{ return isEmpty() || any { it.isWhitespace() || when (it) { '*', '?', '[', ']', '(', ')', '$', '|', '\\', ';', '&amp;', '"', '\'' -&gt; true else -&gt; false } } }</ID>
+    <ID>FunctionExpressionBody:ContainerImpl.kt:ContainerImpl${ return this === other || other is ContainerImpl &amp;&amp; name == other.name }</ID>
+    <ID>FunctionExpressionBody:DependencyGuardPlugin.kt:{ return configName.endsWith("compileclasspath") || configName.endsWith("runtimeclasspath") }</ID>
+    <ID>FunctionExpressionBody:DomainObjectUtils.kt:{ return if (has(name)) named(name) else null }</ID>
+    <ID>FunctionExpressionBody:DomainObjectUtils.kt:{ return try { // Since Gradle 8.6, a new method `named(Spec&lt;String&gt;)` is available. // It provides lazy name-based filtering of tasks // without triggering the creation of the tasks, // even when the task was not part of the build execution. // https://docs.gradle.org/8.6/release-notes.html#lazy-name-based-filtering-of-tasks // https://docs.gradle.org/8.6/javadoc/org/gradle/api/NamedDomainObjectSet.html#named-org.gradle.api.specs.Spec- named { it == name } } catch (_: NoSuchMethodError) { // Eager fallback for older Gradle versions matching { it.name == name } } }</ID>
+    <ID>FunctionExpressionBody:ExtensionUtils.kt:{ return try { extensions.findByType(clazz().java) != null } catch (_: NoClassDefFoundError) { false } }</ID>
+    <ID>FunctionExpressionBody:ExtensionUtils.kt:{ return try { uncheckedCast(findByType(clazz().java)) } catch (_: NoClassDefFoundError) { null } }</ID>
+    <ID>FunctionExpressionBody:FluxoCache.kt:FluxoCache${ return cache.computeIfAbsent(SerializedKey(key)) { logger?.d( "Allocating an additional ClassLoader for key={} Cache.size was {}", key, cache.size, ) URLClassLoader(state.jarUrls(), javaClass.classLoader) } }</ID>
+    <ID>FunctionExpressionBody:FluxoConfigurationExtensionPublicationImpl.kt:FluxoConfigurationExtensionPublicationImpl${ return projectName ?: project.rootProject.name.let { when { it.length &lt;= 1 -&gt; it.uppercase() else -&gt; it[0].uppercase() + it.substring(1) } } }</ID>
+    <ID>FunctionExpressionBody:FluxoKmpConfContext.kt:FluxoKmpConfContext.Companion${ return target.extensions.create(NAME, FluxoKmpConfContext::class.java, target) }</ID>
+    <ID>FunctionExpressionBody:GradleProvisioner.kt:GradleProvisioner${ return Provisioner { withTransitives: Boolean, mavenCoords: Collection&lt;String&gt; -&gt; try { val config = configurations.detachedConfiguration() mavenCoords.map { dependencies.create(it) } .forEach(config.dependencies::add) config.setDescription(mavenCoords.toString()) config.setTransitive(withTransitives) config.isCanBeConsumed = false config.isCanBeResolved = true config.attributes { attribute( Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling::class.java, Bundling.EXTERNAL), ) } config.resolve() } catch (e: Throwable) { var cause = e.cause while (cause != null) { /** @see org.gradle.internal.component.AbstractVariantSelectionException */ if (cause.javaClass.simpleName == "AbstractVariantSelectionException") { throw e } cause = cause.cause } var projName = project.path.substring(1).replace(':', '/') if (projName.isNotEmpty()) { projName = "$projName/" } throw GradleException( String.format( "You need to add a repository containing the '%s'" + " artifact in '%sbuild.gradle'.%n" + "E.g.: 'repositories { mavenCentral() }'", mavenCoords, projName, ), e, ) } } }</ID>
+    <ID>FunctionExpressionBody:GradleProvisioner.kt:GradleProvisioner${ return forConfigurationContainer(project, project.configurations, project.dependencies) }</ID>
+    <ID>FunctionExpressionBody:GradleProvisioner.kt:GradleProvisioner.Policy${ return when (this) { ROOT_PROJECT -&gt; DedupingProvisioner( forProject( project, ), ) ROOT_BUILDSCRIPT -&gt; DedupingProvisioner( forRootProjectBuildscript( project, ), ) else -&gt; throw UnsupportedOperationException(name) } }</ID>
+    <ID>FunctionExpressionBody:GradleProvisioner.kt:GradleProvisioner.Request${ return if (withTransitives) mavenCoords.hashCode() else mavenCoords.hashCode().inv() }</ID>
+    <ID>FunctionExpressionBody:GradleProvisioner.kt:GradleProvisioner.Request${ return when { this === other -&gt; true other is Request -&gt; { val o: Request = other o.withTransitives == withTransitives &amp;&amp; o.mavenCoords == mavenCoords } else -&gt; false } }</ID>
+    <ID>FunctionExpressionBody:GraphNode.kt:GraphNode${ return this === other || id == (other as? GraphNode)?.id }</ID>
+    <ID>FunctionExpressionBody:InternalTaskUtils.kt:{ return name.contains("Test", ignoreCase = true) }</ID>
+    <ID>FunctionExpressionBody:InternalUtils.kt:{ return TRUE_VALUES.any { it.equals(this, ignoreCase = true) } }</ID>
+    <ID>FunctionExpressionBody:InternalUtils.kt:{ return envVarValue(name) != null || stringPropValue(name).tryAsBoolean() }</ID>
+    <ID>FunctionExpressionBody:InternalUtils.kt:{ return envVarValue(name)?.takeIf { it.isNotEmpty() } ?: stringPropValue(name)?.takeIf { it.isNotEmpty() } }</ID>
+    <ID>FunctionExpressionBody:InternalUtils.kt:{ return providers.environmentVariable(name).orNull ?: System.getProperty(name) }</ID>
+    <ID>FunctionExpressionBody:KmpTargetCode.kt:KmpTargetCode.Companion${ return when (family) { Family.ANDROID -&gt; ANDROID_NATIVE Family.MINGW -&gt; MINGW Family.LINUX -&gt; LINUX Family.OSX -&gt; OSX Family.IOS -&gt; IOS Family.TVOS -&gt; TVOS Family.WATCHOS -&gt; WATCHOS else -&gt; arrayOf() } }</ID>
+    <ID>FunctionExpressionBody:KmpTargetCode.kt:KmpTargetCode.Companion${ return when (val platformType = target.platformType) { KotlinPlatformType.common -&gt; COMMON KotlinPlatformType.jvm -&gt; JVM KotlinPlatformType.androidJvm -&gt; ANDROID KotlinPlatformType.js -&gt; JS KotlinPlatformType.wasm -&gt; when (target) { is KotlinWasmWasiTargetDsl -&gt; WASM_WASI else -&gt; WASM_JS } KotlinPlatformType.native -&gt; { val konanTarget = (target as KotlinNativeTarget).konanTarget konanTarget.toKmpTargetCode() ?: null.also { logger?.w("Unexpected KonanTarget: $konanTarget") } } else -&gt; { logger?.w("Unexpected KotlinPlatformType: $platformType") null } } }</ID>
+    <ID>FunctionExpressionBody:KotlinOptInUtils.kt:{ return prepareOptIns( optIns = optIns, setupCoroutines = setupCoroutines, optInInternal = optInInternal, isTest = true, ) }</ID>
+    <ID>FunctionExpressionBody:KotlinSourceSetsReportTask.kt:KotlinSourceSetsReportTask${ return if (showOnlyTests) isTest else showTests || !isTest }</ID>
+    <ID>FunctionExpressionBody:KotlinSourceSetsReportTask.kt:KotlinSourceSetsReportTask.KotlinSourceSetsModel${ return map.getOrPut(name) { val node = KotlinSourceSetGraphNode(name) fillNode(node, s) node } }</ID>
+    <ID>FunctionExpressionBody:LoadAndApplyPluginIfNotApplied.kt:{ return SEPARATOR.matcher(name).replaceAll(".") }</ID>
+    <ID>FunctionExpressionBody:Memoize.kt:{ return try { memoize() } catch (e: Throwable) { if (logger == null) throw e logger.e("Failed to memoize provider: $e", e) this } }</ID>
+    <ID>FunctionExpressionBody:MultiplatformSourceSetUtils.kt:{ return targets.mapNotNullTo(LinkedHashSet()) { when (it.platformType) { KotlinPlatformType.common -&gt; null else -&gt; bundleFor(it) } } }</ID>
+    <ID>FunctionExpressionBody:ParseJvmApiDump.kt:{ return this[clazz]?.also { check(it.modifiers == modifiers) { "Unexpected modifiers for $clazz: ${it.modifiers} != $modifiers" + "\n\t$line" + "\n\t$it" } check(it.type == type) { "Unexpected type for $clazz: ${it.type} != $type" + "\n\t$line" + "\n\t$it" } check(it.parents == parents) { "Unexpected parents for $clazz: ${it.parents} != $parents" + "\n\t$line" + "\n\t$it" } } ?: ClassSignature(clazz, type, modifiers, parents).also { this[clazz] = it } }</ID>
+    <ID>FunctionExpressionBody:ParseJvmApiDump.kt:{ return when (name) { "boolean" -&gt; if (isArray || !javaName) "Z" else name "byte" -&gt; if (isArray || !javaName) "B" else name "char" -&gt; if (isArray || !javaName) "C" else name "short" -&gt; if (isArray || !javaName) "S" else name "int" -&gt; if (isArray || !javaName) "I" else name "long" -&gt; if (isArray || !javaName) "J" else name "float" -&gt; if (isArray || !javaName) "F" else name "double" -&gt; if (isArray || !javaName) "D" else name "void", "" -&gt; if (isArray || !javaName) "V" else name else -&gt; { val prefix = if (isArray || !javaName) "L" else "" val n = if (javaName) name else name.replace('.', '/') val suffix = if (isArray || !javaName) ";" else "" "$prefix$n$suffix" } } }</ID>
+    <ID>FunctionExpressionBody:SetupJavadoc.kt:{ return tasks.namedOrNull(JAVADOC_TASK_NAME) ?: tasks.registerCompat&lt;Jar&gt;(JAVADOC_TASK_NAME, Jar::configureJavadocTask) }</ID>
+    <ID>FunctionExpressionBody:SetupKotlinCompatibility.kt:{ return when { isBlank() -&gt; null equals("last", ignoreCase = true) || equals("latest", ignoreCase = true) || equals("max", ignoreCase = true) || equals("+") -&gt; LATEST_KOTLIN_LANG_VERSION equals("current", ignoreCase = true) || isEmpty() -&gt; KOTLIN_LANG_VERSION else -&gt; KotlinLangVersion.fromVersion(this) } }</ID>
+    <ID>FunctionExpressionBody:ShrinkerKeepRulesFromApiTask.kt:{ return tasks.registerCompat&lt;ShrinkerKeepRulesFromApiTask&gt;(SHRINKER_KEEP_GEN_TASK_NAME) { group = FLUXO_TASK_GROUP description = "Generates shrinker (R8/ProGuard) keep rules from API reports" val project = project val projectDir = project.layout.projectDirectory val apiFiles = project.fileTree(projectDir.dir(API_DIR)).matching { include("**/*.api") } generatedDefinitions.setFrom(apiFiles) outputFile.set(projectDir.file("pg/keep-api-autogenerated.pro")) keepModifier.set(autoGenerateKeepModifier) }.also { bindToApiDumpTasks(task = it) } }</ID>
+    <ID>FunctionExpressionBody:ShrinkerReflectiveCaller.kt:ShrinkerReflectiveCaller${ return tryGetClassForName(clazz)?.also { v = v(it) logger.l("Using $shrinker $v from classpath (bundled)") } }</ID>
+    <ID>FunctionExpressionBody:ShrinkerTestBase.kt:ShrinkerTestBase${ return compileResults.computeIfAbsent("$name::$contents") { val kotlinSource = SourceFile.kotlin( name = name, contents = contents, trimIndent = trimIndent, ) compileCode(kotlinSource, stdout = stdout, verbose = verbose, tempDir = tempDir) } }</ID>
+    <ID>FunctionExpressionBody:SourceSetBundle.kt:SourceSetBundle${ return main == other || test == other || moreTests?.contains(other) == true }</ID>
+    <ID>FunctionSignature:AbstractShrinkerTask.kt:AbstractShrinkerTask$private fun getMappingFile: String</ID>
+    <ID>FunctionSignature:AbstractShrinkerTask.kt:AbstractShrinkerTask$private fun getSeedFile: String</ID>
+    <ID>FunctionSignature:AbstractShrinkerTask.kt:AbstractShrinkerTask$private fun getUsageFile: String</ID>
+    <ID>FunctionSignature:AndroidCompatibilityFixtures.kt:private fun bcvPluginDeclaration: String</ID>
+    <ID>FunctionSignature:BuildEndReport.kt:FailureText$override fun transform: String</ID>
+    <ID>FunctionSignature:CliArgUtils.kt:private fun &lt;T : Any?&gt; defaultToString: (T) -&gt; String</ID>
+    <ID>FunctionSignature:CompatibilityGradleSupport.kt:internal fun String.containsAny: Boolean</ID>
+    <ID>FunctionSignature:CompatibilityPublicationSupport.kt:internal fun pluginId: String</ID>
+    <ID>FunctionSignature:CompatibilityPublicationSupport.kt:internal fun pluginVersion: String</ID>
+    <ID>FunctionSignature:CompatibilityRunnerSetup.kt:private fun List&lt;String&gt;.callerAfter: String?</ID>
+    <ID>FunctionSignature:ComposeCompatibilityFixtures.kt:private fun composeKmpAndroidTargetAssertion: String</ID>
+    <ID>FunctionSignature:DependencyPinningBundle.kt:private fun pinDependencies</ID>
+    <ID>FunctionSignature:DependencyUtils.kt:public fun PluginDependency.toModuleDependency: String</ID>
+    <ID>FunctionSignature:FkcSetupRaw.kt:@JvmName("setupRaw") public fun Project.fkcSetupRaw</ID>
+    <ID>FunctionSignature:FluxoConfigurationExtension.kt:internal fun Project.fluxoConfiguration</ID>
+    <ID>FunctionSignature:FluxoConfigurationExtensionImpl.kt:FluxoConfigurationExtensionImpl$override fun asKmp</ID>
+    <ID>FunctionSignature:FluxoKmpConfContext.kt:FluxoKmpConfContext$fun markProjectInSync: Boolean</ID>
+    <ID>FunctionSignature:FluxoKmpConfPlugin.kt:private fun ClassLoader.hasClass: Boolean</ID>
+    <ID>FunctionSignature:JvmFilesProvider.kt:JvmFilesProvider.GradleJvmFilesProvider$override fun jvmCompileFiles: JvmFiles</ID>
+    <ID>FunctionSignature:JvmFilesProvider.kt:JvmFilesProvider.GradleJvmFilesProvider$override fun jvmRuntimeFiles: JvmFiles</ID>
+    <ID>FunctionSignature:JvmFilesProvider.kt:JvmFilesProvider.JarFilterSpec$override fun isSatisfiedBy: Boolean</ID>
+    <ID>FunctionSignature:JvmTarget.kt:JvmTarget.Configure$public fun jvm</ID>
+    <ID>FunctionSignature:KmpConfigurationContainerDsl.kt:KmpConfigurationContainerDsl$public fun allDefaultTargets</ID>
+    <ID>FunctionSignature:KmpConfigurationContainerDslImpl.kt:KmpConfigurationContainerDslImpl$@Suppress("CyclomaticComplexMethod") override fun allDefaultTargets</ID>
+    <ID>FunctionSignature:KotlinConfigSetup.kt:@Suppress("CyclomaticComplexMethod") private fun Logger.logKotlinProjectCompatibility</ID>
+    <ID>FunctionSignature:KotlinJvmCompatibilityRunners.kt:private fun kotlinJvmConsumerBuildScript: String</ID>
+    <ID>FunctionSignature:KotlinJvmTargetCases.kt:private fun Path.mainClassMajor: Int</ID>
+    <ID>FunctionSignature:KotlinSourceSetsReportTask.kt:KotlinSourceSetsReportTask.KotlinSourceSetsModel$@Suppress("CyclomaticComplexMethod", "NestedBlockDepth") private fun fillNode</ID>
+    <ID>FunctionSignature:KotlinSourceSetsReportTask.kt:KotlinSourceSetsReportTask.KotlinSourceSetsModel$private fun graphNode: KotlinSourceSetGraphNode</ID>
+    <ID>FunctionSignature:KotlinUtils.kt:internal inline fun &lt;T, reified R, C&gt; C.mapToArray: Array&lt;R&gt;</ID>
+    <ID>FunctionSignature:LifecycleUtils.kt:internal fun Project.addToCheckAndTestDependencies</ID>
+    <ID>FunctionSignature:LoadAndApplyPluginIfNotApplied.kt:private fun ClassLoader.findPluginClassNames: List&lt;String&gt;</ID>
+    <ID>FunctionSignature:MainClassesProvider.kt:internal fun Project.onComposeDesktopApplication</ID>
+    <ID>FunctionSignature:MultiplatformSourceSetUtils.kt:@Suppress("EnumValuesSoftDeprecate") private fun &lt;E&gt; E.nativeSourceSets: Set&lt;SourceSetBundle&gt;</ID>
+    <ID>FunctionSignature:MultiplatformSourceSetUtils.kt:public fun KotlinSourceSetContainer.bundle: PropertyDelegateProvider&lt;Any?, ReadOnlyProperty&lt;Any?, SourceSetBundle&gt;&gt;</ID>
+    <ID>FunctionSignature:NodeGraphsRenderer.kt:NodeGraphsRenderer$private fun renderChildren</ID>
+    <ID>FunctionSignature:OutgoingArtifactJar.kt:private fun PublishArtifact.logRemoved</ID>
+    <ID>FunctionSignature:ParseJvmApiDump.kt:private fun Task.modifiersForClass</ID>
+    <ID>FunctionSignature:RegisterShrinkerTask.kt:internal fun getShrinkerVerifyTaskName: String</ID>
+    <ID>FunctionSignature:SetupAndroid.kt:private fun ApplicationExtension.applyApplicationTargetSdk</ID>
+    <ID>FunctionSignature:SetupArtifactsProcessing.kt:@Suppress("CyclomaticComplexMethod", "LongMethod", "ReturnCount") internal fun setupArtifactsProcessing</ID>
+    <ID>FunctionSignature:SetupJvmCompatibility.kt:internal fun String.asJvmMajorVersion: Int</ID>
+    <ID>FunctionSignature:SetupPublication.kt:@Suppress("CyclomaticComplexMethod") internal fun MavenPom.setupPublicationPom</ID>
+    <ID>FunctionSignature:SetupPublication.kt:internal fun getIfSigningEnabled: Boolean</ID>
+    <ID>FunctionSignature:SetupPublication.kt:internal fun setupPublication</ID>
+    <ID>FunctionSignature:SetupSpotless.kt:@Suppress("CyclomaticComplexMethod", "LongMethod") internal fun Project.setupSpotless</ID>
+    <ID>FunctionSignature:ShrinkerTestBase.kt:ShrinkerTestBase$private fun ShrinkingResult.actualSeeds: String</ID>
+    <ID>FunctionSignature:ShrinkerTestBase.kt:ShrinkerTestBase$private fun String.seeds: String</ID>
+    <ID>FunctionSignature:StringUtils.kt:internal fun String.lowercaseFirstChar: String</ID>
+    <ID>FunctionSignature:StringUtils.kt:internal fun String.uppercaseFirstChar: String</ID>
+    <ID>FunctionSignature:TargetAndroidContainer.kt:TargetAndroidContainer$override fun KotlinMultiplatformExtension.createTarget</ID>
+    <ID>FunctionSignature:TargetAndroidNativeContainer.kt:TargetAndroidNativeContainer.X64$override fun KotlinMultiplatformExtension.createTarget</ID>
+    <ID>FunctionSignature:TargetAndroidNativeContainer.kt:TargetAndroidNativeContainer.X86$override fun KotlinMultiplatformExtension.createTarget</ID>
+    <ID>FunctionSignature:TargetJvmContainer.kt:TargetJvmContainer.Configure$override fun jvm</ID>
+    <ID>FunctionSignature:TestReportService.kt:TestReportService$fun registerTestResult</ID>
+    <ID>FunctionSignature:TomlResultCatalog.kt:TomlResultCatalog$private fun parsePlugins: Map&lt;String, PluginDependency&gt;</ID>
+    <ID>FunctionSignature:VerifyApiWithAsm.kt:internal fun ApiVerifier.verifyApiWithAsm</ID>
+    <ID>FunctionSignature:VerifyApiWithReflection.kt:private fun ApiVerifier.verifyClassType</ID>
+    <ID>FunctionSignature:VersionCatalogUtils.kt:@JvmName("vVararg") @LowPriorityInOverloadResolution internal fun FluxoVersionCatalog.v</ID>
+    <ID>FunctionSignature:VersionCatalogUtils.kt:internal fun FluxoVersionCatalog.v: String?</ID>
+    <ID>ImplicitDefaultLocale:AbstractShrinkerTask.kt:AbstractShrinkerTask$"%.03f".format(savedPercent)</ID>
+    <ID>ImplicitDefaultLocale:GradleProvisioner.kt:GradleProvisioner$String.format( "You need to add a repository containing the '%s'" + " artifact in '%sbuild.gradle'.%n" + "E.g.: 'repositories { mavenCentral() }'", mavenCoords, projName, )</ID>
+    <ID>ImportOrdering:SetupDetekt.kt:import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget import fluxo.conf.FluxoKmpConfContext import fluxo.conf.MergeDetektBaselinesTask import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl import fluxo.conf.impl.addAndLog import fluxo.conf.impl.android.ANDROID_KMP_LIB_PLUGIN_ID import fluxo.conf.impl.android.AgpVersion import fluxo.conf.impl.configureExtensionIfAvailable import fluxo.conf.impl.dependencies import fluxo.conf.impl.disableTask import fluxo.conf.impl.kotlin.mppExtOrNull import fluxo.conf.impl.kotlin.setupTargets import fluxo.conf.impl.namedCompat import fluxo.conf.impl.registerCompat import fluxo.conf.impl.withType import fluxo.log.l import fluxo.log.logDecision import fluxo.vc.onLibrary import io.github.detekt.gradle.DetektKotlinCompilerPlugin import io.gitlab.arturbosch.detekt.Detekt import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask import io.gitlab.arturbosch.detekt.DetektPlugin import io.gitlab.arturbosch.detekt.extensions.DetektExtension import java.io.File import org.gradle.api.DomainObjectCollection import org.gradle.api.Project import org.gradle.api.Task import org.gradle.api.artifacts.dsl.DependencyHandler import org.gradle.api.file.Directory import org.gradle.api.file.RegularFile import org.gradle.api.plugins.JavaBasePlugin import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME import org.gradle.api.provider.Provider import org.gradle.api.tasks.TaskProvider import org.gradle.language.base.plugins.LifecycleBasePlugin import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME import org.jetbrains.kotlin.gradle.dsl.kotlinExtension import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType import org.jetbrains.kotlin.gradle.plugin.KotlinTarget import org.jetbrains.kotlin.gradle.tasks.KotlinCompileTool import dev.detekt.gradle.Detekt as Detekt2 import dev.detekt.gradle.DetektCreateBaselineTask as Detekt2CreateBaselineTask import dev.detekt.gradle.extensions.DetektExtension as Detekt2Extension import dev.detekt.gradle.plugin.DetektKotlinCompilerPlugin as Detekt2KotlinCompilerPlugin import dev.detekt.gradle.plugin.DetektPlugin as Detekt2Plugin import dev.detekt.gradle.plugin.getSupportedKotlinVersion as getDetekt2CompilerVersion</ID>
+    <ID>ImportOrdering:WasmTarget.kt:import DEFAULT_COMMON_JS_CONFIGURATION as DEFAULT_CONF import fluxo.conf.dsl.container.KotlinTargetContainer import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithWasmPresetFunctions import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl</ID>
+    <ID>Indentation:FluxoConfigurationExtensionAndroidImpl.kt:FluxoConfigurationExtensionAndroidImpl$ </ID>
+    <ID>Kdoc:AbstractShrinkerTask.kt:AbstractShrinkerTask$/** * @see com.android.tools.r8.R8 * @see com.android.builder.dexing.runR8 */</ID>
+    <ID>Kdoc:AbstractShrinkerTask.kt:AbstractShrinkerTask$/** * @see proguard.ProGuard * @see proguard.ProGuard.main */</ID>
+    <ID>Kdoc:AppleSimulatorProbe.kt:/** * Pure logic for the Apple-simulator availability gate, split out of `FkcSetupMultiplatform.kt` so * it is unit-testable: that file references `org.jetbrains.kotlin.gradle.*` (`compileOnly`), whose * file-class `&lt;clinit&gt;` would `NoClassDefFoundError` under test. Keeping this surface KGP-free * (zero such imports) keeps it testable without a Gradle project or a real `xcrun`. */</ID>
+    <ID>Kdoc:CompatibilityJdkSupport.kt:/** * Per-fixture JDK pinning for the compatibility TestKit harness. * * Every fixture must run on the JDK its `compat/matrix.tsv` `jdkVersion` declares, independent of * the ambient daemon JDK. Without that, an unpinned consumer `jvmTarget` defaults to the daemon JDK * (`KotlinConfigSetup` `JRE_VERSION`), so `compileXxx` emits bytecode whose major version * tracks the daemon; a bytecode-reading task (BCV `androidApiBuild`, ASM-based) then throws * `Unsupported class file major version N` once the daemon outruns the wrapped tool's ASM ceiling * (BCV 0.18.1 ≤ Java 22 / major-66). That asymmetry — every other axis (Gradle/KGP/AGP) enforced, * only `jdkVersion` dead metadata — passed dev CI (JDK 21) yet failed release (JDK 23) on the same * commit, sinking v0.15.0's first tag. */</ID>
+    <ID>Kdoc:DependencyGuardPlugin.kt:/** @see com.dropbox.gradle.plugins.dependencyguard.internal.ConfigurationValidators.validatePluginConfiguration */</ID>
+    <ID>Kdoc:FluxoConfigurationExtensionImpl.kt:FluxoConfigurationExtensionImpl$/** @see fluxo.conf.FluxoKmpConfPlugin.configureContainers */</ID>
+    <ID>Kdoc:GradleProvisioner.kt:GradleProvisioner$/** @see org.gradle.internal.component.AbstractVariantSelectionException */</ID>
+    <ID>Kdoc:KmpHierarchyTemplate.kt:/** @see org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder.common */</ID>
+    <ID>Kdoc:KotlinSourceSetsReportTask.kt:KotlinSourceSetsReportTask.KotlinSourceSetsModel$/** @see org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.associateWith */</ID>
+    <ID>Kdoc:MultiplatformSourceSetUtils.kt:/** @see fluxo.conf.dsl.container.impl.target.TargetAndroidContainer.setup */</ID>
+    <ID>Kdoc:ProjectUtils.kt:/** @see OperatingSystemMXBean.getTotalMemorySize */</ID>
+    <ID>Kdoc:SetupAndroidLintPluginWithNoAndroid.kt:/** * @see com.android.build.api.dsl.Lint * @see com.android.build.gradle.internal.plugins.LintPlugin * @see com.android.build.gradle.LintPlugin */</ID>
+    <ID>Kdoc:SetupFinalizeAndroidDsl.kt:/** @see com.android.build.gradle.internal.dsl.BuildType */</ID>
+    <ID>Kdoc:SetupKotlin.kt:/** * @see org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask * @see org.jetbrains.kotlin.gradle.targets.js.npm.PublicPackageJsonTask * @see org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask * @see org.jetbrains.kotlin.gradle.targets.js.typescript.TypeScriptValidationTask * @see org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask */</ID>
+    <ID>Kdoc:SetupKotlinOptions.kt:/** @see ANDROID_SAFE_JVM_TARGET */</ID>
+    <ID>Kdoc:SetupKotlinOptions.kt:/** @see org.jetbrains.kotlin.config.LanguageFeature */</ID>
+    <ID>Kdoc:ShrinkerReflectiveCaller.kt:ShrinkerReflectiveCaller$/** @see com.android.tools.r8.R8 */</ID>
+    <ID>Kdoc:ShrinkerReflectiveCaller.kt:ShrinkerReflectiveCaller$/** @see com.android.tools.r8.Version.LABEL */</ID>
+    <ID>Kdoc:ShrinkerReflectiveCaller.kt:ShrinkerReflectiveCaller$/** @see fluxo.shrink.ShrinkerTestBase.shrink */</ID>
+    <ID>Kdoc:ShrinkerReflectiveCaller.kt:ShrinkerReflectiveCaller$/** @see proguard.ConfigurationParser.parse */</ID>
+    <ID>Kdoc:ShrinkerReflectiveCaller.kt:ShrinkerReflectiveCaller$/** @see proguard.ProGuard.execute */</ID>
+    <ID>Kdoc:ShrinkerReflectiveCaller.kt:ShrinkerReflectiveCaller$/** @see proguard.ProGuard.getVersion */</ID>
+    <ID>Kdoc:ShrinkerVersions.kt:/** Cannot use [com.android.tools.r8.Version.LABEL] directly here * as it will be inlined during compilation. */</ID>
+    <ID>LongMethod:SetupDetekt.kt:private fun Project.setupDetekt1: DomainObjectCollection&lt;Detekt&gt;</ID>
+    <ID>LongMethod:TestReportsMergeTask.kt:TestReportsMergeTask$@TaskAction fun merge</ID>
+    <ID>LongParameterList:SetupDetekt.kt:DetektSettings</ID>
+    <ID>MaxLineLength:SetupDetekt.kt:?.</ID>
+    <ID>MaximumLineLength:SetupDetekt.kt:}</ID>
+    <ID>MixedConditionOperators:ContainerImpl.kt:ContainerImpl$other is ContainerImpl &amp;&amp; name == other.name</ID>
+    <ID>MixedConditionOperators:DependencyGuardPlugin.kt:it == TEST &amp;&amp; RELEASE_TEST_EXCLUDES.any { e -&gt; e in d }</ID>
+    <ID>MixedConditionOperators:DependencyPinningBundle.kt:alias.startsWith(ALIAS, ignoreCase = true) &amp;&amp; alias.run { val l = length l == ALIAS.length || l &gt; ALIAS.length &amp;&amp; this[ALIAS.length] == '.' }</ID>
+    <ID>MixedConditionOperators:DependencyPinningBundle.kt:l &gt; ALIAS.length &amp;&amp; this[ALIAS.length] == '.'</ID>
+    <ID>MixedConditionOperators:KmpTargetCode.kt:target in KonanTarget.deprecatedTargets &amp;&amp; target !in KonanTarget.toleratedDeprecatedTargets</ID>
+    <ID>MixedConditionOperators:SetupAndroidLint.kt:!notForAndroid &amp;&amp; !ctx.isTargetEnabled(KmpTargetCode.ANDROID)</ID>
+    <ID>MixedConditionOperators:SetupKotlinDependencies.kt:kc.setupKnownBoms &amp;&amp; libs.onLibrary("kotlinx-coroutines-bom") { implementation( dh, if (isApplication) dh.enforcedPlatform(it) else dh.platform(it), excludeJetbrainsAnnotations, ) implementation(dh, COROUTINES_DEPENDENCY) }</ID>
+    <ID>MultiLineIfElse:ShrinkerKeepRulesFromApiTask.kt:ShrinkerKeepRulesFromApiTask$",$m"</ID>
+    <ID>MultiLineIfElse:ShrinkerKeepRulesFromApiTask.kt:ShrinkerKeepRulesFromApiTask$m</ID>
+    <ID>MultiLineIfElse:SourceSetBundle.kt:SourceSetBundleBase$return false</ID>
+    <ID>MultilineLoop:VerifyApiWithAsm.kt:VerifierClassVisitor$with(description) { when (modifier) { "public" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_PUBLIC) "protected" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_PROTECTED) "private" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_PRIVATE) "static" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_STATIC) "final" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_FINAL) "synchronized" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_SYNCHRONIZED) "bridge" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_BRIDGE) "native" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_NATIVE) "abstract" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_ABSTRACT) "strictfp" -&gt; verifyModifier(access, type, modifier, Opcodes.ACC_STRICT) // Somehow, `ACC_SYNTHETIC` (for "synthetic") is invisible in ASM. // Maybe removed by the shrinker? } }</ID>
+    <ID>NoUnusedImports:SetupAndroid.kt:fluxo.conf.impl.android.SetupAndroid.kt</ID>
+    <ID>NoUnusedImports:SetupPublication.kt:fluxo.conf.pub.SetupPublication.kt</ID>
+    <ID>PropertyName:KotlinVersionTable.kt:@Volatile internal var KOTLIN_PLUGIN_VERSION: KotlinVersion = KotlinVersion.CURRENT</ID>
+    <ID>PropertyName:KotlinVersionTable.kt:@Volatile internal var KOTLIN_PLUGIN_VERSION_STRING: String = KOTLIN_PLUGIN_VERSION.toString()</ID>
+    <ID>PropertyName:LoggerUtils.kt:@Volatile internal var SHOW_DEBUG_LOGS = false</ID>
+    <ID>PropertyName:ShrinkerVersions.kt:internal var PREFER_BUNDLED_R8 = AtomicBoolean(true)</ID>
+    <ID>PropertyName:ShrinkerVersions.kt:internal var REMOTE_SHRINKER_VERSION = ConcurrentHashMap&lt;JvmShrinker, String&gt;()</ID>
+    <ID>SpacingAroundComma:SetupAndroid.kt:,</ID>
+    <ID>SpreadOperator:GradleFileUtils.kt:(*dirs.ioFiles())</ID>
+    <ID>TooManyFunctions:SetupDetekt.kt:fluxo.conf.feat.SetupDetekt.kt</ID>
+    <ID>TrailingCommaOnCallSite:AndroidCompatibilityFixtures.kt:( "agpVersion" )</ID>
+    <ID>TrailingCommaOnCallSite:AndroidCompatibilityFixtures.kt:( "kgpVersion" )</ID>
+    <ID>TrailingCommaOnCallSite:KmpCompatibilityFixtures.kt:( "kgpVersion" )</ID>
+    <ID>TrailingCommaOnCallSite:KotlinJvmCompatibilityFixtures.kt:( "kgpVersion" )</ID>
+    <ID>TrailingCommaOnCallSite:MergeDetektBaselinesReflectiveTest.kt:MergeDetektBaselinesReflectiveTest$( """ &lt;?xml version='1.0' encoding='UTF-8'?&gt; &lt;SmellBaseline&gt; &lt;ManuallySuppressedIssues&gt; &lt;ID/&gt; &lt;ID&gt; &lt;/ID&gt; &lt;ID&gt;ValidManual:File${'$'}h1&lt;/ID&gt; &lt;/ManuallySuppressedIssues&gt; &lt;CurrentIssues&gt; &lt;ID&gt;&lt;/ID&gt; &lt;ID&gt;ValidCurrent:File${'$'}h2&lt;/ID&gt; &lt;/CurrentIssues&gt; &lt;/SmellBaseline&gt; """.trimIndent() )</ID>
+    <ID>TrailingCommaOnDeclarationSite:DependencyHandlerUtils.kt:( dh: DependencyHandler, dependencyNotation: Any )</ID>
+    <ID>TrailingCommaOnDeclarationSite:KmpHierarchyTemplate.kt:KotlinPlatformType.jvm, KotlinPlatformType.common, KotlinPlatformType.androidJvm -&gt; false</ID>
+    <ID>TrailingCommaOnDeclarationSite:OsUtils.kt:OS</ID>
+    <ID>UnnecessaryApply:SetupAndroid.kt:apply { matchingFallbacks.addAll(listOf("test", DEBUG, "qa")) }</ID>
+    <ID>UnnecessaryApply:SetupAndroid.kt:apply { matchingFallbacks.addAll(listOf(RELEASE, "prod", "production")) }</ID>
+    <ID>UnusedPrivateFunction:LazyForwardingEquality.kt:LazyForwardingEquality$private fun readObjectNoData: Unit</ID>
+    <ID>UnusedPrivateFunction:SetupAndroid.kt:private fun Project.configureMonkeyLauncherTasks</ID>
+    <ID>UnusedPrivateProperty:ShrinkerVerifier.kt:ShrinkerVerifier$private val mainJarFile: File</ID>
+    <ID>UnusedVariable:TestReportsMergeTask.kt:i</ID>
+    <ID>UseCheckNotNull:Agp9KmpDefaultsCase.kt:check(packaged != null) { "No Android resources in $aar" }</ID>
+    <ID>UseCheckNotNull:KotlinJvmCompatibilityRunners.kt:check(result.task(":$it") != null) { result.output }</ID>
+    <ID>UseOrEmpty:CompatibilityJdkSupport.kt:File(it).listFiles()?.asSequence() ?: emptySequence()</ID>
+    <ID>UseOrEmpty:MergeSarifTask.kt:this[key] as List&lt;Json&gt;? ?: emptyList()</ID>
+    <ID>UselessCallOnNotNull:AbstractShrinkerTask.kt:AbstractShrinkerTask$chainForLog.isNullOrBlank()</ID>
+    <ID>UselessCallOnNotNull:SetupKmpAndroidExtension.kt:buildToolsVersion.isNullOrBlank()</ID>
+    <ID>UselessCallOnNotNull:TestReportResult.kt:TestReportResult.Companion$desc.displayName.orEmpty()</ID>
+    <ID>ValueParameterComment:BinaryCompatibilityValidatorConfig.kt:BinaryCompatibilityValidatorConfig$// https://github.com/Kotlin/binary-compatibility-validator/issues/149#issuecomment-1768063785</ID>
+    <ID>ValueParameterComment:BinaryCompatibilityValidatorConfig.kt:BinaryCompatibilityValidatorConfig$// https://github.com/fluxo-kt/fluxo-bcv-js</ID>
   </CurrentIssues>
 </SmellBaseline>

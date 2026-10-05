@@ -128,6 +128,9 @@ dokka = "2.2.0"
 
 # https://github.com/detekt/detekt/releases
 detekt = "1.23.8"
+# Detekt 2 (`dev.detekt`) runs on modules whose stdlib is 2.2+, which Detekt 1's embedded
+# Kotlin 2.0 can't read; its rule packs use the `detekt2-` keys below.
+detekt2 = "2.0.0-alpha.6"
 
 # https://github.com/pinterest/ktlint/releases
 ktlint = "1.8.0"
@@ -246,11 +249,22 @@ detekt-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-librarie
 # their own catalog and `SetupDetekt.kt` will plumb it in via `onLibrary(...)`.
 #detekt-ruleauthors = { module = "io.gitlab.arturbosch.detekt:detekt-rules-ruleauthors", version.ref = "detekt" }
 
+# Detekt 2 rule packs: a pack built against one Detekt line can't load in the other (their APIs
+# live in different packages). hbmartin, arrow, verify-implementation and explicit have no
+# Detekt 2 build yet, so Detekt 2 modules run without them.
+detekt2-formatting = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt2" }
+detekt2-libraries = { module = "dev.detekt:detekt-rules-libraries", version.ref = "detekt2" }
+#detekt2-ruleauthors = { module = "dev.detekt:detekt-rules-ruleauthors", version.ref = "detekt2" }
+detekt2-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.6.7" }
+detekt2-faire = { module = "com.faire:faire-detekt-rules", version = "0.5.8" }
+detekt2-compiler = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", version = "0.1.1" }
+
 # endregion
 
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
 plugin-android-tools-common = { module = "com.android.tools:common", version.ref = "android-tools" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+plugin-detekt2 = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt2" }
 plugin-intellij = { module = "org.jetbrains.intellij.platform:intellij-platform-gradle-plugin", version.ref = "intellij-platform" }
 plugin-jetbrains-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

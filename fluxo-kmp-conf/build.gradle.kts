@@ -129,8 +129,10 @@ dependencies {
     implementation(libs.tomlj)
     // Spotless util classes are used internally
     preferred(libs.plugin.spotless)
-    // Detekt ReportMergeTask is used internally
+    // Both Detekt lines are configured with typed code, so both must be on fluxo's classpath:
+    // a plugin downloaded at runtime would be invisible to it.
     preferred(libs.plugin.detekt)
+    preferred(libs.plugin.detekt2)
     // `kotlin-compiler-embeddable` is `compileOnly` so it stays off the published plugin's
     // runtime classpath. It conflicts with KGP-bundled compiler internals on the consumer's
     // buildscript classpath (KGP since 2.1.0 no longer drags it in transitively, and the

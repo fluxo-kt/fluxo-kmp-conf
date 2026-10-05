@@ -2,9 +2,8 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>CompilerWarning:Main.kt$Preview</ID>
-    <ID>MaxLineLength:Res.kt$Res$public</ID>
-    <ID>MaxLineLength:Res.kt$Res$public suspend</ID>
-    <ID>RedundantSuspendModifier:Res.kt$Res$suspend</ID>
+    <ID>CompilerDiagnostics:MainTest.kt:MainTest$createComposeRule</ID>
+    <ID>MaxLineLength:Res.kt:Res$public</ID>
+    <ID>MaxLineLength:Res.kt:Res$public suspend</ID>
   </CurrentIssues>
 </SmellBaseline>

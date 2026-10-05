@@ -245,10 +245,6 @@ internal val ANDROID_LINT_VERSION_NOISE = listOf(
     "NewerVersionAvailable",
 )
 
-internal val DETEKT_CLASSIFICATION_NOISE = listOf(
-    "platform UNKNOWN is disabled",
-)
-
 internal val FORBIDDEN_RUNTIME_LEAKS = listOf(
     "kotlin-compiler-embeddable",
     "detekt-core",

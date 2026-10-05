@@ -23,8 +23,7 @@ internal fun runComposeKmpAndroidConsumer(row: Map<String, String>, tempDir: Pat
         tempDir,
         rootProjectName = "compat-compose-kmp-android-consumer",
         arguments = listOf("-PKMP_TARGETS=ANDROID,JVM"),
-        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + DETEKT_CLASSIFICATION_NOISE +
-            ANDROID_LINT_VERSION_NOISE,
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_LINT_VERSION_NOISE,
     ) { projectDir ->
         projectDir.resolve("build.gradle.kts").writeText(markerComposeKmpAndroidBuildScript(row))
         projectDir.resolve("gradle.properties").writeText("android.useAndroidX=true\n")
