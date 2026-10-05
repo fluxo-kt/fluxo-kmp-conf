@@ -24,7 +24,8 @@ internal fun FluxoKmpConfContext.prepareTaskInfoPlugin() {
         if (!gradleHasTaskInfoApi()) {
             rootProject.logger.w(
                 "taskinfo ($TASK_INFO_PLUGIN_VERSION, its newest release) can't run on Gradle " +
-                    "${GradleVersion.current().version}: Gradle changed the internal API it reads. " +
+                    "${GradleVersion.current().version}: " +
+                    "Gradle changed the internal API it reads. " +
                     "Use `taskTree`, or Gradle's own `--task-graph` (Gradle 9.1+).",
             )
             return
