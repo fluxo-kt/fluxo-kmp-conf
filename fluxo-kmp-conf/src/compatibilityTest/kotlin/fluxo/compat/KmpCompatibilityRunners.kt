@@ -93,7 +93,9 @@ private fun runKmpBrowserTestsCase(row: Map<String, String>, tempDir: Path) {
         "$task did not run (the host needs Chrome for this case)\n${withChrome.output}"
     }
     val results = projectDir.resolve("build/test-results/jsBrowserTest").toFile()
-    check(results.listFiles().orEmpty().any { "adds" in it.readText() }) {
+    // The results dir also holds a `binary/` directory; only the XML reports name the tests.
+    val reports = results.listFiles().orEmpty().filter { it.isFile && it.name.endsWith(".xml") }
+    check(reports.any { "adds" in it.readText() }) {
         "$task ran no test: no result for 'adds' in $results"
     }
 
