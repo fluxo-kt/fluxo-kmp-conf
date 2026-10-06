@@ -4,7 +4,6 @@ package fluxo.conf.pub
 
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.deps.loadPluginStaticallyError
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
@@ -28,6 +27,7 @@ import fluxo.conf.impl.withType
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.e
 import fluxo.log.l
+import fluxo.log.logDecision
 import fluxo.log.w
 import fluxo.test.formatSummary
 import org.gradle.api.GradleException
@@ -98,15 +98,15 @@ internal fun setupPublication(
     }
     val ctx = conf.ctx
     val isCalled = ctx.startTaskNames.any { name ->
-        CALL_TASK_PREFIXES.any { prefix -> name.startsWith(prefix) }
+        CALL_TASK_PREFIXES.any { prefix -> name.substringAfterLast(':').startsWith(prefix) }
     }
     // A publishing build must fail on a broken publication setup instead of publishing a
     // half-configured one; `check`/`verify` run on every CI build, so they only log it.
     val publishes = ctx.startTaskNames.any { name ->
-        PUBLISH_TASK_PREFIXES.any { prefix -> name.startsWith(prefix) }
+        PUBLISH_TASK_PREFIXES.any { prefix -> name.substringAfterLast(':').startsWith(prefix) }
     }
     ctx.onProjectInSyncRun(forceIf = isCalled, rethrow = publishes) {
-        setupGradleProjectPublication(conf.project, config, conf, publishes)
+        setupGradleProjectPublication(conf.project, config, conf)
     }
 }
 
@@ -114,7 +114,6 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
     p: Project,
     config: FluxoPublicationConfig,
     conf: FluxoConfigurationExtensionImpl,
-    publishes: Boolean,
 ) {
     val useDokka = conf.useDokka
 
@@ -123,16 +122,24 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
     // E.g., official Gradle Plugin publishing is just a broken mess.
     //  https://github.com/adamko-dev/dokkatoo/issues/61#issuecomment-1701156702
     //  https://github.com/adamko-dev/dokkatoo/blob/b1ca20c/buildSrc/src/main/kotlin/buildsrc/conventions/maven-publishing.gradle.kts
-    val useVanniktech = conf.useVanniktechPublish != false
-    if (useVanniktech) {
-        if (p.pluginManager.hasPlugin(VANNIKTECH_MAVEN_PUBLISH_PLUGIN_ID) ||
-            p.pluginManager.hasPlugin(VANNIKTECH_MAVEN_PUBLISH_BASE_PLUGIN_ID)
-        ) {
-            p.configureExtension<MavenPublishBaseExtension>("mavenPublishing") {
-                setupVanniktechPublication(p, config, conf)
-            }
-        } else {
-            p.loadPluginStaticallyError(VANNIKTECH_MAVEN_PUBLISH_PLUGIN_ID, fail = publishes)
+    // fluxo can't apply Vanniktech itself (its typed API must come from the consumer's build
+    // classpath), so without it the module gets fluxo's own maven-publish setup: a module that
+    // publishes still gets its version, group, POM and plugin-marker metadata, and only
+    // Vanniktech's extras (e.g. the Maven Central tasks) are missing.
+    val hasVanniktech = p.pluginManager.hasPlugin(VANNIKTECH_MAVEN_PUBLISH_PLUGIN_ID) ||
+        p.pluginManager.hasPlugin(VANNIKTECH_MAVEN_PUBLISH_BASE_PLUGIN_ID)
+    if (conf.useVanniktechPublish != false && !hasVanniktech) {
+        logDecision(
+            p,
+            setting = "publication",
+            value = "Gradle maven-publish",
+            reason = "the Vanniktech maven-publish plugin isn't applied",
+            howToChange = "apply `id(\"$VANNIKTECH_MAVEN_PUBLISH_PLUGIN_ID\")` for Maven Central",
+        )
+    }
+    if (conf.useVanniktechPublish != false && hasVanniktech) {
+        p.configureExtension<MavenPublishBaseExtension>("mavenPublishing") {
+            setupVanniktechPublication(p, config, conf)
         }
     } else {
         when (val mode = conf.mode) {

@@ -25,6 +25,42 @@ internal fun runGradlePluginConsumer(row: Map<String, String>, tempDir: Path) {
         buildAndCheckGradlePlugin(oldGradle, tempDir.resolve(row.getValue("id") + "-gradle-floor"))
     }
     if (row.kgpMinor() >= KGP_ABI_VALIDATION) runKgpAbiCase(row, tempDir)
+    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) runPublicationWithoutVanniktechCase(row, tempDir)
+}
+
+/**
+ * Publication on, the version given only to fluxo, and the Vanniktech plugin (fluxo's default
+ * publisher) not applied: fluxo must fall back to its own maven-publish setup. It once only logged
+ * the missing plugin, so the project version stayed unset and the plugin marker was published as
+ * `unspecified`.
+ */
+private fun runPublicationWithoutVanniktechCase(row: Map<String, String>, tempDir: Path) {
+    val projectDir = tempDir.resolve(row.getValue("id") + "-publication")
+    val repo = projectDir.resolve("m2")
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-gradle-plugin-consumer",
+        projectDir = projectDir,
+        tasks = listOf("publishToMavenLocal"),
+        arguments = listOf("-Dmaven.repo.local=$repo"),
+    ) {
+        val script = gradlePluginBuildScript(row)
+            .replace("version = \"1.0.0\"\n", "")
+            .replace(
+                "enablePublication = false",
+                "enablePublication = true\n    this.version = \"1.2.3\"\n    publicationConfig()",
+            )
+        it.resolve("build.gradle.kts").writeText(script)
+        writeCompatPluginSource(it)
+    }
+    val marker = repo.resolve(
+        "compat/compat-plugin/$PLUGIN_ID.gradle.plugin/1.2.3/$PLUGIN_ID.gradle.plugin-1.2.3.pom",
+    )
+    check(Files.exists(marker)) {
+        "No plugin marker at version 1.2.3; published: " +
+            Files.walk(repo).use { s -> s.filter(Files::isRegularFile).toList() }
+    }
 }
 
 /** The first Kotlin whose own ABI validation fluxo uses. */

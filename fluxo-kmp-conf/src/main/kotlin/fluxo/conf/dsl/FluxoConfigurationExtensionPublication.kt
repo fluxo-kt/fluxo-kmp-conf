@@ -34,6 +34,9 @@ public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChai
      * for publication configuration and management (recommended).
      *
      * Defaults to `true`.
+     * fluxo can't apply the plugin itself: declare it in the module's `plugins {}`. Without it,
+     * fluxo publishes with Gradle's `maven-publish` (no Maven Central tasks) and says so under
+     * `FLUXO_EXPLAIN`.
      *
      * [Vanniktech's maven-publish plugin](https://github.com/vanniktech/gradle-maven-publish-plugin)
      */
