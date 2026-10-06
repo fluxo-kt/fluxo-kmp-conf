@@ -315,6 +315,8 @@ private fun Project.setupDetekt1(
         baselineFiles.from(baselineTasks.map { it.baseline })
     }
 
+    detekt1SharedKmpSourceSets()
+
     val detektTasks = tasks.withType<Detekt> {
         if (s.testsDisabled) {
             disableTask("tests are disabled")
@@ -350,6 +352,25 @@ private fun Project.setupDetekt1(
         }
     }
     return detektTasks
+}
+
+/**
+ * Detekt 1 gives each KMP compilation a task over that compilation's own source sets, and shared
+ * main ones come through the metadata compilations; a source set no compilation includes
+ * directly (the shared test ones: `commonTest`, `nativeTest`, …) went unanalysed. Detekt's plain
+ * task takes them, without type resolution, as Detekt 2's per-source-set tasks do; its baseline
+ * task takes the same files, so findings there can be baselined.
+ */
+private fun Project.detekt1SharedKmpSourceSets() {
+    val kmp = mppExtOrNull ?: return
+    val unanalysed = provider {
+        val direct = kmp.targets.flatMap { it.compilations }
+            .flatMapTo(HashSet()) { it.kotlinSourceSets }
+        kmp.sourceSets.filter { it !in direct }.map { it.kotlin.sourceDirectories }
+    }
+    tasks.namedCompat {
+        it == DetektPlugin.DETEKT_TASK_NAME || it == DetektPlugin.BASELINE_TASK_NAME
+    }.configureEach { (this as SourceTask).source(unanalysed) }
 }
 
 private fun Project.setupDetekt2(
