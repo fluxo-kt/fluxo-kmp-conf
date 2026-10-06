@@ -314,7 +314,8 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * using the `invokedynamic` JVM instruction.
      * Note: legacy `class` mode provides names for lambda arguments. Indy mode doesn't!
      *
-     * Uses `-Xlambdas` and `-Xsam-conversions` compiler options.
+     * Indy is the compiler's own default, so only `false` passes flags: `-Xlambdas=class` and
+     * `-Xsam-conversions=class` (CI and release builds keep indy).
      *
      * [More info](https://kotlinlang.org/docs/whatsnew15.html#lambdas-via-invokedynamic)
      */
@@ -386,13 +387,11 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
 
 
     /**
-     * Flag to turn on the new faster version of JAR FS should make build faster,
-     * but it is experimental and causes warning.
-     * So auto turned off when [allWarningsAsErrors] enabled.
+     * Whether the Kotlin/JVM compiler reads JARs with its fast JAR file system. The compiler
+     * already uses it by default with the K2 frontend, so `true` passes nothing, and `false`
+     * passes `-Xuse-fast-jar-file-system=false` to fall back to the slower implementation.
      *
      * Inherited from the parent project if not set. Default value: `true`.
-     *
-     * Uses `-Xuse-fast-jar-file-system` compiler option.
      */
     public var useExperimentalFastJarFs: Boolean?
 }

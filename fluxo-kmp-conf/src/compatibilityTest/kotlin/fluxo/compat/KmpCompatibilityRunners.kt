@@ -1,6 +1,7 @@
 package fluxo.compat
 
 import java.nio.file.Path
+import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
 
@@ -71,7 +72,9 @@ private const val FLUXO_BCV_JS_ID = "io.github.fluxo-kt.binary-compatibility-val
 /**
  * `KMP_TARGETS=WASM_WASI` must keep the WASI target enabled: fluxo disables every target outside
  * the filter, so a WASI target classified as Wasm-JS would disable the very target asked for.
- * The project has no sources: an enabled compile reports NO-SOURCE, a disabled one SKIPPED.
+ * An enabled compile succeeds, a disabled one is SKIPPED. The compile also guards the flags fluxo
+ * passes to Wasm: Kotlin 2.4 compiles Wasm with its own argument set, where a JS-only flag prints
+ * "Flag is not supported by this version of the compiler" on every compile.
  */
 private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
     val task = ":compileKotlinWasmWasi"
@@ -83,13 +86,16 @@ private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
         projectDir = tempDir.resolve("${row.getValue("id")}-all-targets-$kgp"),
         tasks = listOf(task.removePrefix(":")),
         arguments = listOf("-PKMP_TARGETS=WASM_WASI"),
+        forbiddenOutput = listOf("Flag is not supported by this version of the compiler"),
         assertTasksSucceed = false,
     ) { projectDir ->
         // WASI is not among the default targets: consumers declare it.
         projectDir.resolve("build.gradle.kts")
             .writeText(markerKmpAllTargetsBuildScript(row, extraTargets = "; wasmWasi()"))
+        projectDir.resolve("src/wasmWasiMain/kotlin").createDirectories()
+            .resolve("W.kt").writeText("package compat\n\nfun wasi(): Int = 1\n")
     }
-    check(result.task(task)?.outcome == TaskOutcome.NO_SOURCE) {
+    check(result.task(task)?.outcome == TaskOutcome.SUCCESS) {
         "KMP_TARGETS=WASM_WASI: $task was ${result.task(task)?.outcome}\n${result.output}"
     }
 }

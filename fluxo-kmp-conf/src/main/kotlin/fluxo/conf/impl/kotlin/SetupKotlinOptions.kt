@@ -17,6 +17,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     isAndroid: Boolean,
     isTest: Boolean,
     isMultiplatform: Boolean,
+    isWasm: Boolean,
     jvmTargetVersion: String?,
 ) {
     val context = conf.ctx
@@ -64,13 +65,8 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         deprecatedVersions.forEach { context.deprecatedKotlinVersions.record(it, path) }
     }
 
-    val isJvm: Boolean
-    val isJs: Boolean
     when (this) {
         is KotlinJvmCompilerOptions -> {
-            isJvm = true
-            isJs = false
-
             if (jvmTargetVersion == null && isAndroid) {
                 followAndroidJavaTarget(conf.project)
             }
@@ -103,22 +99,23 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 compilerArgs.add("-Xstring-concat=inline")
             }
 
-            // Using the new faster version of JAR FS should make build faster,
-            // but it is experimental and causes warning.
-            if (!warningsAsErrors && kc.fastJarFs) {
-                compilerArgs.add("-Xuse-fast-jar-file-system")
+            // The compiler uses the fast JAR file system by default with K2 (`?: useK2` in
+            // KotlinCoreEnvironment, 2.1.21 to 2.4.20), the only frontend on the supported range,
+            // so only switching it off needs a flag.
+            if (!kc.fastJarFs) {
+                compilerArgs.add("-Xuse-fast-jar-file-system=false")
             }
 
             // "indy" mode generates lambda functions using `invokedynamic` instruction.
             // "class" mode provides lambdas arguments names and `reflect()` support.
-            // `invokedynamic` instruction is supported since Java 8 and Android API 26.
-            // https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/jvm/extraHelp.out
+            // `indy` is the compiler's default from language version 2.0, so only `class` is
+            // passed.
             // https://kotlinlang.org/docs/whatsnew20.html#generation-of-lambda-functions-using-invokedynamic
             // https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect.jvm/reflect.html
             val useIndyLambdas = kc.jvmTargetInt >= JRE_1_8 &&
                 (kc.useIndyLambdas || isCI || releaseSettings)
-            (if (useIndyLambdas) "indy" else "class").let { mode ->
-                compilerArgs.addAll("-Xlambdas=$mode", "-Xsam-conversions=$mode")
+            if (!useIndyLambdas) {
+                compilerArgs.addAll("-Xlambdas=class", "-Xsam-conversions=class")
             }
 
             if (releaseSettings && kc.removeAssertionsInRelease) {
@@ -127,14 +124,13 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         }
 
         is KotlinJsCompilerOptions -> {
-            isJs = true
-            isJvm = false
-            compilerArgs.addAll(JS_OPTS)
-        }
-
-        else -> {
-            isJvm = false
-            isJs = false
+            // ES2015 classes under the Kotlin plugin's default ES5 target. JS only: Wasm shares
+            // these options, but Kotlin 2.4 compiles it with its own argument set, where a
+            // JS-only flag warns "not supported by this version of the compiler".
+            // `-Xoptimize-generated-js` is on by default on the whole supported range.
+            if (!isWasm) {
+                useEsClasses.set(true)
+            }
         }
     }
 
@@ -147,25 +143,19 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         // K2 is the only compiler from Kotlin 2.0+; under the layer-2 floor (consumer
         // KGP 2.0+) it is the only path, and the `useK2` toggle is gone from KGP.
 
-        // Lang features
+        // Lang features. This compilation uses the newest language version the consumer's Kotlin
+        // knows (2.3 on Kotlin 2.1), so only features that are not stable there need a flag:
+        // enabling a stable one is a "redundant argument" warning.
         /** @see org.jetbrains.kotlin.config.LanguageFeature */
-        // https://github.com/JetBrains/kotlin/blob/ca0b061/compiler/util/src/org/jetbrains/kotlin/config/LanguageVersionSettings.kt
 
-        // Non-local break and continue are in preview since 2.0.
-        // In K2 the feature is JVM-only.
-        // https://youtrack.jetbrains.com/issue/KT-1436/Support-non-local-break-and-continue
-        if (isJvm) {
-            compilerArgs.add(langFeature("BreakContinueInInlineLambdas"))
-        }
-
-        // K2 Explicit backing fields (unconditional under the layer-2 floor).
+        // Explicit backing fields: stable from Kotlin 2.4; the official flag exists since 2.3.
         // https://github.com/Kotlin/KEEP/issues/278#issuecomment-1152073904
-        // https://github.com/Kotlin/KEEP/pull/289
-        compilerArgs.add(langFeature("ExplicitBackingFields"))
-
-        // TODO: Guard conditions for when-with-subject (Kotlin 2.0.20)
-        //  https://youtrack.jetbrains.com/issue/KT-67787
-        // "-XXLanguage:+WhenGuards"
+        val kgp = context.kotlinPluginVersion
+        when {
+            kgp >= KOTLIN_2_4 -> {}
+            kgp >= KOTLIN_2_3 -> compilerArgs.add("-Xexplicit-backing-fields")
+            else -> compilerArgs.add(langFeature("ExplicitBackingFields"))
+        }
     }
 
     compilerArgs.addDefault(KotlinDefault.DONT_WARN_ON_ERROR_SUPPRESSION)
@@ -199,30 +189,15 @@ private val LATEST_OPTS = arrayOf(
     // Allow loading pre-release classes
     "-Xskip-prerelease-check",
 
-    // Enable experimental value classes
-    // https://youtrack.jetbrains.com/issue/KT-1179
-    // https://github.com/Kotlin/KEEP/blob/master/notes/value-classes.md
-    "-Xvalue-classes",
-
     // Compile using Front-end IR internal incremental compilation cycle.
     // Warning: this feature is far from being production-ready.
     "-Xuse-fir-ic",
 
-    // Compile using LightTree parser with Front-end IR.
-    "-Xuse-fir-lt",
-
     // Check pre- and postconditions on phases.
     "-Xcheck-phase-conditions",
-
-    // Enable new experimental generic type inference algorithm.
-    "-Xnew-inference",
 ).asList()
 
 private val LATEST_JVM_OPTS = arrayOf(
-    // Enhance not null annotated type parameter's types to definitely not null types
-    // (@NotNull T → T & Any)
-    "-Xenhance-type-parameter-types-to-def-not-null",
-
     // Allow using features from Java language that are in the preview phase.
     // Works as `--enable-preview` in Java.
     // All class files are marked as preview-generated, thus it won't be possible to use
@@ -237,14 +212,6 @@ private val JVM_RELEASE_OPTS = arrayOf(
     "-Xno-call-assertions",
     "-Xno-param-assertions",
     "-Xno-receiver-assertions",
-).asList()
-
-// https://github.com/JetBrains/kotlin/blob/master/compiler/testData/cli/js/jsExtraHelp.out
-private val JS_OPTS = arrayOf(
-    // Perform extra optimizations on the generated JS code.
-    "-Xoptimize-generated-js",
-    // Generate JavaScript with ES2015 classes.
-    "-Xes-classes",
 ).asList()
 
 // TODO: -Xwasm-use-new-exception-proposal

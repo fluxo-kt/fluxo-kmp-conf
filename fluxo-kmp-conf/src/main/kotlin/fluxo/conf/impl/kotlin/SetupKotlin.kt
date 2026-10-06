@@ -433,6 +433,7 @@ private fun KotlinProjectExtension.setupTargets(
                     isAndroid = isAndroid,
                     isTest = isTest,
                     isMultiplatform = isMultiplatform,
+                    isWasm = KotlinPlatformType.wasm === platformType,
                 )
             }
             // After setupKotlinOptions, whose `freeCompilerArgs.set()` would drop the lazy flag.
