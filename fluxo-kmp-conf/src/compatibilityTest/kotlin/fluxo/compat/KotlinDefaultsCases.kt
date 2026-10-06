@@ -30,21 +30,26 @@ internal fun runKotlinDefaultsSwitchCase(row: Map<String, String>, tempDir: Path
     }.output.substringAfter(ARGS_MARKER, "").substringBefore('\n')
 
     val on = run(emptyList())
-    check("-Xjsr305=strict" in on && "-Xvalidate-bytecode" in on) { "Control lacks flags: $on" }
-    val off = run(listOf("-PDISABLE_KOTLIN_DEFAULTS=-Xjsr305,validate-bytecode"))
-    check(off.isNotEmpty() && "-Xjsr305" !in off && "-Xvalidate-bytecode" !in off) {
-        "DISABLE_KOTLIN_DEFAULTS left flags on: '$off'"
+    check("-Xjsr305=strict" in on && "-Xvalidate-bytecode" in on && "$EXTRA=true" in on) {
+        "Control lacks defaults: $on"
+    }
+    // `wextra` covers a default set through a typed option rather than a flag.
+    val off = run(listOf("-PDISABLE_KOTLIN_DEFAULTS=-Xjsr305,validate-bytecode,wextra"))
+    check("-Xjsr305" !in off && "-Xvalidate-bytecode" !in off && "$EXTRA=false" in off) {
+        "DISABLE_KOTLIN_DEFAULTS left defaults on: '$off'"
     }
     run(listOf("-PDISABLE_KOTLIN_DEFAULTS=jsr3O5"), expectFailure = listOf("Did you mean jsr305?"))
 }
 
 private const val ARGS_MARKER = "FLUXO_COMPAT_ARGS="
+private const val EXTRA = "extraWarnings"
 
 private val ARGS_PROBE =
     """
 
     tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
         val args = compilerOptions.freeCompilerArgs
-        doFirst { println("$ARGS_MARKER" + args.get()) }
+        val extra = compilerOptions.extraWarnings
+        doFirst { println("$ARGS_MARKER" + args.get() + " $EXTRA=" + extra.get()) }
     }
     """.trimIndent()

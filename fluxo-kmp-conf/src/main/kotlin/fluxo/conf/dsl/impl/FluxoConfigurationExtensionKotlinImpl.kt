@@ -286,6 +286,38 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         get() = suppressVersionWarningsProp.orNull ?: parent?.suppressVersionWarnings
         set(value) = suppressVersionWarningsProp.set(value)
 
+    @get:Input
+    val returnValueCheckerProp: Property<Boolean>
+    override var returnValueChecker: Boolean?
+        get() = returnValueCheckerProp.orNull ?: parent?.returnValueChecker
+        set(value) = returnValueCheckerProp.set(value)
+
+    @get:Input
+    val annotationDefaultTargetParamPropertyProp: Property<Boolean>
+    override var annotationDefaultTargetParamProperty: Boolean?
+        get() = annotationDefaultTargetParamPropertyProp.orNull
+            ?: parent?.annotationDefaultTargetParamProperty
+        set(value) = annotationDefaultTargetParamPropertyProp.set(value)
+
+    @get:Input
+    val consistentDataClassCopyVisibilityProp: Property<Boolean>
+    override var consistentDataClassCopyVisibility: Boolean?
+        get() = consistentDataClassCopyVisibilityProp.orNull
+            ?: parent?.consistentDataClassCopyVisibility
+        set(value) = consistentDataClassCopyVisibilityProp.set(value)
+
+    @get:Input
+    val whenExpressionsIndyProp: Property<Boolean>
+    override var whenExpressionsIndy: Boolean?
+        get() = whenExpressionsIndyProp.orNull ?: parent?.whenExpressionsIndy
+        set(value) = whenExpressionsIndyProp.set(value)
+
+    @get:Input
+    val extraWarningsProp: Property<Boolean>
+    override var extraWarnings: Boolean?
+        get() = extraWarningsProp.orNull ?: parent?.extraWarnings
+        set(value) = extraWarningsProp.set(value)
+
 
     @get:Input
     val enableComposeProp: Property<Boolean>

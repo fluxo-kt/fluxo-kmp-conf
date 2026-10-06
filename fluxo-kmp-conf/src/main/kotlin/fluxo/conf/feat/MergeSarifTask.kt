@@ -92,9 +92,10 @@ internal fun mergeSarif(reports: List<Json>): Json {
     val results = ArrayList<Json>()
     for (run in reports.flatMap { it.runs }) {
         for (rule in run.driver?.list("rules").orEmpty()) {
-            ruleIndex.getOrPut(rule["id"] as String) {
+            val id = rule["id"] as String
+            if (id !in ruleIndex) {
                 rules.add(rule)
-                rules.lastIndex
+                ruleIndex[id] = rules.lastIndex
             }
         }
         for (result in run.results) {

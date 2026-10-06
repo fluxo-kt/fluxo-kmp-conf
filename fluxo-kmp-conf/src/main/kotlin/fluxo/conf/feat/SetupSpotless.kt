@@ -167,13 +167,13 @@ internal fun Project.setupSpotless(
     if (isRootProject) {
         configureExtension<SpotlessExtension>("spotlessPredeclare") {
             kotlin {
-                runCatching { ktlint(ktlintVersion) }.getOrElse { ktlint() }
+                if (runCatching { ktlint(ktlintVersion) }.isFailure) ktlint()
                 if (enableDiktat) {
                     diktat()
                 }
             }
             kotlinGradle {
-                runCatching { ktlint(ktlintVersion) }.getOrElse { ktlint() }
+                if (runCatching { ktlint(ktlintVersion) }.isFailure) ktlint()
                 if (enableDiktat) {
                     diktat()
                 }

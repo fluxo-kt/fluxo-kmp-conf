@@ -184,7 +184,7 @@ private fun KotlinMultiplatformAndroidLibraryExtension.applyMinSdk(
 private fun KotlinMultiplatformAndroidLibraryExtension.applyBuildToolsVersion(
     conf: FluxoConfigurationExtensionImpl,
 ) = noSuchMethodSafe {
-    if (!buildToolsVersion.isNullOrBlank()) return@noSuchMethodSafe
+    if (buildToolsVersion.isNotBlank()) return@noSuchMethodSafe
     conf.androidBuildToolsVersion?.takeIf { it.isNotBlank() }?.let { buildToolsVersion = it }
 }
 

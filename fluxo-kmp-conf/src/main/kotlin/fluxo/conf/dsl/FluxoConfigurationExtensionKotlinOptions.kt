@@ -464,4 +464,52 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=suppress-version-warnings`.
      */
     public var suppressVersionWarnings: Boolean?
+
+    /**
+     * Report an ignored result of a function whose result must be used (Kotlin's unused return
+     * value checker), on Kotlin 2.3 and newer. Passes `-Xreturn-value-checker=check`.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=return-value-checker`.
+     */
+    public var returnValueChecker: Boolean?
+
+    /**
+     * Apply an annotation on a constructor `val`/`var` parameter to the property too, as Kotlin
+     * does by default from language version 2.4, so a module behaves the same on every language
+     * version. Passes `-Xannotation-default-target=param-property` below language version 2.4.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=annotation-default-target`.
+     */
+    public var annotationDefaultTargetParamProperty: Boolean?
+
+    /**
+     * Give a data class's generated `copy()` the visibility of its primary constructor, so a
+     * private constructor can't be bypassed through `copy()` (KT-11914). In a library this can
+     * change the public ABI: `@ConsistentCopyVisibility` or `@ExposedCopyVisibility` on the class
+     * decides per class. Passes `-Xconsistent-data-class-copy-visibility`.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=consistent-data-class-copy-visibility`.
+     */
+    public var consistentDataClassCopyVisibility: Boolean?
+
+    /**
+     * Compile type-checking `when` expressions with `invokedynamic` on JVM targets 21 and newer.
+     * Kotlin 2.4 already does; on Kotlin 2.2 and 2.3 this passes `-Xwhen-expressions=indy`.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=when-expressions`.
+     */
+    public var whenExpressionsIndy: Boolean?
+
+    /**
+     * Turn on the compiler's extra checks (`extraWarnings`, `-Wextra`): redundant or
+     * suspicious code the default checks don't report.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=wextra`.
+     */
+    public var extraWarnings: Boolean?
 }

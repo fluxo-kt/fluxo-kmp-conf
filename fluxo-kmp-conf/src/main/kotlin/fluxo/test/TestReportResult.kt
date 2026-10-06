@@ -35,7 +35,7 @@ private constructor(
             val testSuite = ":$projectName $className"
             val testTaskName = task.name.substringBeforeLast("Test")
 
-            var name = desc.displayName.orEmpty()
+            var name = desc.displayName
             if (!name.endsWith(']')) {
                 val targetName = (task as? KotlinTest)?.targetName
                     ?: testTaskName.takeIf {

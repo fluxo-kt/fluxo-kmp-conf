@@ -451,7 +451,7 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
 
             val chainForLog = chainForLog.get()
             when {
-                chainForLog.isNullOrBlank() -> append(path)
+                chainForLog.isBlank() -> append(path)
                 else -> append(projectLogPath).append(" ").append(chainForLog)
             }.append(") ")
 

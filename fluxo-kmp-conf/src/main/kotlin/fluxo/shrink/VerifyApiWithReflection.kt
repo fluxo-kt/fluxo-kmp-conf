@@ -19,14 +19,12 @@ internal fun ApiVerifier.verifyApiWithReflection(
     val className = signature.name
     val clazz = Class.forName(className, true, classLoader)
 
-    // Check the kotlin class reflection.
+    // Check the kotlin class reflection: it parses the class metadata lazily, so reading every
+    // member's types forces it and fails here when the shrinker broke the metadata.
     val kClass = clazz.kotlin
     kClass.members.forEach { member ->
-        member.parameters.forEach {
-            it.type
-            it.isOptional
-        }
-        member.returnType
+        member.parameters.forEach { forceRead(it.type, it.isOptional) }
+        forceRead(member.returnType)
     }
 
     // TODO: Check parent classes and interfaces.
@@ -207,3 +205,7 @@ private fun ApiVerifier.verifyClassType(
         }
     }
 }
+
+/** Takes values only so that computing them happens; see `verifyApiWithReflection`. */
+@Suppress("UNUSED_PARAMETER", "UnusedParameter")
+private fun forceRead(vararg values: Any) = Unit

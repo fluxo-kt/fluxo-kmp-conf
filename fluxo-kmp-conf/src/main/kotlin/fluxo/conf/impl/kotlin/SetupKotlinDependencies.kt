@@ -49,14 +49,17 @@ internal fun Project.setupKotlinDependencies(
     libs.onLibrary("jetbrains-annotation") { compileOnlyWithConstraint(dh, it) }
 
     if (kc.setupCoroutines) {
-        kc.setupKnownBoms && libs.onLibrary("kotlinx-coroutines-bom") {
+        val bomApplied = kc.setupKnownBoms && libs.onLibrary("kotlinx-coroutines-bom") {
             implementation(
                 dh,
                 if (isApplication) dh.enforcedPlatform(it) else dh.platform(it),
                 excludeJetbrainsAnnotations,
             )
             implementation(dh, COROUTINES_DEPENDENCY)
-        } || libs.onLibrary("kotlinx-coroutines-core") { implementation(dh, it) }
+        }
+        if (!bomApplied) {
+            libs.onLibrary("kotlinx-coroutines-core") { implementation(dh, it) }
+        }
 
         libs.onLibrary("kotlinx-coroutines-test") { testImplementation(dh, it) }
         libs.onLibrary("kotlinx-coroutines-debug") { testImplementation(dh, it) }

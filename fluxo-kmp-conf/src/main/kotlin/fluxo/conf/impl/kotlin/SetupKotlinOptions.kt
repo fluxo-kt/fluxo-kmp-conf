@@ -55,6 +55,22 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         compilerArgs.addDefault(KotlinDefault.EXPECT_ACTUAL_CLASSES, kc.defaultsOff)
     }
 
+    // Strict defaults. Each is passed only where the consumer's compiler has it and it is not
+    // already the default at the compilation's language version (see KotlinDefault).
+    val kgp = context.kotlinPluginVersion
+    val effectiveLang = languageVersion.orNull?.version?.let(::parseKotlinPluginVersion)
+        ?: KotlinVersion(kgp.major, kgp.minor)
+    if (kgp >= KOTLIN_2_3) {
+        compilerArgs.addDefault(KotlinDefault.RETURN_VALUE_CHECKER, kc.defaultsOff)
+    }
+    if (effectiveLang < KOTLIN_2_4) {
+        compilerArgs.addDefault(KotlinDefault.ANNOTATION_DEFAULT_TARGET, kc.defaultsOff)
+    }
+    compilerArgs.addDefault(KotlinDefault.CONSISTENT_DATA_CLASS_COPY_VISIBILITY, kc.defaultsOff)
+    if (KotlinDefault.EXTRA_WARNINGS !in kc.defaultsOff) {
+        extraWarnings.set(true)
+    }
+
     // Read from the compile task's own options, after ours were applied, so a version the
     // consumer set in their own `kotlin { compilerOptions }` counts too.
     val deprecatedVersions = listOfNotNull(languageVersion.orNull, apiVersion.orNull)
@@ -92,6 +108,10 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
             compilerArgs.addDefault(KotlinDefault.EMIT_JVM_TYPE_ANNOTATIONS, kc.defaultsOff)
             compilerArgs.addDefault(KotlinDefault.JSR305, kc.defaultsOff)
             compilerArgs.addDefault(KotlinDefault.VALIDATE_BYTECODE, kc.defaultsOff)
+            val target = jvmTargetVersion?.toJvmMajorVersion() ?: 0
+            if (kgp >= KOTLIN_2_2 && kgp < KOTLIN_2_4 && target >= JRE_21) {
+                compilerArgs.addDefault(KotlinDefault.WHEN_EXPRESSIONS_INDY, kc.defaultsOff)
+            }
             if (useLatestSettings) {
                 compilerArgs.addAll(LATEST_JVM_OPTS)
             }
@@ -152,7 +172,6 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
 
         // Explicit backing fields: stable from Kotlin 2.4; the official flag exists since 2.3.
         // https://github.com/Kotlin/KEEP/issues/278#issuecomment-1152073904
-        val kgp = context.kotlinPluginVersion
         when {
             kgp >= KOTLIN_2_4 -> {}
             kgp >= KOTLIN_2_3 -> compilerArgs.add("-Xexplicit-backing-fields")

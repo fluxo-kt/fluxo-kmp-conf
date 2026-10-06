@@ -16,17 +16,15 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
         projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
         writeKotlinJvmSources(projectDir)
     }
-    val case = { tasks: List<String>, arguments: List<String> ->
-        runConsumerCase(
-            row,
-            tempDir,
-            rootProjectName = "compat-kotlin-jvm-consumer",
-            tasks = tasks,
-            arguments = arguments,
-            forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
-            writeProject = writeProject,
-        ).output
-    }
+    fun case(tasks: List<String>, arguments: List<String>) = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kotlin-jvm-consumer",
+        tasks = tasks,
+        arguments = arguments,
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+        writeProject = writeProject,
+    ).output
     case(row.getValue("requiredTasks").split(' '), emptyList())
 
     // FLUXO_EXPLAIN prints the derived settings at build end. The second run is a

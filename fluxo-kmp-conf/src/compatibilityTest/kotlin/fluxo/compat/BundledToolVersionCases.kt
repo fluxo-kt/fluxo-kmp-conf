@@ -12,26 +12,24 @@ import kotlin.io.path.writeText
  */
 internal fun runBundledToolVersionCase(row: Map<String, String>, tempDir: Path) {
     if (row.kgpMinor() < NEWEST_TESTED_KOTLIN) return
-    val case = { tasks: List<String>, arguments: List<String> ->
-        runConsumerCase(
-            row,
-            tempDir,
-            rootProjectName = "compat-bundled-tool-versions",
-            projectDir = tempDir.resolve(row.getValue("id") + "-bundled-tool-versions"),
-            tasks = tasks,
-            arguments = arguments,
-            forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
-            assertTasksSucceed = arguments.isEmpty(),
-            seedBaseline = false,
-        ) { projectDir ->
-            projectDir.resolve("build.gradle.kts").writeText(
-                markerKotlinJvmBuildScript(row)
-                    .replaceFirst("plugins {\n", "plugins {\n$DECLARED\n")
-                    .replace("setupVerification = false", VERIFICATION_ON),
-            )
-            writeKotlinJvmSources(projectDir)
-        }.output
-    }
+    fun case(tasks: List<String>, arguments: List<String>) = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-bundled-tool-versions",
+        projectDir = tempDir.resolve(row.getValue("id") + "-bundled-tool-versions"),
+        tasks = tasks,
+        arguments = arguments,
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
+        assertTasksSucceed = arguments.isEmpty(),
+        seedBaseline = false,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerKotlinJvmBuildScript(row)
+                .replaceFirst("plugins {\n", "plugins {\n$DECLARED\n")
+                .replace("setupVerification = false", VERIFICATION_ON),
+        )
+        writeKotlinJvmSources(projectDir)
+    }.output
     val output = case(listOf("buildEnvironment"), emptyList())
     val replaced = OLDER.filter { (module, version) -> "$module:$version -> " in output }
     check(replaced.isEmpty()) { "fluxo replaced the declared $replaced:\n$output" }

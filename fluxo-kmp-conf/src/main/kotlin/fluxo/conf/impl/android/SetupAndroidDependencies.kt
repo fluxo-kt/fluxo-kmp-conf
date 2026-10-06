@@ -82,7 +82,9 @@ internal fun Project.setupAndroidDependencies(
         }
     }
 
-    libs.onLibrary("test-jUnit", testImpl) || libs.onLibrary("junit", testImpl)
+    if (!libs.onLibrary("test-jUnit", testImpl)) {
+        libs.onLibrary("junit", testImpl)
+    }
     libs.onLibrary("test-mockito-core", testImpl)
     libs.onLibrary("test-robolectric", testImpl)
 

@@ -272,16 +272,26 @@ private fun FluxoConfigurationExtensionImpl.kotlinDefaultsOff(
     project: Project,
 ): Set<KotlinDefault> {
     val build = parseDisabledKotlinDefaults(project.envOrPropList(DISABLE_KOTLIN_DEFAULTS))
-    val module = buildSet {
-        if (jsr305Strict == false) add(KotlinDefault.JSR305)
-        if (validateBytecode == false) add(KotlinDefault.VALIDATE_BYTECODE)
-        if (emitJvmTypeAnnotations == false) add(KotlinDefault.EMIT_JVM_TYPE_ANNOTATIONS)
-        if (dontWarnOnErrorSuppression == false) add(KotlinDefault.DONT_WARN_ON_ERROR_SUPPRESSION)
-        if (expectActualClasses == false) add(KotlinDefault.EXPECT_ACTUAL_CLASSES)
-        if (suppressVersionWarnings == false) add(KotlinDefault.SUPPRESS_VERSION_WARNINGS)
-        if (progressiveMode == false) add(KotlinDefault.PROGRESSIVE)
-        if (!useJdkRelease) add(KotlinDefault.JDK_RELEASE)
+    // Each default with the module setting that switches it off; unset means on.
+    val settings = mapOf(
+        KotlinDefault.JSR305 to jsr305Strict,
+        KotlinDefault.VALIDATE_BYTECODE to validateBytecode,
+        KotlinDefault.EMIT_JVM_TYPE_ANNOTATIONS to emitJvmTypeAnnotations,
+        KotlinDefault.DONT_WARN_ON_ERROR_SUPPRESSION to dontWarnOnErrorSuppression,
+        KotlinDefault.EXPECT_ACTUAL_CLASSES to expectActualClasses,
+        KotlinDefault.SUPPRESS_VERSION_WARNINGS to suppressVersionWarnings,
+        KotlinDefault.RETURN_VALUE_CHECKER to returnValueChecker,
+        KotlinDefault.ANNOTATION_DEFAULT_TARGET to annotationDefaultTargetParamProperty,
+        KotlinDefault.CONSISTENT_DATA_CLASS_COPY_VISIBILITY to consistentDataClassCopyVisibility,
+        KotlinDefault.WHEN_EXPRESSIONS_INDY to whenExpressionsIndy,
+        KotlinDefault.EXTRA_WARNINGS to extraWarnings,
+        KotlinDefault.PROGRESSIVE to progressiveMode,
+        KotlinDefault.JDK_RELEASE to useJdkRelease,
+    )
+    check(settings.keys == KotlinDefault.entries.toSet()) {
+        "Kotlin defaults without a module setting: ${KotlinDefault.entries - settings.keys}"
     }
+    val module = settings.filterValues { it == false }.keys
     val off = build + module
     if (off.isNotEmpty()) {
         ctx.logDecision(

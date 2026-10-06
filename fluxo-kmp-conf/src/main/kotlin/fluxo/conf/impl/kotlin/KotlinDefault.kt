@@ -47,6 +47,30 @@ internal enum class KotlinDefault(
      */
     SUPPRESS_VERSION_WARNINGS("-Xsuppress-version-warnings"),
 
+    /**
+     * Kotlin 2.3+: report an ignored result of a function whose result must be used (Kotlin's
+     * unused return value checker). Not passed below 2.3.
+     */
+    RETURN_VALUE_CHECKER("-Xreturn-value-checker=check"),
+
+    /**
+     * An annotation on a constructor `val`/`var` parameter also applies to the property, as
+     * from language version 2.4, where it is the default and not passed.
+     */
+    ANNOTATION_DEFAULT_TARGET("-Xannotation-default-target=param-property"),
+
+    /** A data class's `copy()` gets its constructor's visibility (KT-11914). */
+    CONSISTENT_DATA_CLASS_COPY_VISIBILITY("-Xconsistent-data-class-copy-visibility"),
+
+    /**
+     * Type-checking `when` compiled with `invokedynamic` (`SwitchBootstraps.typeSwitch`) for JVM
+     * targets 21+, on Kotlin 2.2 and 2.3; from 2.4 it is the compiler's own default there.
+     */
+    WHEN_EXPRESSIONS_INDY("-Xwhen-expressions=indy"),
+
+    /** The typed `extraWarnings`, shown as `-Wextra` in the build log. */
+    EXTRA_WARNINGS(flag = null, switchName = "wextra"),
+
     /** The typed `progressiveMode`, shown as `-progressive` in the build log. */
     PROGRESSIVE(flag = null, switchName = "progressive"),
 
