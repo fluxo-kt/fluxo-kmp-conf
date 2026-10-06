@@ -216,10 +216,20 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
 
 
     /**
-     * List of Kotlin opt-ins to add in the project.
+     * List of Kotlin opt-ins to add in the project: the experimental APIs the module uses.
      *
-     * Default set of opt-ins:
-     * - [kotlin.RequiresOptIn]
+     * A marker's short name works as well as its full one (`ExperimentalUuidApi` or
+     * `kotlin.uuid.ExperimentalUuidApi`) for the Kotlin stdlib, kotlinx coroutines, serialization
+     * and datetime, and Compose markers. An unknown short name fails the build, naming the closest
+     * known one; use the full name for a marker fluxo does not know. A marker that exists only on
+     * some platforms (`ExperimentalPathApi` on the JVM, `ExperimentalForeignApi` on Native) is
+     * passed only to those platforms' compilations, where it resolves.
+     *
+     * Besides the defaults below, only named markers are opted into: a marker nobody named can't
+     * fail the build when Kotlin removes or deprecates it. Set on the root project, the list
+     * applies to every module.
+     *
+     * Default set of opt-ins, which only allow writing a construct on purpose:
      * - [kotlin.contracts.ExperimentalContracts]
      * - [kotlin.experimental.ExperimentalObjCName]
      * - [kotlin.experimental.ExperimentalTypeInference]

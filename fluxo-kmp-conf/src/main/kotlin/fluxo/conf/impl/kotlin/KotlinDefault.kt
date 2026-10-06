@@ -96,7 +96,7 @@ internal fun parseDisabledKotlinDefaults(names: List<String>): Set<KotlinDefault
             .lowercase()
         byName[name] ?: throw IllegalArgumentException(
             "DISABLE_KOTLIN_DEFAULTS: unknown name '$raw'. " +
-                closestSwitchNames(name, byName.keys).let {
+                closestNames(name, byName.keys).let {
                     if (it.isEmpty()) "" else "Did you mean ${it.joinToString(" or ")}? "
                 } +
                 "Valid names: ${byName.keys.joinToString()}.",
@@ -104,8 +104,9 @@ internal fun parseDisabledKotlinDefaults(names: List<String>): Set<KotlinDefault
     }
 }
 
-private fun closestSwitchNames(name: String, valid: Collection<String>): List<String> {
-    val distances = valid.associateWith { editDistance(name, it) }
+/** The [valid] names nearest to a misspelled [name], ignoring case; none when all are far off. */
+internal fun closestNames(name: String, valid: Collection<String>): List<String> {
+    val distances = valid.associateWith { editDistance(name.lowercase(), it.lowercase()) }
     val best = distances.values.minOrNull()
     // Up to a third of the name may differ: catches typos, not unrelated names.
     val near = best != null && best <= maxOf(1, name.length / TYPO_SHARE_DIVISOR)

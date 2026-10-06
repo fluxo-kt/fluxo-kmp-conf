@@ -89,8 +89,9 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
 
     val setupCoroutines = setupCoroutines ?: true
     val optInInternal = optInInternal ?: false
+    val resolvedOptIns = resolveOptIns(DEFAULT_OPT_INS + optIns)
     val optIns = prepareOptIns(
-        optIns = DEFAULT_OPT_INS + optIns,
+        optIns = resolvedOptIns.everywhere,
         setupCoroutines = setupCoroutines,
         optInInternal = optInInternal,
     )
@@ -133,6 +134,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         setupCoroutines = setupCoroutines,
         setupSerialization = setupKotlinXSerialization,
         optIns = optIns,
+        platformOptIns = resolvedOptIns,
         optInInternal = optInInternal,
     )
     project.logger.logKotlinProjectCompatibility(kc, pluginVersion)

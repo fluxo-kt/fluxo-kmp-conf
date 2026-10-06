@@ -47,7 +47,10 @@ internal class KotlinConfig(
     val useKotlinCompose: Boolean,
     val setupCoroutines: Boolean,
     val setupSerialization: Boolean,
+    /** Opt-ins for every compilation. */
     val optIns: Set<String>,
+    /** Opt-ins to markers that exist only on some platforms ([ResolvedOptIns.forPlatform]). */
+    val platformOptIns: ResolvedOptIns,
     val optInInternal: Boolean,
 ) {
     fun langAndApiVersions(

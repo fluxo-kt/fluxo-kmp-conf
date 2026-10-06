@@ -24,7 +24,10 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         runKmpAllTargetsCase(row + ("kgpVersion" to NEXT_KOTLIN), tempDir)
         runKmpWasiFilterCase(row, tempDir)
     }
-    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) runKmpTsApiChecksCase(row, tempDir)
+    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
+        runKmpTsApiChecksCase(row, tempDir)
+        runKmpShortOptInCase(row, tempDir)
+    }
 }
 
 /**

@@ -91,6 +91,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     isMultiplatform: Boolean,
     jvmTargetVersion: String?,
     inheritedArgs: Provider<List<String>>?,
+    optInPlatform: OptInPlatform?,
 ) {
     val context = conf.ctx
     val isCI = context.isCI
@@ -108,6 +109,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     if (isTest) {
         optIn.addAll(kc.prepareTestOptIns() - kc.optIns)
     }
+    optIn.addAll(kc.platformOptIns.forPlatform(optInPlatform))
 
     if (useLatestSettings) {
         compilerArgs.addAll(LATEST_OPTS)

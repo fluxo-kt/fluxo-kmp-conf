@@ -57,6 +57,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.targets.js.KotlinWasmTargetType
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
@@ -424,6 +426,22 @@ private fun KotlinProjectExtension.setupTargets(
             (isJsOrWasm || isMetadata || isTest)
 
         val compName = name
+        // Shared metadata compilations (`common`) get only the opt-ins every platform has; shared
+        // native ones are `native`.
+        val optInPlatform = when (platformType) {
+            KotlinPlatformType.jvm, KotlinPlatformType.androidJvm -> OptInPlatform.JVM
+
+            KotlinPlatformType.js -> OptInPlatform.JS
+
+            KotlinPlatformType.wasm -> when ((target as? KotlinWasmTargetDsl)?.wasmTargetType) {
+                KotlinWasmTargetType.WASI -> OptInPlatform.WASM_WASI
+                else -> OptInPlatform.WASM_JS
+            }
+
+            KotlinPlatformType.native -> OptInPlatform.NATIVE
+
+            else -> null
+        }
         compileTaskProvider.configure {
             compilerOptions {
                 setupKotlinCompatibility(
@@ -442,6 +460,7 @@ private fun KotlinProjectExtension.setupTargets(
                     isTest = isTest,
                     isMultiplatform = isMultiplatform,
                     inheritedArgs = inheritedArgs,
+                    optInPlatform = optInPlatform,
                 )
             }
             if (kc.useJdkRelease && this is KotlinJvmCompile) {
