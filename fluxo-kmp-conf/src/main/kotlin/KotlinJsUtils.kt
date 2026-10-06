@@ -2,19 +2,23 @@
 @file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
+import fluxo.conf.impl.kotlin.karmaFindsChrome
+import fluxo.conf.impl.kotlin.karmaNeedsOnlyChrome
 import fluxo.log.w
 import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.targets.js.KotlinWasmTargetType
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalMainFunctionArgumentsDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinTargetWithNodeJsDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 
 
 internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget>.() -> Unit =
@@ -23,14 +27,19 @@ internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget
     }
 
 public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
-    val isWasi = this is KotlinWasmWasiTargetDsl
+    // KGP's one target class implements the JS, Wasm-JS and WASI DSLs alike, so type checks
+    // can't tell these targets apart; the platform type and `wasmTargetType` can.
+    val isJs = platformType == KotlinPlatformType.js
+    val wasmType = if (isJs) null else (this as? KotlinWasmTargetDsl)?.wasmTargetType
 
     // set up browser & nodejs environment + test timeouts
     if (this is KotlinJsTargetDsl) {
         try {
-            if (!isWasi) {
+            // Browser tests use KGP's default runner, Karma with headless Chrome. No
+            // `testTimeout()` here: its `useMocha` would replace Karma and run them in Node.
+            if (wasmType != KotlinWasmTargetType.WASI) {
                 browser {
-                    testTimeout()
+                    testTask { skipWithoutChrome() }
                 }
             }
         } catch (e: Throwable) {
@@ -72,9 +81,9 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
     }
 
     if (this is KotlinTargetWithNodeJsDsl) {
-        val isWasm = this is KotlinWasmTargetDsl
         nodejs {
-            if (!isWasm) {
+            // Mocha runs only JS tests; Wasm tests in Node use KGP's own runner.
+            if (isJs) {
                 testTimeout()
             }
 
@@ -87,7 +96,7 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
         }
     }
 
-    if (this is KotlinWasmJsTargetDsl) {
+    if (wasmType == KotlinWasmTargetType.JS && this is KotlinWasmJsTargetDsl) {
         if (ENABLE_D8) {
             try {
                 d8 {
@@ -102,13 +111,28 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
         }
         // Binaryen is enabled by default in Kotlin 2.0+; explicit applyBinaryen()
         // was removed in 2.3 and pre-2.0 WASM is no longer a supported target.
-    } else {
-        // KotlinWasmTargetDsl is incomplete before the Kotlin 2.0
-        try {
-            if (this is KotlinWasmTargetDsl) {
-                binaries.executable()
+    }
+}
+
+/**
+ * Skips this browser test task where Karma would launch only Chrome and finds none, so `check`
+ * passes on machines without Chrome while browser tests run wherever it is installed (developer
+ * machines, most CI images). Decided when the task runs: the consumer's own browser choice is
+ * final by then, and the environment read never enters the configuration cache.
+ */
+private fun KotlinJsTest.skipWithoutChrome() {
+    val env = project.providers.environmentVariablesPrefixedBy("")
+    onlyIf("Karma finds the Chrome its browser tests need") { task ->
+        val settings = (task as KotlinJsTest).testFrameworkSettings
+        if (!karmaNeedsOnlyChrome(settings)) return@onlyIf true
+        karmaFindsChrome(env.get()::get, System.getProperty("os.name")).also { found ->
+            if (!found) {
+                task.logger.w(
+                    "${task.path} skipped: no Chrome found for these browser tests " +
+                        "(Node tests still run). Install Chrome, or set CHROME_BIN to a Chrome " +
+                        "or Chromium executable.",
+                )
             }
-        } catch (_: Error) {
         }
     }
 }

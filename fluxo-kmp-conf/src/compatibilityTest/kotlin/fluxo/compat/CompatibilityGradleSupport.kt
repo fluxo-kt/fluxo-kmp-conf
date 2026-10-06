@@ -74,13 +74,14 @@ internal fun compatRunner(
     projectDir: Path,
     gradleUserHome: Path,
     arguments: List<String>,
+    environment: Map<String, String> = emptyMap(),
 ): GradleRunner {
     pinInnerJdk(projectDir, row.compatJdkMajor())
     return GradleRunner.create()
         .withProjectDir(projectDir.toFile())
         .withTestKitDir(gradleUserHome.toFile())
         .withGradleVersion(row.getValue("gradleVersion"))
-        .withEnvironment(sanitizedEnvironment() + TRIPWIRE_ENVIRONMENT)
+        .withEnvironment(sanitizedEnvironment() + TRIPWIRE_ENVIRONMENT + environment)
         .withArguments(arguments + tripwireArguments(projectDir, row))
         .forwardOutput()
 }
@@ -98,6 +99,7 @@ internal fun compatRunner(
  * [forbiddenOutput] and, when [assertTasksSucceed], succeed every task in [tasks]; otherwise it
  * must fail and print every [expectFailure] text. Returns the result for case-specific checks.
  * Several cases may share one [projectDir] to reuse its configuration-cache entry.
+ * [environment] is laid over the host's, e.g. to hide a tool the host has.
  */
 @Suppress("LongParameterList")
 internal fun runConsumerCase(
@@ -111,6 +113,7 @@ internal fun runConsumerCase(
     expectFailure: List<String> = emptyList(),
     assertTasksSucceed: Boolean = true,
     seedBaseline: Boolean = true,
+    environment: Map<String, String> = emptyMap(),
     writeProject: (Path) -> Unit,
 ): BuildResult {
     // `status` is the row's claim; the runner's expectation is what actually gets checked.
@@ -127,7 +130,7 @@ internal fun runConsumerCase(
     val gradleUserHome = compatGradleUserHome()
     Files.createDirectories(gradleUserHome)
     val args = gradleArguments(tasks) + arguments
-    val runner = compatRunner(row, projectDir, gradleUserHome, args)
+    val runner = compatRunner(row, projectDir, gradleUserHome, args, environment)
 
     val result = if (expectFailure.isEmpty()) {
         if (seedBaseline && CHECK_TASK in tasks) {

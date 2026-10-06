@@ -2,6 +2,7 @@ package fluxo.compat
 
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
 
@@ -35,7 +36,72 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         runKmpStdlibSplitCase(row, tempDir)
         runKmpNpmToolVersionCase(row, tempDir)
         runKmpBareSetupCase(row, tempDir)
+        runKmpBrowserTestsCase(row, tempDir)
     }
+}
+
+/**
+ * JS tests run in a real browser where Karma finds Chrome, and are skipped with a warning where
+ * it finds none, so `check` stays green there. The browser setup was once skipped for every
+ * target (a type check meant for WASI matched JS too), so no fluxo build ran browser tests.
+ * The run without Chrome reuses the first run's configuration cache: the browser lookup must
+ * happen when the task runs, not be stored with the configuration. Needs Chrome on the host.
+ */
+private fun runKmpBrowserTestsCase(row: Map<String, String>, tempDir: Path) {
+    val projectDir = tempDir.resolve("${row.getValue("id")}-browser-tests")
+    val task = ":jsBrowserTest"
+    fun run(environment: Map<String, String>) = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kmp-browser-tests",
+        projectDir = projectDir,
+        tasks = listOf(task.removePrefix(":")),
+        assertTasksSucceed = false,
+        environment = environment,
+    ) {
+        // Running JS tests downloads Node.js and Yarn from repositories KGP adds to the project.
+        val settings = it.resolve("settings.gradle.kts")
+        settings.writeText(settings.readText().replace("FAIL_ON_PROJECT_REPOS", "PREFER_PROJECT"))
+        it.resolve("build.gradle.kts").writeText(
+            """
+            plugins {
+                id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
+                id("${pluginId()}") version "${pluginVersion()}"
+            }
+
+            fkcSetupMultiplatform(
+                config = {
+                    setupVerification = false
+                    enablePublication = false
+                    enableGradleDoctor = false
+                    setupCoroutines = false
+                },
+                kmp = { js() },
+                kotlin = { sourceSets.commonTest.dependencies { implementation(kotlin("test")) } },
+            )
+            """.trimIndent(),
+        )
+        it.resolve("src/commonTest/kotlin").createDirectories().resolve("BrowserTest.kt")
+            .writeText(
+                "package compat\n\nimport kotlin.test.Test\nimport kotlin.test.assertEquals\n\n" +
+                    "class BrowserTest {\n    @Test\n    fun adds() = assertEquals(2, 1 + 1)\n}\n",
+            )
+    }
+
+    val withChrome = run(emptyMap())
+    check(withChrome.task(task)?.outcome == TaskOutcome.SUCCESS) {
+        "$task did not run (the host needs Chrome for this case)\n${withChrome.output}"
+    }
+    val results = projectDir.resolve("build/test-results/jsBrowserTest").toFile()
+    check(results.listFiles().orEmpty().any { "adds" in it.readText() }) {
+        "$task ran no test: no result for 'adds' in $results"
+    }
+
+    val noChrome = run(mapOf("CHROME_BIN" to projectDir.resolve("no-chrome").toString()))
+    check(noChrome.task(task)?.outcome == TaskOutcome.SKIPPED) {
+        "$task without Chrome was ${noChrome.task(task)?.outcome}\n${noChrome.output}"
+    }
+    check("$task skipped: no Chrome found" in noChrome.output) { noChrome.output }
 }
 
 /**
