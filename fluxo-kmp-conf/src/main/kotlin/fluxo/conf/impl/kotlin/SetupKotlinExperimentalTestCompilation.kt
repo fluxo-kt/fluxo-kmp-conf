@@ -1,6 +1,7 @@
 package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.conf.feat.disableDetektTasks
 import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
 import fluxo.conf.impl.capitalizeAsciiOnly
 import fluxo.gradle.addToCheckAndTestDependencies
@@ -67,6 +68,9 @@ private fun KCompilation.setupExperimentalLatestCompilation(
         )
         defaultSourceSet.dependsOn(mainCompilation.defaultSourceSet)
         project.addToCheckAndTestDependencies(compileTaskProvider, checkOnly = true)
+        // It compiles the main sources again at newer language settings; Detekt over it would
+        // repeat `detektMain`'s analysis of the same files.
+        disableDetektTasks(project, "detektMain analyses the same sources")
     }
 }
 

@@ -38,6 +38,7 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
@@ -75,8 +76,6 @@ internal fun FluxoKmpConfContext.registerDetektMergeRootTask(): TaskProvider<Mer
 
 // FIXME: Setup the light-weight mode for the git hooks, to run only on the changed files.
 //  And probably without types resolution.
-
-// FIXME: Disable Detekt for the experimentalLatest test compilation.
 
 @Suppress("LongMethod")
 internal fun Project.setupDetekt(
@@ -159,16 +158,24 @@ internal fun Project.setupDetekt(
         }
         tasks.namedCompat { it == CHECK_TASK_NAME }
             .configureEach { dependsOn(detektAll) }
-        // In KMP modules Detekt's own `detekt` task has no sources (the code lives in per-target
-        // source sets), so the command people type passed on zero files while `check` failed.
-        // It runs every other Detekt task instead (not `detektAll`, which includes it).
-        if (mppExtOrNull != null) {
-            tasks.namedCompat { it == DetektPlugin.DETEKT_TASK_NAME }.configureEach {
-                dependsOn(
-                    analysisTasks.map { all ->
-                        all.filter { it.name != DetektPlugin.DETEKT_TASK_NAME }
-                    },
-                )
+        // Detekt's own `detekt` task analyses its `source` without types. By default that is the
+        // `main`/`test` directories the type-resolved tasks (`detektMain`, `detektTest`, per
+        // variant or target) analyse already, and in KMP modules nothing, so the command people
+        // type passed on zero files while `check` failed; Detekt's plugin still wires it into
+        // `check`, where its own pass doubled the analysis time. So it runs every other Detekt
+        // task (not `detektAll`, which includes it) and skips its own pass when they cover every
+        // file it would analyse; a consumer-set `source` elsewhere still gets analysed.
+        tasks.namedCompat { it == DetektPlugin.DETEKT_TASK_NAME }.configureEach {
+            val others = analysisTasks.map { all ->
+                all.filter { it.name != DetektPlugin.DETEKT_TASK_NAME }
+            }
+            dependsOn(others)
+            val covered = files(
+                others.map { all -> all.filter { it.enabled }.map { (it as SourceTask).source } },
+            )
+            val own = (this as SourceTask).source
+            onlyIf("it has files the type-resolved Detekt tasks don't analyse") {
+                !covered.files.containsAll(own.files)
             }
         }
 
@@ -308,7 +315,6 @@ private fun Project.setupDetekt1(
         baselineFiles.from(baselineTasks.map { it.baseline })
     }
 
-    // FIXME: Disable non-resolving tasks if resolving version is available.
     val detektTasks = tasks.withType<Detekt> {
         if (s.testsDisabled) {
             disableTask("tests are disabled")
@@ -448,10 +454,14 @@ private fun Project.detekt2AnalysisTasks(): Provider<List<Detekt2>> = provider {
 internal fun KotlinTarget.disableDetektTasks(project: Project) {
     val target = this
     compilations.configureEach {
-        val names = detektTaskNames(target, compilation = this, project)
-        project.tasks.namedCompat { it in names }
-            .configureEach { disableTask("target '${target.name}' is not in KMP_TARGETS") }
+        disableDetektTasks(project, "target '${target.name}' is not in KMP_TARGETS")
     }
+}
+
+/** Disables both Detekt lines' analysis and baseline tasks over this compilation. */
+internal fun KotlinCompilation<*>.disableDetektTasks(project: Project, reason: String) {
+    val names = detektTaskNames(target, compilation = this, project)
+    project.tasks.namedCompat { it in names }.configureEach { disableTask(reason) }
 }
 
 /**
