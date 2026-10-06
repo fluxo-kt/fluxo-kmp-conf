@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.JavaBasePlugin
-import org.gradle.api.provider.Property
 import org.gradle.api.tasks.TaskProvider
 
 private const val MERGE_LINT_TASK_NAME = "mergeLintSarif"
@@ -296,32 +295,15 @@ private fun Task.reportLintVersion() {
     }
 }
 
-@Suppress("NestedBlockDepth", "ReturnCount")
+@Suppress("ReturnCount")
 private fun Task.reportLintVersion(lintTool: LintTool?): Boolean {
-    var lintVersion: String? = null
-    var versionKey: Property<String>? = null
-    try {
-        versionKey = lintTool?.versionKey
-        lintVersion = versionKey?.orNull?.trim()
+    // `versionKey` exists on every supported AGP (8.4+); the catch covers a future AGP that
+    // drops it, since this line is informational and must never fail the build.
+    val lintVersion = try {
+        lintTool?.versionKey?.orNull?.trim()
     } catch (e: Throwable) {
-        var report = true
-        try {
-            if (versionKey == null && lintTool != null) {
-                // AGP before 8.2
-                lintTool.javaClass.getDeclaredMethod("getVersion").invoke(lintTool)?.let {
-                    lintVersion = it.toString().trim()
-                }
-                report = false
-            }
-        } catch (e2: Throwable) {
-            e2.addSuppressed(e)
-            logger.w("Failed to get Android Lint version", e2)
-            return false
-        }
-        if (report) {
-            logger.w("Failed to get Android Lint version", e)
-            return false
-        }
+        logger.w("Failed to get Android Lint version", e)
+        return false
     }
     if (lintVersion.isNullOrEmpty() || !IS_VERSION_REPORTED.compareAndSet(false, true)) {
         return false

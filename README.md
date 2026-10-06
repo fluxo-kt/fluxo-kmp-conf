@@ -21,7 +21,7 @@ Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects
 Initially made for the [Fluxo][fluxo] state management framework and other libraries, then published for general use.
 
 Targeted for Gradle 9.0+, JDK 17+, and Kotlin 2.1+.
-AGP 8 and 9 are covered. Exact checked rows are in [`compat/matrix.tsv`](compat/matrix.tsv).
+AGP 8.4+ and 9 are covered (older AGP can't run on Gradle 9). Exact checked rows are in [`compat/matrix.tsv`](compat/matrix.tsv).
 Built with:<br>
 [![Kotlin](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffluxo-kt%2Ffluxo-kmp-conf%2Fmain%2Fgradle%2Flibs.versions.toml&query=%24.versions.kotlin&label=Kotlin&color=7F52FF&logo=kotlin&logoColor=7F52FF&labelColor=2B2B2B)](https://github.com/JetBrains/Kotlin)
 [![Gradle](https://img.shields.io/badge/Gradle-wrapper-f68244?logo=gradle&labelColor=2B2B2B)](gradle/wrapper/gradle-wrapper.properties)

@@ -79,12 +79,6 @@
 # Help to deal with reflection access #
 # #####################################
 
-# see fluxo.conf.feat.SetupAndroidLintKt.reportLintVersion
--dontnote com.android.build.gradle.internal.lint.LintTool
--keep class com.android.build.gradle.internal.lint.LintTool {
-    *** getVersion();
-}
-
 -dontnote com.android.tools.r8.Version
 -keep class com.android.tools.r8.Version {
     *** LABEL;

@@ -58,7 +58,7 @@ internal object AgpVersion {
      * `CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION`.
      * The companion-object access (`AndroidPluginVersion.Companion.getCurrent()`) survives the
      * 8.x → 9.x migration unchanged and requires only AGP on the classpath; it does NOT require
-     * AGP to be applied as a plugin. It covers the whole supported AGP range (8.0+).
+     * AGP to be applied as a plugin. It covers the whole supported AGP range (8.4+).
      * Returns `null` if it is absent.
      */
     private fun detect(cl: ClassLoader): KotlinVersion? = detectViaAndroidPluginVersion(cl)
