@@ -87,7 +87,12 @@ internal fun Project.addFluxoTools(
     repositories: List<URI>,
     onParentClasspath: (pluginId: String) -> Boolean,
 ) {
+    // A tool on a parent's classpath makes every descendant that declares it with a version fail
+    // ("already on the classpath with an unknown version"), so parents (the root included) get
+    // only tools added on request (dependency analysis); a parent that uses KSP itself gets the
+    // `plugins {}` line to add instead.
     val needed = tools.filterNot { onParentClasspath(it.id) }
+        .filter { childProjects.isEmpty() || it.tasks.isNotEmpty() }
     if (needed.isEmpty()) return
     val handler = buildscript
     // A build script's classpath resolves only through its own repositories. A `plugins {}`

@@ -11,8 +11,9 @@ import org.gradle.api.configuration.BuildFeatures
  * A plugin that works only from the project's own build classpath (it needs the Kotlin plugin's
  * classes, or applies helper plugins by id) is missing there: the settings plugin or the root
  * hook put it there for projects without child projects (`FluxoTool.kt`), so this is a parent
- * project (the root included) or a build that couldn't resolve it. Loaded by fluxo instead, it breaks the configuration cache,
- * so with the cache on the build stops here with the line that fixes it.
+ * project (the root included) or a build that couldn't resolve it. Loaded by fluxo instead, it
+ * breaks the configuration cache, so with the cache on the build stops here with the line that
+ * fixes it.
  */
 internal fun missingFromBuildClasspath(project: Project, id: String, version: String?) {
     if (project.isConfigurationCacheActive()) {

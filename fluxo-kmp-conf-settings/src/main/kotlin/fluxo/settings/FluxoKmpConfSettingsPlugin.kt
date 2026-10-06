@@ -19,11 +19,7 @@ import org.gradle.api.services.BuildServiceParameters
  * another project's state: each records its own class loader after evaluation, and its children
  * check those records for tools already on a parent's classpath.
  *
- * Only projects without child projects get the tools. A tool on a parent's classpath (the root
- * or an intermediate project such as `:benchmarks` of `:benchmarks:jmh`) makes every descendant
- * that declares it with a version fail ("already on the classpath with an unknown version"), and
- * parents rarely need one; a parent that does gets the `plugins {}` line to add. Dependency
- * analysis is the exception, as it reports at the root and is added only on request.
+ * Which projects get which tools, and why parents get almost none: [addFluxoTools].
  */
 public class FluxoKmpConfSettingsPlugin : Plugin<Settings> {
     override fun apply(settings: Settings) {
@@ -51,12 +47,8 @@ public class FluxoKmpConfSettingsPlugin : Plugin<Settings> {
         )
         gradle.lifecycle.beforeProject {
             val project = this
-            val projectTools = when {
-                project.childProjects.isEmpty() -> tools
-                else -> tools.filter { it.tasks.isNotEmpty() }
-            }
             val state = project.toolState()
-            project.addFluxoTools(projectTools, repositories) { id ->
+            project.addFluxoTools(tools, repositories) { id ->
                 state.onAncestorClasspath(project.path, id)
             }
         }
