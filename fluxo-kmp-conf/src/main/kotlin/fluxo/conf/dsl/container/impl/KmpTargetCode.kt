@@ -6,7 +6,8 @@ import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.KotlinWasmTargetType
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.KonanTarget
 
@@ -124,8 +125,10 @@ internal enum class KmpTargetCode {
 
                 KotlinPlatformType.js -> JS
 
-                KotlinPlatformType.wasm -> when (target) {
-                    is KotlinWasmWasiTargetDsl -> WASM_WASI
+                // KGP's one target class implements both the Wasm-JS and WASI DSLs, so a type
+                // check calls every Wasm target WASI; `wasmTargetType` tells them apart.
+                KotlinPlatformType.wasm -> when ((target as? KotlinWasmTargetDsl)?.wasmTargetType) {
+                    KotlinWasmTargetType.WASI -> WASM_WASI
                     else -> WASM_JS
                 }
 

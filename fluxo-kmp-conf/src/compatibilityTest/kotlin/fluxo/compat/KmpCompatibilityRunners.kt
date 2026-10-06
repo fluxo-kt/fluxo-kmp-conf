@@ -125,19 +125,23 @@ private const val FLUXO_BCV_JS_ID = "io.github.fluxo-kt.binary-compatibility-val
  * `KMP_TARGETS=WASM_WASI` must keep the WASI target and its tests enabled: fluxo disables every
  * target outside the filter, so a WASI target classified as Wasm-JS would disable the very target
  * asked for.
+ * KGP's one JS/Wasm target class implements the WASI DSL too, so a classifier keyed on that type
+ * calls Wasm-JS WASI: the consumer-declared wasmJs must be disabled here (fluxo creates none
+ * under this filter).
  * An enabled compile succeeds, a disabled one is SKIPPED. The compile also guards the flags fluxo
  * passes to Wasm: Kotlin 2.4 compiles Wasm with its own argument set, where a JS-only flag prints
  * "Flag is not supported by this version of the compiler" on every compile.
  */
 private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
     val task = ":compileKotlinWasmWasi"
+    val wasmJsTask = ":compileKotlinWasmJs"
     val kgp = row.getValue("kgpVersion")
     val result = runConsumerCase(
         row,
         tempDir,
         rootProjectName = "compat-kmp-all-targets-consumer",
         projectDir = tempDir.resolve("${row.getValue("id")}-all-targets-$kgp"),
-        tasks = listOf(task.removePrefix(":")),
+        tasks = listOf(task.removePrefix(":"), wasmJsTask.removePrefix(":")),
         arguments = listOf("-PKMP_TARGETS=WASM_WASI"),
         forbiddenOutput = listOf("Flag is not supported by this version of the compiler"),
         assertTasksSucceed = false,
@@ -148,6 +152,7 @@ private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
         projectDir.resolve("build.gradle.kts").writeText(
             script + "\n" +
                 """
+                kotlin { wasmJs { nodejs() } }
                 gradle.projectsEvaluated {
                     tasks.withType<org.gradle.api.tasks.testing.AbstractTestTask>().forEach {
                         println("$TEST_TASK_MARKER" + it.name + ":" + it.enabled)
@@ -160,6 +165,10 @@ private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
     }
     check(result.task(task)?.outcome == TaskOutcome.SUCCESS) {
         "KMP_TARGETS=WASM_WASI: $task was ${result.task(task)?.outcome}\n${result.output}"
+    }
+    val wasmJsOutcome = result.task(wasmJsTask)?.outcome
+    check(wasmJsOutcome == TaskOutcome.SKIPPED) {
+        "KMP_TARGETS=WASM_WASI: $wasmJsTask was $wasmJsOutcome\n${result.output}"
     }
     // Wasm tests are KotlinJsTest tasks too, so a gate keyed on the JS target disabled them.
     val wasiTests = result.output.lines()
