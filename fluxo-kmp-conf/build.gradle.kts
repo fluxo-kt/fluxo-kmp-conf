@@ -210,6 +210,13 @@ testing {
                     dependsOn(":fluxo-kmp-conf-settings:publishAllPublicationsToLocalDevRepository")
                     shouldRunAfter(tasks.test)
                     systemProperty("fluxo.repo.root", rootDir.absolutePath)
+                    // Read by the tests at run time (the matrix rows, the CI legs the shard guard
+                    // checks), so an edit to either alone must rerun the suite.
+                    inputs.files(
+                        rootProject.file("compat/matrix.tsv"),
+                        rootProject.file(".github/workflows/build.yml"),
+                    ).withPropertyName("compatRuntimeFiles")
+                        .withPathSensitivity(org.gradle.api.tasks.PathSensitivity.RELATIVE)
                     systemProperty(
                         "fluxo.local.maven.repo",
                         compatibilityLocalMavenRepo.get().asFile.absolutePath,

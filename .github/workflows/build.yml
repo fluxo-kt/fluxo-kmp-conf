@@ -52,7 +52,9 @@ jobs:
         # JDK 21 needed by IntelliJ Platform 2026.* targets (S12). JDK 23 keeps
         # early-warning coverage for newer daemon/toolchain behavior.
         java: ['21', '23']
-        os: ['macos', 'windows', 'ubuntu']
+        # No Windows cell: Windows matters for consumers, not for the plugin's own build, so
+        # Windows runs consumer compat fixtures in `integrationChecks` instead.
+        os: ['macos', 'ubuntu']
     name: 'Build and check on ${{ matrix.os }} / JDK ${{ matrix.java }}'
     # Keep the job budget above the sum of the guarded Gradle/check steps. Otherwise
     # a slow but healthy matrix leg can be cancelled after its checks already passed.
@@ -79,7 +81,6 @@ jobs:
           java-version: '${{ matrix.java }}'
 
       - name: Setup Gradle
-        continue-on-error: ${{ matrix.os == 'windows' }}
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
         with:
           cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
@@ -90,8 +91,8 @@ jobs:
 
       - name: 'Build and check plugin itself'
         # Sized for the SLOWEST cell: macOS alone builds the Apple/native (konan) KMP targets
-        # ubuntu/windows skip, so it's the bottleneck. 18 min red-flaked macos/JDK23 on a commit
-        # green on all 5 other cells + every integration leg. Keep margin over the macOS native
+        # ubuntu skips, so it's the bottleneck. 18 min red-flaked macos/JDK23 on a commit
+        # green on every other cell + every integration leg. Keep margin over the macOS native
         # wall-time (~18 min + runner variance); < the 90-min job cap so a real hang still trips.
         timeout-minutes: 45
         # `compatibilityTest` is excluded here and runs once in `integrationChecks` instead: it
@@ -173,22 +174,44 @@ jobs:
             directory: self
             command: ./gradlew build assemble check --continue --stacktrace --scan
             timeout: 4
-          # The OS-independent compatibility TestKit harness, excluded from the
-          # per-OS×JDK `build assemble check` step and run once here instead. ~19
-          # nested consumer builds, sequential; generous timeout reflects the real
-          # cost (it outgrew the 18-min per-cell budget when run 6×). Measured
-          # ~19 min wall-time on a fast multi-core host; the budget carries ~2.4×
-          # margin for the 4-vCPU runner and the cold (read-only on non-default
-          # branches) Gradle cache that re-downloads every pinned AGP/Kotlin/Compose.
-          - name: compatibility-test
+          # The compatibility TestKit suite, excluded from the per-OS×JDK `build assemble
+          # check` step, runs here as one leg per fixture class so each leg stays short and a
+          # failure names its toolchain line. Every compat test class
+          # must match one leg's `--tests` pattern: `CompatibilityShardGuardTest` fails
+          # otherwise, so a new fixture class can't go unrun. Timeouts allow for a cold
+          # (read-only on non-default branches) Gradle cache re-downloading the pinned tools.
+          - name: compat-android
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --continue --stacktrace --scan
-            timeout: 45
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.Android*' --continue --stacktrace --scan
+            timeout: 20
+          - name: compat-compose
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.Compose*' --continue --stacktrace --scan
+            timeout: 20
+          - name: compat-gradle-plugin
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.GradlePlugin*' --continue --stacktrace --scan
+            timeout: 15
+          - name: compat-kmp
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.Kmp*' --continue --stacktrace --scan
+            timeout: 15
+          - name: compat-kotlin-jvm
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.KotlinJvm*' --tests 'fluxo.compat.Compatibility*' --continue --stacktrace --scan
+            timeout: 15
+          # Windows matters for consumers, not for the plugin's own build: the Kotlin/JVM
+          # consumer fixtures run here, the plugin itself builds on ubuntu and macOS only.
+          - name: compat-kotlin-jvm-windows
+            os: windows
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.KotlinJvm*' --tests 'fluxo.compat.Compatibility*' --continue --stacktrace --scan
+            timeout: 25
     name: 'Integration check / ${{ matrix.name }}'
-    # Above the largest leg step (compatibility-test, 45) plus checkout/JDK/Gradle
-    # setup overhead, so a healthy-but-slow leg is never cancelled mid-flight.
-    timeout-minutes: 55
-    runs-on: ubuntu-latest
+    # Above the largest leg step (25) plus checkout/JDK/Gradle setup overhead, so a
+    # healthy-but-slow leg is never cancelled mid-flight.
+    timeout-minutes: 35
+    runs-on: "${{ matrix.os || 'ubuntu' }}-latest"
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, 'ci skip') }}
     env:
       GITHUB_DEPENDENCY_GRAPH_ENABLED: false
@@ -217,6 +240,9 @@ jobs:
             21
 
       - name: Setup Gradle
+        # setup-gradle's cache restore can fail on Windows before Gradle runs; the build step
+        # then still runs and decides the leg.
+        continue-on-error: ${{ matrix.os == 'windows' }}
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
         with:
           cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
