@@ -212,7 +212,7 @@ detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.28"
 
 # https://github.com/Faire/faire-detekt-rules/releases
 # Stays on the Detekt 1.x line: 0.5.5 and later are built against Detekt 2 (`dev.detekt`).
-detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.5.4" }
+detekt-faire = { module = "com.faire:faire-detekt-rules", version = "0.5.8" }
 
 # https://github.com/hbmartin/hbmartin-detekt-rules/releases
 detekt-hbmartin = { module = "com.github.hbmartin:hbmartin-detekt-rules", version = "0.1.7" }
@@ -221,7 +221,7 @@ detekt-hbmartin = { module = "com.github.hbmartin:hbmartin-detekt-rules", versio
 detekt-arrow = { module = "com.wolt.arrow.detekt:rules", version = "0.5.0" }
 
 # https://github.com/BraisGabin/detekt-compiler-rules/tags
-detekt-compiler = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", version = "0.0.4" }
+detekt-compiler = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", version = "0.1.1" }
 
 # TODO: https://github.com/colematthew4/detekt-operator
 #detekt-operator = { module = "io.cole.matthew.detekt.operator:detekt-operator", version = "0.0.1" }
