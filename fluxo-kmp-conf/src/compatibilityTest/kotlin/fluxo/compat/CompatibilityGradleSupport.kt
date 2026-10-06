@@ -195,8 +195,19 @@ internal fun seedDependencyGuardBaseline(
     result.assertTaskSuccess(":$DEPENDENCY_GUARD_BASELINE_TASK")
 }
 
-internal fun sanitizedEnvironment(): Map<String, String> =
-    System.getenv().filterKeys { it !in KMP_TARGET_ENV_KEYS }
+// The release job exports the signing key and publication credentials (env vars and
+// `ORG_GRADLE_PROJECT_*` Gradle properties); a fixture that inherits them signs and publishes
+// where it must refuse, and the real secrets would reach consumer builds.
+internal fun sanitizedEnvironment(): Map<String, String> = System.getenv().filterKeys { key ->
+    key !in KMP_TARGET_ENV_KEYS && PUBLICATION_ENV_PREFIXES.none { key.startsWith(it) }
+}
+
+private val PUBLICATION_ENV_PREFIXES = listOf(
+    "ORG_GRADLE_PROJECT_",
+    "SIGNING_",
+    "MAVEN_CENTRAL_",
+    "GRADLE_PUBLISH_",
+)
 
 internal fun Map<String, String>.isExecutionFixture(): Boolean =
     getValue("fixture").endsWith("-exec")
