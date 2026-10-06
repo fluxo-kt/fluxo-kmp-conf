@@ -41,6 +41,62 @@ internal fun runKotlinDefaultsSwitchCase(row: Map<String, String>, tempDir: Path
     run(listOf("-PDISABLE_KOTLIN_DEFAULTS=jsr3O5"), expectFailure = listOf("Did you mean jsr305?"))
 }
 
+/**
+ * What the consumer sets in their own `kotlin { compilerOptions }` beats fluxo's defaults,
+ * written before or after `fkcSetup*()`: a typed option (progressive mode) and a flag fluxo also
+ * passes (`-Xjsr305`), which must reach the compiler once, with the consumer's value. Passed
+ * twice with different values, `-Xjsr305` is a compiler error ("Conflict duplicating -Xjsr305
+ * value"); most other flags give a "passed multiple times" warning, which fails this
+ * warnings-as-errors build.
+ */
+internal fun runConsumerSettingsWinCase(row: Map<String, String>, tempDir: Path) {
+    for (order in listOf("before", "after")) {
+        val output = runConsumerCase(
+            row,
+            tempDir,
+            rootProjectName = "compat-consumer-settings-$order",
+            projectDir = tempDir.resolve(row.getValue("id") + "-consumer-settings-$order"),
+            tasks = listOf("compileKotlin"),
+            forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + "passed multiple times",
+        ) {
+            val script = markerKotlinJvmBuildScript(row)
+            val setup = "fkcSetupKotlin {"
+            check(setup in script) { "No '$setup' in the marker script" }
+            it.resolve("build.gradle.kts").writeText(
+                when (order) {
+                    "before" -> script.replace(setup, "$CONSUMER_OPTIONS\n\n$setup")
+                    else -> script + "\n\n" + CONSUMER_OPTIONS
+                } + SETTINGS_PROBE,
+            )
+            writeKotlinJvmSources(it)
+        }.output.substringAfter(ARGS_MARKER, "").substringBefore('\n')
+        check("progressive=false" in output && "-Xjsr305=warn" in output) {
+            "Settings written $order fkcSetup* lost: '$output'"
+        }
+        check("-Xjsr305=strict" !in output) { "fluxo's -Xjsr305 passed too ($order): '$output'" }
+    }
+}
+
+private val CONSUMER_OPTIONS =
+    """
+    kotlin {
+        compilerOptions {
+            progressiveMode.set(false)
+            freeCompilerArgs.add("-Xjsr305=warn")
+        }
+    }
+    """.trimIndent()
+
+private val SETTINGS_PROBE =
+    """
+
+    tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
+        val args = compilerOptions.freeCompilerArgs
+        val progressive = compilerOptions.progressiveMode
+        doFirst { println("$ARGS_MARKER" + args.get() + " progressive=" + progressive.get()) }
+    }
+    """.trimIndent()
+
 private const val ARGS_MARKER = "FLUXO_COMPAT_ARGS="
 private const val EXTRA = "extraWarnings"
 

@@ -5,6 +5,7 @@ import fluxo.log.logDecision
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -56,6 +57,7 @@ internal fun jdkApiLimit(target: Int, compileJdk: Int, compileJdkHome: File): Jd
 internal fun KotlinJvmCompile.limitKotlinJdkApi(
     conf: FluxoConfigurationExtensionImpl,
     jvmTarget: String,
+    inheritedArgs: Provider<List<String>>?,
 ) {
     val project = conf.project
     val target = jvmTarget.toJvmMajorVersion()
@@ -71,7 +73,9 @@ internal fun KotlinJvmCompile.limitKotlinJdkApi(
         )
     }
     conf.report(limit, "Kotlin JDK API limit ($name)", target, compileJdk)
-    if (limit == JdkApiLimit.Apply) compilerOptions.freeCompilerArgs.add("-Xjdk-release=$jvmTarget")
+    if (limit == JdkApiLimit.Apply) {
+        compilerOptions.addArgsUnlessInherited(listOf("-Xjdk-release=$jvmTarget"), inheritedArgs)
+    }
 }
 
 /**
@@ -85,7 +89,7 @@ internal fun KotlinJvmCompile.limitKotlinJdkApi(
  */
 internal fun KotlinJvmCompile.hideJdkFromAndroidCode(conf: FluxoConfigurationExtensionImpl) {
     // KGP sets and locks it on the `kotlin-android` path; nothing to change there.
-    if (compilerOptions.noJdk.orNull != true) compilerOptions.noJdk.set(true)
+    if (compilerOptions.noJdk.orNull != true) compilerOptions.noJdk.convention(true)
     conf.ctx.logDecision(
         conf.project,
         setting = "Kotlin JDK API ($name)",

@@ -21,10 +21,14 @@ internal fun KotlinCommonCompilerOptions.setupKotlinCompatibility(
     isTest: Boolean,
     isExperimentalTest: Boolean,
 ) {
-    val (lang, api) = conf.kotlinConfig
-        .langAndApiVersions(isTest = isTest, latestSettings = isExperimentalTest)
-    lang?.let(languageVersion::set)
-    api?.let(apiVersion::set)
+    val kc = conf.kotlinConfig
+    val versions = kc.langAndApiVersions(isTest = isTest, latestSettings = isExperimentalTest)
+    // Main compilations take the module's defaults (`setupModuleKotlinOptions`).
+    if (versions == kc.langAndApiVersions(isTest = false)) return
+    val (lang, api) = versions
+    lang?.let { languageVersion.convention(it) }
+    api?.let { apiVersion.convention(it) }
+    progressiveMode.convention((kc.progressive || isExperimentalTest) && lang.isCurrentOrLater)
 }
 
 internal fun KotlinProjectExtension.setupSourceSetsKotlinCompatibility(
@@ -40,17 +44,19 @@ internal fun KotlinProjectExtension.setupSourceSetsKotlinCompatibility(
         (this as? AbstractKotlinSourceSet)?.compilations?.forEach { it.disableCompilation() }
     }
 
-    languageSettings.apply {
-        val (lang, api) = kc.langAndApiVersions(isTest = isTestSet)
-        lang?.run { languageVersion = version }
-        api?.run { apiVersion = version }
-
-        if (kc.progressive && lang.isCurrentOrLater) {
-            progressiveMode = true
+    // A `languageSettings` setter writes its compilation's options with `set()`, which would
+    // override the consumer's module-level `compilerOptions`. Main values come from the module's
+    // defaults instead (KGP also passes them to shared source sets without a compilation), so
+    // only the test-only settings are written here, which shared test source sets need for the
+    // IDE.
+    if (isTestSet) {
+        languageSettings.apply {
+            kc.tests?.let {
+                languageVersion = it.version
+                apiVersion = it.version
+            }
+            (testOptIns - kc.optIns).forEach(::optIn)
         }
-
-        (if (isTestSet) testOptIns else kc.optIns)
-            .forEach(::optIn)
     }
 }
 

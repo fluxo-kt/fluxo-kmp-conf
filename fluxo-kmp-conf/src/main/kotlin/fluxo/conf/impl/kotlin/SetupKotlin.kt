@@ -49,6 +49,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Named
 import org.gradle.api.Project
 import org.gradle.api.plugins.UnknownPluginException
+import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -342,6 +343,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
         coreLibrariesVersion = kc.coreLibs
 
         conf.setupCompose()
+        setupModuleKotlinOptions(conf)
         setupTargets(conf)
         setupSourceSetsKotlinCompatibility(kc)
 
@@ -358,19 +360,24 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     project.setupVerification(conf)
 
     // AGP-9 KMP+Android (`com.android.kotlin.multiplatform.library`) registers a separate
-    // extension type that does not flow through `setupAndroidCommon` (which is bound to the
-    // legacy `TestedExtension`). Apply Fluxo defaults — namespace, compileSdk, minSdk —
-    // to the new extension when the consumer applies the new plugin.
+    // extension type that is not a `CommonExtension`, so `setupAndroidCommon` never sees it.
+    // Apply Fluxo defaults — namespace, compileSdk, minSdk — to the new extension when the
+    // consumer applies the new plugin.
     project.setupKmpAndroidExtension(conf)
 }
 
-// Options are set per-compilation (not via KotlinProjectExtension.compilerOptions) because
-// setupKotlinOptions uses freeCompilerArgs.set() which would silently discard project-level args.
+// Shared defaults sit on the module (`setupModuleKotlinOptions`) and, in KMP, on each target;
+// what differs per compilation is set on its compile task here.
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 private fun KotlinProjectExtension.setupTargets(
     conf: FluxoConfigurationExtensionImpl,
     isMultiplatform: Boolean = this is KotlinMultiplatformExtension,
 ) = setupTargets {
+    // A single-target module's target inherits the module's options, set already; a convention
+    // on the target would cut that link.
+    if (isMultiplatform) setupTargetKotlinOptions(conf)
+    val inheritedArgs = (this as? HasConfigurableKotlinCompilerOptions<*>)
+        ?.compilerOptions?.freeCompilerArgs
     compilations.configureEach compilation@{
         val isExperimentalTest = isExperimentalLatestCompilation
         val isTest = isExperimentalTest || isTestRelated()
@@ -412,8 +419,9 @@ private fun KotlinProjectExtension.setupTargets(
         // still fail the build.
         val isMetadata = !isAndroid && KotlinPlatformType.common === platformType
 
-        val warningsAsErrors = conf.kotlinConfig.warningsAsErrors &&
-            !isJsOrWasm && !isMetadata && !isTest && (ctx.isCI || ctx.isRelease)
+        // The module default is on for CI and release builds (`setupModuleKotlinOptions`).
+        val warningsAsErrorsOff = kc.warningsAsErrors && (ctx.isCI || ctx.isRelease) &&
+            (isJsOrWasm || isMetadata || isTest)
 
         val compName = name
         compileTaskProvider.configure {
@@ -427,19 +435,21 @@ private fun KotlinProjectExtension.setupTargets(
                 setupKotlinOptions(
                     conf = conf,
                     compilationName = compName,
-                    warningsAsErrors = warningsAsErrors,
+                    warningsAsErrorsOff = warningsAsErrorsOff,
                     latestSettings = isExperimentalTest,
                     jvmTargetVersion = jvmTargetVersion,
                     isAndroid = isAndroid,
                     isTest = isTest,
                     isMultiplatform = isMultiplatform,
-                    isWasm = KotlinPlatformType.wasm === platformType,
+                    inheritedArgs = inheritedArgs,
                 )
             }
-            // After setupKotlinOptions, whose `freeCompilerArgs.set()` would drop the lazy flag.
             if (kc.useJdkRelease && this is KotlinJvmCompile) {
                 when {
-                    !isAndroid -> jvmTargetVersion?.let { limitKotlinJdkApi(conf, it) }
+                    !isAndroid -> jvmTargetVersion?.let {
+                        limitKotlinJdkApi(conf, it, inheritedArgs)
+                    }
+
                     // Host tests run on a JDK, so they keep its API.
                     !isTest -> hideJdkFromAndroidCode(conf)
                 }

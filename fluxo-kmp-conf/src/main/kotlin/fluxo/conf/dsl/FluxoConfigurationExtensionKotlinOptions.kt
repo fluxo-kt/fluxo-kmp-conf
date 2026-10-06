@@ -285,6 +285,9 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * warning the code cannot fix (KT-69310), and every platform compilation recompiles the
      * same common sources under this flag.
      *
+     * `allWarningsAsErrors` in your own `kotlin { compilerOptions }` wins for the compilations
+     * this applies to; for the excluded ones, set it on their compile task.
+     *
      * Inherited from the parent project if not set.
      *
      * **Default value: `false`.**

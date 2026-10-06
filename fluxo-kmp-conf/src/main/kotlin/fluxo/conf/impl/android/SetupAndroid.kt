@@ -37,17 +37,28 @@ import org.gradle.api.tasks.Exec
  */
 internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensionImpl) {
     val project = conf.project
+    // Nullable values are filled only when empty, so a value the consumer set in `android {}`
+    // wins also when written before `fkcSetup*()`.
     conf.androidNamespace.let { ns ->
-        if (ns.isEmpty()) {
-            project.logger.e("Required Android namespace IS EMPTY!")
-        } else {
-            namespace = ns
-            project.logger.l("Android namespace '$ns'")
+        when {
+            !namespace.isNullOrEmpty() -> {}
+
+            ns.isEmpty() -> project.logger.e("Required Android namespace IS EMPTY!")
+
+            else -> {
+                namespace = ns
+                project.logger.l("Android namespace '$ns'")
+            }
         }
     }
     conf.androidBuildToolsVersion?.let { buildToolsVersion = it }
 
-    applyAgpSdkProperty(conf.androidCompileSdk, { compileSdk = it }, { compileSdkPreview = it })
+    applyAgpSdkProperty(
+        conf.androidCompileSdk,
+        isSet = { compileSdk != null || !compileSdkPreview.isNullOrBlank() },
+        asInt = { compileSdk = it },
+        asPreview = { compileSdkPreview = it },
+    )
 
     val ctx = conf.ctx
     val pseudoLocales = ctx.isMaxDebug && !ctx.isRelease && !ctx.isCI
@@ -65,15 +76,19 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
     // for cross-subtype compatibility; the lambda receiver is the modern `DefaultConfig`
     // (extends `BaseFlavor`) which carries minSdk/testInstrumentationRunner/etc.
     defaultConfig.apply {
-        applyAgpSdkProperty(conf.androidMinSdk, { minSdk = it }) {
-            // minSdkPreview is deprecated in AGP 9 and will be removed in AGP 10.0.
-            // The enclosing noSuchMethodSafe in applyAgpSdkProperty already handles
-            // the runtime NoSuchMethodError when AGP 10.0 removes this setter.
-            @Suppress("DEPRECATION")
-            minSdkPreview = it
-        }
+        // minSdkPreview is deprecated in AGP 9 and will be removed in AGP 10.0. The enclosing
+        // noSuchMethodSafe in applyAgpSdkProperty handles the runtime NoSuchMethodError then.
+        @Suppress("DEPRECATION")
+        applyAgpSdkProperty(
+            conf.androidMinSdk,
+            isSet = { minSdk != null || !minSdkPreview.isNullOrBlank() },
+            asInt = { minSdk = it },
+            asPreview = { minSdkPreview = it },
+        )
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        if (testInstrumentationRunner.isNullOrEmpty()) {
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
         // testInstrumentationRunner = "androidx.benchmark.junit4.AndroidBenchmarkRunner"
     }
 
@@ -267,23 +282,26 @@ private fun ApplicationExtension.applyApplicationTargetSdk(
     conf: FluxoConfigurationExtensionImpl,
 ) = applyAgpSdkProperty(
     conf.androidTargetSdk,
-    { defaultConfig.targetSdk = it },
-    { defaultConfig.targetSdkPreview = it },
+    isSet = { defaultConfig.run { targetSdk != null || !targetSdkPreview.isNullOrBlank() } },
+    asInt = { defaultConfig.targetSdk = it },
+    asPreview = { defaultConfig.targetSdkPreview = it },
 )
 
 /**
- * Applies a legacy AGP "Int-or-Preview" SDK property pair. Non-`Int` values fall through
- * to the preview setter via `toString()` — the legacy path treats `fluxoConfiguration { }`
- * as the single source of truth, so unsupported types are rare and best squashed into the
- * preview slot rather than fail-fast (the AGP-9 KMP path opts for fail-fast logging
+ * Applies a legacy AGP "Int-or-Preview" SDK property pair unless [isSet]: a level the consumer
+ * set in `android {}` wins, also when written before `fkcSetup*()`. Non-`Int` values fall
+ * through to the preview setter via `toString()`; unsupported types are rare and best squashed
+ * into the preview slot rather than fail-fast (the AGP-9 KMP path opts for fail-fast logging
  * because that path is bidirectional). The forward-compat NSME catch is shared with the
  * KMP path via [noSuchMethodSafe].
  */
 private inline fun applyAgpSdkProperty(
     value: Any,
+    isSet: () -> Boolean,
     asInt: (Int) -> Unit,
     asPreview: (String) -> Unit,
 ) = noSuchMethodSafe {
+    if (isSet()) return@noSuchMethodSafe
     when (value) {
         is Int -> asInt(value)
         else -> asPreview(value.toString())

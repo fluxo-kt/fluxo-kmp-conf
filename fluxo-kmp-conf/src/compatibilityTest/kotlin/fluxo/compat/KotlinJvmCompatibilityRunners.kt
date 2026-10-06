@@ -45,6 +45,7 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     check(EXPLAIN_HEADER !in plain) { "Without FLUXO_EXPLAIN no block is printed:\n$plain" }
 
     runDeprecatedLanguageVersionCase(row, tempDir)
+    runConsumerSettingsWinCase(row, tempDir)
     runKotlinJvmTargetCases(row, tempDir)
     runRootClasspathPinCase(row, tempDir)
     runFetchedToolCase(row, tempDir)

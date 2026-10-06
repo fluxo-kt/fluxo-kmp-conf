@@ -120,7 +120,8 @@ internal interface FluxoConfigurationExtensionAndroidImpl :
                         setting = "android${type}Sdk",
                         value = value,
                         reason = reason,
-                        howToChange = "set android${type}Sdk in fkcSetup* or the version catalog",
+                        howToChange = "set android${type}Sdk in fkcSetup* or the version " +
+                            "catalog, or set it in the module's `android {}` block",
                     )
                 }
             }

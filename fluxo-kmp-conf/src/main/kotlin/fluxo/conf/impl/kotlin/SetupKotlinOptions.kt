@@ -2,23 +2,95 @@ package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
+import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
+/**
+ * The defaults every compilation of the module shares, as conventions on the module's own
+ * `kotlin { compilerOptions }`. KGP passes module values down to targets and compile tasks as
+ * conventions too, so a value the consumer sets on the module, a target or a task wins, written
+ * before or after `fkcSetup*()`. A KMP module's own options are common-only; JVM and JS options
+ * go on each target ([setupTargetKotlinOptions]).
+ */
+internal fun KotlinProjectExtension.setupModuleKotlinOptions(
+    conf: FluxoConfigurationExtensionImpl,
+) {
+    val options = (this as? HasConfigurableKotlinCompilerOptions<*>)?.compilerOptions ?: return
+    val kc = conf.kotlinConfig
+    val ctx = conf.ctx
+    if (kc.warningsAsErrors && (ctx.isCI || ctx.isRelease)) {
+        options.allWarningsAsErrors.convention(true)
+    }
+    val (lang, api) = kc.langAndApiVersions(isTest = false)
+    lang?.let { options.languageVersion.convention(it) }
+    api?.let { options.apiVersion.convention(it) }
+    if (kc.progressive && lang.isCurrentOrLater) {
+        options.progressiveMode.convention(true)
+    }
+    if (KotlinDefault.EXTRA_WARNINGS !in kc.defaultsOff) {
+        options.extraWarnings.convention(true)
+    }
+    options.optIn.addAll(kc.optIns)
+    (options as? KotlinJvmCompilerOptions)?.setupJvmModuleOptions(conf)
+}
+
+/** JVM and JS defaults of a KMP target: the module-level options of KMP have none of them. */
+internal fun KotlinTarget.setupTargetKotlinOptions(conf: FluxoConfigurationExtensionImpl) {
+    when (val options = (this as? HasConfigurableKotlinCompilerOptions<*>)?.compilerOptions) {
+        is KotlinJvmCompilerOptions -> options.setupJvmModuleOptions(conf)
+
+        // ES2015 classes under the Kotlin plugin's default ES5 target. JS only: Wasm targets
+        // share this options type, but Kotlin 2.4 compiles Wasm with its own argument set, where
+        // a JS-only flag warns "not supported by this version of the compiler".
+        // `-Xoptimize-generated-js` is on by default on the whole supported range.
+        is KotlinJsCompilerOptions -> if (platformType === KotlinPlatformType.js) {
+            options.useEsClasses.convention(true)
+        }
+
+        else -> {}
+    }
+}
+
+private fun KotlinJvmCompilerOptions.setupJvmModuleOptions(conf: FluxoConfigurationExtensionImpl) {
+    if (conf.kotlinConfig.javaParameters) {
+        javaParameters.convention(true)
+    }
+    // The typed `jvmDefault` option exists only since KGP 2.2; the plugin is APPLIED against the
+    // consumer's KGP and the layer-2 floor is Kotlin 2.1, where calling the 2.2 getter throws
+    // NoSuchMethodError. Below 2.2, `setupKotlinOptions` passes `-Xjvm-default=all`, the 2.1
+    // equivalent of `NO_COMPATIBILITY`, deprecated on 2.2+ (it would trip `-Werror`).
+    if (conf.ctx.kotlinPluginVersion >= KOTLIN_2_2) {
+        jvmDefault.convention(JvmDefaultMode.NO_COMPATIBILITY)
+    }
+}
+
+/**
+ * Per-compilation settings, on the compile task (the same options object as its compilation).
+ * Values that differ from the module's defaults (test or experimental language version, and
+ * warnings-as-errors off) are conventions here, so they lose to a value set on this task or
+ * compilation, but a module or target value no longer reaches this compilation. Flags are added
+ * lazily, without those the consumer already passes for the module or target
+ * ([addArgsUnlessInherited]).
+ */
 @Suppress("LongParameterList", "ComplexMethod", "LongMethod")
 internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     conf: FluxoConfigurationExtensionImpl,
     compilationName: String,
-    warningsAsErrors: Boolean,
+    warningsAsErrorsOff: Boolean,
     latestSettings: Boolean,
     isAndroid: Boolean,
     isTest: Boolean,
     isMultiplatform: Boolean,
-    isWasm: Boolean,
     jvmTargetVersion: String?,
+    inheritedArgs: Provider<List<String>>?,
 ) {
     val context = conf.ctx
     val isCI = context.isCI
@@ -28,15 +100,14 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     val useLatestSettings = !releaseSettings && latestSettings
     val kc = conf.kotlinConfig
 
-    if (warningsAsErrors) {
-        allWarningsAsErrors.set(true)
+    if (warningsAsErrorsOff) {
+        allWarningsAsErrors.convention(false)
     }
 
-    val compilerArgs = freeCompilerArgs.orElse(emptyList()).get().toMutableSet()
-    compilerArgs.addAll(DEFAULT_OPTS)
-    optIn.addAll(if (isTest) kc.prepareTestOptIns() else kc.optIns)
-
-    val (lang) = kc.langAndApiVersions(isTest = isTest, latestSettings = useLatestSettings)
+    val compilerArgs = LinkedHashSet(DEFAULT_OPTS)
+    if (isTest) {
+        optIn.addAll(kc.prepareTestOptIns() - kc.optIns)
+    }
 
     if (useLatestSettings) {
         compilerArgs.addAll(LATEST_OPTS)
@@ -67,12 +138,9 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         compilerArgs.addDefault(KotlinDefault.ANNOTATION_DEFAULT_TARGET, kc.defaultsOff)
     }
     compilerArgs.addDefault(KotlinDefault.CONSISTENT_DATA_CLASS_COPY_VISIBILITY, kc.defaultsOff)
-    if (KotlinDefault.EXTRA_WARNINGS !in kc.defaultsOff) {
-        extraWarnings.set(true)
-    }
 
-    // Read from the compile task's own options, after ours were applied, so a version the
-    // consumer set in their own `kotlin { compilerOptions }` counts too.
+    // Read from the compile task's own options, which inherit the module's and target's, so a
+    // version the consumer set in their own `kotlin { compilerOptions }` counts too.
     val deprecatedVersions = listOfNotNull(languageVersion.orNull, apiVersion.orNull)
         .distinct().filter { it.isDeprecatedByKgp }
     // Switched off, the compiler's own warning stays, so the build-end replacement is not needed.
@@ -89,19 +157,13 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 followAndroidJavaTarget(conf.project)
             }
             // The JDK API limit (-Xjdk-release) is added per task by `limitKotlinJdkApi`.
+            // Set, not a convention: KGP gives the task a toolchain-derived convention, and
+            // javac's target is set from the same value, so the two can't disagree. The
+            // module's `jvmTarget` setting is how a consumer changes it.
             jvmTargetVersion?.let { setupJvmCompatibility(it) }
 
-            if (kc.javaParameters) {
-                javaParameters.set(true)
-            }
-            // The typed `jvmDefault` option exists only since KGP 2.2; the plugin is APPLIED
-            // against the consumer's KGP and the layer-2 floor is Kotlin 2.1, where calling the
-            // 2.2 getter throws NoSuchMethodError. `-Xjvm-default=all` is the 2.1 equivalent of
-            // `NO_COMPATIBILITY` but is deprecated on 2.2+ (would trip `-Werror`), so gate by
-            // the consumer's KGP version. The 2.2-only symbol is reached only on 2.2+.
-            if (context.kotlinPluginVersion >= KOTLIN_2_2) {
-                jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
-            } else {
+            // KGP 2.1: see `setupJvmModuleOptions`.
+            if (kgp < KOTLIN_2_2) {
                 compilerArgs.add("-Xjvm-default=all")
             }
 
@@ -144,21 +206,6 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 compilerArgs.addAll(JVM_RELEASE_OPTS)
             }
         }
-
-        is KotlinJsCompilerOptions -> {
-            // ES2015 classes under the Kotlin plugin's default ES5 target. JS only: Wasm shares
-            // these options, but Kotlin 2.4 compiles it with its own argument set, where a
-            // JS-only flag warns "not supported by this version of the compiler".
-            // `-Xoptimize-generated-js` is on by default on the whole supported range.
-            if (!isWasm) {
-                useEsClasses.set(true)
-            }
-        }
-    }
-
-    if ((kc.progressive || useLatestSettings) && lang.isCurrentOrLater) {
-        progressiveMode.set(true)
-        // compilerArgs.add("-progressive")
     }
 
     if (useLatestSettings) {
@@ -186,7 +233,30 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         compilerArgs.add("-Xdebug")
     }
 
-    freeCompilerArgs.set(compilerArgs.toList())
+    addArgsUnlessInherited(compilerArgs.toList(), inheritedArgs)
+}
+
+/**
+ * Adds fluxo's [args] to a compile task lazily, without any whose key (the part before `=`) the
+ * consumer passes for the whole module or target ([inherited]): their value wins, and no flag
+ * reaches the compiler twice with different values. That is an error for some flags
+ * (`-Xjsr305`: "Conflict duplicating") and a "passed multiple times" warning for most, which
+ * fails `-Werror` builds. A flag the consumer adds on the task itself is not seen here.
+ */
+internal fun KotlinCommonCompilerOptions.addArgsUnlessInherited(
+    args: List<String>,
+    inherited: Provider<List<String>>?,
+) {
+    when {
+        args.isEmpty() -> {}
+        inherited == null -> freeCompilerArgs.addAll(args)
+        else -> freeCompilerArgs.addAll(inherited.map { withoutInheritedKeys(args, it) })
+    }
+}
+
+private fun withoutInheritedKeys(args: List<String>, inherited: List<String>): List<String> {
+    val keys = inherited.mapTo(HashSet()) { it.substringBefore('=') }
+    return args.filter { it.substringBefore('=') !in keys }
 }
 
 

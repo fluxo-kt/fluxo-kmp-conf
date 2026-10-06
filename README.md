@@ -113,6 +113,13 @@ Use these DSLs when defaults are not enough:
 Only the safest, most broadly useful settings are enabled by default,
 so you can start without extra configuration.
 
+Your own settings beat these defaults:
+- What you set in `kotlin { compilerOptions }`, for the module or a target, wins wherever you write it, and a flag you pass there replaces fluxo's flag of the same name.
+- A few defaults differ per compilation (warnings as errors off for tests, JS and shared metadata; a separate test language version): set those on the compile task.
+- The JVM target is set with fluxo's `jvmTarget`, which keeps Kotlin and Java on the same target.
+- In `android {}`, the namespace, SDK levels and test runner you set win wherever you write them; other Android settings fluxo writes, set after `fkcSetup*()`.
+- Every compiler default fluxo adds can be switched off per module or with `DISABLE_KOTLIN_DEFAULTS` (see [`FluxoConfigurationExtensionKotlinOptions`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/FluxoConfigurationExtensionKotlinOptions.kt)).
+
 A few examples of configuration:
 - [Compose desktop application](checks/compose-desktop/build.gradle.kts)
 - [Gradle plugin](checks/gradle-plugin/build.gradle.kts)

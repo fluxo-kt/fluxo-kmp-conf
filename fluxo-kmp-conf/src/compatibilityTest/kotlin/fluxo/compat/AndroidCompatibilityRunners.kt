@@ -233,6 +233,25 @@ internal fun runAndroidLibraryConsumer(row: Map<String, String>, tempDir: Path) 
         }
     }
 
+    // A level the consumer sets in `android {}` wins, also when written before `fkcSetup*()`.
+    val agpLine = "id(\"com.android.library\") version \"${row.getValue("agpVersion")}\""
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-android-library-sdk-first",
+        projectDir = tempDir.resolve(row.getValue("id") + "-sdk-first"),
+        tasks = listOf("help"),
+        forbiddenOutput = ANDROID_NOISE,
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(
+            markerAndroidLibraryBuildScript(row)
+                .replace("$agpLine apply false", agpLine)
+                .replace("fkcSetupAndroidLibrary(", "$CONSUMER_MIN_SDK\n\nfkcSetupAndroidLibrary(")
+                .replace("(agpMax to 23)", "(agpMax to 26)")
+                .replace("agpMax, 23)", "agpMax, 26)"),
+        )
+    }
+
     // AGP 9's built-in Kotlin fails configuration on `org.jetbrains.kotlin.kapt`; its kapt is
     // `com.android.legacy-kapt`, from an artifact AGP doesn't depend on. `setupKapt` must apply
     // it when the consumer declared it, and otherwise name the line to add.
@@ -263,6 +282,10 @@ internal fun runAndroidLibraryConsumer(row: Map<String, String>, tempDir: Path) 
 private const val LEGACY_KAPT_LINE = "id(\"com.android.legacy-kapt\") version"
 
 private const val NO_COROUTINES = "setupCoroutines = false"
+
+private const val CONSUMER_MIN_SDK =
+    "extensions.configure<com.android.build.api.dsl.LibraryExtension>(\"android\") {\n" +
+        "    defaultConfig.minSdk = 26\n}"
 
 /**
  * A call above minSdk (Lint `NewApi`) must fail `check`, once, at the end of the build, listing
