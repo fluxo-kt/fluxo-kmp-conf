@@ -18,7 +18,12 @@ public interface FluxoConfigurationExtensionCommon {
 
 
     /**
-     * Flag that allows to disable dependency setup completely.
+     * Whether fluxo adds dependencies to the module: annotations, Kotlin test libraries, and the
+     * libraries and BOMs your version catalog names.
+     * Set on the root project, it also applies your catalog's Kotlin/JS tool versions:
+     * `js-mocha`, `js-karma`, `js-webpack`, `js-webpackCli` and `js-webpackDevServer` where
+     * newer than the Kotlin plugin's own, `js-yarn`, and the `js-engineIo`, `js-socketIo` and
+     * `js-uaParserJs` Yarn resolutions. With it off, the Kotlin plugin's versions stay.
      *
      * Inherited from the parent project if not set.
      * Default value: `false`.

@@ -64,6 +64,8 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
         configureExtension<YarnRootExtension>(YarnRootExtension.YARN) {
             // Consumers commit `<root>/.kotlin-js-store/yarn.lock`; KGP's own default is
             // `<root>/kotlin-js-store`, so leaving it to KGP would orphan that lock file silently.
+            // The Wasm lock stays at KGP's `<root>/kotlin-js-store/wasm` for the same reason:
+            // fluxo never moved it, so that is where consumers commit it.
             setLockFileDirectory(rootDir.resolve(".kotlin-js-store"), ctx.kotlinPluginVersion)
 
             // yarn.lock is calculated differently without tests, ignore mismatch
