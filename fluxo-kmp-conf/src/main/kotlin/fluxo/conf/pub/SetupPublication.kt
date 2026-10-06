@@ -42,6 +42,7 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.jvm.tasks.Jar as JarJvm
@@ -514,8 +515,21 @@ internal fun getIfSigningEnabled(config: FluxoPublicationConfig): Boolean =
 
 internal fun Project.validateSignedReleaseBeforeRemotePublish(config: FluxoPublicationConfig) {
     tasks.configureEach {
-        if (!isRemotePublishTask(name)) return@configureEach
+        // Only tasks that upload: one publication to one Maven repository, or the Plugin Portal
+        // and Maven Central tasks. Lifecycle tasks (`publish`, `publishAll…`) upload nothing
+        // themselves; the tasks they run are checked.
+        val uploads = this is PublishToMavenRepository || name == "publishPlugins" ||
+            name.contains("MavenCentral", ignoreCase = true)
+        if (!uploads) return@configureEach
+        // A `file:` repository stays on this machine (tests, local checks); only uploads must be
+        // signed. A provider: maven-publish assigns the repository after this configureEach, and
+        // the configuration cache drops it before execution but stores a provider's value.
+        val task = this
+        val toFileRepo = project.provider {
+            (task as? PublishToMavenRepository)?.repository?.url?.scheme == "file"
+        }
         doFirst {
+            if (toFileRepo.get()) return@doFirst
             if (!config.isSnapshot && config.signingKey.isNullOrBlank()) {
                 throw GradleException(
                     "Refusing to publish non-snapshot ${config.group}:${config.projectName}:" +
@@ -535,16 +549,6 @@ internal fun SigningExtension.configureInMemoryPgpKeys(config: FluxoPublicationC
     } else {
         useInMemoryPgpKeys(signingKeyId, config.signingKey, config.signingPassword)
     }
-}
-
-private fun isRemotePublishTask(name: String): Boolean {
-    val remoteRepositoryPublish = name.startsWith("publish") &&
-        "Repository" in name &&
-        !name.contains("LocalDev", ignoreCase = true) &&
-        !name.contains("MavenLocal", ignoreCase = true)
-    return name == "publishPlugins" ||
-        name.contains("MavenCentral", ignoreCase = true) ||
-        remoteRepositoryPublish
 }
 
 

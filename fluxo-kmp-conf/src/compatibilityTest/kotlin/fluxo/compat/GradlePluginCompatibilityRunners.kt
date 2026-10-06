@@ -38,13 +38,14 @@ internal fun runGradlePluginConsumer(row: Map<String, String>, tempDir: Path) {
 private fun runPublicationWithoutVanniktechCase(row: Map<String, String>, tempDir: Path) {
     val projectDir = tempDir.resolve(row.getValue("id") + "-publication")
     val repo = projectDir.resolve("m2")
-    runConsumerCase(
+    fun run(tasks: List<String>, expectFailure: List<String> = emptyList()) = runConsumerCase(
         row,
         tempDir,
         rootProjectName = "compat-gradle-plugin-consumer",
         projectDir = projectDir,
-        tasks = listOf("publishToMavenLocal"),
+        tasks = tasks,
         arguments = listOf("-Dmaven.repo.local=$repo"),
+        expectFailure = expectFailure,
     ) {
         val script = gradlePluginBuildScript(row)
             .replace("version = \"1.0.0\"\n", "")
@@ -53,9 +54,13 @@ private fun runPublicationWithoutVanniktechCase(row: Map<String, String>, tempDi
                 "enablePublication = true\n    this.version = \"1.2.3\"\n" +
                     "    githubProject = \"$GITHUB_PROJECT\"\n    publicationConfig()",
             )
-        it.resolve("build.gradle.kts").writeText(script + "\n" + GENERATED_SOURCE_SCRIPT)
+        it.resolve("build.gradle.kts").writeText(script + "\n" + PUBLICATION_EXTRAS_SCRIPT)
         writeCompatPluginSource(it)
     }
+    // A release version without a signing key: an upload is refused before it starts, while a
+    // `file:` repository (local checks) accepts it.
+    run(listOf("publishAllPublicationsToRemoteRepository"), expectFailure = UNSIGNED_REFUSAL)
+    run(listOf("publishToMavenLocal", "publishAllPublicationsToChecksRepository"))
     val marker = repo.resolve(
         "compat/compat-plugin/$PLUGIN_ID.gradle.plugin/1.2.3/$PLUGIN_ID.gradle.plugin-1.2.3.pom",
     )
@@ -87,8 +92,8 @@ private fun runPublicationWithoutVanniktechCase(row: Map<String, String>, tempDi
 
 private const val GITHUB_PROJECT = "fluxo-kt/compat"
 
-/** A source directory produced by a task, as code generators (e.g. build config) add them. */
-private val GENERATED_SOURCE_SCRIPT = """
+/** A task-generated source directory (as code generators add) and two repositories. */
+private val PUBLICATION_EXTRAS_SCRIPT = """
     val generateCompatSource = tasks.register("generateCompatSource") {
         val dir = layout.buildDirectory.dir("generated/compat")
         outputs.dir(dir)
@@ -99,7 +104,18 @@ private val GENERATED_SOURCE_SCRIPT = """
         }
     }
     kotlin.sourceSets.named("main") { kotlin.srcDir(generateCompatSource) }
+
+    publishing.repositories.maven {
+        name = "checks"
+        url = uri(layout.buildDirectory.dir("checks-repo"))
+    }
+    publishing.repositories.maven {
+        name = "remote"
+        url = uri("https://example.invalid/repo")
+    }
 """.trimIndent()
+
+private val UNSIGNED_REFUSAL = listOf("Refusing to publish non-snapshot compat:compat-plugin:1.2.3")
 
 /** The first Kotlin whose own ABI validation fluxo uses. */
 private val KGP_ABI_VALIDATION = KotlinVersion(2, 4)
