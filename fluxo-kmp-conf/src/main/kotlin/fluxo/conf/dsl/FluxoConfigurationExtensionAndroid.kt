@@ -54,7 +54,8 @@ public interface FluxoConfigurationExtensionAndroid {
      * Auto set using the version names in toml version catalog:
      * `versionCode` or `androidVersionCode`.
      *
-     * Defaults to `0`.
+     * Defaults to `0`, which sets no version code (AGP rejects `0`).
+     * A version code set in `android { defaultConfig {} }` wins.
      *
      * See [Versioning Your Application](http://developer.android.com/tools/publishing/versioning.html)
      *

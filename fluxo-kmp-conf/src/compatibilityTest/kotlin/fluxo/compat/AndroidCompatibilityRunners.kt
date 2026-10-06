@@ -252,6 +252,8 @@ internal fun runAndroidLibraryConsumer(row: Map<String, String>, tempDir: Path) 
         )
     }
 
+    if (!row.isExecutionFixture()) runAndroidAppCase(row, tempDir)
+
     // AGP 9's built-in Kotlin fails configuration on `org.jetbrains.kotlin.kapt`; its kapt is
     // `com.android.legacy-kapt`, from an artifact AGP doesn't depend on. `setupKapt` must apply
     // it when the consumer declared it, and otherwise name the line to add.

@@ -2,6 +2,7 @@
 
 package fluxo.conf.impl.android
 
+import com.android.build.api.dsl.ApplicationDefaultConfig
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
@@ -93,26 +94,11 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
         // testInstrumentationRunner = "androidx.benchmark.junit4.AndroidBenchmarkRunner"
     }
 
+    // Locale filtering is app-only — libraries do not produce APKs so filtering
+    // their resources here would be incorrect.
+    var keptByResourceConfigurations = false
     if (this is ApplicationExtension) {
-        // Locale filtering is app-only — libraries do not produce APKs so filtering
-        // their resources here would be incorrect. AGP 8.3+ uses
-        // androidResources.localeFilters; older AGP falls back to the deprecated
-        // defaultConfig.resourceConfigurations via a noSuchMethodSafe catch.
-        // https://developer.android.com/studio/build/shrink-code#unused-alt-resources
-        // https://stackoverflow.com/a/49117551/1816338
-        if (languages.isNotEmpty()) {
-            var localeFiltersApplied = false
-            noSuchMethodSafe {
-                androidResources.localeFilters.addAll(languages)
-                localeFiltersApplied = true
-            }
-            if (!localeFiltersApplied) {
-                // AGP < 8.3 fallback: resourceConfigurations is deprecated in AGP 9.x.
-                // Remove this branch once the consumer floor exceeds AGP 8.2.
-                @Suppress("DEPRECATION")
-                noSuchMethodSafe { defaultConfig.resourceConfigurations.addAll(languages) }
-            }
-        }
+        keptByResourceConfigurations = keepLocales(languages)
         applyApplicationTargetSdk(conf)
     }
 
@@ -124,19 +110,29 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
     if (this is ApplicationExtension) {
         isApplication = true
 
+        // Filled only when empty, so values the consumer set in `android {}` win. A version code
+        // of 0 means unset: AGP rejects 0, and with none it builds without one.
         defaultConfig {
-            applicationId = conf.androidApplicationId
-            versionCode = conf.androidVersionCode
-            conf.version.takeIf { it.isNotBlank() }?.let {
-                versionName = it.trim()
+            if (applicationId.isNullOrEmpty()) {
+                applicationId = conf.androidApplicationId
+            }
+            if (versionCode == null) {
+                conf.androidVersionCode.takeIf { it > 0 }?.let { versionCode = it }
+            }
+            if (versionName.isNullOrEmpty()) {
+                conf.version.takeIf { it.isNotBlank() }?.let { versionName = it.trim() }
             }
         }
 
         // FIXME: Automatic per-app language support
         // https://developer.android.com/build/releases/past-releases/agp-8-1-0-release-notes#automatic-per-app-languages
 
-        androidResources {
-            generateLocaleConfig = true
+        // AGP before 8.8 rejects a generated locale config next to `resourceConfigurations`;
+        // the locales the consumer listed win over this default.
+        if (!keptByResourceConfigurations) {
+            androidResources {
+                generateLocaleConfig = true
+            }
         }
 
         setupSigningIn(project = project)
@@ -290,12 +286,47 @@ internal fun FluxoConfigurationExtensionImpl.logNamespaceDecision(ns: String) = 
  */
 private fun ApplicationExtension.applyApplicationTargetSdk(
     conf: FluxoConfigurationExtensionImpl,
-) = applyAgpSdkProperty(
-    conf.androidTargetSdk,
-    isSet = { defaultConfig.run { targetSdk != null || !targetSdkPreview.isNullOrBlank() } },
-    asInt = { defaultConfig.targetSdk = it },
-    asPreview = { defaultConfig.targetSdkPreview = it },
-)
+) = appDefaultConfig.let { dc ->
+    applyAgpSdkProperty(
+        conf.androidTargetSdk,
+        isSet = { dc.targetSdk != null || !dc.targetSdkPreview.isNullOrBlank() },
+        asInt = { dc.targetSdk = it },
+        asPreview = { dc.targetSdkPreview = it },
+    )
+}
+
+/**
+ * Keeps only [languages] in the app. AGP 8.8+ uses `androidResources.localeFilters`; older AGP
+ * gets the deprecated `defaultConfig.resourceConfigurations`, and then `true` is returned.
+ *
+ * https://developer.android.com/studio/build/shrink-code#unused-alt-resources
+ * https://stackoverflow.com/a/49117551/1816338
+ */
+private fun ApplicationExtension.keepLocales(languages: Set<String>): Boolean {
+    if (languages.isEmpty()) return false
+    var localeFiltersApplied = false
+    noSuchMethodSafe {
+        androidResources.localeFilters.addAll(languages)
+        localeFiltersApplied = true
+    }
+    if (!localeFiltersApplied) {
+        // Remove this fallback once the consumer floor reaches AGP 8.8.
+        @Suppress("DEPRECATION")
+        appDefaultConfig.resourceConfigurations.addAll(languages)
+    }
+    return !localeFiltersApplied
+}
+
+/**
+ * `ApplicationExtension.defaultConfig` compiles to a getter only AGP 9 declares (AGP 8 inherits
+ * a generic one from [CommonExtension]), so on AGP 8 it throws `NoSuchMethodError`. The
+ * [CommonExtension] getter exists on both lines.
+ */
+private val ApplicationExtension.appDefaultConfig: ApplicationDefaultConfig
+    get() {
+        val common: CommonExtension = this
+        return common.defaultConfig as ApplicationDefaultConfig
+    }
 
 /**
  * Applies a legacy AGP "Int-or-Preview" SDK property pair unless [isSet]: a level the consumer
