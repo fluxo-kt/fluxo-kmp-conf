@@ -52,9 +52,11 @@ jobs:
         # JDK 21 needed by IntelliJ Platform 2026.* targets (S12). JDK 23 keeps
         # early-warning coverage for newer daemon/toolchain behavior.
         java: ['21', '23']
-        # No Windows cell: Windows matters for consumers, not for the plugin's own build, so
-        # Windows runs consumer compat fixtures in `integrationChecks` instead.
-        os: ['macos', 'ubuntu']
+        # Ubuntu only: the plugin's own build has no OS-specific output, and macOS runners took
+        # about twice ubuntu's time for the same evidence (the release job still builds on
+        # macOS). Windows matters for consumers, so it runs consumer compat fixtures in
+        # `integrationChecks` instead.
+        os: ['ubuntu']
     name: 'Build and check on ${{ matrix.os }} / JDK ${{ matrix.java }}'
     # Keep the job budget above the sum of the guarded Gradle/check steps. Otherwise
     # a slow but healthy matrix leg can be cancelled after its checks already passed.
@@ -90,8 +92,7 @@ jobs:
           artifact-retention-days: 1
 
       - name: 'Build and check plugin itself'
-        # Sized for the SLOWEST cell, macOS (the smallest runners); below the 90-min job cap so
-        # a real hang still trips.
+        # Below the 90-min job cap so a real hang still trips.
         timeout-minutes: 45
         # `compatibilityTest` is excluded here and runs once in `integrationChecks` instead: it
         # spawns ~19 nested TestKit consumer builds (AGP/KMP/Compose), is OS- and daemon-JDK-
@@ -209,7 +210,7 @@ jobs:
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=8/8 --continue --stacktrace --scan
             timeout: 10
           # Windows matters for consumers, not for the plugin's own build: the Kotlin/JVM
-          # consumer fixtures run here, the plugin itself builds on ubuntu and macOS only.
+          # consumer fixtures run here, the plugin itself builds on ubuntu only.
           - name: compat-kotlin-jvm-windows-1-of-2
             os: windows
             directory: .
