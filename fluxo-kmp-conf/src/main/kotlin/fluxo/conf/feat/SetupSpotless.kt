@@ -69,8 +69,20 @@ internal fun Project.setupSpotless(
             predeclareDeps()
         }
 
+        // Excludes go into the target tree, so Gradle skips an excluded directory unread.
+        // `targetExclude(String)` would build a second tree listing every file under `.gradle/`,
+        // `build/` and `node_modules/` just to subtract it; Spotless 7 hashes that tree for the
+        // configuration cache, which fails on Windows on Gradle's locked `checksums.lock`.
+        // A FileCollection target also loses Spotless's own `.git`/build-dir excludes for `**/`
+        // string targets, so SPOTLESS_EXCLUDED_DIRS repeats them.
+        fun FormatExtension.targetTree(vararg includes: String) = target(
+            fileTree(projectDir) {
+                include(*includes)
+                exclude(*SPOTLESS_EXCLUDED_DIRS)
+            },
+        )
+
         fun FormatExtension.defaultFormatSettings(numSpacesPerTab: Int = 4) {
-            targetExclude(*SPOTLESS_EXCLUDE_PATHS)
             trimTrailingWhitespace()
             leadingTabsToSpaces(numSpacesPerTab)
             endWithNewline()
@@ -80,7 +92,7 @@ internal fun Project.setupSpotless(
         // a root `.editorconfig`; null keeps ktlint's own defaults.
         val editorConfigPath = rootProject.file(".editorconfig").takeIf { it.isFile }
         kotlin {
-            target("**/*.kt", "**/*.kts")
+            targetTree("**/*.kt", "**/*.kts")
 
             // TODO: Use ktlint directly?
             // https://github.com/search?q=setEditorConfigPath+path%3A*.kt&type=code
@@ -100,8 +112,6 @@ internal fun Project.setupSpotless(
                     diktat()
                 }
             }
-
-            targetExclude(*SPOTLESS_EXCLUDE_PATHS)
 
             // TODO: Licenses
             // licenseHeader("/* (C)$YEAR */")
@@ -127,18 +137,17 @@ internal fun Project.setupSpotless(
 
         // TODO: Only if java plugin is enabled?
         java {
-            target("**/*.java")
+            targetTree("**/*.java")
             googleJavaFormat().aosp()
             defaultFormatSettings()
         }
 
         json {
-            target("**/*.json")
-            targetExclude(*SPOTLESS_EXCLUDE_PATHS)
+            targetTree("**/*.json")
             gson().indentWithSpaces(2).sortByKeys()
         }
         format("misc") {
-            target(
+            targetTree(
                 "**/*.css",
                 "**/*.dockerfile",
                 "**/*.gradle",
@@ -197,14 +206,17 @@ internal fun Project.setupSpotless(
     }
 }
 
-private val SPOTLESS_EXCLUDE_PATHS = arrayOf(
-    "**/.gradle-cache/",
-    "**/.gradle/",
-    "**/.idea/",
-    "**/.run/",
-    "**/_/",
-    "**/build/",
-    "**/generated/",
-    "**/node_modules/",
-    "**/resources/",
+// No trailing slash: the pattern then matches the directory itself, so the walk prunes it
+// instead of listing its content.
+private val SPOTLESS_EXCLUDED_DIRS = arrayOf(
+    "**/.git",
+    "**/.gradle",
+    "**/.gradle-cache",
+    "**/.idea",
+    "**/.run",
+    "**/_",
+    "**/build",
+    "**/generated",
+    "**/node_modules",
+    "**/resources",
 )
