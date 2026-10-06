@@ -494,7 +494,6 @@ buildConfig {
 
     buildConfigField("DOKKA", libs.plugins.dokka)
     buildConfigField("GRADLE_PLUGIN_PUBLISH", libs.plugins.gradle.plugin.publish)
-    buildConfigField("COMPLETE_KOTLIN", libs.plugins.complete.kotlin)
     buildConfigField("DEPS_VERSIONS", libs.plugins.deps.versions, implementation = true)
     buildConfigField("DEPS_ANALYSIS", libs.plugins.deps.analysis)
     buildConfigField("FLUXO_BCV_JS", libs.plugins.fluxo.bcv.js)

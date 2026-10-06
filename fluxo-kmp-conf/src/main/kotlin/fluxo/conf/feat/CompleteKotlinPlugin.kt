@@ -1,57 +1,25 @@
 package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
-import fluxo.conf.data.BuildConstants.COMPLETE_KOTLIN_PLUGIN_ALIAS
-import fluxo.conf.data.BuildConstants.COMPLETE_KOTLIN_PLUGIN_ID
-import fluxo.conf.data.BuildConstants.COMPLETE_KOTLIN_PLUGIN_VERSION
-import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import loadKmmCodeCompletion
 
 /**
- * Gradle Plugin that adds auto-completion
- * and symbol resolution for all Kotlin/Native platforms on any OS.
- *
- * Does project repo addition (incompatible with `RepositoriesMode.FAIL_ON_PROJECT_REPOS`)!
- * Downloads files that contain platform klibs intended for other OSes,
- * and puts them in the right directories.
- *
- * It only downloads the missing ones,
- * so it has no effect on macOS if you don't use Windows (mingw target)
- * or Linux MIPS targets, for example.
- *
- * Can be turned off once required libs are downloaded and saved.
- *
- * [See details](https://github.com/LouisCAD/CompleteKotlin/releases)
+ * `LOAD_KMM_CODE_COMPLETION` used to apply the `com.louiscad.complete-kotlin` plugin, which
+ * downloads another OS's Kotlin/Native distribution to copy the platform libraries (e.g. iOS
+ * `platform.Foundation` on Linux) that the host's own distribution lacks. It downloads only for
+ * targets whose `klib/platform/<target>` is missing, and every host distribution (Linux, macOS,
+ * Windows) ships all targets' platform libraries on the whole supported range (Kotlin 2.1.21 and
+ * 2.4.20 distributions read 2026-10-06), so it downloaded nothing. An iOS source set using
+ * `platform.Foundation` compiled on Linux x86-64 without it, on Kotlin 2.2.21 and 2.4.20.
  */
-internal fun FluxoKmpConfContext.prepareCompleteKotlinPlugin() {
-    // https://github.com/LouisCAD/CompleteKotlin/releases
-    if (isCI || !rootProject.loadKmmCodeCompletion()) {
+internal fun FluxoKmpConfContext.warnIfCodeCompletionFlagSet() {
+    if (!rootProject.loadKmmCodeCompletion()) {
         return
     }
-    onProjectInSyncRun {
-        val pluginId = COMPLETE_KOTLIN_PLUGIN_ID
-        val result = loadAndApplyPluginIfNotApplied(
-            id = pluginId,
-            version = COMPLETE_KOTLIN_PLUGIN_VERSION,
-            catalogPluginId = COMPLETE_KOTLIN_PLUGIN_ALIAS,
-            fetchWithGradle = true,
-        )
-        if (result.applied) {
-            val flag = LOAD_KMM_CODE_COMPLETION_FLAG
-            buildEndReport.warn {
-                """
-
-                * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-                '$flag' is enabled.
-                It enables the '$pluginId' Gradle plugin which downloads files with
-                platform klibs intended for other OSes, and puts them in the right directories
-                for auto-completion and symbol resolution for all Kotlin/Native platforms.
-
-                Don't forget to disable '$flag' once all required libs are downloaded and saved!
-                * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-                """.trimIndent()
-            }
-        }
+    buildEndReport.warn {
+        "'$LOAD_KMM_CODE_COMPLETION_FLAG' does nothing any more and can be removed: " +
+            "the Kotlin/Native distribution already contains the platform libraries " +
+            "of every target."
     }
 }
 

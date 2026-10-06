@@ -14,7 +14,6 @@ import fluxo.conf.dsl.impl.ConfigureContainers
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.prepareBuildConfigKmpPlugin
 import fluxo.conf.feat.prepareBuildScanPlugin
-import fluxo.conf.feat.prepareCompleteKotlinPlugin
 import fluxo.conf.feat.prepareDependencyAnalysisPlugin
 import fluxo.conf.feat.prepareDependencyAnalysisTasks
 import fluxo.conf.feat.prepareDependencyGuardPlugin
@@ -29,6 +28,7 @@ import fluxo.conf.feat.setupGradleDoctorPlugin
 import fluxo.conf.feat.setupSpotless
 import fluxo.conf.feat.setupTestsReport
 import fluxo.conf.feat.setupVerificationRoot
+import fluxo.conf.feat.warnIfCodeCompletionFlagSet
 import fluxo.conf.impl.checkIsRootProject
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.isRootProject
@@ -95,7 +95,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             return
         }
 
-        ctx.prepareCompleteKotlinPlugin()
+        ctx.warnIfCodeCompletionFlagSet()
         ctx.prepareDependencyUpdatesPlugin()
         ctx.prepareDependencyAnalysisPlugin()
         ctx.prepareDependencyGuardPlugin()

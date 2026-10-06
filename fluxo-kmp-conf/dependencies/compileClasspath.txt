@@ -31,8 +31,6 @@ com.gradle:develocity-gradle-plugin:4.6.0
 com.guardsquare:proguard-base:7.10.0
 com.guardsquare:proguard-core:9.4.0
 com.guardsquare:proguard-gradle:7.10.0
-com.louiscad.complete-kotlin:com.louiscad.complete-kotlin.gradle.plugin:1.1.0
-com.louiscad.complete-kotlin:plugin:1.1.0
 com.pinterest.ktlint:ktlint-cli:1.8.0
 com.savvasdalkitsis.module-dependency-graph:com.savvasdalkitsis.module-dependency-graph.gradle.plugin:0.12
 com.savvasdalkitsis:module-dependency-graph:0.12
