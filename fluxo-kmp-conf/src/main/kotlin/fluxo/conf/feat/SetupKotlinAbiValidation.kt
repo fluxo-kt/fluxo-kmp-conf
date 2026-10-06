@@ -1,5 +1,6 @@
 package fluxo.conf.feat
 
+import fluxo.annotation.VersionGated
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
 import fluxo.conf.dsl.DEFAULT_CONSTRUCTOR_MARKER_CLASS
@@ -77,7 +78,6 @@ private fun kgpHasStableAbiValidation(): Boolean = try {
     false
 }
 
-@OptIn(ExperimentalAbiValidation::class)
 private fun Project.setupKgpAbiValidation(
     conf: FluxoConfigurationExtensionImpl,
     isMultiplatform: Boolean,
@@ -88,15 +88,11 @@ private fun Project.setupKgpAbiValidation(
     val ignoredClasses = config?.ignoredClasses ?: setOf(DEFAULT_CONSTRUCTOR_MARKER_CLASS)
     val nonPublicMarkers = config?.nonPublicMarkers ?: setOf(JVM_SYNTHETIC_CLASS)
 
-    // Calling `abiValidation {}` is what enables it (it also adds the check to `check`).
-    extensions.getByType(KotlinProjectExtension::class.java).abiValidation {
-        filters.exclude {
-            // BCV ignores a package with its subpackages; `**` matches any depth.
-            byNames.addAll(ignoredPackages.map { "$it.**" })
-            byNames.addAll(ignoredClasses)
-            annotatedWith.addAll(nonPublicMarkers)
-        }
-    }
+    // BCV ignores a package with its subpackages; `**` matches any depth.
+    enableKgpAbiValidation(
+        excludedNames = ignoredPackages.map { "$it.**" } + ignoredClasses,
+        nonPublicMarkers = nonPublicMarkers,
+    )
 
     // BCV's task names, kept because consumer scripts, CI and `./updateBaseline` call them; a
     // Kotlin upgrade that switches the engine must not remove them. KGP has one check and one
@@ -134,6 +130,22 @@ private fun Project.setupKgpAbiValidation(
             howToChange = "run without a target filter",
         )
     }
+}
+
+/**
+ * Reading `abiValidation` is what enables it, as `abiValidation {}` does (it also adds the check
+ * to `check`). No lambdas here: the linkage check can't see [VersionGated] on a lambda's body.
+ */
+@VersionGated
+@OptIn(ExperimentalAbiValidation::class)
+private fun Project.enableKgpAbiValidation(
+    excludedNames: Collection<String>,
+    nonPublicMarkers: Collection<String>,
+) {
+    val exclude = extensions.getByType(KotlinProjectExtension::class.java)
+        .abiValidation.filters.exclude
+    exclude.byNames.addAll(excludedNames)
+    exclude.annotatedWith.addAll(nonPublicMarkers)
 }
 
 /** Registers `<prefix>Dump`/`<prefix>Check` unless something already owns the name. */

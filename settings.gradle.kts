@@ -47,6 +47,18 @@ dependencyResolutionManagement {
                 includeGroupByRegex("com\\.github\\..*")
             }
         }
+        // The oldest supported Gradle's own API jars, for `checkFloorLinkage`: no Maven artifact
+        // carries them, so the distribution itself is resolved.
+        exclusiveContent {
+            forRepository {
+                ivy("https://services.gradle.org/distributions") {
+                    name = "Gradle distributions"
+                    patternLayout { artifact("[module]-[revision]-bin.[ext]") }
+                    metadataSources { artifact() }
+                }
+            }
+            filter { includeModule("gradle", "gradle") }
+        }
     }
 }
 

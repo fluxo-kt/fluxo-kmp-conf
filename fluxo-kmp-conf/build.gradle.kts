@@ -1,7 +1,15 @@
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.attributes.plugin.GradlePluginApiVersion
+import ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer
+import ru.vyarus.gradle.plugin.animalsniffer.signature.BuildSignatureTask
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.build.config)
     alias(libs.plugins.vanniktech.mvn.publish)
+    // Task types only, for `checkFloorLinkage`; applied, it would add checks of its own.
+    alias(libs.plugins.animalsniffer) apply false
 }
 
 group = "io.github.fluxo-kt"
@@ -637,8 +645,128 @@ val verifyBuildScriptMirror = tasks.register("verifyBuildScriptMirror") {
     }
 }
 
+// region Oldest-version linkage check
+// The plugin compiles against the newest Kotlin Gradle plugin, AGP and Gradle but runs on the
+// consumer's, down to `compat/linkage-floor.properties`. A call into API those versions lack
+// compiles and passes every test on newer versions, then fails only for an old consumer, and only
+// on the path that makes the call. This check reads every compiled class instead: references
+// into Kotlin Gradle plugin, AGP or Gradle API must exist in the oldest versions, unless the code
+// is marked `@VersionGated` (reached only where the API exists).
+val linkageFloor = Properties().apply {
+    rootProject.file("compat/linkage-floor.properties").reader().use { load(it) }
+}
+val linkageTool: Configuration by configurations.creating {
+    isCanBeConsumed = false
+}
+val linkageJdkSignature: Configuration by configurations.creating {
+    isCanBeConsumed = false
+}
+val linkageGradleDistribution: Configuration by configurations.creating {
+    isCanBeConsumed = false
+}
+val linkageFloorJars: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(
+            LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+            objects.named(LibraryElements.JAR),
+        )
+        attribute(
+            GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE,
+            objects.named(linkageFloor.getProperty("gradle")),
+        )
+    }
+    // The Kotlin standard library is the one Gradle bundles, taken from its distribution below.
+    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
+    exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
+}
+dependencies {
+    linkageTool(libs.animal.sniffer)
+    // The JDK 8 API, only so inherited members (`Collection.add`, `Enum.ordinal`) resolve; JDK
+    // references themselves are not checked (`ignoreClasses`).
+    linkageJdkSignature("org.codehaus.mojo.signature:java18:1.0@signature")
+    linkageGradleDistribution("gradle:gradle:${linkageFloor.getProperty("gradle")}@zip")
+    val kotlin = linkageFloor.getProperty("kotlin")
+    linkageFloorJars("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin")
+    linkageFloorJars("org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlin")
+    linkageFloorJars("org.jetbrains.kotlin:kotlin-sam-with-receiver:$kotlin")
+    linkageFloorJars("com.android.tools.build:gradle:${linkageFloor.getProperty("agp")}")
+}
+
+val unpackFloorGradleApi = tasks.register<Sync>("unpackFloorGradleApi") {
+    description = "Extracts the oldest supported Gradle's API jars for checkFloorLinkage."
+    from(zipTree(linkageGradleDistribution.elements.map { it.single().asFile }))
+    // Gradle's own jars and its Kotlin standard library; its embedded Kotlin compiler would
+    // clash with the Kotlin Gradle plugin's copy of the same classes.
+    include(
+        "*/lib/gradle-*.jar",
+        "*/lib/plugins/gradle-*.jar",
+        "*/lib/groovy-4*.jar",
+        "*/lib/groovy-json-*.jar",
+        "*/lib/kotlin-stdlib-*.jar",
+        "*/lib/kotlin-reflect-*.jar",
+    )
+    eachFile { path = name }
+    includeEmptyDirs = false
+    into(layout.buildDirectory.dir("linkage/gradle-api"))
+}
+
+val buildFloorSignature = tasks.register<BuildSignatureTask>("buildFloorSignature") {
+    description = "Builds the API signature of the oldest supported Kotlin, AGP and Gradle."
+    animalsnifferClasspath = linkageTool
+    // Jars that re-ship JDK 8 `javax` packages clash with the JDK signature.
+    val jdkDuplicates = Regex(
+        "^(jakarta\\.xml\\.bind-api|jakarta\\.activation-api|javax\\.activation|" +
+            "javax\\.annotation-api|xml-apis)-",
+    )
+    files(linkageFloorJars.filter { !jdkDuplicates.containsMatchIn(it.name) })
+    files(unpackFloorGradleApi)
+    signatures(linkageJdkSignature)
+    outputDirectory = layout.buildDirectory.dir("linkage").get().asFile
+    outputName = "floor"
+}
+
+// Everything else on the compile classpath is trusted as is: the tools fluxo bundles run at the
+// version it ships. Gradle's API and Kotlin library come in as files, not modules, so the module
+// filter drops them along with what the floor replaces.
+val linkageTrustedClasspath = configurations.compileClasspath.flatMap { compile ->
+    compile.incoming.artifacts.resolvedArtifacts.zip(
+        linkageFloorJars.incoming.artifacts.resolvedArtifacts,
+    ) { artifacts, floor ->
+        val replaced = floor.mapNotNullTo(HashSet()) {
+            (it.id.componentIdentifier as? ModuleComponentIdentifier)?.moduleIdentifier
+        }
+        artifacts.filter {
+            val id = it.id.componentIdentifier as? ModuleComponentIdentifier
+            id != null && id.moduleIdentifier !in replaced &&
+                !(id.group == "org.jetbrains.kotlin" && id.module.startsWith("kotlin-stdlib"))
+        }.map { it.file }
+    }
+}
+
+val checkFloorLinkage = tasks.register<AnimalSniffer>("checkFloorLinkage") {
+    group = "verification"
+    description = "Fails on calls into Kotlin Gradle plugin, AGP or Gradle API that the " +
+        "oldest supported versions lack, outside code marked @VersionGated."
+    animalsnifferClasspath = linkageTool
+    animalsnifferSignatures = files(buildFloorSignature.map { it.outputFiles })
+    source = sourceSets.main.get().output.classesDirs.asFileTree
+    sourcesDirs = files(sourceSets.main.get().kotlin.srcDirs)
+    classpath = files(linkageTrustedClasspath)
+    annotation = "fluxo.annotation.VersionGated"
+    ignoreClasses = listOf("java.*", "javax.*", "jdk.*", "sun.*", "com.sun.*", "org.w3c.*")
+        .plus("org.xml.*")
+    reports.text.required = true
+    reports.text.outputLocation = layout.buildDirectory.file("reports/linkage/floor.txt")
+    reports.csv.outputLocation = layout.buildDirectory.file("reports/linkage/floor.csv")
+}
+// endregion
+
 tasks.named("check") {
     dependsOn(
+        checkFloorLinkage,
         verifyBuildScriptMirror,
         verifyCompatibilityStatic,
         verifyPluginPortalMetadata,

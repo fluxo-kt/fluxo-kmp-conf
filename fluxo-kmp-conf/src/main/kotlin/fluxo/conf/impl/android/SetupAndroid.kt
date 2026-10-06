@@ -10,6 +10,7 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.lint.AndroidLintTask
 import com.android.build.gradle.internal.lint.AndroidLintTextOutputTask
+import fluxo.annotation.VersionGated
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAndLog
 import fluxo.conf.impl.get
@@ -306,7 +307,7 @@ private fun ApplicationExtension.keepLocales(languages: Set<String>): Boolean {
     if (languages.isEmpty()) return false
     var localeFiltersApplied = false
     noSuchMethodSafe {
-        androidResources.localeFilters.addAll(languages)
+        addLocaleFilters(languages)
         localeFiltersApplied = true
     }
     if (!localeFiltersApplied) {
@@ -315,6 +316,12 @@ private fun ApplicationExtension.keepLocales(languages: Set<String>): Boolean {
         appDefaultConfig.resourceConfigurations.addAll(languages)
     }
     return !localeFiltersApplied
+}
+
+/** `localeFilters` exists from AGP 8.8; [keepLocales] catches its `NoSuchMethodError`. */
+@VersionGated
+private fun ApplicationExtension.addLocaleFilters(languages: Set<String>) {
+    androidResources.localeFilters.addAll(languages)
 }
 
 /**

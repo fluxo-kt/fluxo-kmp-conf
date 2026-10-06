@@ -1,5 +1,6 @@
 package fluxo.conf.impl.kotlin
 
+import fluxo.annotation.VersionGated
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAll
 import org.gradle.api.provider.Provider
@@ -68,8 +69,13 @@ private fun KotlinJvmCompilerOptions.setupJvmModuleOptions(conf: FluxoConfigurat
     // NoSuchMethodError. Below 2.2, `setupKotlinOptions` passes `-Xjvm-default=all`, the 2.1
     // equivalent of `NO_COMPATIBILITY`, deprecated on 2.2+ (it would trip `-Werror`).
     if (conf.ctx.kotlinPluginVersion >= KOTLIN_2_2) {
-        jvmDefault.convention(JvmDefaultMode.NO_COMPATIBILITY)
+        jvmDefaultNoCompatibility()
     }
+}
+
+@VersionGated
+private fun KotlinJvmCompilerOptions.jvmDefaultNoCompatibility() {
+    jvmDefault.convention(JvmDefaultMode.NO_COMPATIBILITY)
 }
 
 /**

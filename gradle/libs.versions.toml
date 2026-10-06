@@ -336,6 +336,10 @@ okio-jvm = { module = "com.squareup.okio:okio-jvm", version.ref = "okio" }
 
 undertow-core = { module = "io.undertow:undertow-core", version.ref = "undertow" }
 
+# Checks the plugin's classes against the oldest supported Kotlin, AGP and Gradle (`checkFloorLinkage`).
+# https://github.com/mojohaus/animal-sniffer/releases
+animal-sniffer = { module = "org.codehaus.mojo:animal-sniffer", version = "1.28" }
+
 # endregion
 
 
@@ -436,3 +440,7 @@ module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", 
 # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
 build-config = { id = "com.github.gmazzo.buildconfig", version = "6.1.2" }
+
+# Task types of the oldest-version linkage check (`checkFloorLinkage`), used without applying it.
+# https://github.com/xvik/gradle-animalsniffer-plugin/releases
+animalsniffer = { id = "ru.vyarus.animalsniffer", version = "2.0.1" }

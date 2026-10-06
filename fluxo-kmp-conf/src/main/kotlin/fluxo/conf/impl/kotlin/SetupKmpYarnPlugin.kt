@@ -1,5 +1,6 @@
 package fluxo.conf.impl.kotlin
 
+import fluxo.annotation.VersionGated
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.checkIsRootProject
@@ -44,7 +45,7 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
             setYarnVersion(libs, kgp)
         }
 
-        val yarnName = kgp.extensionName("kotlinYarn") { YarnRootExtension.YARN }
+        val yarnName = kgp.extensionName("kotlinYarn", ::yarnExtensionName)
         configureExtension<YarnRootExtension>(yarnName) {
             // Consumers commit `<root>/.kotlin-js-store/yarn.lock`; KGP's own default is
             // `<root>/kotlin-js-store`, so leaving it to KGP would orphan that lock file silently.
@@ -69,7 +70,7 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
         if (!setupDependencies) {
             return@configuration
         }
-        val nodeJsName = kgp.extensionName("kotlinNodeJs") { NodeJsRootExtension.EXTENSION_NAME }
+        val nodeJsName = kgp.extensionName("kotlinNodeJs", ::nodeJsExtensionName)
         configureExtension<NodeJsRootExtension>(nodeJsName) {
             val v = versions
             setFromCatalog(libs, "js-karma", v.karma)
@@ -87,7 +88,7 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
  * not on the deprecated `var version: String` of `YarnRootExtension`.
  */
 private fun Project.setYarnVersion(libs: FluxoVersionCatalog, kgp: KotlinVersion) {
-    val name = kgp.extensionName("kotlinYarnSpec") { YarnRootEnvSpec.YARN }
+    val name = kgp.extensionName("kotlinYarnSpec", ::yarnSpecExtensionName)
     configureExtension<YarnRootEnvSpec>(name) {
         val alias = "js-yarn"
         val wasSet = libs.onVersion(alias) {
@@ -149,7 +150,7 @@ private const val KJS = "KotlinJS"
 /** Same KGP 2.4.20 Provider-API split as [ignoreYarnLockChanges]. */
 private fun YarnRootExtension.setLockFileDirectory(dir: File, kgp: KotlinVersion) {
     if (kgp >= KOTLIN_2_4_20) {
-        lockFileDirectoryProperty.set(dir)
+        setLockFileDirectoryProperty(dir)
     } else {
         @Suppress("DEPRECATION")
         lockFileDirectory = dir
@@ -165,9 +166,7 @@ private fun YarnRootExtension.setLockFileDirectory(dir: File, kgp: KotlinVersion
  */
 private fun YarnRootExtension.ignoreYarnLockChanges(kgp: KotlinVersion) {
     if (kgp >= KOTLIN_2_4_20) {
-        yarnLockMismatchReportProperty.set(YarnLockMismatchReport.NONE)
-        yarnLockAutoReplaceProperty.set(false)
-        reportNewYarnLockProperty.set(false)
+        ignoreYarnLockChangesByProperties()
     } else {
         @Suppress("DEPRECATION")
         yarnLockMismatchReport = YarnLockMismatchReport.NONE
@@ -176,4 +175,15 @@ private fun YarnRootExtension.ignoreYarnLockChanges(kgp: KotlinVersion) {
         @Suppress("DEPRECATION")
         reportNewYarnLock = false
     }
+}
+
+@VersionGated
+private fun YarnRootExtension.setLockFileDirectoryProperty(dir: File) =
+    lockFileDirectoryProperty.set(dir)
+
+@VersionGated
+private fun YarnRootExtension.ignoreYarnLockChangesByProperties() {
+    yarnLockMismatchReportProperty.set(YarnLockMismatchReport.NONE)
+    yarnLockAutoReplaceProperty.set(false)
+    reportNewYarnLockProperty.set(false)
 }

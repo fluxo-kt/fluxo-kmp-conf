@@ -1,6 +1,11 @@
 package fluxo.conf.feat
 
-import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import dev.detekt.gradle.Detekt as Detekt2
+import dev.detekt.gradle.DetektCreateBaselineTask as Detekt2CreateBaselineTask
+import dev.detekt.gradle.extensions.DetektExtension as Detekt2Extension
+import dev.detekt.gradle.plugin.DetektKotlinCompilerPlugin as Detekt2KotlinCompilerPlugin
+import dev.detekt.gradle.plugin.DetektPlugin as Detekt2Plugin
+import dev.detekt.gradle.plugin.getSupportedKotlinVersion as getDetekt2CompilerVersion
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.MergeDetektBaselinesTask
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
@@ -40,13 +45,6 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompileTool
-import dev.detekt.gradle.Detekt as Detekt2
-import dev.detekt.gradle.DetektCreateBaselineTask as Detekt2CreateBaselineTask
-import dev.detekt.gradle.extensions.DetektExtension as Detekt2Extension
-import dev.detekt.gradle.plugin.DetektKotlinCompilerPlugin as Detekt2KotlinCompilerPlugin
-import dev.detekt.gradle.plugin.DetektPlugin as Detekt2Plugin
-import dev.detekt.gradle.plugin.getSupportedKotlinVersion as getDetekt2CompilerVersion
 
 private const val DEBUG_DETEKT_LOGS = false
 
@@ -537,7 +535,7 @@ private fun Project.detektConfigFiles(
     return files
 }
 
-private fun String.capitalized() = replaceFirstChar { it.uppercase() }
+internal fun String.capitalized() = replaceFirstChar { it.uppercase() }
 
 private fun Project.detektPlugins(dh: DependencyHandler, dependencyNotation: Any) =
     addAndLog(dh, "detektPlugins", dependencyNotation)
@@ -576,9 +574,9 @@ private const val DETEKT2_MIN_STDLIB_TEXT = "2.2"
 
 private val DETEKT2_MIN_STDLIB = parseDetektLangVersion(DETEKT2_MIN_STDLIB_TEXT)
 
-private const val DETEKT_TASK_NAME = "detekt"
+internal const val DETEKT_TASK_NAME = "detekt"
 
-private const val DETEKT_BASELINE_TASK_NAME = "detektBaseline"
+internal const val DETEKT_BASELINE_TASK_NAME = "detektBaseline"
 
 private const val SOURCE_SET_SUFFIX = "SourceSet"
 
@@ -589,31 +587,3 @@ private const val EXT = "xml"
 private const val DETEKT_BASELINE_FILE_NAME = "detekt-$BASELINE.$EXT"
 
 private val TEST_TASK_PREFIXES = arrayOf(CHECK_TASK_NAME, TEST_TASK_NAME)
-
-/**
- * Detekt 1.x gives a KMP compilation's type-resolution tasks `compileDependencyFiles`, the raw
- * configuration. For the AGP 9 KMP Android target that configuration can't be resolved as is:
- * with `withHostTest {}` the host-test classpath sees several variants of the module itself
- * ("cannot choose between the following variants"), so `check` fails before running anything.
- * The Kotlin compile task's `libraries` hold what the compiler actually used, resolved by AGP
- * and KGP, which is exactly what type resolution needs. Other targets resolve fine and keep
- * Detekt's own classpath. Detekt 2 takes `libraries` itself.
- */
-private fun Project.useCompilerClasspathInKmpAndroidDetekt() {
-    val kotlin = mppExtOrNull ?: return
-    kotlin.targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
-        val target = name.capitalized()
-        compilations.configureEach {
-            val compilation = this
-            val suffix = target + compilation.name.capitalized()
-            val libraries = files(
-                compilation.compileTaskProvider.map { (it as KotlinCompileTool).libraries },
-            )
-            tasks.namedCompat<Task, Detekt> { it == DETEKT_TASK_NAME + suffix }
-                .configureEach { classpath.setFrom(compilation.output.classesDirs, libraries) }
-            val baselineName = DETEKT_BASELINE_TASK_NAME + suffix
-            tasks.namedCompat<Task, DetektCreateBaselineTask> { it == baselineName }
-                .configureEach { classpath.setFrom(compilation.output.classesDirs, libraries) }
-        }
-    }
-}

@@ -2,7 +2,6 @@ package fluxo.conf.feat
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
-import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.dsl.Lint
 import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import com.android.build.gradle.internal.lint.AndroidLintTask
@@ -105,14 +104,7 @@ internal fun Project.setupKmpAndroidLint(
     if (!disableLint) pluginManager.apply(ANDROID_LINT_PLUGIN_ID)
 
     val mppExt = mppExtOrNull ?: return
-    mppExt.targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
-        // The target IS the extension on the AGP-9 KMP+Android plugin.
-        lint.configureAndroidLintExtension(
-            conf = conf,
-            disableLint = disableLint,
-            reBaseline = isBaselineRequested,
-        )
-    }
+    mppExt.configureKmpAndroidLint(conf, disableLint, reBaseline = isBaselineRequested)
 
     wireAndroidLintTaskGraph(conf, ignoredBuildTypes, ignoredFlavors, disableLint)
 }

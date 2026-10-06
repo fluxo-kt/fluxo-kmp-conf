@@ -1,4 +1,8 @@
 @file:Suppress("UnstableApiUsage")
+// Everything here runs only once `com.android.kotlin.multiplatform.library` is applied: fluxo's
+// AGP 9 route (AGP 8 KMP modules use the legacy Android plugins). The oldest supported AGP lacks
+// this API.
+@file:VersionGated
 
 package fluxo.conf.impl.android
 
@@ -6,6 +10,7 @@ import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
+import fluxo.annotation.VersionGated
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.kotlin.ksp
 import fluxo.conf.impl.kotlin.mppExtOrNull
@@ -33,29 +38,33 @@ import org.gradle.api.Project
  * @see <a href="https://developer.android.com/kotlin/multiplatform/plugin">AGP KMP Library docs</a>
  */
 internal fun Project.setupKmpAndroidExtension(conf: FluxoConfigurationExtensionImpl) {
-    pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) {
-        val mppExt = mppExtOrNull ?: run {
-            logger.e(
-                "$ANDROID_KMP_LIB_PLUGIN_ID applied without a Kotlin Multiplatform extension; " +
-                    "skipping Fluxo auto-config of `kotlin.android { }`.",
-            )
-            return@withPlugin
-        }
+    // The callback only calls a function: the oldest-version linkage check can't see the file's
+    // annotation from a lambda nested in another lambda.
+    pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) { configureKmpAndroidTargets(conf) }
+}
 
-        val androidTargets = mppExt.targets.withType<KotlinMultiplatformAndroidLibraryTarget>()
-        androidTargets.configureEach {
-            // The target IS the extension on the AGP-9 KMP+Android plugin.
-            applyFluxoDefaults(conf)
-            enableResourcesWhenPresent(conf)
-        }
-        // A second `withHostTest` throws ("Android host tests have already been enabled"), so it
-        // must wait for the consumer's script; and AGP creates the test component right after
-        // its DSL finalization blocks, so later (our own `afterEvaluate`) gives a compilation
-        // without a test task.
-        if (!conf.ctx.testsDisabled) {
-            extensions.findByType(KotlinMultiplatformAndroidComponentsExtension::class.java)
-                ?.finalizeDsl { androidTargets.forEach { it.enableHostTestsWhenAbsent(conf) } }
-        }
+private fun Project.configureKmpAndroidTargets(conf: FluxoConfigurationExtensionImpl) {
+    val mppExt = mppExtOrNull ?: run {
+        logger.e(
+            "$ANDROID_KMP_LIB_PLUGIN_ID applied without a Kotlin Multiplatform extension; " +
+                "skipping Fluxo auto-config of `kotlin.android { }`.",
+        )
+        return
+    }
+
+    val androidTargets = mppExt.targets.withType<KotlinMultiplatformAndroidLibraryTarget>()
+    androidTargets.configureEach {
+        // The target IS the extension on the AGP-9 KMP+Android plugin.
+        applyFluxoDefaults(conf)
+        enableResourcesWhenPresent(conf)
+    }
+    // A second `withHostTest` throws ("Android host tests have already been enabled"), so it
+    // must wait for the consumer's script; and AGP creates the test component right after
+    // its DSL finalization blocks, so later (our own `afterEvaluate`) gives a compilation
+    // without a test task.
+    if (!conf.ctx.testsDisabled) {
+        extensions.findByType(KotlinMultiplatformAndroidComponentsExtension::class.java)
+            ?.finalizeDsl { androidTargets.forEach { it.enableHostTestsWhenAbsent(conf) } }
     }
 }
 
