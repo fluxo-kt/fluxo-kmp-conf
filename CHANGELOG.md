@@ -70,6 +70,7 @@
 - `setupDependencies = true` in a KMP module without JVM or Android targets made the Kotlin plugin warn "Unused Kotlin Source Sets" (`commonJvmMain`, `commonJvmTest`), which fluxo created for its JVM-only dependencies.
 - A publishing build (`publish…`, `upload…`, `release…`, `install…` and similar tasks) whose publication setup failed, e.g. with publication enabled and no project version or no Vanniktech plugin declared, printed an error line and went on, then stopped at "Task 'publishToMavenLocal' not found" or published a half-configured publication. It now fails with the setup's own error. Builds that don't publish only log it, as before.
 - `resolveDependencies` failed with the configuration cache on ("cannot serialize object of type … DefaultProject"). Every project now has its own `resolveDependencies`, and the root one runs them all.
+- A `KMP_TARGETS` filter without `JS` (e.g. `KMP_TARGETS=WASM_WASI`) disabled every Wasm test task, so `check` ran no Wasm tests and printed "Unexpected test task … Target should be disabled". Wasm tests now follow their own target.
 
 ### Updated
 - Bundled tools: Detekt 1.x rule packs compose-rules 0.4.28 and faire 0.5.4 (may report new findings), Spotless 8.10.3, gradle-versions 0.64.0 (applied by its current id `io.github.ben-manes.versions`), KSP 2.3.12 when fluxo provisions it. That KSP needs Kotlin 2.2+, so on Kotlin 2.1 the build stops at configuration and names the Kotlin-tied KSP release to declare (`2.1.21-<ksp version>`), instead of failing inside `kspKotlin` with `NoSuchMethodError`.

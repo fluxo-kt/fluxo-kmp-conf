@@ -135,20 +135,16 @@ private val COMMON_TEST_TASKS_NAMES: Set<String> = hashSetOf(
 )
 
 
-internal fun FluxoKmpConfContext.isTestTaskAllowed(task: AbstractTestTask): Boolean {
-    val isAllowed = when (task) {
-        is KotlinJsTest -> isTargetEnabled(KmpTargetCode.JS)
+internal fun FluxoKmpConfContext.isTestTaskAllowed(task: AbstractTestTask): Boolean = when (task) {
+    // Wasm tests are KotlinJsTest tasks too, so the code comes from the task's own target.
+    is KotlinJsTest -> KmpTargetCode.fromKotlinTarget(task.compilation.target, logger = null)
+        ?.let(::isTargetEnabled) ?: true
 
-        is KotlinNativeTest ->
-            isCompilationAllowed(nativeFamilyFromString(platformFromTaskName(task.name)))
+    is KotlinNativeTest ->
+        isCompilationAllowed(nativeFamilyFromString(platformFromTaskName(task.name)))
 
-        // JVM/Android tests
-        else -> isTargetEnabled(KmpTargetCode.JVM) || isTargetEnabled(KmpTargetCode.ANDROID)
-    }
-    if (!isAllowed) {
-        task.logger.e("Unexpected test task ${task.name}! Target should be disabled")
-    }
-    return isAllowed
+    // JVM/Android tests
+    else -> isTargetEnabled(KmpTargetCode.JVM) || isTargetEnabled(KmpTargetCode.ANDROID)
 }
 
 private fun FluxoKmpConfContext.isCompilationAllowed(family: Family): Boolean =

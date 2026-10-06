@@ -75,8 +75,9 @@ private const val TS_API_MARKER = "FLUXO_COMPAT_TS_API="
 private const val FLUXO_BCV_JS_ID = "io.github.fluxo-kt.binary-compatibility-validator-js"
 
 /**
- * `KMP_TARGETS=WASM_WASI` must keep the WASI target enabled: fluxo disables every target outside
- * the filter, so a WASI target classified as Wasm-JS would disable the very target asked for.
+ * `KMP_TARGETS=WASM_WASI` must keep the WASI target and its tests enabled: fluxo disables every
+ * target outside the filter, so a WASI target classified as Wasm-JS would disable the very target
+ * asked for.
  * An enabled compile succeeds, a disabled one is SKIPPED. The compile also guards the flags fluxo
  * passes to Wasm: Kotlin 2.4 compiles Wasm with its own argument set, where a JS-only flag prints
  * "Flag is not supported by this version of the compiler" on every compile.
@@ -95,15 +96,33 @@ private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
         assertTasksSucceed = false,
     ) { projectDir ->
         // WASI is not among the default targets: consumers declare it.
-        projectDir.resolve("build.gradle.kts")
-            .writeText(markerKmpAllTargetsBuildScript(row, extraTargets = "; wasmWasi()"))
+        val wasi = "; wasmWasi { target { nodejs() } }"
+        val script = markerKmpAllTargetsBuildScript(row, extraTargets = wasi)
+        projectDir.resolve("build.gradle.kts").writeText(
+            script + "\n" +
+                """
+                gradle.projectsEvaluated {
+                    tasks.withType<org.gradle.api.tasks.testing.AbstractTestTask>().forEach {
+                        println("$TEST_TASK_MARKER" + it.name + ":" + it.enabled)
+                    }
+                }
+                """.trimIndent(),
+        )
         projectDir.resolve("src/wasmWasiMain/kotlin").createDirectories()
             .resolve("W.kt").writeText("package compat\n\nfun wasi(): Int = 1\n")
     }
     check(result.task(task)?.outcome == TaskOutcome.SUCCESS) {
         "KMP_TARGETS=WASM_WASI: $task was ${result.task(task)?.outcome}\n${result.output}"
     }
+    // Wasm tests are KotlinJsTest tasks too, so a gate keyed on the JS target disabled them.
+    val wasiTests = result.output.lines()
+        .filter { it.startsWith(TEST_TASK_MARKER + "wasmWasi") }
+    check(wasiTests.isNotEmpty() && wasiTests.all { it.endsWith(":true") }) {
+        "KMP_TARGETS=WASM_WASI: WASI test tasks $wasiTests\n${result.output}"
+    }
 }
+
+private const val TEST_TASK_MARKER = "FLUXO_COMPAT_TEST_TASK="
 
 /**
  * Groups like `allDefaultTargets()` must create only targets the consumer's Kotlin fully
