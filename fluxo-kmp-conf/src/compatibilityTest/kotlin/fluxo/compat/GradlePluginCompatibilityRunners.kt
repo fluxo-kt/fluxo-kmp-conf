@@ -5,6 +5,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Properties
 import java.util.zip.ZipFile
+import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 private const val PLUGIN_ID = "compat.compat-plugin"
@@ -49,19 +50,56 @@ private fun runPublicationWithoutVanniktechCase(row: Map<String, String>, tempDi
             .replace("version = \"1.0.0\"\n", "")
             .replace(
                 "enablePublication = false",
-                "enablePublication = true\n    this.version = \"1.2.3\"\n    publicationConfig()",
+                "enablePublication = true\n    this.version = \"1.2.3\"\n" +
+                    "    githubProject = \"$GITHUB_PROJECT\"\n    publicationConfig()",
             )
-        it.resolve("build.gradle.kts").writeText(script)
+        it.resolve("build.gradle.kts").writeText(script + "\n" + GENERATED_SOURCE_SCRIPT)
         writeCompatPluginSource(it)
     }
     val marker = repo.resolve(
         "compat/compat-plugin/$PLUGIN_ID.gradle.plugin/1.2.3/$PLUGIN_ID.gradle.plugin-1.2.3.pom",
     )
-    check(Files.exists(marker)) {
-        "No plugin marker at version 1.2.3; published: " +
-            Files.walk(repo).use { s -> s.filter(Files::isRegularFile).toList() }
+    val published = Files.walk(repo).use { s -> s.filter(Files::isRegularFile).toList() }
+    check(Files.exists(marker)) { "No plugin marker at version 1.2.3; published: $published" }
+
+    // The POM must be valid for Maven Central and point at the project. Project-level elements
+    // precede `<licenses>`; `<scm>` has a `<url>` of its own. All problems are reported at once.
+    val pom = published.single { it.toString().endsWith("1.2.3.pom") && it != marker }.readText()
+    val sourcesJar = published.single { it.toString().endsWith("-sources.jar") }
+    val sources = ZipFile(sourcesJar.toFile()).use { zip ->
+        zip.entries().asSequence().map { it.name }.toList()
     }
+    val problems = listOfNotNull(
+        "POM url isn't the project's".takeUnless {
+            "<url>https://github.com/$GITHUB_PROJECT</url>" in pom.substringBefore("<licenses>")
+        },
+        "POM license has a <distribution> (fluxo writes none)".takeUnless {
+            "<distribution>" !in pom
+        },
+        "POM scm connection isn't https".takeUnless {
+            "<connection>scm:git:https://github.com/$GITHUB_PROJECT.git</connection>" in pom
+        },
+        // Added to the source set after fluxo configured the module.
+        "sources jar lacks the generated source".takeUnless { "compat/Generated.kt" in sources },
+    )
+    check(problems.isEmpty()) { "$problems\n$pom\n$sourcesJar: $sources" }
 }
+
+private const val GITHUB_PROJECT = "fluxo-kt/compat"
+
+/** A source directory produced by a task, as code generators (e.g. build config) add them. */
+private val GENERATED_SOURCE_SCRIPT = """
+    val generateCompatSource = tasks.register("generateCompatSource") {
+        val dir = layout.buildDirectory.dir("generated/compat")
+        outputs.dir(dir)
+        doLast {
+            val file = dir.get().file("compat/Generated.kt").asFile
+            file.parentFile.mkdirs()
+            file.writeText("package compat\n\ninternal const val GENERATED = 1\n")
+        }
+    }
+    kotlin.sourceSets.named("main") { kotlin.srcDir(generateCompatSource) }
+""".trimIndent()
 
 /** The first Kotlin whose own ABI validation fluxo uses. */
 private val KGP_ABI_VALIDATION = KotlinVersion(2, 4)

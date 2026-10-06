@@ -34,6 +34,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Property
 import org.gradle.api.publish.PublicationContainer
@@ -246,7 +247,7 @@ private fun FluxoKmpConfContext.setupPublicationAndroidLibrary(
 
     val publishing = p.applyMavenPublishPlugin(config)
 
-    val sourcePaths = p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
+    val sourcePaths = p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin
     val sourceJarTask = p.registerSourceJarTask(sourcePaths)
     val javadocTask = setupJavadocTask(p, config, useDokka = useDokka)
 
@@ -291,8 +292,10 @@ private fun FluxoKmpConfContext.setupPublicationGradlePlugin(
         config.publicationUrl?.let { vcsUrl.set(it) }
     }
 
-    val sourcePaths = gradlePluginExtension.pluginSourceSet.java.srcDirs +
-        p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
+    val sourcePaths = listOf(
+        gradlePluginExtension.pluginSourceSet.java,
+        p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin,
+    )
     val sourceJarTask = p.registerSourceJarTask(sourcePaths)
 
     // TODO: Should wrap `setupPublicationExtension` in afterEvaluate?
@@ -319,7 +322,7 @@ private fun FluxoKmpConfContext.setupPublicationKotlinJvm(
 
     val publishing = p.applyMavenPublishPlugin(config)
 
-    val sourcePaths = p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin.srcDirs
+    val sourcePaths = p.kotlinExtension.sourceSets[MAIN_SOURCE_SET_NAME].kotlin
     val sourceJarTask = p.registerSourceJarTask(sourcePaths)
 
     setupPublicationExtension(p, publishing, config, useDokka = useDokka, sourceJarTask)
@@ -335,7 +338,7 @@ private fun FluxoKmpConfContext.setupPublicationJava(p: Project, config: FluxoPu
 
     val javaPluginExtension = p.the<JavaPluginExtension>()
 
-    val sourcePaths = javaPluginExtension.sourceSets[MAIN_SOURCE_SET_NAME].java.srcDirs
+    val sourcePaths = javaPluginExtension.sourceSets[MAIN_SOURCE_SET_NAME].java
     val sourceJarTask = p.registerSourceJarTask(sourcePaths)
 
     setupPublicationExtension(p, publishing, config, useDokka = false, sourceJarTask)
@@ -358,7 +361,8 @@ internal fun MavenPom.setupPublicationPom(
 
     name.set(config.projectName ?: name.get())
     description.set(config.projectDescription ?: description.get())
-    url.set(config.publicationUrl ?: url.orNull ?: config.projectUrl)
+    // The POM url is the project's home page; the release's own link (a tag) belongs to scm.
+    url.set(config.projectUrl ?: url.orNull ?: config.publicationUrl)
 
     config.inceptionYear?.let { inceptionYear.set(it) }
 
@@ -367,12 +371,9 @@ internal fun MavenPom.setupPublicationPom(
         licenses {
             license {
                 name.set(config.licenseName)
-                config.licenseUrl?.let {
-                    url.set(it)
-                    if (it.endsWith(".txt")) {
-                        distribution.set(it)
-                    }
-                }
+                // No `distribution`: optional (Central's example omits it), and it takes only
+                // `repo` or `manual`, never the licence URL.
+                config.licenseUrl?.let { url.set(it) }
             }
         }
     }
@@ -392,7 +393,7 @@ internal fun MavenPom.setupPublicationPom(
     }
 
     scm {
-        url.set(config.projectUrl)
+        url.set(config.publicationUrl ?: config.projectUrl)
         connection.set(config.scmUrl)
         developerConnection.set(config.scmUrl)
         config.scmTag.takeIf { !it.isNullOrEmpty() }?.let {
@@ -631,8 +632,12 @@ internal val Project.gradlePluginExt: GradlePluginDevelopmentExtension
 private fun Project.registerSourceJarTask(sourcePaths: Any): NamedDomainObjectProvider<out Task> {
     val taskName = "sourcesJar"
     val existing = tasks.namedOrNull(taskName)
+    // Source sets, never their `srcDirs`: those are copied when this runs and miss directories
+    // added later (generated sources), while a source set stays lazy and carries the tasks that
+    // generate them. Source sets may overlap (Kotlin's includes `src/main/java`), hence EXCLUDE.
     val provider = existing ?: tasks.registerCompat<Jar>(taskName) {
         from(sourcePaths)
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         group = LifecycleBasePlugin.BUILD_GROUP
         description = "Assembles a project sources jar."
         archiveClassifier.set("sources")

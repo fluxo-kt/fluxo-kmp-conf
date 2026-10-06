@@ -16,7 +16,7 @@ public data class FluxoPublicationConfig(
     public var projectDescription: String? = null,
     /** Project website or repository url */
     public var projectUrl: String? = null,
-    /** `scm:git:git://..` url */
+    /** `scm:git:https://..` url */
     public var scmUrl: String? = null,
 
     public var developerId: String? = null,

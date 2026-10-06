@@ -174,7 +174,10 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
                 //  Shouldn't be url, but `namespace/name`
                 githubProject?.let { githubProject ->
                     url = "https://github.com/$githubProject"
-                    scmUrl = "scm:git:git://github.com/$githubProject.git"
+                    // A Maven SCM git URL that tools can clone from: GitHub disabled the
+                    // unencrypted git:// protocol on 2022-03-15. Read and push both work over
+                    // https, so it serves as `connection` and `developerConnection`.
+                    scmUrl = "scm:git:https://github.com/$githubProject.git"
                 }
 
                 FluxoPublicationConfig(
