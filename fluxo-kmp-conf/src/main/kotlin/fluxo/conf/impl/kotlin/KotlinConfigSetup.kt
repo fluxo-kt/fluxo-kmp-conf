@@ -4,9 +4,11 @@ import envOrPropList
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.hasRoomPlugin
 import fluxo.conf.impl.envOrPropFlagValue
+import fluxo.log.FluxoProblem
+import fluxo.log.i
 import fluxo.log.l
 import fluxo.log.logDecision
-import fluxo.log.w
+import fluxo.log.reportProblem
 import kotlin.math.min
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -28,7 +30,10 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     // surfacing far from its `kotlinCoreLibraries` vs `kotlin` root cause.
     kotlinStdlibSkewError(pluginVersion, coreLibs)?.let { msg ->
         require(project.envOrPropFlagValue(ALLOW_KOTLIN_STDLIB_SKEW_PROP)) { msg }
-        project.logger.w("$msg [allowed via -P$ALLOW_KOTLIN_STDLIB_SKEW_PROP]")
+        project.reportProblem(
+            FluxoProblem.KOTLIN_VERSIONS,
+            "$msg [allowed via -P$ALLOW_KOTLIN_STDLIB_SKEW_PROP]",
+        )
     }
 
     // Note: apiVersion can't be greater than languageVersion!
@@ -39,9 +44,11 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         api = null
     }
     if (api != null && lang != null && api > lang) {
-        project.logger.w(
+        project.reportProblem(
+            FluxoProblem.KOTLIN_VERSIONS,
             "Kotlin API version is downgraded from $api to $lang" +
-                ", as it can't be greater than the language version!",
+                ", as it can't be greater than the language version.",
+            fix = "Set kotlinApiVersion to $lang or lower, or raise kotlinLangVersion.",
         )
         api = null
     }
@@ -192,7 +199,7 @@ private fun Logger.logKotlinProjectCompatibility(
     l(msg)
 
     if (kc.jvmToolchain) {
-        w(
+        i(
             "JVM toolchain setup is enabled! \n" +
                 "Note that it's rarely beneficial because of inefficient resource usage, " +
                 "compiler bugs, reduced performance and outdated javadoc, " +

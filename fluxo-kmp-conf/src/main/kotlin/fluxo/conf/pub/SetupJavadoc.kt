@@ -5,7 +5,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.BuildConstants
 import fluxo.conf.deps.isConfigurationCacheActive
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
-import fluxo.conf.deps.missingFromBuildClasspathMessage
+import fluxo.conf.deps.reportMissingFromBuildClasspath
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
@@ -16,7 +16,6 @@ import fluxo.conf.impl.namedOrNull
 import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.withType
 import fluxo.log.l
-import fluxo.log.w
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -106,9 +105,10 @@ private fun FluxoKmpConfContext.loadAndApplyDokkaIfNotApplied(project: Project):
     val declared = project.buildscript.classLoader
         .getResource("META-INF/gradle-plugins/$id.properties") != null
     if (!declared && project.isConfigurationCacheActive()) {
-        project.logger.w(
-            missingFromBuildClasspathMessage(project, id, BuildConstants.DOKKA_PLUGIN_VERSION) +
-                " Until then the publication gets plain Javadoc.",
+        project.reportMissingFromBuildClasspath(
+            id,
+            BuildConstants.DOKKA_PLUGIN_VERSION,
+            consequence = "Until then the publication gets plain Javadoc.",
         )
         return false
     }

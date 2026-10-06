@@ -17,12 +17,12 @@ import fluxo.conf.impl.kotlin.DeprecatedKotlinVersions
 import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
 import fluxo.conf.impl.tryAsBoolean
+import fluxo.log.FluxoProblem
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
-import fluxo.log.e
 import fluxo.log.i
+import fluxo.log.reportProblem
 import fluxo.log.v
-import fluxo.log.w
 import fluxo.shrink.BUNDLED_PROGUARD_VERSION
 import fluxo.shrink.BUNDLED_R8_VERSION
 import fluxo.util.readableByteSize
@@ -241,9 +241,10 @@ internal abstract class FluxoKmpConfContext
         if (testsDisabled) {
             val name = startTaskNames.firstOrNull { CHECK_TASK_NAME in it || TEST_TASK_NAME in it }
             if (name != null) {
-                logger.w(
-                    "`$name` runs no tests: fluxo turns them off because of $testsDisabledReason." +
-                        " Unset DISABLE_TESTS, and don't exclude `check` or `test`, to run them.",
+                project.reportProblem(
+                    FluxoProblem.TESTS_OFF,
+                    "`$name` runs no tests: fluxo turns them off because of $testsDisabledReason.",
+                    fix = "Unset DISABLE_TESTS, and don't exclude `check` or `test`, to run them.",
                 )
             }
         }
@@ -314,7 +315,10 @@ internal abstract class FluxoKmpConfContext
                 if (rethrow) throw e
                 // A warning: the build goes on, and the message names the fix. The trace is
                 // only for debugging fluxo itself.
-                rootProject.logger.w("Setup step skipped: ${e.message ?: e}")
+                rootProject.reportProblem(
+                    FluxoProblem.SETUP_STEP_SKIPPED,
+                    "Setup step skipped: ${e.message ?: e}",
+                )
                 rootProject.logger.v("Setup step failure", e)
             }
         }

@@ -1,6 +1,7 @@
 package fluxo.conf.deps
 
-import fluxo.log.w
+import fluxo.log.FluxoProblem
+import fluxo.log.reportProblem
 import javax.inject.Inject
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -14,14 +15,32 @@ import org.gradle.api.configuration.BuildFeatures
  * so with the cache on the build stops here with the line that fixes it.
  */
 internal fun missingFromBuildClasspath(project: Project, id: String, version: String?) {
-    val message = missingFromBuildClasspathMessage(project, id, version)
-    if (project.isConfigurationCacheActive()) throw GradleException(message)
-    project.logger.w(message)
+    if (project.isConfigurationCacheActive()) {
+        throw GradleException(missingFromBuildClasspathMessage(project, id, version))
+    }
+    project.reportMissingFromBuildClasspath(id, version)
 }
 
+/** Warns that plugin [id] must be declared; [consequence] says what happens until then. */
+internal fun Project.reportMissingFromBuildClasspath(
+    id: String,
+    version: String?,
+    consequence: String? = null,
+) = reportProblem(
+    FluxoProblem.PLUGIN_NOT_ON_BUILD_CLASSPATH,
+    message = missingCause(this, id) + consequence?.let { " $it" }.orEmpty(),
+    fix = missingFix(this, id, version),
+)
+
 internal fun missingFromBuildClasspathMessage(project: Project, id: String, version: String?) =
-    "'$id' is not on the build classpath of '${project.path}'. Add `id(\"$id\")" +
-        (if (version != null) " version \"$version\"" else "") + "` to the `plugins {}` block of " +
+    missingCause(project, id) + " " + missingFix(project, id, version)
+
+private fun missingCause(project: Project, id: String) =
+    "'$id' is not on the build classpath of '${project.path}'."
+
+private fun missingFix(project: Project, id: String, version: String?) =
+    "Add `id(\"$id\")" + (if (version != null) " version \"$version\"" else "") +
+        "` to the `plugins {}` block of " +
         (if (project.parent == null) "the root build script." else "'${project.path}'.")
 
 internal fun Project.isConfigurationCacheActive(): Boolean =

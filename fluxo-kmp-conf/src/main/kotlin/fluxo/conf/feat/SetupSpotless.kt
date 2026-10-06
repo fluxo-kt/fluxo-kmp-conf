@@ -8,8 +8,9 @@ import com.diffplug.spotless.kotlin.KtLintStep
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.isRootProject
+import fluxo.log.FluxoProblem
 import fluxo.log.l
-import fluxo.log.w
+import fluxo.log.reportProblem
 import fluxo.vc.v
 import org.gradle.api.Project
 
@@ -32,10 +33,12 @@ internal fun Project.setupSpotless(
     }.isSuccess
     if (!hasSpotless7Api) {
         if (ctx.firstInBuild("spotless-too-old")) {
-            logger.w(
+            reportProblem(
+                FluxoProblem.TOOL_TOO_OLD,
                 "Spotless on the build classpath is older than 7.0, which fluxo's formatting " +
-                    "setup needs, so Spotless is not set up. Declare Spotless 7.0 or newer, or " +
-                    "remove your Spotless version to use the bundled one.",
+                    "setup needs, so Spotless is not set up.",
+                fix = "Declare Spotless 7.0 or newer, or remove your Spotless version to use " +
+                    "the bundled one.",
             )
         }
         return

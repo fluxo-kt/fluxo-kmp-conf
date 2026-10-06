@@ -5,9 +5,10 @@ import fluxo.conf.data.BuildConstants.TASK_INFO_PLUGIN_ALIAS
 import fluxo.conf.data.BuildConstants.TASK_INFO_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.TASK_INFO_PLUGIN_VERSION
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
+import fluxo.log.FluxoProblem
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.l
-import fluxo.log.w
+import fluxo.log.reportProblem
 import org.barfuin.gradle.taskinfo.GradleTaskInfoPlugin
 import org.gradle.util.GradleVersion
 
@@ -22,11 +23,12 @@ internal fun FluxoKmpConfContext.prepareTaskInfoPlugin() {
             }
         }
         if (!gradleHasTaskInfoApi()) {
-            rootProject.logger.w(
+            rootProject.reportProblem(
+                FluxoProblem.TOOL_UNSUPPORTED_ON_GRADLE,
                 "taskinfo ($TASK_INFO_PLUGIN_VERSION, its newest release) can't run on Gradle " +
                     "${GradleVersion.current().version}: " +
-                    "Gradle changed the internal API it reads. " +
-                    "Use `taskTree`, or Gradle's own `--task-graph` (Gradle 9.1+).",
+                    "Gradle changed the internal API it reads.",
+                fix = "Use `taskTree`, or Gradle's own `--task-graph` (Gradle 9.1+).",
             )
             return
         }

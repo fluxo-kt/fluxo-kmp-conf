@@ -6,7 +6,8 @@ import fluxo.conf.dsl.FluxoConfigurationExtension
 import fluxo.conf.dsl.fluxoConfiguration
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.kotlin.INTELLIJ_PLUGIN_ID
-import fluxo.log.w
+import fluxo.log.FluxoProblem
+import fluxo.log.reportProblem
 import org.gradle.api.Project
 import org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -79,9 +80,10 @@ public fun Project.fkcSetupIdeaPlugin(
             }
 
             if (intellijVersion.isNotBlank()) {
-                project.logger.w(
-                    "fkcSetupIdeaPlugin: `intellijVersion` is deprecated in IJ Platform v2." +
-                        " Configure via: dependencies { intellijPlatform {" +
+                project.reportProblem(
+                    FluxoProblem.DEPRECATED_SETTING,
+                    "fkcSetupIdeaPlugin: `intellijVersion` is deprecated in IJ Platform v2.",
+                    fix = "Configure via: dependencies { intellijPlatform {" +
                         " intellijIdeaCommunity(\"$intellijVersion\") } }",
                 )
             }

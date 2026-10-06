@@ -1,7 +1,9 @@
 package fluxo.conf.impl.kotlin
 
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
+import fluxo.log.FluxoProblem
 import fluxo.log.logDecision
+import fluxo.log.reportProblem
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -138,7 +140,9 @@ private fun FluxoConfigurationExtensionImpl.report(
 ) {
     if (limit is JdkApiLimit.Unavailable) {
         check(!(limit.failsRelease && ctx.isRelease)) { limit.reason }
-        if (ctx.firstInBuild(limit.reason)) project.logger.warn("w: ${limit.reason}")
+        if (ctx.firstInBuild(limit.reason)) {
+            project.reportProblem(FluxoProblem.JDK_API_NOT_LIMITED, limit.reason)
+        }
     }
     ctx.logDecision(
         project,

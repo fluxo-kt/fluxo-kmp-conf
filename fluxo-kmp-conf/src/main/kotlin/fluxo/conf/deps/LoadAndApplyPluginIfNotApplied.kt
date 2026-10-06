@@ -8,7 +8,6 @@ import fluxo.log.d
 import fluxo.log.e
 import fluxo.log.i
 import fluxo.log.v
-import fluxo.log.w
 import fluxo.vc.p
 import fluxo.vc.v
 import getGradlePluginMarkerArtifactMavenCoordinates
@@ -172,10 +171,11 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
                         "Loaded plugin '$pluginId' for '${project.path}' from [$coords]$detected",
                     )
                 } else {
-                    logger.w(
-                        missingFromBuildClasspathMessage(project, pluginId, pluginVersion) +
-                            " fluxo loads it itself, which the configuration cache can't store" +
-                            " when the plugin registers tasks.",
+                    project.reportMissingFromBuildClasspath(
+                        pluginId,
+                        pluginVersion,
+                        consequence = "fluxo loads it itself, which the configuration cache " +
+                            "can't store when the plugin registers tasks.",
                     )
                 }
                 return pluginClass
@@ -344,9 +344,8 @@ private const val CLASS_NAME_AUTO_DETECTED = " (class name is not provided and a
 
 /** Reports a plugin that must be declared by the consumer; with [fail], fails the build. */
 internal fun Project.loadPluginStaticallyError(pluginId: String, fail: Boolean = false) {
-    val message = missingFromBuildClasspathMessage(this, pluginId, version = null)
-    if (fail) throw GradleException(message)
-    logger.w(message)
+    if (fail) throw GradleException(missingFromBuildClasspathMessage(this, pluginId, null))
+    reportMissingFromBuildClasspath(pluginId, version = null)
 }
 
 private fun loadingErrorMessage(err: String, example: String) = "$err\n " +

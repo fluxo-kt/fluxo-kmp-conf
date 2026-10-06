@@ -14,6 +14,10 @@ internal fun runPublicationSetupFailureCase(row: Map<String, String>, tempDir: P
         "no-version" to "Publication of ':' has no version",
         "no-vanniktech" to "'com.vanniktech.maven.publish' is not on the build classpath of ':'",
     )
+    val problemIds = mapOf(
+        "no-version" to "setup-step-skipped",
+        "no-vanniktech" to "plugin-not-on-build-classpath",
+    )
     for ((scenario, cause) in scenarios) {
         fun case(tasks: List<String>, expectFailure: List<String>) = runConsumerCase(
             row,
@@ -39,6 +43,12 @@ internal fun runPublicationSetupFailureCase(row: Map<String, String>, tempDir: P
             "$scenario: expected a warning with '$cause':\n$help"
         }
         check(help.lines().none { it.startsWith("e: ") }) { "$scenario: error line:\n$help" }
+        // The same warning reaches Gradle's Problems API, so the problems report lists it.
+        val report = tempDir.resolve(row.getValue("id") + "-publication-$scenario")
+            .resolve("build/reports/problems/problems-report.html").toFile()
+        check(report.isFile && problemIds.getValue(scenario) in report.readText()) {
+            "$scenario: no '${problemIds.getValue(scenario)}' in $report"
+        }
     }
 }
 

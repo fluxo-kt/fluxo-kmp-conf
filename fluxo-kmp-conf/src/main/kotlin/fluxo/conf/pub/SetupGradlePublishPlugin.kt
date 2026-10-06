@@ -2,9 +2,9 @@ package fluxo.conf.pub
 
 import fluxo.conf.data.BuildConstants.GRADLE_PLUGIN_PUBLISH_PLUGIN_ID
 import fluxo.conf.data.BuildConstants.GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION
+import fluxo.conf.deps.reportMissingFromBuildClasspath
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.feat.setupValidatePluginTasks
-import fluxo.log.w
 import org.gradle.api.Project
 import org.gradle.api.plugins.UnknownPluginException
 
@@ -19,11 +19,10 @@ internal fun Project.setupGradlePublishPlugin(conf: FluxoConfigurationExtensionI
         pluginManager.apply(GRADLE_PLUGIN_PUBLISH_PLUGIN_ID)
     } catch (_: UnknownPluginException) {
         if (conf.enablePublication == true) {
-            val line = "id(\"$GRADLE_PLUGIN_PUBLISH_PLUGIN_ID\") version " +
-                "\"$GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION\""
-            logger.w(
-                "Plugin Portal publication is not set up for '$path': " +
-                    "add `$line` to its `plugins {}` block.",
+            reportMissingFromBuildClasspath(
+                GRADLE_PLUGIN_PUBLISH_PLUGIN_ID,
+                GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION,
+                consequence = "Until then Plugin Portal publication is not set up.",
             )
         }
     }
