@@ -119,7 +119,6 @@
     <ID>ForbiddenComment:DependencyAnalysisPlugin.kt:// TODO: no need to declare transitive dependencies for the final app module</ID>
     <ID>ForbiddenComment:DependencyGuardPlugin.kt:// TODO: Allow to customize configurations auto-filtration</ID>
     <ID>ForbiddenComment:DependencyGuardPlugin.kt:// TODO: Allow to customize projects auto-filtration</ID>
-    <ID>ForbiddenComment:DependencyGuardPlugin.kt:// TODO: Opt-out configurable switch via `fluxoKmpConf { depsGuard = false }`</ID>
     <ID>ForbiddenComment:DependencyGuardPlugin.kt:// TODO: Update when resolved (https://github.com/dropbox/dependency-guard/issues/3)</ID>
     <ID>ForbiddenComment:DependencyUtils.kt:// TODO: Support rich VersionConstraint</ID>
     <ID>ForbiddenComment:FkcSetupAndroid.kt:// FIXME: Implement cleaner 2-levels lazy API: asAndroidApp { android { ... } }</ID>

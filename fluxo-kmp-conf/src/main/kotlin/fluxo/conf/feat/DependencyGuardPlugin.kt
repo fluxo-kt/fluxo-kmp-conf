@@ -17,7 +17,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.language.base.plugins.LifecycleBasePlugin.CHECK_TASK_NAME
 
-// TODO: Opt-out configurable switch  via `fluxoKmpConf { depsGuard = false }`
+// No opt-out switch yet (e.g. `fluxoConfiguration { depsGuard = false }`).
 
 // Plugin that guards against unintentional dependency changes
 // https://github.com/dropbox/dependency-guard/blob/main/CHANGELOG.md#change-log

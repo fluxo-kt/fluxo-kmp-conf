@@ -142,7 +142,7 @@ public interface FluxoConfigurationExtensionCommon {
      * ```kotlin
      * // root build.gradle.kts
      * plugins { id("io.github.fluxo-kt.fluxo-kmp-conf") }
-     * fluxoKmpConf { enableGradleDoctor = true }
+     * fluxoConfiguration { enableGradleDoctor = true }
      * doctor {
      *     javaHome { ensureJavaHomeMatches.set(false) }
      * }
