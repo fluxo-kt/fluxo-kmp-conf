@@ -29,14 +29,26 @@ pins). Where it disagrees with the current tree, the tree and AGENTS.md win:
   `unsafe-pattern-allowlist.tsv`) with `verifyCompatibilityStatic` and
   `verifyBuildScriptMirror` on `check`; GitHub Actions updated through
   `actions-up`; no `taskGraph.whenReady` left in `fluxo-kmp-conf/src/main/kotlin`.
-- **Still open from the queue below**: configuration-time dependency resolution
-  in the dynamic plugin loader (`GradleProvisioner` still calls
-  `config.resolve()`); negative TestKit rows with exact messages;
-  configuration-cache evidence for key rows (the compat tripwires already fail
-  on cache problems); SCM probing and signing reads only in publish tasks;
-  release-workflow concurrency; CI permissions and checkout credentials;
-  `Class.forName`/`getMethod` inventory. Stale Dependabot PRs are the
-  maintainer's call, never closed by an agent.
+- **Closed, not to redo**:
+  - Configuration-time resolution in the dynamic plugin loader stays. Applying
+    a plugin during configuration needs its jar then, so no lazy form exists.
+  - Negative rows with exact messages exist as `expectFailure` cases in the
+    compat suite. Examples: KSP too new for Kotlin 2.1, `jvmTarget` above
+    Kotlin's maximum, an unsupported native target, root-only KSP stopping
+    with the line to add.
+  - Configuration-cache evidence: every compat fixture fails on a cache
+    problem, and the tool cases assert that the stored entry is reused.
+  - Linkage against the oldest supported Kotlin, AGP and Gradle is checked
+    by `checkFloorLinkage`.
+- **Still open, not scheduled**:
+  - SCM probing and signing reads restricted to publish tasks.
+  - Release-workflow concurrency: `release.yml` has no `concurrency:` block.
+  - Checkout credential persistence: no workflow sets
+    `persist-credentials: false`.
+  - An inventory of reflective lookups (`Class.forName`, `getMethod`,
+    `getDeclared*`), which `checkFloorLinkage` does not see.
+
+  Stale Dependabot PRs are the maintainer's call, never closed by an agent.
 
 ## Intent
 
