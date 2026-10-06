@@ -58,7 +58,7 @@ The settings plugin becomes the hub for Isolated Projects builds, and the root p
 | 6 root reads | `isolated.rootProject.projectDirectory`, `rootDir` and `isolated.rootProject.name` | nothing |
 | 7 property lookup | the module's own property plus the same name in settings-level defaults; no parent walk | a flag set only in a parent module's `gradle.properties` stops reaching its children under Isolated Projects |
 
-Root-only setup (no settings line) can't be made Isolated-Projects-safe, because only settings can reach every project without touching another project. Under Isolated Projects, fluxo should fail at the root with the settings line to add. The root-only hook (D6) and blocker 5's root branches stay for builds without Isolated Projects.
+Root-only setup (no settings line) can't be made Isolated-Projects-safe, because only settings can reach every project without touching another project. Under Isolated Projects, fluxo should fail at the root with the settings line to add. The root-only tool hook and blocker 5's root branches stay for builds without Isolated Projects.
 
 The single-module case needs only the settings-plugin marker read replaced. The settings plugin could record its presence where a project can read it without `gradle.extensions`, for example a build service registered under a fixed name. Whether a project may look that up under Isolated Projects is not measured.
 

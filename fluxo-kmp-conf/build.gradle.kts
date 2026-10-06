@@ -251,7 +251,7 @@ testing {
                     // Gradle's own cleanup bounds the caches and distributions of this home
                     // (versions unused for 30 days go), but deletes daemon logs only under
                     // `daemon/`: TestKit daemons log to `test-kit-daemon/` and leave worker
-                    // classpath files in `.tmp/`, which grow by hundreds of MB a day. No fixture
+                    // classpath files in `.tmp/`, which grow with every run. No fixture
                     // daemon outlives the test JVM, so a day's files are enough for debugging.
                     // Only those two kinds: `.tmp/.cache` is the Kotlin compiler's klib
                     // expansion cache, which a partial delete would corrupt.

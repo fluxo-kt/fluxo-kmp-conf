@@ -212,7 +212,7 @@ private fun Logger.logKotlinProjectCompatibility(
 }
 
 /**
- * The JVM target of a module that sets none (R10). It must not follow whichever JDK happens to run
+ * The JVM target of a module that sets none. It must not follow whichever JDK happens to run
  * the build: that made bytecode machine-dependent and sank v0.15.0's first release tag.
  * - Libraries get 17, the oldest JDK Gradle 9 runs on, so any consumer can load them.
  * - Applications ship with their own runtime, so they get the newest target the JDK running Gradle

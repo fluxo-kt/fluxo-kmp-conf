@@ -13,7 +13,7 @@ import org.gradle.jvm.toolchain.JavaToolchainService
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 /**
- * Whether a compiler can limit the JDK API it sees to the JVM target (R11, R12). Without it, code
+ * Whether a compiler can limit the JDK API it sees to the JVM target. Without it, code
  * compiled for 17 on JDK 21 links JDK 21 methods and then fails on a Java 17 runtime with
  * `NoSuchMethodError`. javac (`--release`) and Kotlin (`-Xjdk-release`) both read the API of each
  * release from the compile JDK's `lib/ct.sym`, so the decision is shared and each compiler adds
@@ -102,7 +102,7 @@ internal fun KotlinJvmCompile.hideJdkFromAndroidCode(conf: FluxoConfigurationExt
 }
 
 /**
- * Sets javac's `--release` on this task when [jdkApiLimit] allows it (R12). The compile JDK comes
+ * Sets javac's `--release` on this task when [jdkApiLimit] allows it. The compile JDK comes
  * from the task's own `javaCompiler`, which is exact with or without a toolchain.
  *
  * javac rejects `--add-exports`, `--add-reads` and `--patch-module` together with `--release`,

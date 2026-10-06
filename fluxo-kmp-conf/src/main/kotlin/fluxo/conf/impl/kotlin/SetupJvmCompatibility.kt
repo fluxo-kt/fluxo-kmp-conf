@@ -54,7 +54,7 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
     // `ClassCastException`. `CommonExtension` is the stable parent of both
     // `LibraryExtension` and `BaseAppModuleExtension` across AGP 8 and 9 and exposes
     // `compileOptions` directly.
-    // An unset target leaves Android to AGP's own default (R10).
+    // An unset target leaves Android to AGP's own default.
     if (!kc.jvmTargetExplicit) return
     project.configureExtensionIfAvailable<CommonExtension>(ANDROID_EXT_NAME) {
         // AGP 9 dropped the action-form `compileOptions { }` helper from `CommonExtension`
@@ -73,7 +73,7 @@ internal fun KotlinProjectExtension.setupJvmCompatibility(project: Project, kc: 
 }
 
 /**
- * An Android module without an explicit target keeps AGP's Java target (R10), and Kotlin must
+ * An Android module without an explicit target keeps AGP's Java target, and Kotlin must
  * match it: AGP 9's built-in Kotlin aligns itself, but KGP on the AGP 8 path defaults to the build
  * JDK and its JVM-target validation then fails the build ('compileDebugJavaWithJavac' (1.8) vs
  * 'compileDebugKotlin' (17)). Lazy, so `compileOptions` written after `fkcSetup*()` still count.

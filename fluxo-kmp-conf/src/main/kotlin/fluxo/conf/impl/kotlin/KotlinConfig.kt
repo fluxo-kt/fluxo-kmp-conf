@@ -22,7 +22,7 @@ internal class KotlinConfig(
     /** Explicit, or derived when unset (see `defaultJvmTarget`). */
     val jvmTarget: String,
     val jvmTargetInt: Int,
-    /** `false` when [jvmTarget] was derived: Android then keeps AGP's own default (R10). */
+    /** `false` when [jvmTarget] was derived: Android then keeps AGP's own default. */
     val jvmTargetExplicit: Boolean,
     val jvmTestTarget: String?,
     val jvmToolchain: Boolean,
