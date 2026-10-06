@@ -106,7 +106,7 @@ internal fun setupPublication(
         PUBLISH_TASK_PREFIXES.any { prefix -> name.startsWith(prefix) }
     }
     ctx.onProjectInSyncRun(forceIf = isCalled, rethrow = publishes) {
-        setupGradleProjectPublication(conf.project, config, conf)
+        setupGradleProjectPublication(conf.project, config, conf, publishes)
     }
 }
 
@@ -114,6 +114,7 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
     p: Project,
     config: FluxoPublicationConfig,
     conf: FluxoConfigurationExtensionImpl,
+    publishes: Boolean,
 ) {
     val useDokka = conf.useDokka
 
@@ -131,7 +132,7 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
                 setupVanniktechPublication(p, config, conf)
             }
         } else {
-            p.loadPluginStaticallyError(VANNIKTECH_MAVEN_PUBLISH_PLUGIN_ID)
+            p.loadPluginStaticallyError(VANNIKTECH_MAVEN_PUBLISH_PLUGIN_ID, fail = publishes)
         }
     } else {
         when (val mode = conf.mode) {

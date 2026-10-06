@@ -12,6 +12,7 @@ import fluxo.vc.p
 import fluxo.vc.v
 import getGradlePluginMarkerArtifactMavenCoordinates
 import java.util.regex.Pattern
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.logging.Logger
@@ -329,13 +330,17 @@ private fun FluxoKmpConfContext.getPluginIdAndVersion(
 
 private const val CLASS_NAME_AUTO_DETECTED = " (class name is not provided and auto detected!)"
 
+/** Reports a plugin that must be declared by the consumer; with [fail], fails the build. */
 internal fun Project.loadPluginStaticallyError(
     pluginId: String,
     catalogPluginAlias: String? = null,
+    fail: Boolean = false,
 ) {
     val example = loadingWarnExample(pluginId, catalogPluginAlias)
     val error = "Can't load plugin '$pluginId' dynamically in '$path'!"
-    logger.e(loadingErrorMessage(error, example))
+    val message = loadingErrorMessage(error, example)
+    if (fail) throw GradleException(message)
+    logger.e(message)
 }
 
 private fun loadingErrorMessage(err: String, example: String) = "$err\n " +
