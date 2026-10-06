@@ -12,8 +12,8 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * The Kotlin language version.
      * Provide source compatibility with the specified version of Kotlin.
      *
-     * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
-     * '2.0 (experimental)', '2.1 (experimental)'.
+     * Possible values: any version the module's Kotlin accepts here, from 2.1 (fluxo's minimum)
+     * up; that Kotlin marks the newest ones experimental and the oldest deprecated.
      * Set 'latest' or 'last' for the latest possible value.
      * Set 'current' for the current Kotlin plugin base value.
      *
@@ -37,8 +37,8 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * The Kotlin api version.
      * Allow using declarations only from the specified version of the bundled libraries.
      *
-     * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
-     * '2.0 (experimental)', '2.1 (experimental)'.
+     * Possible values: any version the module's Kotlin accepts here, from 2.1 (fluxo's minimum)
+     * up; that Kotlin marks the newest ones experimental and the oldest deprecated.
      * Set 'latest' or 'last' for the latest possible value.
      * Set 'current' for the current Kotlin plugin base value.
      *
@@ -62,8 +62,8 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * Override the Kotlin language/api version for tests.
      * Provide source compatibility with the specified version of Kotlin.
      *
-     * Possible values: '1.4 (deprecated)', '1.5 (deprecated)', '1.6', '1.7', '1.8', '1.9',
-     * '2.0 (experimental)', '2.1 (experimental)'.
+     * Possible values: any version the module's Kotlin accepts here, from 2.1 (fluxo's minimum)
+     * up; that Kotlin marks the newest ones experimental and the oldest deprecated.
      * Set 'latest' or 'last' for the latest possible value.
      * Set 'current' for the current Kotlin plugin base value.
      *
