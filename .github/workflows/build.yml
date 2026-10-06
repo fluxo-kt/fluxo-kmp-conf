@@ -90,10 +90,8 @@ jobs:
           artifact-retention-days: 1
 
       - name: 'Build and check plugin itself'
-        # Sized for the SLOWEST cell: macOS alone builds the Apple/native (konan) KMP targets
-        # ubuntu skips, so it's the bottleneck. 18 min red-flaked macos/JDK23 on a commit
-        # green on every other cell + every integration leg. Keep margin over the macOS native
-        # wall-time (~18 min + runner variance); < the 90-min job cap so a real hang still trips.
+        # Sized for the SLOWEST cell, macOS (the smallest runners); below the 90-min job cap so
+        # a real hang still trips.
         timeout-minutes: 45
         # `compatibilityTest` is excluded here and runs once in `integrationChecks` instead: it
         # spawns ~19 nested TestKit consumer builds (AGP/KMP/Compose), is OS- and daemon-JDK-
