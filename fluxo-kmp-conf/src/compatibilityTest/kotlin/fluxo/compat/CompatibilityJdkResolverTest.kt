@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.ResourceLock
+import org.junit.jupiter.api.parallel.Resources
 
 /**
  * Falsifies [resolveCompatJdkHome] / [compatJdkMajor] — the load-bearing guarantee that a
@@ -14,7 +16,11 @@ import org.junit.jupiter.api.Test
  *
  * Exercises the real resolver against the real filesystem and the running JVM — no mocks: the
  * positive case points the override at this JVM's own `java.home`, which is guaranteed to be a JDK.
+ *
+ * The overrides are JVM-wide system properties and the suite runs methods concurrently, so the
+ * lock keeps one method's override from reaching another's lookup.
  */
+@ResourceLock(Resources.SYSTEM_PROPERTIES)
 class CompatibilityJdkResolverTest {
 
     @Test
