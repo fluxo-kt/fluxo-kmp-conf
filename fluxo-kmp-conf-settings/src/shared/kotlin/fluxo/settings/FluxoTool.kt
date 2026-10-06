@@ -90,10 +90,12 @@ internal fun Project.addFluxoTools(
     val needed = tools.filterNot { onParentClasspath(it.id) }
     if (needed.isEmpty()) return
     val handler = buildscript
-    // Gradle resolves a build script's classpath through its own repositories, or, when it has
-    // none, through the settings plugin repositories, which forbid any build-script repository
-    // when they use `exclusiveContent`. So ours go in only next to the project's own, including
-    // ones its build script declares after this runs.
+    // A build script's classpath resolves only through its own repositories. A `plugins {}`
+    // block makes Gradle copy the settings plugin repositories into them, and those forbid any
+    // other build-script repository when they use `exclusiveContent`. So ours go in next to the
+    // project's own, including ones its build script declares or Gradle copies after this runs.
+    // A script with neither (no build file, or no `plugins {}` block: an intermediate parent
+    // project) still has none when its classpath resolves; ours are then its only source.
     val own = handler.repositories
     var added = false
     val addOnce = {
@@ -102,7 +104,14 @@ internal fun Project.addFluxoTools(
             own.addMissing(repositories)
         }
     }
-    if (own.isNotEmpty()) addOnce() else own.whenObjectAdded { addOnce() }
+    if (own.isNotEmpty()) {
+        addOnce()
+    } else {
+        own.whenObjectAdded { addOnce() }
+        handler.configurations.named(ScriptHandler.CLASSPATH_CONFIGURATION) {
+            withDependencies { if (own.isEmpty()) addOnce() }
+        }
+    }
     for (tool in needed) {
         val dependency = handler.dependencies.add("classpath", tool.marker)
         (dependency as ExternalModuleDependency).version { prefer(tool.version) }

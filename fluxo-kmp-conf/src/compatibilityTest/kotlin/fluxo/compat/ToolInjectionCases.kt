@@ -121,8 +121,11 @@ private fun runToolInjectionBuild(
     ) { projectDir ->
         projectDir.resolve("settings.gradle.kts").writeText(
             markerSettingsScript("compat-$name", settingsPlugin) +
-                "\ninclude(\":app\", \":gp\")\n",
+                "\ninclude(\":app\", \":gp\", \":nested:leaf\")\n",
         )
+        // `:nested` has no build file, so Gradle gives its build script no repositories; the
+        // tools injected there must still resolve, or configuration fails.
+        writeModule(projectDir.resolve("nested/leaf"), "fkcSetupKotlin { $FLAGS }")
         projectDir.resolve("build.gradle.kts").writeText(
             markerKotlinJvmBuildScript(row) + "\n" + APPLIED_PROBE,
         )

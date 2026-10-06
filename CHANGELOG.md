@@ -1,6 +1,12 @@
 # Changelog [^1]
 
 
+## Unreleased
+
+### Fixed
+- A build whose project has no `plugins {}` block (no build file, e.g. an intermediate parent like `:benchmarks` of `:benchmarks:jmh`) failed configuration with "Cannot resolve external dependency com.google.devtools.ksp… because no repositories are defined": the tools fluxo puts on each project's build classpath had no repository to resolve from there. They now resolve through your plugin repositories.
+
+
 ## [0.16.0] - 2026-10-06
 
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
