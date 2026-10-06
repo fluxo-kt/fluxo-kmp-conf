@@ -87,11 +87,30 @@ public fun Project.fkcSetupMultiplatform(
 
 
 /**
- * Configure a separate Kotlin/Native tests where code runs in worker thread.
+ * Adds a second debug test binary and run (`<target>BackgroundTest`) to every Kotlin/Native target
+ * with tests, compiled with `-trw` so the tests run on a worker thread: it catches code that only
+ * works on the main thread or on thread-local state, at about double the native link and test time.
+ * Safe to call more than once. fluxo calls it for modules with `backgroundNativeTests = true`.
+ *
+ * @see <a href="https://kotlinlang.org/docs/compiler-reference.html#generate-worker-test-runner-trw">-trw</a>
  */
 public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
-    // Configure a separate test where code runs in worker thread
-    // https://kotlinlang.org/docs/compiler-reference.html#generate-worker-test-runner-trw.
+    targets.withType<KotlinNativeTargetWithTests<*>> {
+        val background = "background"
+        if (testRuns.findByName(background) != null) return@withType
+        binaries {
+            test(background, listOf(DEBUG)) {
+                freeCompilerArgs += "-trw"
+            }
+        }
+        testRuns.create(background) {
+            setExecutionSourceFrom(binaries.getTest(background, DEBUG))
+        }
+    }
+}
+
+/** Skips simulator test tasks (including background ones) when no simulator runtime can run them. */
+internal fun KotlinMultiplatformExtension.skipTestsWithoutAppleSimulator() {
     targets.withType<KotlinNativeTargetWithTests<*>> {
         val targetName = name
         val targetId = targetName.replaceFirstChar { it.uppercase() }
@@ -101,15 +120,6 @@ public fun KotlinMultiplatformExtension.setupBackgroundNativeTests() {
                     hasRunnableAppleSimulatorRuntime(targetName)
                 }
             }
-        }
-        val background = "background"
-        binaries {
-            test(background, listOf(DEBUG)) {
-                freeCompilerArgs += "-trw"
-            }
-        }
-        testRuns.create(background) {
-            setExecutionSourceFrom(binaries.getTest(background, DEBUG))
         }
     }
 }

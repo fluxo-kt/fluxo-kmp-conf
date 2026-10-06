@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import setupBackgroundNativeTests
+import skipTestsWithoutAppleSimulator
 
 internal class KmpConfigurationContainerDslImpl(
     override val holder: ContainerHolder,
@@ -132,7 +132,7 @@ internal class KmpConfigurationContainerDslImpl(
             @OptIn(ExperimentalKotlinGradlePluginApi::class)
             applyDefaultHierarchyTemplate(KotlinHierarchyTemplate.fluxoKmpConf)
 
-            setupBackgroundNativeTests()
+            skipTestsWithoutAppleSimulator()
         }
     }
 }

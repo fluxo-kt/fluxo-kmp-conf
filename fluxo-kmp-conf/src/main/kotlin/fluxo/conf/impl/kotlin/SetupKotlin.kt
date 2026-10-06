@@ -61,6 +61,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.targets.js.KotlinWasmTargetType
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import setupBackgroundNativeTests
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
 internal fun configureKotlinJvm(
@@ -337,6 +338,9 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
         project.checkKspFitsKotlin(ctx.kotlinPluginVersion)
     }
     if (kc.setupKapt) applyKapt(conf)
+    if (conf.backgroundNativeTests && this is KotlinMultiplatformExtension) {
+        setupBackgroundNativeTests()
+    }
 
     if (conf.setupJvmCompatibility) {
         setupJvmCompatibility(project, kc)

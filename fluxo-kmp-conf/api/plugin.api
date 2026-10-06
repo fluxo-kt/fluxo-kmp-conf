@@ -252,6 +252,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public static synthetic fun apiValidation$default (Lfluxo/conf/dsl/FluxoConfigurationExtensionKotlin;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public abstract fun getAddStdlibDependency ()Z
 	public abstract fun getApiValidation ()Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;
+	public abstract fun getBackgroundNativeTests ()Z
 	public abstract fun getEnableApiValidation ()Z
 	public abstract fun getEnableCompose ()Ljava/lang/Boolean;
 	public abstract fun getOnConfiguration ()Lkotlin/jvm/functions/Function1;
@@ -264,6 +265,7 @@ public abstract interface class fluxo/conf/dsl/FluxoConfigurationExtensionKotlin
 	public fun onConfiguration (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun setAddStdlibDependency (Z)V
 	public abstract fun setApiValidation (Lfluxo/conf/dsl/BinaryCompatibilityValidatorConfig;)V
+	public abstract fun setBackgroundNativeTests (Z)V
 	public abstract fun setEnableApiValidation (Z)V
 	public abstract fun setEnableCompose (Ljava/lang/Boolean;)V
 	public abstract fun setOnConfiguration (Lkotlin/jvm/functions/Function1;)V

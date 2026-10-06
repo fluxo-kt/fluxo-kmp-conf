@@ -34,7 +34,7 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Flag to configure [Kotlin coroutines](https://github.com/Kotlin/kotlinx.coroutines)
      * dependencies and opt-ins.
      *
-     * Inherited from the parent project if not set. Default value: `false`.
+     * Inherited from the parent project if not set. Default value: `true`.
      *
      * @see optInInternal
      */
@@ -47,6 +47,20 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      * Inherited from the parent project if not set. Default value: `false`.
      */
     public var setupKotlinXSerialization: Boolean
+
+    /**
+     * Adds a second debug test binary and run (`<target>BackgroundTest`) to every Kotlin/Native
+     * target with tests, compiled with `-trw`, so the tests run on a worker thread. It catches
+     * code that only works on the main thread or relies on thread-local state; it roughly doubles
+     * native link and test time, so it is off by default.
+     *
+     * The same is available in the Kotlin DSL: `kotlin { setupBackgroundNativeTests() }`.
+     * To skip those runs in a build that has them, use `onlyIf { false }` on the tasks: the Kotlin
+     * plugin sets `enabled` itself later, overriding `enabled = false`.
+     *
+     * Inherited from the parent project if not set. Default value: `false`.
+     */
+    public var backgroundNativeTests: Boolean
 
 
     /**

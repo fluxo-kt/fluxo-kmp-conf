@@ -243,6 +243,12 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         set(value) = setupKotlinXSerializationProp.set(value)
 
     @get:Input
+    val backgroundNativeTestsProp: Property<Boolean>
+    override var backgroundNativeTests: Boolean
+        get() = backgroundNativeTestsProp.orNull ?: parent?.backgroundNativeTests ?: false
+        set(value) = backgroundNativeTestsProp.set(value)
+
+    @get:Input
     val setupKnownBomsProp: Property<Boolean>
     override var setupKnownBoms: Boolean
         get() = setupKnownBomsProp.orNull ?: parent?.setupKnownBoms ?: false
