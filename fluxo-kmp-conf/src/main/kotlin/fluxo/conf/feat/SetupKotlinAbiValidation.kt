@@ -155,7 +155,8 @@ private fun Project.registerAbiAliases(prefix: String) {
     if (dump !in names) {
         tasks.register(dump) {
             group = "other"
-            description = "Updates the ABI dumps (runs $KGP_ABI_UPDATE_TASK)"
+            description = "Alias of $KGP_ABI_UPDATE_TASK, which updates every target's ABI " +
+                "dump; `-x $dump` excludes nothing, exclude $KGP_ABI_UPDATE_TASK"
             dependsOn(KGP_ABI_UPDATE_TASK)
         }
     }
@@ -163,7 +164,8 @@ private fun Project.registerAbiAliases(prefix: String) {
     if (check !in names) {
         tasks.register(check) {
             group = "verification"
-            description = "Checks the ABI against the dumps (runs $KGP_ABI_CHECK_TASK)"
+            description = "Alias of $KGP_ABI_CHECK_TASK, which checks every target's ABI; " +
+                "`-x $check` excludes nothing, exclude $KGP_ABI_CHECK_TASK"
             dependsOn(KGP_ABI_CHECK_TASK)
         }
     }
