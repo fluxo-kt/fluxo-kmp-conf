@@ -110,8 +110,9 @@ Use these DSLs when defaults are not enough:
 - [`BinaryCompatibilityValidatorConfig`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/BinaryCompatibilityValidatorConfig.kt)
 - [`KmpConfigurationContainerDsl`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/container/KmpConfigurationContainerDsl.kt)
 
-Only the safest, most broadly useful settings are enabled by default,
-so you can start without extra configuration.
+Defaults are strict (extra compiler checks, the JDK API limited to the JVM target, Android
+`NewApi` failing `check`), and each strict setting has its own off-switch, so you can start
+without extra configuration and relax only what blocks you.
 
 Your own settings beat these defaults:
 - What you set in `kotlin { compilerOptions }`, for the module or a target, wins wherever you write it, and a flag you pass there replaces fluxo's flag of the same name.
