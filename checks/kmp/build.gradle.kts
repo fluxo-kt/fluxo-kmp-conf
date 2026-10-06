@@ -39,6 +39,8 @@ fkcSetupMultiplatform(
         enableGenericAndroidLint = true
         enableGradleDoctor = true
         enablePublication = true
+        // A root project's Gradle group is empty, and Maven publications need one.
+        group = "io.github.fluxo-kt.checks"
         // Verifies Fluxo's auto-config of `kotlin.android { }` from FluxoConfigurationExtension.
         androidNamespace = "io.github.fluxo_kt.fluxo_kmp_conf.checks.kmp"
         androidCompileSdk = 34

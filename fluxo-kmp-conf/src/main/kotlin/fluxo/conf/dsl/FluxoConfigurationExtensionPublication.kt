@@ -25,7 +25,9 @@ public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChai
      * Flag to enable publication of this project.
      * Inherited from the parent project if not set.
      *
-     * Defaults to `false` if [publicationConfig] is set.
+     * When neither this project nor a parent sets it, publication is on only in a project that
+     * calls [publicationConfig] itself, so a shared config at the root publishes no module on
+     * its own. `true` without any [publicationConfig] publishes with the derived defaults.
      */
     public var enablePublication: Boolean?
 
@@ -155,7 +157,7 @@ public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChai
      * Reasonably configures the [FluxoPublicationConfig]
      * with provided values with possibility for customization.
      *
-     * Enables publication once called!
+     * Enables publication of this project once called, unless [enablePublication] is `false`.
      *
      * @see publicationConfig
      */

@@ -51,7 +51,7 @@ private fun runPublicationWithoutVanniktechCase(row: Map<String, String>, tempDi
             .replace("version = \"1.0.0\"\n", "")
             .replace(
                 "enablePublication = false",
-                "enablePublication = true\n    this.version = \"1.2.3\"\n" +
+                "this.version = \"1.2.3\"\n" +
                     "    githubProject = \"$GITHUB_PROJECT\"\n    publicationConfig()",
             )
         it.resolve("build.gradle.kts").writeText(script + "\n" + PUBLICATION_EXTRAS_SCRIPT)

@@ -25,7 +25,7 @@ internal fun runDokkaCase(row: Map<String, String>, tempDir: Path) {
             var script = markerKotlinJvmBuildScript(row).replace(
                 "enablePublication = false",
                 "enablePublication = true\n    useVanniktechPublish = false\n" +
-                    "    useDokka = true\n    publicationConfig {}",
+                    "    useDokka = true",
             )
             if (declared) {
                 // Any Dokka 2 release: what matters is where it is loaded from.

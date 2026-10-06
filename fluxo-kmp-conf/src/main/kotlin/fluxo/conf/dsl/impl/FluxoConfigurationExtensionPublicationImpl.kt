@@ -24,8 +24,14 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     @get:Input
     val enablePublicationProp: Property<Boolean>
     override var enablePublication: Boolean?
-        get() = enablePublicationProp.orNull ?: parent?.enablePublication
+        // A project's own `publicationConfig {}` call enables it there (the KDoc promise). Not
+        // inherited: a shared POM config at the root must not make every module publish.
+        get() = explicitEnablePublication ?: true.takeIf { publicationConfigProp.isPresent }
         set(value) = enablePublicationProp.set(value)
+
+    private val explicitEnablePublication: Boolean?
+        get() = enablePublicationProp.orNull
+            ?: (parent as? FluxoConfigurationExtensionPublicationImpl)?.explicitEnablePublication
 
     @get:Input
     val useVanniktechPublishProp: Property<Boolean>

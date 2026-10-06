@@ -94,10 +94,14 @@ internal fun setupPublication(
     conf: FluxoConfigurationExtensionImpl,
 ) {
     // TODO: Avoid publication setup when possible
-    val config = conf.publicationConfig
-    if (config == null || conf.enablePublication != true) {
+    if (conf.enablePublication != true) {
         return
     }
+    // `enablePublication = true` alone publishes with the derived defaults (version, group,
+    // name), the same as a bare `publicationConfig()`; before, it silently published nothing.
+    val config = conf.publicationConfig
+        ?: conf.publicationConfig().let { conf.publicationConfig }
+        ?: return
     val ctx = conf.ctx
     val isCalled = ctx.startTaskNames.any { name ->
         CALL_TASK_PREFIXES.any { prefix -> name.substringAfterLast(':').startsWith(prefix) }
