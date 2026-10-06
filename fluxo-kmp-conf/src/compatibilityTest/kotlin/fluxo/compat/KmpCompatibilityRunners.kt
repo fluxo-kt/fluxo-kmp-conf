@@ -46,6 +46,8 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
  * target (a type check meant for WASI matched JS too), so no fluxo build ran browser tests.
  * The run without Chrome reuses the first run's configuration cache: the browser lookup must
  * happen when the task runs, not be stored with the configuration. Needs Chrome on the host.
+ * The Wasm-JS test executable compile is the only compile receiving fluxo's main-function
+ * arguments flag, so it carries the unsupported-flag check for Wasm.
  */
 private fun runKmpBrowserTestsCase(row: Map<String, String>, tempDir: Path) {
     val projectDir = tempDir.resolve("${row.getValue("id")}-browser-tests")
@@ -55,7 +57,7 @@ private fun runKmpBrowserTestsCase(row: Map<String, String>, tempDir: Path) {
         tempDir,
         rootProjectName = "compat-kmp-browser-tests",
         projectDir = projectDir,
-        tasks = listOf(task.removePrefix(":")),
+        tasks = listOf(task.removePrefix(":"), "compileTestDevelopmentExecutableKotlinWasmJs"),
         assertTasksSucceed = false,
         environment = environment,
     ) {
@@ -76,7 +78,7 @@ private fun runKmpBrowserTestsCase(row: Map<String, String>, tempDir: Path) {
                     enableGradleDoctor = false
                     setupCoroutines = false
                 },
-                kmp = { js() },
+                kmp = { js(); wasmJs() },
                 kotlin = { sourceSets.commonTest.dependencies { implementation(kotlin("test")) } },
             )
             """.trimIndent(),
@@ -196,9 +198,7 @@ private const val FLUXO_BCV_JS_ID = "io.github.fluxo-kt.binary-compatibility-val
  * KGP's one JS/Wasm target class implements the WASI DSL too, so a classifier keyed on that type
  * calls Wasm-JS WASI: the consumer-declared wasmJs must be disabled here (fluxo creates none
  * under this filter).
- * An enabled compile succeeds, a disabled one is SKIPPED. The compile also guards the flags fluxo
- * passes to Wasm: Kotlin 2.4 compiles Wasm with its own argument set, where a JS-only flag prints
- * "Flag is not supported by this version of the compiler" on every compile.
+ * An enabled compile succeeds, a disabled one is SKIPPED.
  */
 private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
     val task = ":compileKotlinWasmWasi"
@@ -211,7 +211,6 @@ private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
         projectDir = tempDir.resolve("${row.getValue("id")}-all-targets-$kgp"),
         tasks = listOf(task.removePrefix(":"), wasmJsTask.removePrefix(":")),
         arguments = listOf("-PKMP_TARGETS=WASM_WASI"),
-        forbiddenOutput = listOf("Flag is not supported by this version of the compiler"),
         assertTasksSucceed = false,
     ) { projectDir ->
         // WASI is not among the default targets: consumers declare it.

@@ -1,6 +1,12 @@
 # Changelog [^1]
 
 
+## Unreleased
+
+### Fixed
+- On Kotlin 2.4+, every Wasm-JS executable compile printed `e: Flag is not supported by this version of the compiler: -Xplatform-arguments-in-main-function=process.argv`. fluxo asked KGP to pass process arguments to `main` for Wasm too, but since 2.4 the Wasm compiler doesn't accept that flag. fluxo now asks only for JS, and for Wasm on Kotlin before 2.4.
+
+
 ## [0.16.1] - 2026-10-06
 
 ### Fixed

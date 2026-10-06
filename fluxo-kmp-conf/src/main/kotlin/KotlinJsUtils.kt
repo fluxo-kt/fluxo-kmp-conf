@@ -2,6 +2,8 @@
 @file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
+import fluxo.conf.impl.kotlin.KOTLIN_2_4
+import fluxo.conf.impl.kotlin.KOTLIN_PLUGIN_VERSION
 import fluxo.conf.impl.kotlin.karmaFindsChrome
 import fluxo.conf.impl.kotlin.karmaNeedsOnlyChrome
 import fluxo.log.w
@@ -88,10 +90,15 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
             }
 
             // https://kotlinlang.org/docs/whatsnew20.html#passing-arguments-to-the-main-function
-            @OptIn(ExperimentalMainFunctionArgumentsDsl::class)
-            try {
-                passProcessArgvToMainFunction()
-            } catch (_: Throwable) {
+            // The flag this adds is declared only in the JS compiler's arguments. Wasm parsed
+            // those until Kotlin 2.4; since then it has its own and prints "Flag is not
+            // supported" on every Wasm executable compile.
+            if (isJs || KOTLIN_PLUGIN_VERSION < KOTLIN_2_4) {
+                @OptIn(ExperimentalMainFunctionArgumentsDsl::class)
+                try {
+                    passProcessArgvToMainFunction()
+                } catch (_: Throwable) {
+                }
             }
         }
     }

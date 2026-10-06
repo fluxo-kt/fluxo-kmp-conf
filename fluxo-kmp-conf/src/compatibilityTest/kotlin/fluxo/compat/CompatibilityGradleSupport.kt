@@ -156,7 +156,8 @@ internal fun runConsumerCase(
         }
         return result
     }
-    val noise = forbiddenOutput + PUBLICATION_NOISE_SIGNATURES + DEPENDENCY_GUARD_BASELINE_NOISE
+    val noise = forbiddenOutput + PUBLICATION_NOISE_SIGNATURES + DEPENDENCY_GUARD_BASELINE_NOISE +
+        UNSUPPORTED_COMPILER_FLAG
     assertFalse(result.output.containsAny(noise), result.output)
     if (assertTasksSucceed) {
         tasks.forEach { result.assertTaskSuccess(":$it") }
@@ -241,6 +242,14 @@ internal val PUBLICATION_NOISE_SIGNATURES = listOf(
 internal val DEPENDENCY_GUARD_BASELINE_NOISE = listOf(
     "Dependency Guard baseline created",
 )
+
+/**
+ * A flag the consumer's compiler doesn't declare: non-fatal, but printed on every compile that
+ * receives it. Checked in every case, since a flag can reach only some compile tasks (Wasm
+ * executable links, never the klib compile).
+ */
+internal const val UNSUPPORTED_COMPILER_FLAG =
+    "Flag is not supported by this version of the compiler"
 
 internal const val CHECK_TASK = "check"
 
