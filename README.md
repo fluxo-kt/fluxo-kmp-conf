@@ -10,8 +10,8 @@ Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects
 - Completely lazy on-demand project configuration framework with many nice-to-have things out-of-the-box.
 - Automatically configures hierarchical source sets and provides convenience DSL for them.
 - You can control which targets are enabled by passing properties at build time. With no errors in modules with all targets disabled!
-- Ready for Android, JS, KMP, KMM, JVM, or IDEA plugin modules.
-- Allows configuring verification tasks (Detekt, Lint, BinaryCompatibilityValidator with JS support!).
+- Ready for Android, JS, KMP, JVM, Gradle plugin, or IDEA plugin modules.
+- Allows configuring verification tasks (Detekt, Lint, ABI validation — Kotlin's own engine on Kotlin 2.4+, else BCV — with TypeScript API checks for JS).
   - Provides merged Sarif reports for the whole project.
   - Provides baseline configuration tasks.
 - Convenience console tests report at the end of the build along with a merged XML report for the whole project.
@@ -135,7 +135,7 @@ The plugin opportunistically wires in the following aliases when defined in your
 | `androidx.compose.ui.tooling` | `[libraries]` | Excluded from `dependency-analysis` reports (debug-only dep). |
 | `square.leakcanary` | `[libraries]` | Excluded from `dependency-analysis` reports (debug-only dep). |
 | `square.plumber` | `[libraries]` | Excluded from `dependency-analysis` reports (debug-only dep). |
-| `pinned` | `[bundles]` | List dependencies whose version the plugin should constrain against accidental upstream downgrade. |
+| `pinned` | `[bundles]` | Minimum versions (e.g. security fixes) for every module's dependencies. Constraints only raise versions. The root build classpath loads before any plugin runs, so there fluxo can't apply them; when a pinned module runs older there, the build ends with the `buildscript { dependencies { constraints { … } } }` lines to add. |
 
 
 ## Hierarchical KMP project structure
