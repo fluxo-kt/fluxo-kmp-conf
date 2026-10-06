@@ -251,6 +251,43 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
 
 
     @get:Input
+    val jsr305StrictProp: Property<Boolean>
+    override var jsr305Strict: Boolean?
+        get() = jsr305StrictProp.orNull ?: parent?.jsr305Strict
+        set(value) = jsr305StrictProp.set(value)
+
+    @get:Input
+    val validateBytecodeProp: Property<Boolean>
+    override var validateBytecode: Boolean?
+        get() = validateBytecodeProp.orNull ?: parent?.validateBytecode
+        set(value) = validateBytecodeProp.set(value)
+
+    @get:Input
+    val emitJvmTypeAnnotationsProp: Property<Boolean>
+    override var emitJvmTypeAnnotations: Boolean?
+        get() = emitJvmTypeAnnotationsProp.orNull ?: parent?.emitJvmTypeAnnotations
+        set(value) = emitJvmTypeAnnotationsProp.set(value)
+
+    @get:Input
+    val dontWarnOnErrorSuppressionProp: Property<Boolean>
+    override var dontWarnOnErrorSuppression: Boolean?
+        get() = dontWarnOnErrorSuppressionProp.orNull ?: parent?.dontWarnOnErrorSuppression
+        set(value) = dontWarnOnErrorSuppressionProp.set(value)
+
+    @get:Input
+    val expectActualClassesProp: Property<Boolean>
+    override var expectActualClasses: Boolean?
+        get() = expectActualClassesProp.orNull ?: parent?.expectActualClasses
+        set(value) = expectActualClassesProp.set(value)
+
+    @get:Input
+    val suppressVersionWarningsProp: Property<Boolean>
+    override var suppressVersionWarnings: Boolean?
+        get() = suppressVersionWarningsProp.orNull ?: parent?.suppressVersionWarnings
+        set(value) = suppressVersionWarningsProp.set(value)
+
+
+    @get:Input
     val enableComposeProp: Property<Boolean>
     override var enableCompose: Boolean?
         get() = enableComposeProp.orNull ?: parent?.enableCompose

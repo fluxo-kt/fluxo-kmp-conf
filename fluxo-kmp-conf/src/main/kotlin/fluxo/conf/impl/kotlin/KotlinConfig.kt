@@ -29,6 +29,8 @@ internal class KotlinConfig(
     val useJdkRelease: Boolean,
 
     val progressive: Boolean,
+    /** Compiler defaults switched off for this module (DSL or `DISABLE_KOTLIN_DEFAULTS`). */
+    val defaultsOff: Set<KotlinDefault>,
     val latestCompilation: Boolean,
     val warningsAsErrors: Boolean,
     val javaParameters: Boolean,

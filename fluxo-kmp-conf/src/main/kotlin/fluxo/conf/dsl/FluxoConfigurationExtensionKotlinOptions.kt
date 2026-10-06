@@ -280,6 +280,11 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
     /**
      * Flag to treat all warnings as errors.
      *
+     * Applied only on CI (`CI=true`) or release (`RELEASE=true`) builds, and never to test,
+     * JS, Wasm or shared-metadata compilations. Metadata compilations report an upstream
+     * warning the code cannot fix (KT-69310), and every platform compilation recompiles the
+     * same common sources under this flag.
+     *
      * Inherited from the parent project if not set.
      *
      * **Default value: `false`.**
@@ -394,4 +399,69 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * Inherited from the parent project if not set. Default value: `true`.
      */
     public var useExperimentalFastJarFs: Boolean?
+
+
+    // Compiler defaults: each can be switched off here per module, or for the whole build with
+    // `DISABLE_KOTLIN_DEFAULTS=<names>` (comma-separated, as the build log shows the flag, with or
+    // without `-X`), which wins over these settings. An unknown name there fails the build.
+    // `progressiveMode` (`progressive`) and `useJdkRelease` (`jdk-release`) take part too.
+
+    /**
+     * Treat JSR-305 nullability annotations in Java code (`@Nonnull`, `@Nullable`, Spring's,
+     * …) as Kotlin nullability, so calling Java with a possibly null value is a compile error.
+     * Passes `-Xjsr305=strict` on JVM compilations.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=jsr305`.
+     */
+    public var jsr305Strict: Boolean?
+
+    /**
+     * Run the JVM bytecode verifier on the generated class files, so a compiler bug producing
+     * invalid bytecode fails the build instead of the program at runtime. Passes
+     * `-Xvalidate-bytecode` on JVM compilations.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=validate-bytecode`.
+     */
+    public var validateBytecode: Boolean?
+
+    /**
+     * Write Kotlin type annotations (`TYPE_USE` targets) into JVM bytecode, so Java tools and
+     * reflection see them. Passes `-Xemit-jvm-type-annotations` on JVM compilations.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=emit-jvm-type-annotations`.
+     */
+    public var emitJvmTypeAnnotations: Boolean?
+
+    /**
+     * Silence the warning the K2 compiler prints for every `@Suppress` of an error diagnostic
+     * (KT-66513): the suppression is deliberate source code, the warning about it is noise that
+     * warnings-as-errors would turn fatal. Passes `-Xdont-warn-on-error-suppression`.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=dont-warn-on-error-suppression`.
+     */
+    public var dontWarnOnErrorSuppression: Boolean?
+
+    /**
+     * Allow `expect`/`actual` classes in multiplatform modules without the compiler's Beta
+     * warning on each of them. Passes `-Xexpect-actual-classes` on multiplatform compilations.
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=expect-actual-classes`.
+     */
+    public var expectActualClasses: Boolean?
+
+    /**
+     * When the module's Kotlin language or API version is one its own Kotlin calls deprecated,
+     * pass `-Xsuppress-version-warnings` so that warning alone doesn't fail a warnings-as-errors
+     * build after a Kotlin upgrade; one build-end warning names the modules and the version to
+     * move to instead. Off, the compiler's own warning stays (and fails such builds).
+     *
+     * Inherited from the parent project if not set. Default value: `true`.
+     * Off for the whole build: `DISABLE_KOTLIN_DEFAULTS=suppress-version-warnings`.
+     */
+    public var suppressVersionWarnings: Boolean?
 }

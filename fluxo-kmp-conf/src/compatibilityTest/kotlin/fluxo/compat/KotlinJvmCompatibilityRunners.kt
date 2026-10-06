@@ -54,7 +54,10 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     runBundledToolVersionCase(row, tempDir)
     runDetektTypeResolutionCase(row, tempDir)
     runTaskInfoCase(row, tempDir)
-    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) runDokkaCase(row, tempDir)
+    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
+        runDokkaCase(row, tempDir)
+        runKotlinDefaultsSwitchCase(row, tempDir)
+    }
 }
 
 /**

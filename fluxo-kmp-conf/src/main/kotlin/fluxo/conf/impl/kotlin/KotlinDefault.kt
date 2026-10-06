@@ -18,7 +18,15 @@ package fluxo.conf.impl.kotlin
  *
  * Kept free of Kotlin Gradle plugin types so it can be unit-tested (see AGENTS.md).
  */
-internal enum class KotlinDefault(val flag: String) {
+internal enum class KotlinDefault(
+    /** The flag passed; `null` for a default set through a typed compiler option. */
+    val flag: String?,
+    /**
+     * The name `DISABLE_KOTLIN_DEFAULTS` takes: the flag as the build log shows it, without its
+     * `-X` and value, so a consumer can copy it from there.
+     */
+    val switchName: String = checkNotNull(flag).removePrefix("-X").substringBefore('='),
+) {
     JSR305("-Xjsr305=strict"),
     VALIDATE_BYTECODE("-Xvalidate-bytecode"),
     EMIT_JVM_TYPE_ANNOTATIONS("-Xemit-jvm-type-annotations"),
@@ -38,8 +46,60 @@ internal enum class KotlinDefault(val flag: String) {
      * Kotlin upgrade alone would fail the build. One build-end warning names the modules instead.
      */
     SUPPRESS_VERSION_WARNINGS("-Xsuppress-version-warnings"),
+
+    /** The typed `progressiveMode`, shown as `-progressive` in the build log. */
+    PROGRESSIVE(flag = null, switchName = "progressive"),
+
+    /** `useJdkRelease`: Kotlin's `-Xjdk-release`, javac's `--release`, Android's `noJdk`. */
+    JDK_RELEASE(flag = null, switchName = "jdk-release"),
 }
 
-internal fun MutableCollection<String>.addDefault(default: KotlinDefault) {
-    add(default.flag)
+/** Adds [default]'s flag unless it is switched [off]; returns whether it was added. */
+internal fun MutableCollection<String>.addDefault(
+    default: KotlinDefault,
+    off: Set<KotlinDefault>,
+): Boolean = default !in off && add(checkNotNull(default.flag))
+
+/**
+ * Reads `DISABLE_KOTLIN_DEFAULTS`: names as the build log shows them, with or without `-X` and
+ * a value (`-Xjsr305=strict`, `jsr305`). An unknown name fails, listing the closest valid ones:
+ * Gradle silently ignores a misspelled property, so a typo would leave the default on unseen.
+ */
+internal fun parseDisabledKotlinDefaults(names: List<String>): Set<KotlinDefault> {
+    val byName = KotlinDefault.entries.associateBy { it.switchName }
+    return names.filter { it.isNotBlank() }.mapTo(LinkedHashSet()) { raw ->
+        val name = raw.trim().removePrefix("-").removePrefix("X").substringBefore('=')
+            .lowercase()
+        byName[name] ?: throw IllegalArgumentException(
+            "DISABLE_KOTLIN_DEFAULTS: unknown name '$raw'. " +
+                closestSwitchNames(name, byName.keys).let {
+                    if (it.isEmpty()) "" else "Did you mean ${it.joinToString(" or ")}? "
+                } +
+                "Valid names: ${byName.keys.joinToString()}.",
+        )
+    }
+}
+
+private fun closestSwitchNames(name: String, valid: Collection<String>): List<String> {
+    val distances = valid.associateWith { editDistance(name, it) }
+    val best = distances.values.minOrNull()
+    // Up to a third of the name may differ: catches typos, not unrelated names.
+    val near = best != null && best <= maxOf(1, name.length / TYPO_SHARE_DIVISOR)
+    return if (near) distances.filterValues { it == best }.keys.sorted() else emptyList()
+}
+
+private const val TYPO_SHARE_DIVISOR = 3
+
+private fun editDistance(a: String, b: String): Int {
+    var prev = IntArray(b.length + 1) { it }
+    for (i in a.indices) {
+        val cur = IntArray(b.length + 1)
+        cur[0] = i + 1
+        for (j in b.indices) {
+            val substitution = prev[j] + if (a[i] == b[j]) 0 else 1
+            cur[j + 1] = minOf(prev[j + 1] + 1, cur[j] + 1, substitution)
+        }
+        prev = cur
+    }
+    return prev[b.length]
 }

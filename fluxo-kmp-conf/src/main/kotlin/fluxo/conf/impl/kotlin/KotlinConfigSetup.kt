@@ -1,5 +1,6 @@
 package fluxo.conf.impl.kotlin
 
+import envOrPropList
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.hasRoomPlugin
 import fluxo.conf.impl.envOrPropFlagValue
@@ -54,7 +55,8 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         javaParameters ?: false &&
         !isApplication
 
-    val progressive = progressiveMode ?: true
+    val defaultsOff = kotlinDefaultsOff(project)
+    val progressive = (progressiveMode ?: true) && KotlinDefault.PROGRESSIVE !in defaultsOff
 
     // No Kotlin version gate: every supported Kotlin (2.1+) has the latest settings.
     val canUseLatestSettings = progressive
@@ -110,9 +112,10 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
         jvmTargetExplicit = explicitJvmTarget != null,
         jvmTestTarget = jvmTests,
         jvmToolchain = jvmToolchain,
-        useJdkRelease = useJdkRelease,
+        useJdkRelease = KotlinDefault.JDK_RELEASE !in defaultsOff,
 
         progressive = progressive,
+        defaultsOff = defaultsOff,
         latestCompilation = latestCompilation,
         warningsAsErrors = allWarningsAsErrors ?: false,
         javaParameters = javaParameters,
@@ -259,3 +262,41 @@ internal fun FluxoConfigurationExtensionImpl.hintDefaultedJvmTarget(
 
 /** See [defaultJvmTarget]. */
 private const val LIBRARY_JVM_TARGET = JRE_17
+
+/**
+ * The compiler defaults switched off for this module: `DISABLE_KOTLIN_DEFAULTS` first, which no
+ * DSL setting can turn back on (so CI can rely on it), then the module's DSL with parent
+ * inheritance. One decision line names them.
+ */
+private fun FluxoConfigurationExtensionImpl.kotlinDefaultsOff(
+    project: Project,
+): Set<KotlinDefault> {
+    val build = parseDisabledKotlinDefaults(project.envOrPropList(DISABLE_KOTLIN_DEFAULTS))
+    val module = buildSet {
+        if (jsr305Strict == false) add(KotlinDefault.JSR305)
+        if (validateBytecode == false) add(KotlinDefault.VALIDATE_BYTECODE)
+        if (emitJvmTypeAnnotations == false) add(KotlinDefault.EMIT_JVM_TYPE_ANNOTATIONS)
+        if (dontWarnOnErrorSuppression == false) add(KotlinDefault.DONT_WARN_ON_ERROR_SUPPRESSION)
+        if (expectActualClasses == false) add(KotlinDefault.EXPECT_ACTUAL_CLASSES)
+        if (suppressVersionWarnings == false) add(KotlinDefault.SUPPRESS_VERSION_WARNINGS)
+        if (progressiveMode == false) add(KotlinDefault.PROGRESSIVE)
+        if (!useJdkRelease) add(KotlinDefault.JDK_RELEASE)
+    }
+    val off = build + module
+    if (off.isNotEmpty()) {
+        ctx.logDecision(
+            project,
+            setting = "Kotlin defaults off",
+            value = off.joinToString { it.switchName },
+            reason = when {
+                module.isEmpty() -> DISABLE_KOTLIN_DEFAULTS
+                build.isEmpty() -> "fkcSetup* settings"
+                else -> "$DISABLE_KOTLIN_DEFAULTS and fkcSetup* settings"
+            },
+            howToChange = "$DISABLE_KOTLIN_DEFAULTS, or the matching fkcSetup* setting",
+        )
+    }
+    return off
+}
+
+private const val DISABLE_KOTLIN_DEFAULTS = "DISABLE_KOTLIN_DEFAULTS"

@@ -52,15 +52,17 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     }
 
     if (isMultiplatform) {
-        compilerArgs.addDefault(KotlinDefault.EXPECT_ACTUAL_CLASSES)
+        compilerArgs.addDefault(KotlinDefault.EXPECT_ACTUAL_CLASSES, kc.defaultsOff)
     }
 
     // Read from the compile task's own options, after ours were applied, so a version the
     // consumer set in their own `kotlin { compilerOptions }` counts too.
     val deprecatedVersions = listOfNotNull(languageVersion.orNull, apiVersion.orNull)
         .distinct().filter { it.isDeprecatedByKgp }
-    if (deprecatedVersions.isNotEmpty()) {
-        compilerArgs.addDefault(KotlinDefault.SUPPRESS_VERSION_WARNINGS)
+    // Switched off, the compiler's own warning stays, so the build-end replacement is not needed.
+    if (deprecatedVersions.isNotEmpty() &&
+        compilerArgs.addDefault(KotlinDefault.SUPPRESS_VERSION_WARNINGS, kc.defaultsOff)
+    ) {
         val path = conf.project.path
         deprecatedVersions.forEach { context.deprecatedKotlinVersions.record(it, path) }
     }
@@ -87,9 +89,9 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
                 compilerArgs.add("-Xjvm-default=all")
             }
 
-            compilerArgs.addDefault(KotlinDefault.EMIT_JVM_TYPE_ANNOTATIONS)
-            compilerArgs.addDefault(KotlinDefault.JSR305)
-            compilerArgs.addDefault(KotlinDefault.VALIDATE_BYTECODE)
+            compilerArgs.addDefault(KotlinDefault.EMIT_JVM_TYPE_ANNOTATIONS, kc.defaultsOff)
+            compilerArgs.addDefault(KotlinDefault.JSR305, kc.defaultsOff)
+            compilerArgs.addDefault(KotlinDefault.VALIDATE_BYTECODE, kc.defaultsOff)
             if (useLatestSettings) {
                 compilerArgs.addAll(LATEST_JVM_OPTS)
             }
@@ -158,7 +160,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
         }
     }
 
-    compilerArgs.addDefault(KotlinDefault.DONT_WARN_ON_ERROR_SUPPRESSION)
+    compilerArgs.addDefault(KotlinDefault.DONT_WARN_ON_ERROR_SUPPRESSION, kc.defaultsOff)
 
     // https://kotlinlang.org/docs/whatsnew18.html#a-new-compiler-option-for-disabling-optimizations
     if (!releaseSettings && context.useKotlinDebug) {
