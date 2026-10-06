@@ -79,7 +79,11 @@ public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
         // Generate TypeScript declaration files
         // https://kotlinlang.org/docs/js-ir-compiler.html#preview-generation-of-typescript-declaration-files-d-ts
         binaries.executable()
-        generateTypeScriptDefinitions()
+        // WASI has no JS host to declare types for: the Kotlin 2.4 compiler crashes linking a
+        // WASI executable with them ("Cannot access to js related std in wasi mode").
+        if (wasmType != KotlinWasmTargetType.WASI) {
+            generateTypeScriptDefinitions()
+        }
     }
 
     if (this is KotlinTargetWithNodeJsDsl) {

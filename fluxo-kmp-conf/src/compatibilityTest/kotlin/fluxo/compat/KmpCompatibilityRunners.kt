@@ -198,10 +198,12 @@ private const val FLUXO_BCV_JS_ID = "io.github.fluxo-kt.binary-compatibility-val
  * KGP's one JS/Wasm target class implements the WASI DSL too, so a classifier keyed on that type
  * calls Wasm-JS WASI: the consumer-declared wasmJs must be disabled here (fluxo creates none
  * under this filter).
- * An enabled compile succeeds, a disabled one is SKIPPED.
+ * An enabled compile succeeds, a disabled one is SKIPPED. The production link is where JS-only
+ * options reach WASI: TypeScript declarations there crashed the Kotlin 2.4 compiler.
  */
 private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
     val task = ":compileKotlinWasmWasi"
+    val linkTask = ":compileProductionExecutableKotlinWasmWasi"
     val wasmJsTask = ":compileKotlinWasmJs"
     val kgp = row.getValue("kgpVersion")
     val result = runConsumerCase(
@@ -209,12 +211,13 @@ private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
         tempDir,
         rootProjectName = "compat-kmp-all-targets-consumer",
         projectDir = tempDir.resolve("${row.getValue("id")}-all-targets-$kgp"),
-        tasks = listOf(task.removePrefix(":"), wasmJsTask.removePrefix(":")),
+        tasks = listOf(task, linkTask, wasmJsTask).map { it.removePrefix(":") },
         arguments = listOf("-PKMP_TARGETS=WASM_WASI"),
         assertTasksSucceed = false,
     ) { projectDir ->
-        // WASI is not among the default targets: consumers declare it.
-        val wasi = "; wasmWasi { target { nodejs() } }"
+        // WASI is not among the default targets: consumers declare it. Plain `wasmWasi()` gets
+        // fluxo's default target setup (a `target {}` block replaces it).
+        val wasi = "; wasmWasi()"
         val script = markerKmpAllTargetsBuildScript(row, extraTargets = wasi)
         projectDir.resolve("build.gradle.kts").writeText(
             script + "\n" +
@@ -230,8 +233,10 @@ private fun runKmpWasiFilterCase(row: Map<String, String>, tempDir: Path) {
         projectDir.resolve("src/wasmWasiMain/kotlin").createDirectories()
             .resolve("W.kt").writeText("package compat\n\nfun wasi(): Int = 1\n")
     }
-    check(result.task(task)?.outcome == TaskOutcome.SUCCESS) {
-        "KMP_TARGETS=WASM_WASI: $task was ${result.task(task)?.outcome}\n${result.output}"
+    for (enabled in listOf(task, linkTask)) {
+        check(result.task(enabled)?.outcome == TaskOutcome.SUCCESS) {
+            "KMP_TARGETS=WASM_WASI: $enabled was ${result.task(enabled)?.outcome}\n${result.output}"
+        }
     }
     val wasmJsOutcome = result.task(wasmJsTask)?.outcome
     check(wasmJsOutcome == TaskOutcome.SKIPPED) {
