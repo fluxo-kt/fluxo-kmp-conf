@@ -37,31 +37,15 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
 
         val libs = ctx.libs
         val testsDisabled = ctx.testsDisabled
+        val kgp = ctx.kotlinPluginVersion
+        val root = this@afterEvaluate
 
-        // The Yarn 1.x line is frozen; the public Provider-based version
-        // setter lives on `YarnRootEnvSpec` (extension name "yarnSpec"),
-        // not on the deprecated `var version: String` of `YarnRootExtension`.
         if (setupDependencies) {
-            configureExtension<YarnRootEnvSpec>(YarnRootEnvSpec.YARN) {
-                val alias = "js-yarn"
-                val wasSet = libs.onVersion(alias) {
-                    version.set(it)
-                    logDependency(KJS, "$alias:$it")
-                }
-                if (!wasSet) {
-                    val min = MIN_YARN
-                    val current = version.orNull
-                    if (current == null ||
-                        KotlinToolingVersion(current) < KotlinToolingVersion(min)
-                    ) {
-                        version.set(min)
-                        logDependency(KJS, "$alias:$min")
-                    }
-                }
-            }
+            setYarnVersion(libs, kgp)
         }
 
-        configureExtension<YarnRootExtension>(YarnRootExtension.YARN) {
+        val yarnName = kgp.extensionName("kotlinYarn") { YarnRootExtension.YARN }
+        configureExtension<YarnRootExtension>(yarnName) {
             // Consumers commit `<root>/.kotlin-js-store/yarn.lock`; KGP's own default is
             // `<root>/kotlin-js-store`, so leaving it to KGP would orphan that lock file silently.
             // The Wasm lock stays at KGP's `<root>/kotlin-js-store/wasm` for the same reason:
@@ -77,21 +61,48 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
                 return@configureExtension
             }
 
-            setFromCatalog(libs, "js-engineIo", "engine.io")
-            setFromCatalog(libs, "js-socketIo", "socket.io")
-            setFromCatalog(libs, "js-uaParserJs", "ua-parser-js")
+            setFromCatalog(root, libs, "js-engineIo", "engine.io")
+            setFromCatalog(root, libs, "js-socketIo", "socket.io")
+            setFromCatalog(root, libs, "js-uaParserJs", "ua-parser-js")
         }
 
         if (!setupDependencies) {
             return@configuration
         }
-        configureExtension<NodeJsRootExtension>(NodeJsRootExtension.EXTENSION_NAME) {
+        val nodeJsName = kgp.extensionName("kotlinNodeJs") { NodeJsRootExtension.EXTENSION_NAME }
+        configureExtension<NodeJsRootExtension>(nodeJsName) {
             val v = versions
             setFromCatalog(libs, "js-karma", v.karma)
             setFromCatalog(libs, "js-mocha", v.mocha)
             setFromCatalog(libs, "js-webpack", v.webpack)
             setFromCatalog(libs, "js-webpackCli", v.webpackCli)
             setFromCatalog(libs, "js-webpackDevServer", v.webpackDevServer)
+        }
+    }
+}
+
+/**
+ * The Yarn 1.x line is frozen; the public Provider-based version
+ * setter lives on `YarnRootEnvSpec` (extension name "yarnSpec"),
+ * not on the deprecated `var version: String` of `YarnRootExtension`.
+ */
+private fun Project.setYarnVersion(libs: FluxoVersionCatalog, kgp: KotlinVersion) {
+    val name = kgp.extensionName("kotlinYarnSpec") { YarnRootEnvSpec.YARN }
+    configureExtension<YarnRootEnvSpec>(name) {
+        val alias = "js-yarn"
+        val wasSet = libs.onVersion(alias) {
+            version.set(it)
+            logDependency(KJS, "$alias:$it")
+        }
+        if (!wasSet) {
+            val min = MIN_YARN
+            val current = version.orNull
+            if (current == null ||
+                KotlinToolingVersion(current) < KotlinToolingVersion(min)
+            ) {
+                version.set(min)
+                logDependency(KJS, "$alias:$min")
+            }
         }
     }
 }
@@ -109,7 +120,9 @@ private fun Project.setFromCatalog(
     }
 }
 
+/** [project] is passed in: `YarnRootExtension.project` doesn't exist on Kotlin 2.1. */
 private fun YarnRootExtension.setFromCatalog(
+    project: Project,
     libs: FluxoVersionCatalog,
     alias: String,
     path: String,
@@ -119,6 +132,14 @@ private fun YarnRootExtension.setFromCatalog(
         project.logDependency(KJS, "$path:$it")
     }
 }
+
+/**
+ * Kotlin's Yarn and Node.js extension names are `const val`s on Kotlin 2.1 and companion getters
+ * from 2.2, so a reference compiled against a newer Kotlin throws `NoSuchMethodError` on 2.1.
+ * [kotlin21] is the constant's value there; [current] is referenced only on 2.2+.
+ */
+private inline fun KotlinVersion.extensionName(kotlin21: String, current: () -> String) =
+    if (this >= KOTLIN_2_2) current() else kotlin21
 
 
 private const val MIN_YARN = "1.22.19"

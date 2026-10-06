@@ -16,6 +16,7 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         projectDir.resolve("build.gradle.kts").writeText(markerKmpBuildScript(row))
         writeKmpSources(projectDir)
     }
+    runKmpJsCase(row, tempDir)
     // Kotlin keeps deprecating native targets and then deletes them (watchosArm32 has no DSL
     // method and no KonanTarget left in Kotlin 2.5), so target groups follow the consumer's
     // Kotlin, never a list in the plugin. The newest row also runs on the next Kotlin.

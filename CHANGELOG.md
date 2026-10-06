@@ -74,6 +74,7 @@
 - A `KMP_TARGETS` filter without `JS` (e.g. `KMP_TARGETS=WASM_WASI`) disabled every Wasm test task, so `check` ran no Wasm tests and printed "Unexpected test task … Target should be disabled". Wasm tests now follow their own target.
 - On AGP 8, Android applications never got fluxo's `targetSdk` or the kept locales (`androidResourceConfigurations`): the calls failed with `NoSuchMethodError`, which fluxo swallowed. On AGP before 8.8 the kept locales go into `resourceConfigurations`, and then fluxo leaves `generateLocaleConfig` off, since AGP rejects the two together.
 - `fkcSetupAndroidApp` without a version code failed configuration ("versionCode is set to 0"); with none set, fluxo now sets none. `applicationId`, `versionCode` and `versionName` set in `android { defaultConfig {} }` are no longer overwritten.
+- KMP modules with a JS target failed configuration on Kotlin 2.1 with `NoSuchMethodError` (`YarnRootExtension$Companion.getYARN()`).
 
 ### Updated
 - Bundled tools: Detekt 1.x rule packs compose-rules 0.4.28 and faire 0.5.4 (may report new findings), Spotless 8.10.3, gradle-versions 0.64.0 (applied by its current id `io.github.ben-manes.versions`), KSP 2.3.12 when fluxo provisions it. That KSP needs Kotlin 2.2+, so on Kotlin 2.1 the build stops at configuration and names the Kotlin-tied KSP release to declare (`2.1.21-<ksp version>`), instead of failing inside `kspKotlin` with `NoSuchMethodError`.
