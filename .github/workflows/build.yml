@@ -173,46 +173,58 @@ jobs:
             command: ./gradlew build assemble check --continue --stacktrace --scan
             timeout: 4
           # The compatibility TestKit suite, excluded from the per-OS×JDK `build assemble
-          # check` step, runs here as one leg per fixture class so each leg stays short and a
-          # failure names its toolchain line. Every compat test class
-          # must match one leg's `--tests` pattern: `CompatibilityShardGuardTest` fails
-          # otherwise, so a new fixture class can't go unrun. Timeouts allow for a cold
-          # (read-only on non-default branches) Gradle cache re-downloading the pinned tools.
-          - name: compat-android-kmp
+          # check` step, runs here as 8 legs, each taking every 8th row of compat/matrix.tsv
+          # (`selectedRows`), so every row runs in exactly one leg and no leg nears the 5-min
+          # budget. Raise the leg count, not the timeout, when legs grow. Timeouts allow for a
+          # cold Gradle cache re-downloading the pinned tools.
+          - name: compat-1-of-8
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.AndroidKmp*' --continue --stacktrace --scan
-            timeout: 15
-          - name: compat-android-lib
+            command: ./gradlew :plugin:compatibilityTest -PcompatShard=1/8 --continue --stacktrace --scan
+            timeout: 10
+          - name: compat-2-of-8
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.AndroidLibrary*' --continue --stacktrace --scan
-            timeout: 15
-          - name: compat-compose
+            command: ./gradlew :plugin:compatibilityTest -PcompatShard=2/8 --continue --stacktrace --scan
+            timeout: 10
+          - name: compat-3-of-8
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.Compose*' --continue --stacktrace --scan
-            timeout: 20
-          - name: compat-gradle-plugin
+            command: ./gradlew :plugin:compatibilityTest -PcompatShard=3/8 --continue --stacktrace --scan
+            timeout: 10
+          - name: compat-4-of-8
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.GradlePlugin*' --continue --stacktrace --scan
-            timeout: 15
-          - name: compat-kmp
+            command: ./gradlew :plugin:compatibilityTest -PcompatShard=4/8 --continue --stacktrace --scan
+            timeout: 10
+          - name: compat-5-of-8
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.Kmp*' --continue --stacktrace --scan
-            timeout: 15
-          - name: compat-kotlin-jvm
+            command: ./gradlew :plugin:compatibilityTest -PcompatShard=5/8 --continue --stacktrace --scan
+            timeout: 10
+          - name: compat-6-of-8
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.KotlinJvm*' --tests 'fluxo.compat.Compatibility*' --continue --stacktrace --scan
-            timeout: 15
+            command: ./gradlew :plugin:compatibilityTest -PcompatShard=6/8 --continue --stacktrace --scan
+            timeout: 10
+          - name: compat-7-of-8
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest -PcompatShard=7/8 --continue --stacktrace --scan
+            timeout: 10
+          - name: compat-8-of-8
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest -PcompatShard=8/8 --continue --stacktrace --scan
+            timeout: 10
           # Windows matters for consumers, not for the plugin's own build: the Kotlin/JVM
           # consumer fixtures run here, the plugin itself builds on ubuntu and macOS only.
-          - name: compat-kotlin-jvm-windows
+          - name: compat-kotlin-jvm-windows-1-of-2
             os: windows
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.KotlinJvm*' --tests 'fluxo.compat.Compatibility*' --continue --stacktrace --scan
-            timeout: 25
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.KotlinJvm*' -PcompatShard=1/2 --continue --stacktrace --scan
+            timeout: 15
+          - name: compat-kotlin-jvm-windows-2-of-2
+            os: windows
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.KotlinJvm*' -PcompatShard=2/2 --continue --stacktrace --scan
+            timeout: 15
     name: 'Integration check / ${{ matrix.name }}'
-    # Above the largest leg step (25) plus checkout/JDK/Gradle setup overhead, so a
+    # Above the largest leg step (15) plus checkout/JDK/Gradle setup overhead, so a
     # healthy-but-slow leg is never cancelled mid-flight.
-    timeout-minutes: 35
+    timeout-minutes: 25
     runs-on: "${{ matrix.os || 'ubuntu' }}-latest"
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, 'ci skip') }}
     env:

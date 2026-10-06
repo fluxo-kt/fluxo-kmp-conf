@@ -220,12 +220,9 @@ testing {
                     dependsOn(":fluxo-kmp-conf-settings:publishAllPublicationsToLocalDevRepository")
                     shouldRunAfter(tasks.test)
                     systemProperty("fluxo.repo.root", rootDir.absolutePath)
-                    // Read by the tests at run time (the matrix rows, the CI legs the shard guard
-                    // checks), so an edit to either alone must rerun the suite.
-                    inputs.files(
-                        rootProject.file("compat/matrix.tsv"),
-                        rootProject.file(".github/workflows/build.yml"),
-                    ).withPropertyName("compatRuntimeFiles")
+                    // Read by the tests at run time, so an edit to it alone must rerun the suite.
+                    inputs.file(rootProject.file("compat/matrix.tsv"))
+                        .withPropertyName("compatRuntimeFiles")
                         .withPathSensitivity(org.gradle.api.tasks.PathSensitivity.RELATIVE)
                     // The newest-upstream versions the weekly run passes (`withNewest`); an input,
                     // so an up-to-date or cached result never stands in for that run.
@@ -239,6 +236,11 @@ testing {
                     )
                     systemProperty("fluxo.plugin.id", pluginId)
                     systemProperty("fluxo.plugin.version", version.toString())
+                    // `<k>/<n>`: CI runs the suite as n legs (`selectedRows`). A system property is
+                    // a task input, so shards never share an up-to-date or cached result.
+                    providers.gradleProperty("compatShard").orNull?.let {
+                        systemProperty("fluxo.compat.shard", it)
+                    }
                     // Every fixture builds in its own row-keyed directory, so classes, methods and
                     // rows all run concurrently. Each running fixture is a Gradle daemon of up to
                     // 3 GB (`compatRunner`'s heap + Metaspace) plus its Kotlin daemon, so the pool

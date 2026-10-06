@@ -3,18 +3,33 @@ package fluxo.compat
 import java.nio.file.Files
 import java.nio.file.Path
 
-internal fun selectedRows(fixture: String): List<Map<String, String>> {
-    val rows = matrixRows().filter { it["fixture"] == fixture }
-    // A run against the newest upstream versions keeps only the rows it moved, so a fixture
-    // with floor rows only has none there.
-    check(rows.isNotEmpty() || NEWEST_OVERRIDES.isNotEmpty()) {
-        "No compatibility rows for fixture '$fixture' in compat/matrix.tsv"
+/**
+ * The rows of [fixtures] this run tests. CI runs the suite as n legs passing
+ * `-PcompatShard=<k>/<n>`; a row belongs to shard k when its position in the matrix is k-1 mod n,
+ * so every row runs in exactly one leg whatever classes a leg selects, and neighbouring rows
+ * (one toolchain line's floor and newest) land in different legs. Unset, every row runs.
+ */
+internal fun selectedRows(vararg fixtures: String): List<Map<String, String>> {
+    val matrix = matrixRows()
+    for (fixture in fixtures) {
+        // A run against the newest upstream versions keeps only the rows it moved, so a
+        // fixture with floor rows only has none there.
+        check(matrix.any { it["fixture"] == fixture } || NEWEST_OVERRIDES.isNotEmpty()) {
+            "No compatibility rows for fixture '$fixture' in compat/matrix.tsv"
+        }
     }
-    return rows
+    return matrix.filterIndexed { i, row ->
+        row["fixture"] in fixtures && i % SHARD.second == SHARD.first - 1
+    }
 }
 
-internal fun selectedRows(vararg fixtures: String): List<Map<String, String>> =
-    fixtures.flatMap(::selectedRows)
+/** `<k>/<n>` from `fluxo.compat.shard` (1-based), else the whole matrix as one shard. */
+private val SHARD: Pair<Int, Int> = System.getProperty("fluxo.compat.shard").orEmpty().let {
+    if (it.isEmpty()) return@let 1 to 1
+    val (k, n) = it.split('/').map(String::toInt)
+    require(n >= 1 && k in 1..n) { "fluxo.compat.shard must be <k>/<n> with 1 <= k <= n: '$it'" }
+    k to n
+}
 
 internal fun matrixRows(): List<Map<String, String>> {
     val root = Path.of(System.getProperty("fluxo.repo.root"))

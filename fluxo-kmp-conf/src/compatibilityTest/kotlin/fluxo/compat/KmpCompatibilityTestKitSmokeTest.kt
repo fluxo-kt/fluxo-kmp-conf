@@ -10,7 +10,7 @@ internal class KmpCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedKmpJvmFilteredConsumersRunRequiredLifecycleTasks(): Iterable<DynamicTest> =
-        selectedRows(fixture = "kmp").map { row ->
+        selectedRows("kmp").map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runKmpConsumer(row, tempDir)
             }
@@ -18,7 +18,7 @@ internal class KmpCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedKmpCommonOnlyConsumersCreateNoPlatformTargets(): Iterable<DynamicTest> =
-        selectedRows(fixture = "kmp-common").map { row ->
+        selectedRows("kmp-common").map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runKmpCommonOnlyConsumer(row, tempDir)
             }
@@ -26,7 +26,7 @@ internal class KmpCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedKmpConsumersRejectInvalidTargetFilters(): Iterable<DynamicTest> =
-        selectedRows(fixture = "kmp-invalid-target").map { row ->
+        selectedRows("kmp-invalid-target").map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runKmpInvalidTargetConsumer(row, tempDir)
             }

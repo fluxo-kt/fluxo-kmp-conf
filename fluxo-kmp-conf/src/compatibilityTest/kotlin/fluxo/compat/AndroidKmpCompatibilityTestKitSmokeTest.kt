@@ -26,7 +26,7 @@ internal class AndroidKmpCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedAgp9KmpAppConsumersFailWithMigrationGuidance(): Iterable<DynamicTest> =
-        selectedRows(fixture = "android-kmp-agp9-app-unsupported").map { row ->
+        selectedRows("android-kmp-agp9-app-unsupported").map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runAgp9KmpAppUnsupportedConsumer(row, tempDir)
             }

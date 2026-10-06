@@ -10,7 +10,7 @@ internal class KotlinJvmCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedKotlinJvmConsumersRunRequiredLifecycleTasks(): Iterable<DynamicTest> =
-        selectedRows(fixture = "kotlin-jvm").flatMap { row ->
+        selectedRows("kotlin-jvm").flatMap { row ->
             kotlinJvmConsumerCases(row, tempDir).map { (case, run) ->
                 DynamicTest.dynamicTest("${row.getValue("id")} $case", run)
             }
@@ -18,7 +18,7 @@ internal class KotlinJvmCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedKotlinJvmMarkerConsumersRunRequiredLifecycleTasks(): Iterable<DynamicTest> =
-        selectedRows(fixture = "kotlin-jvm").map { row ->
+        selectedRows("kotlin-jvm").map { row ->
             DynamicTest.dynamicTest("${row.getValue("id")}-marker") {
                 runKotlinJvmMarkerConsumer(row, tempDir)
             }
@@ -26,7 +26,7 @@ internal class KotlinJvmCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedKotlinJvmConsumersHonorDisabledTests(): Iterable<DynamicTest> =
-        selectedRows(fixture = "kotlin-jvm-tests-disabled").map { row ->
+        selectedRows("kotlin-jvm-tests-disabled").map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
                 runKotlinJvmTestsDisabledConsumer(row, tempDir)
             }
