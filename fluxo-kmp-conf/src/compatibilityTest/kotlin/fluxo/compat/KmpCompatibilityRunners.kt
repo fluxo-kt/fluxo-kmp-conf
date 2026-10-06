@@ -28,6 +28,7 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         runKmpTsApiChecksCase(row, tempDir)
         runKmpShortOptInCase(row, tempDir)
         runKmpStdlibSplitCase(row, tempDir)
+        runKmpNpmToolVersionCase(row, tempDir)
     }
 }
 

@@ -170,7 +170,8 @@ internal fun Project.setupMultiplatformDependencies(
         // AndroidX Compose
         else {
             libs.onLibrary("androidx-compose-runtime") { lib ->
-                sourceSets.register(CommonJvm.ANDROID + MAIN_SOURCE_SET_POSTFIX) {
+                val androidMain = CommonJvm.ANDROID + MAIN_SOURCE_SET_POSTFIX
+                sourceSets.named { it == androidMain }.configureEach {
                     dependencies { compileOnlyAndLog(lib) }
                     implementation(constraints, lib)
                 }
@@ -178,7 +179,9 @@ internal fun Project.setupMultiplatformDependencies(
         }
     }
 
-    sourceSets.register(CommonJvm.COMMON_JVM + MAIN_SOURCE_SET_POSTFIX) {
+    // Configured only where the target hierarchy creates them: a registered source set that no
+    // compilation uses (a module without JVM targets) makes KGP warn "Unused Kotlin Source Sets".
+    sourceSets.named { it == CommonJvm.COMMON_JVM + MAIN_SOURCE_SET_POSTFIX }.configureEach {
         dependencies {
             // TODO: Use `compileOnlyApi` for transitively included compile-only dependencies.
             // https://issuetracker.google.com/issues/216305675
@@ -197,7 +200,7 @@ internal fun Project.setupMultiplatformDependencies(
             libs.onLibrary("androidx-annotation") { compileOnlyWithConstraint(it) }
         }
     }
-    sourceSets.register(CommonJvm.COMMON_JVM + TEST_SOURCE_SET_POSTFIX) {
+    sourceSets.named { it == CommonJvm.COMMON_JVM + TEST_SOURCE_SET_POSTFIX }.configureEach {
         dependencies {
             // Help with https://youtrack.jetbrains.com/issue/KT-29341
             val junit = libs.l("junit", "test-junit") ?: JUNIT_DEPENDENCY

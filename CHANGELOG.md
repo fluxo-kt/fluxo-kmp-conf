@@ -66,6 +66,7 @@
 - The shrinker failed on Compose Multiplatform 1.12 desktop apps: two dependencies share the jar name `runtime-saveable-desktop-1.12.1.jar`.
 - On Kotlin 2.4 every Kotlin/Wasm compile warned "Flag is not supported by this version of the compiler" for `-Xes-classes` and `-Xoptimize-generated-js`: fluxo passed JS flags to Wasm. fluxo also no longer passes flags that are already the compiler's default (`-Xlambdas=indy`, `-Xsam-conversions=indy`, `-Xuse-fast-jar-file-system`, `-Xoptimize-generated-js`), nor, in the latest-settings test compilation, flags newer Kotlin removed or deprecated (`-Xvalue-classes`, `-Xuse-fir-lt`) or that enable features already stable there (`-Xnew-inference`, `-Xenhance-type-parameter-types-to-def-not-null`, non-local `break`/`continue`, explicit backing fields from Kotlin 2.4).
 - `useExperimentalFastJarFs = false` had no effect (the compiler uses its fast JAR file system by default); it now passes `-Xuse-fast-jar-file-system=false`.
+- `setupDependencies = true` in a KMP module without JVM or Android targets made the Kotlin plugin warn "Unused Kotlin Source Sets" (`commonJvmMain`, `commonJvmTest`), which fluxo created for its JVM-only dependencies.
 - `resolveDependencies` failed with the configuration cache on ("cannot serialize object of type … DefaultProject"). Every project now has its own `resolveDependencies`, and the root one runs them all.
 
 ### Updated
