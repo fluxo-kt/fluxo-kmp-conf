@@ -55,7 +55,7 @@ updates:
       - dependency-name: "org.jetbrains.compose*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       # Detekt core (scoped to arturbosch coordinates — detekt-verify-implementation
-      # under dk.cachet stays bumpable; the rule extensions below couple to core)
+      # under dk.cachet stays bumpable)
       - dependency-name: "io.gitlab.arturbosch.detekt*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       # Rule packs pinned twice in the catalog (`detekt-*` on their last Detekt 1 build,
