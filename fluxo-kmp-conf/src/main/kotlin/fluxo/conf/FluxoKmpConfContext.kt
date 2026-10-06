@@ -300,24 +300,25 @@ internal abstract class FluxoKmpConfContext
      * @see markProjectInSync
      * @FIXME Allow to use it from any build scripts
      */
-    fun onProjectInSyncRun(forceIf: Boolean = false, action: FluxoKmpConfContext.() -> Unit) {
+    fun onProjectInSyncRun(
+        forceIf: Boolean = false,
+        rethrow: Boolean = false,
+        action: FluxoKmpConfContext.() -> Unit,
+    ) {
         val context = this
+        // A failing action is logged and skipped, so one broken optional setup doesn't fail
+        // every build; with `rethrow` (the build asked for what the action sets up) it fails it.
+        val run = {
+            try {
+                context.action()
+            } catch (e: Throwable) {
+                if (rethrow) throw e
+                rootProject.logger.e("Failed to run onProjectInSyncRun action: $e", e)
+            }
+        }
         when {
-            forceIf || isProjectInSyncRun -> {
-                try {
-                    context.action()
-                } catch (e: Throwable) {
-                    rootProject.logger.e("Failed to run onProjectInSyncRun action: $e", e)
-                }
-            }
-
-            else -> projectInSyncFlag.configureEach {
-                try {
-                    context.action()
-                } catch (e: Throwable) {
-                    rootProject.logger.e("Failed to run onProjectInSyncRun action: $e", e)
-                }
-            }
+            forceIf || isProjectInSyncRun -> run()
+            else -> projectInSyncFlag.configureEach { run() }
         }
     }
 

@@ -58,6 +58,7 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
         runDokkaCase(row, tempDir)
         runKotlinDefaultsSwitchCase(row, tempDir)
+        runPublicationSetupFailureCase(row, tempDir)
     }
 }
 
