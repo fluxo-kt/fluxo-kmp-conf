@@ -261,10 +261,13 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: '${{ matrix.name }}-build-report'
+          # The `!…*:*` line: Compose compiler reports are named after the Kotlin module name
+          # (`group:project`), and upload-artifact fails the whole upload on ':' in a path.
           path: |
             ${{ matrix.directory }}/**/build/logs/
             ${{ matrix.directory }}/**/build/reports/
             ${{ matrix.directory }}/**/build/output/
+            !${{ matrix.directory }}/**/build/reports/**/*:*
           compression-level: 9
 
       - name: "Post result in PR comment"
