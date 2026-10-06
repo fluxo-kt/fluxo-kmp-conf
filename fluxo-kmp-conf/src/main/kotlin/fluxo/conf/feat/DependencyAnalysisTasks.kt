@@ -55,24 +55,27 @@ private const val ALL_DEPS_TASK_ALT_NAME = "depsAll"
 
 private fun FluxoKmpConfContext.registerResolveDependenciesTasks() {
     onProjectInSyncRun(forceIf = hasStartTaskCalled(RESOLVE_DEPENDENCIES_TASK_NAME)) {
-        val project = rootProject
-        project.logger.l("register :$RESOLVE_DEPENDENCIES_TASK_NAME task")
-        project.tasks.registerCompat<Task>(RESOLVE_DEPENDENCIES_TASK_NAME) {
-            group = TASK_GROUP_OTHER
-            description = "Resolve and prefetch dependencies"
-            doLast {
-                project.allprojects.forEach { p ->
-                    p.configurations.plus(p.buildscript.configurations)
-                        .filter { it.isCanBeResolved }
-                        .forEach {
-                            try {
-                                it.resolve()
-                            } catch (_: Throwable) {
-                            }
-                        }
-                }
-            }
-        }
+        rootProject.logger.l("register :$RESOLVE_DEPENDENCIES_TASK_NAME task")
+        // One task per project, each resolving its own configurations: a task can't touch
+        // `Project` at execution under the configuration cache. The root one depends on the
+        // others by path, so `:resolveDependencies` still prefetches the whole build.
+        rootProject.allprojects { registerTaskResolveDependencies() }
+    }
+}
+
+private fun Project.registerTaskResolveDependencies() {
+    val subprojectTasks = subprojects.map { "${it.path}:$RESOLVE_DEPENDENCIES_TASK_NAME" }
+    tasks.registerCompat<Task>(RESOLVE_DEPENDENCIES_TASK_NAME) {
+        group = TASK_GROUP_OTHER
+        description = "Resolve and prefetch dependencies"
+        dependsOn(subprojectTasks)
+        // Lenient: a configuration that fails to resolve is skipped, as before.
+        val files = project.files(
+            project.configurations.plus(project.buildscript.configurations)
+                .filter { it.isCanBeResolved }
+                .map { conf -> conf.incoming.artifactView { lenient(true) }.files },
+        )
+        doLast { files.files }
     }
 }
 

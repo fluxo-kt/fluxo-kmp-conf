@@ -26,6 +26,8 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
         writeProject = writeProject,
     ).output
     case(row.getValue("requiredTasks").split(' '), emptyList())
+    // Resolves every configuration, so it must do so without reaching `Project` at execution.
+    case(listOf("resolveDependencies"), emptyList())
 
     // FLUXO_EXPLAIN prints the derived settings at build end. The second run is a
     // configuration-cache hit, where configuration never runs, so the block must come from
