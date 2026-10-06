@@ -8,6 +8,14 @@ package fluxo.conf.impl.kotlin
  * their own DSL setting (explicit API, debug, release assertion removal, lambda mode, the
  * latest-settings compilation) are not defaults and stay outside this list.
  *
+ * Every flag here, and every other flag the plugin passes, must be declared by the oldest
+ * supported compiler or gated on the Kotlin version that added it, use the typed compiler option
+ * where one exists, and stop being passed at the language version where it becomes the default:
+ * the compiler reports an unknown flag, and a flag enabling an already stable feature, as strong
+ * warnings, which fail warnings-as-errors builds. A Kotlin release that removes a flag still
+ * breaks such builds on older fluxo versions until a fluxo release drops it; without
+ * warnings-as-errors it is one warning naming the flag.
+ *
  * Kept free of Kotlin Gradle plugin types so it can be unit-tested (see AGENTS.md).
  */
 internal enum class KotlinDefault(val flag: String) {
