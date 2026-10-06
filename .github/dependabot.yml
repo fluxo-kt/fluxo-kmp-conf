@@ -31,24 +31,20 @@ updates:
     cooldown:
       default-days: 7
       semver-major-days: 30
-    # Policy-pinned compatibility surface — promoted via the compat/matrix.tsv
-    # canary-then-graduate discipline, never a Dependabot rubber-stamp. Kotlin /
-    # KSP / AGP / Compose / Detekt-core move in lockstep with the consumer
-    # compatibility matrix (e.g. KGP 2.3.x caps at Gradle 9.3.0 < our wrapper;
-    # KSP 2.3+ is K2-only KSP2; Detekt 2.0 moved groupId to dev.detekt). okhttp
-    # 5.x is a breaking artifact split + nullability flip + KMP drop, exposed to
-    # consumers via the BOM alignment in SetupKotlinDependencies. Patch bumps
-    # within the pinned band stay allowed (same compat cell); minor/major are
-    # conscious release events done by a human. The Detekt rule extensions
-    # (compose-rules, faire) couple to Detekt core's major and graduate with it.
+    # Kotlin and KSP are NOT ignored: the build pin follows the newest stable Kotlin,
+    # because the plugin's own language/API/stdlib level (`kotlinLangVersion`,
+    # `kotlinApiVersion`, `kotlinCoreLibraries`) are separate catalog keys no library
+    # references, so a bump can't raise the consumer floor, and the compat/matrix.tsv floor
+    # rows keep testing the oldest supported Kotlin. A stale Kotlin pin is what broke the
+    # newer tool-plugin bumps (they ship metadata the old build compiler can't read).
+    #
+    # Still ignored for minor/major, done by a human as release events: AGP, Compose and
+    # Detekt core move with the consumer compatibility matrix, and the Detekt rule
+    # extensions (compose-rules, faire) couple to Detekt core's major. okhttp 5.x is a
+    # breaking artifact split + nullability flip + KMP drop, exposed to consumers via the
+    # BOM alignment in SetupKotlinDependencies. Patch bumps within the pinned band stay
+    # allowed.
     ignore:
-      # Kotlin + KSP
-      - dependency-name: "org.jetbrains.kotlin:*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
-      - dependency-name: "org.jetbrains.kotlin.*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
-      - dependency-name: "com.google.devtools.ksp*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       # AGP / Android build tools
       - dependency-name: "com.android.tools.build:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
