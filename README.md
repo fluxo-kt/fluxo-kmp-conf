@@ -50,10 +50,12 @@ Apply the plugin in the root project. Configure modules separately with the setu
 functions below. Keep a Kotlin plugin before it in `plugins {}`; `apply false` is fine.
 
 The settings line puts the plugins fluxo applies for you (KSP, plugin-publish, dependency
-analysis) on each module's build classpath, so they work with the configuration cache and need
-no `plugins {}` lines of their own; a version you declare yourself wins. Without it, the root
-line alone covers subprojects, but not the root project itself: a single-module build that uses
-KSP gets the exact line to add.
+analysis) on the build classpath of each module without submodules, so they work with the
+configuration cache and need no `plugins {}` lines of their own; a version you declare yourself
+wins. A module with submodules (the root, or a parent like `:benchmarks`) gets none, since a
+copy there would break every submodule that declares the plugin with a version; if it uses KSP
+itself, the build tells you the exact line to add. Without the settings line, the root line
+alone does the same, except for a single-module build's root project.
 
 <details>
 <summary>How to use snapshots from JitPack repository</summary>

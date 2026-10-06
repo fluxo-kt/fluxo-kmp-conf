@@ -4,7 +4,7 @@
 ## [0.16.1] - 2026-10-06
 
 ### Fixed
-- A build whose project has no `plugins {}` block (no build file, e.g. an intermediate parent like `:benchmarks` of `:benchmarks:jmh`) failed configuration with "Cannot resolve external dependency com.google.devtools.ksp… because no repositories are defined": the tools fluxo puts on each project's build classpath had no repository to resolve from there. They now resolve through your plugin repositories.
+- Multi-level builds failed configuration on 0.16.0. The plugins fluxo puts on build classpaths (KSP, plugin-publish) also went onto intermediate parents (e.g. `:benchmarks` of `:benchmarks:jmh`), so a submodule declaring one of them with a version failed ("already on the classpath with an unknown version"), and a parent without a build file failed with "Cannot resolve external dependency com.google.devtools.ksp… because no repositories are defined". Only modules without submodules get them now, and a module without a `plugins {}` block resolves them through your plugin repositories.
 - With Detekt 2 and a `KMP_TARGETS` filter that leaves out every JVM and Android target, `commonTest` (and other shared source sets those targets compile) went unanalysed: its own Detekt task was skipped as covered by the JVM/Android test task, which the filter disabled. Without such a filter it was and is analysed inside `detektTestJvm`/the Android test task.
 
 

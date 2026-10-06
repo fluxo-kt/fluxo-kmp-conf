@@ -121,11 +121,15 @@ private fun runToolInjectionBuild(
     ) { projectDir ->
         projectDir.resolve("settings.gradle.kts").writeText(
             markerSettingsScript("compat-$name", settingsPlugin) +
-                "\ninclude(\":app\", \":gp\", \":nested:leaf\")\n",
+                "\ninclude(\":app\", \":gp\", \":nested:leaf\", \":empty\")\n",
         )
-        // `:nested` has no build file, so Gradle gives its build script no repositories; the
-        // tools injected there must still resolve, or configuration fails.
-        writeModule(projectDir.resolve("nested/leaf"), "fkcSetupKotlin { $FLAGS }")
+        // A tool on a parent's classpath (`:nested`) would fail this versioned declaration with
+        // "already on the classpath with an unknown version". `:empty` has no build file, so no
+        // repositories of its own; the tools injected there must still resolve.
+        Files.createDirectories(projectDir.resolve("nested/leaf"))
+        projectDir.resolve("nested/leaf/build.gradle.kts").writeText(
+            "plugins { id(\"com.gradle.plugin-publish\") version \"2.2.1\" apply false }\n",
+        )
         projectDir.resolve("build.gradle.kts").writeText(
             markerKotlinJvmBuildScript(row) + "\n" + APPLIED_PROBE,
         )

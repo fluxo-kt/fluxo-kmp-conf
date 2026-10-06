@@ -151,7 +151,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
 
     /**
      * Without the fluxo settings line, does what the settings plugin does ([addFluxoTools]) for
-     * subprojects: the root project is already being evaluated, so a tool it needs itself gets
+     * subprojects without child projects: the root project is already being evaluated, so a tool it needs itself gets
      * the line to add instead. Dependency analysis is applied to the root only, so it is left out.
      *
      * Reads the parent project's class loader, a cross-project access Isolated Projects forbid.
@@ -180,8 +180,10 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
         )
         if (tools.isEmpty()) return
         gradle.beforeProject {
+            // Leaves only: on a parent's classpath a tool breaks every descendant that declares
+            // it with a version (see FluxoKmpConfSettingsPlugin).
             val parentLoader = parent?.buildscript?.classLoader
-            if (parentLoader != null) {
+            if (parentLoader != null && childProjects.isEmpty()) {
                 addFluxoTools(tools, repositories) { id ->
                     parentLoader.getResource("META-INF/gradle-plugins/$id.properties") != null
                 }
