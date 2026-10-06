@@ -2,7 +2,9 @@ import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.attributes.plugin.GradlePluginApiVersion
 import ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer
 import ru.vyarus.gradle.plugin.animalsniffer.signature.BuildSignatureTask
+import java.lang.management.ManagementFactory
 import java.util.Properties
+import com.sun.management.OperatingSystemMXBean
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -237,13 +239,27 @@ testing {
                     )
                     systemProperty("fluxo.plugin.id", pluginId)
                     systemProperty("fluxo.plugin.version", version.toString())
-                    // Fixture classes are independent TestKit builds, so they run concurrently;
-                    // rows inside one class stay sequential to bound the number of live daemons.
+                    // Every fixture builds in its own row-keyed directory, so classes, methods and
+                    // rows all run concurrently. Each running fixture is a Gradle daemon of up to
+                    // 3 GB (`compatRunner`'s heap + Metaspace) plus its Kotlin daemon, so the pool
+                    // is capped by memory (5 GB each) as well as CPUs: a 16 GB CI runner gets 3,
+                    // never swapping. `max-pool-size` makes the cap hard; JUnit's default lets
+                    // blocked threads be replaced, beyond `parallelism`.
+                    val os = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
+                    val parallelism = minOf(
+                        Runtime.getRuntime().availableProcessors(),
+                        (os.totalMemorySize / (5L shl 30)).toInt(),
+                    ).coerceAtLeast(1)
                     systemProperty("junit.jupiter.execution.parallel.enabled", "true")
-                    systemProperty("junit.jupiter.execution.parallel.mode.default", "same_thread")
+                    systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
+                    systemProperty("junit.jupiter.execution.parallel.config.strategy", "fixed")
                     systemProperty(
-                        "junit.jupiter.execution.parallel.mode.classes.default",
-                        "concurrent",
+                        "junit.jupiter.execution.parallel.config.fixed.parallelism",
+                        parallelism,
+                    )
+                    systemProperty(
+                        "junit.jupiter.execution.parallel.config.fixed.max-pool-size",
+                        parallelism,
                     )
                     // Under `.gradle/` so it survives `clean`; see `compatGradleUserHome`.
                     val testKitHome = rootDir.resolve(".gradle/compat-testkit")
