@@ -199,7 +199,8 @@ internal fun runKotlinJvmVariant(
 }
 
 internal fun Map<String, String>.kgpMinor(): KotlinVersion {
-    val (major, minor) = getValue("kgpVersion").split('.').map(String::toInt)
+    // Only major and minor: the patch part may carry a prerelease suffix ("0-Beta1").
+    val (major, minor) = getValue("kgpVersion").split('.').take(2).map(String::toInt)
     return KotlinVersion(major, minor)
 }
 

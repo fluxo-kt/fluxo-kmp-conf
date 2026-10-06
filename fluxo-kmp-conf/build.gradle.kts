@@ -217,6 +217,12 @@ testing {
                         rootProject.file(".github/workflows/build.yml"),
                     ).withPropertyName("compatRuntimeFiles")
                         .withPathSensitivity(org.gradle.api.tasks.PathSensitivity.RELATIVE)
+                    // The newest-upstream versions the weekly run passes (`withNewest`); an input,
+                    // so an up-to-date or cached result never stands in for that run.
+                    inputs.property(
+                        "compatNewest",
+                        providers.environmentVariable("FLUXO_COMPAT_NEWEST").orElse(""),
+                    )
                     systemProperty(
                         "fluxo.local.maven.repo",
                         compatibilityLocalMavenRepo.get().asFile.absolutePath,

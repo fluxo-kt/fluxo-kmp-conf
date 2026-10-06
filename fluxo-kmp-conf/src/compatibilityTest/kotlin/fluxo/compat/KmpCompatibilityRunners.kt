@@ -21,7 +21,11 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
     // Kotlin, never a list in the plugin. The newest row also runs on the next Kotlin.
     if (row.getValue("kotlinLangVersion") == "-") {
         runKmpAllTargetsCase(row, tempDir)
-        runKmpAllTargetsCase(row + ("kgpVersion" to NEXT_KOTLIN), tempDir)
+        // Already on it in the newest-upstream run; the same project again would only reuse
+        // the configuration cache and print none of the markers.
+        if (row["kgpVersion"] != NEXT_KOTLIN) {
+            runKmpAllTargetsCase(row + ("kgpVersion" to NEXT_KOTLIN), tempDir)
+        }
         runKmpWasiFilterCase(row, tempDir)
     }
     if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {

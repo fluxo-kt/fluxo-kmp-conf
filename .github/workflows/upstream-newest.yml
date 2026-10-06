@@ -1,0 +1,101 @@
+name: Newest upstream
+
+# Builds the consumer compatibility fixtures against the newest Kotlin, Gradle, AGP, Compose
+# Multiplatform and KSP releases, resolved when the run starts, so a release that breaks
+# consumers shows up here before they upgrade. `stable` takes final releases only; `pre` also
+# takes Beta and RC releases newer than those. Dev and alpha builds are left out: their own
+# bugs would turn the run red for reasons that are not this plugin's.
+#
+# Weekly rather than per change: it re-downloads every tool, so it doesn't fit the per-change
+# time budget. A red scheduled run is the alert: GitHub emails it to whoever last changed the
+# schedule. It opens no issues.
+
+on:
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CI: true
+
+jobs:
+  compat:
+    strategy:
+      fail-fast: false
+      matrix:
+        channel: ['stable', 'pre']
+        # The same legs as build.yml's compat legs; only rows on the newest line run here.
+        shard:
+          - name: android
+            tests: "--tests 'fluxo.compat.Android*'"
+          - name: compose
+            tests: "--tests 'fluxo.compat.Compose*'"
+          - name: gradle-plugin
+            tests: "--tests 'fluxo.compat.GradlePlugin*'"
+          - name: kmp
+            tests: "--tests 'fluxo.compat.Kmp*'"
+          - name: kotlin-jvm
+            tests: "--tests 'fluxo.compat.KotlinJvm*'"
+    name: 'Newest ${{ matrix.channel }} / ${{ matrix.shard.name }}'
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # 21 runs Gradle; 17 is what the compat fixtures' inner builds pin (`jdkVersion`).
+      - name: Set up JDKs
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-encryption-key: "${{ secrets.GRADLE_ENCRYPTION_KEY }}"
+          # Newest-version downloads would crowd out the cache the per-change builds use.
+          cache-read-only: true
+          dependency-graph: disabled
+          artifact-retention-days: 7
+
+      # The matrix columns move through FLUXO_COMPAT_NEWEST (see `withNewest` in the compat
+      # sources). KSP is the version fluxo bundles, so it is set in this checkout's catalog.
+      - name: Resolve the newest ${{ matrix.channel }} versions
+        run: |
+          .github/scripts/resolve-newest-upstream.sh '${{ matrix.channel }}' > newest.txt
+          cat newest.txt
+          v() { sed -n "s/^$1=//p" newest.txt; }
+          echo "FLUXO_COMPAT_NEWEST=kgpVersion=$(v kotlin),gradleVersion=$(v gradle),agpVersion=$(v agp),composeVersion=$(v compose)" >> "$GITHUB_ENV"
+          sed -i -E "s/^ksp = \"[^\"]*\"/ksp = \"$(v ksp)\"/" gradle/libs.versions.toml
+          grep -E '^ksp = ' gradle/libs.versions.toml
+
+      - name: Run compat fixtures
+        timeout-minutes: 20
+        run: ./gradlew :plugin:compatibilityTest ${{ matrix.shard.tests }} --continue --stacktrace
+
+      - name: Upload the build report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: 'newest-${{ matrix.channel }}-${{ matrix.shard.name }}-report'
+          path: |
+            newest.txt
+            **/build/reports/
+          compression-level: 9
