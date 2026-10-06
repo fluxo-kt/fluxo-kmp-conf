@@ -27,6 +27,7 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
     if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
         runKmpTsApiChecksCase(row, tempDir)
         runKmpShortOptInCase(row, tempDir)
+        runKmpStdlibSplitCase(row, tempDir)
     }
 }
 

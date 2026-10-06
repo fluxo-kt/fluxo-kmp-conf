@@ -64,8 +64,10 @@ internal const val ALLOW_KOTLIN_STDLIB_SKEW_PROP = "fluxo.allowKotlinStdlibSkew"
  * A runtime newer than the compiler makes Kotlin emit a version-mismatch
  * warning that `allWarningsAsErrors` turns fatal on CI/release — the footgun two
  * independently-pinned catalog versions (`kotlin` vs `kotlinCoreLibraries`)
- * invite. Equal or older stdlib is fine: the compiler always supports its own
+ * invite. An equal or older stdlib is fine on the JVM, which supports its own
  * and older runtimes, so the check is strictly directional, not equality.
+ * Kotlin/JS and Kotlin/Wasm accept only the compiler's exact stdlib, which
+ * `useCompilerStdlib` gives them.
  *
  * [stdlibVersion] is parsed leniently via [parseKotlinPluginVersion]; a blank or
  * unparseable value yields `null` (skip) rather than masking a real build behind

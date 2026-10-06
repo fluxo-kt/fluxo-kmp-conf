@@ -70,6 +70,12 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
         }
         set(value) = kotlinCoreLibrariesProp.set(value)
 
+    @get:Input
+    val singleKotlinStdlibVersionProp: Property<Boolean>
+    override var singleKotlinStdlibVersion: Boolean
+        get() = singleKotlinStdlibVersionProp.orNull ?: parent?.singleKotlinStdlibVersion ?: false
+        set(value) = singleKotlinStdlibVersionProp.set(value)
+
 
     @get:Input
     val javaLangTargetProp: Property<String>

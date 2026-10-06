@@ -408,6 +408,7 @@ private fun KotlinProjectExtension.setupTargets(
         }
         val isJsOrWasm = !isAndroid && platformType
             .let { KotlinPlatformType.js === it || KotlinPlatformType.wasm === it }
+        if (isJsOrWasm) useCompilerStdlib(conf)
 
         // Shared-metadata (klib) compilations are the `common` platform target. They resolve the
         // *transformed* hierarchical metadata of every dependency, and for a diamond source-set

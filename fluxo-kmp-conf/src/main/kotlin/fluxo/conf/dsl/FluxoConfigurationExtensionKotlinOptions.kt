@@ -95,11 +95,26 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * `kotlinCoreLibraries`, `kotlinCoreLibrariesVersion`, `kotlinStdlib`,
      * `kotlin`, `kotlinVersion`.
      *
+     * This version is a floor for JVM and Android code. Kotlin/JS and Kotlin/Wasm compile only
+     * against the standard library of the compiler's exact version (an older one fails with "not
+     * supported" or "ABI version … not compatible"), so their compilations get the compiler's
+     * stdlib; Kotlin/Native uses the stdlib bundled with its compiler. `FLUXO_EXPLAIN=true` prints
+     * the split. [singleKotlinStdlibVersion] turns it off.
+     *
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension.coreLibrariesVersion
      * @see kotlinLangVersion
      * @see kotlinApiVersion
      */
     public var kotlinCoreLibraries: String?
+
+    /**
+     * Use [kotlinCoreLibraries] for the JS and Wasm compilations too, as before 0.16, instead of
+     * the compiler's stdlib. When that version differs from the compiler's, the build then fails
+     * at configuration with this setting named, as those compilations would fail anyway.
+     *
+     * Inherited from the parent project if not set. Default value: `false`.
+     */
+    public var singleKotlinStdlibVersion: Boolean
 
 
     /**
