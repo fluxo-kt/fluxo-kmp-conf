@@ -39,8 +39,7 @@ updates:
     # newer tool-plugin bumps (they ship metadata the old build compiler can't read).
     #
     # Still ignored for minor/major, done by a human as release events: AGP, Compose and
-    # Detekt core move with the consumer compatibility matrix, and the Detekt rule
-    # extensions (compose-rules, faire) couple to Detekt core's major. okhttp 5.x is a
+    # Detekt core move with the consumer compatibility matrix. okhttp 5.x is a
     # breaking artifact split + nullability flip + KMP drop, exposed to consumers via the
     # BOM alignment in SetupKotlinDependencies. Patch bumps within the pinned band stay
     # allowed.
@@ -59,10 +58,13 @@ updates:
       # under dk.cachet stays bumpable; the rule extensions below couple to core)
       - dependency-name: "io.gitlab.arturbosch.detekt*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Rule packs pinned twice in the catalog (`detekt-*` on their last Detekt 1 build,
+      # `detekt2-*` on a Detekt 2 build): Dependabot matches by module, not by catalog key,
+      # so it would move the Detekt 1 pins onto Detekt 2 builds (faire crosses lines in a
+      # patch). Bumped by hand.
       - dependency-name: "io.nlopez.compose.rules:*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "com.faire:*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.braisgabin.detekt:*"
       # okhttp — 5.x only (4.x minor/patch within band stays allowed)
       - dependency-name: "com.squareup.okhttp3:*"
         update-types: ["version-update:semver-major"]
