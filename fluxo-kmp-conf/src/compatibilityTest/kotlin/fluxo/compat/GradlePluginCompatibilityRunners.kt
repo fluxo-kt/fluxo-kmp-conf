@@ -24,6 +24,50 @@ internal fun runGradlePluginConsumer(row: Map<String, String>, tempDir: Path) {
         val oldGradle = row + ("gradleVersion" to OLDEST_SUPPORTED_GRADLE)
         buildAndCheckGradlePlugin(oldGradle, tempDir.resolve(row.getValue("id") + "-gradle-floor"))
     }
+    if (row.kgpMinor() >= KGP_ABI_VALIDATION) runKgpAbiCase(row, tempDir)
+}
+
+/** The first Kotlin whose own ABI validation fluxo uses. */
+private val KGP_ABI_VALIDATION = KotlinVersion(2, 4)
+
+/**
+ * On Kotlin 2.4+ ABI validation runs on the Kotlin Gradle plugin's engine, with no BCV declared:
+ * BCV's `apiDump` writes the dump, `check` runs the KGP check, and `apiCheck` fails on an API
+ * change the dump doesn't have.
+ */
+private fun runKgpAbiCase(row: Map<String, String>, tempDir: Path) {
+    val projectDir = tempDir.resolve(row.getValue("id") + "-kgp-abi")
+    fun run(
+        tasks: List<String>,
+        extraSource: String = "",
+        expectFailure: List<String> = emptyList(),
+    ) = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-gradle-plugin-consumer",
+        projectDir = projectDir,
+        tasks = tasks,
+        arguments = listOf("-PFLUXO_EXPLAIN=true"),
+        expectFailure = expectFailure,
+    ) {
+        it.resolve("build.gradle.kts").writeText(
+            gradlePluginBuildScript(row).replace("enableApiValidation = false", ""),
+        )
+        writeCompatPluginSource(it, extraSource)
+    }
+
+    val dumpOutput = run(listOf("apiDump")).output
+    check("ABI validation engine = Kotlin Gradle plugin" in dumpOutput) { dumpOutput }
+    val dump = projectDir.resolve("api/compat-gradle-plugin-consumer.api")
+    check(Files.exists(dump) && "compat/CompatPlugin" in dump.toFile().readText()) {
+        "apiDump wrote no dump with the plugin class at $dump\n$dumpOutput"
+    }
+    run(listOf("check")).assertTaskSuccess(":checkKotlinAbi")
+    run(
+        listOf("apiCheck"),
+        extraSource = "\npublic fun compatAdded(): Int = 1\n",
+        expectFailure = listOf("ABI has changed", "compatAdded"),
+    )
 }
 
 private fun buildAndCheckGradlePlugin(row: Map<String, String>, projectDir: Path) {
@@ -34,26 +78,7 @@ private fun buildAndCheckGradlePlugin(row: Map<String, String>, projectDir: Path
         projectDir = projectDir,
     ) {
         it.resolve("build.gradle.kts").writeText(gradlePluginBuildScript(row))
-        val sources = it.resolve("src/main/kotlin/compat")
-        Files.createDirectories(sources)
-        sources.resolve("CompatPlugin.kt").writeText(
-            """
-            package compat
-
-            import org.gradle.api.Plugin
-            import org.gradle.api.Project
-
-            // `group` resolves only with sam-with-receiver: Gradle's Action has an implicit receiver.
-            public class CompatPlugin : Plugin<Project> {
-                override fun apply(target: Project) {
-                    target.tasks.register("compatHello") { group = "compat" }
-                }
-            }
-
-            // A top-level declaration makes the compiler write META-INF/*.kotlin_module.
-            internal fun compatGreeting(): String = "compat"
-            """.trimIndent(),
-        )
+        writeCompatPluginSource(it)
     }.output
 
     val jar = projectDir.resolve("build/libs").toFile().listFiles().orEmpty().single()
@@ -87,6 +112,29 @@ private fun buildAndCheckGradlePlugin(row: Map<String, String>, projectDir: Path
     }
 }
 
+private fun writeCompatPluginSource(projectDir: Path, extraSource: String = "") {
+    val sources = projectDir.resolve("src/main/kotlin/compat")
+    Files.createDirectories(sources)
+    sources.resolve("CompatPlugin.kt").writeText(
+        """
+        package compat
+
+        import org.gradle.api.Plugin
+        import org.gradle.api.Project
+
+        // `group` resolves only with sam-with-receiver: Gradle's Action has an implicit receiver.
+        public class CompatPlugin : Plugin<Project> {
+            override fun apply(target: Project) {
+                target.tasks.register("compatHello") { group = "compat" }
+            }
+        }
+
+        // A top-level declaration makes the compiler write META-INF/*.kotlin_module.
+        internal fun compatGreeting(): String = "compat"
+        """.trimIndent() + extraSource,
+    )
+}
+
 private const val EMBEDDED_KOTLIN_MARKER = "FLUXO_COMPAT_EMBEDDED_KOTLIN="
 
 /** The oldest Gradle the plugin supports (README "Targeted for"). */
@@ -108,7 +156,8 @@ private fun gradlePluginBuildScript(row: Map<String, String>): String =
 
     fkcSetupGradlePlugin(pluginName = "compat-plugin", pluginClass = "$PLUGIN_CLASS") {
         setupVerification = false
-        // On by default for Gradle plugins; BCV must then be declared by the consumer.
+        // On by default for Gradle plugins, and below Kotlin 2.4 it needs BCV declared by the
+        // consumer; runKgpAbiCase covers it on 2.4+.
         enableApiValidation = false
         enablePublication = false
         enableGradleDoctor = false

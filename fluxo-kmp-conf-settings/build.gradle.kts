@@ -58,4 +58,9 @@ buildConfig {
         "DEPS_ANALYSIS_PLUGIN_VERSION",
         "\"${libs.plugins.deps.analysis.get().version}\"",
     )
+    buildConfigField(
+        "String",
+        "FLUXO_BCV_JS_PLUGIN_VERSION",
+        "\"${libs.plugins.fluxo.bcv.js.get().version}\"",
+    )
 }

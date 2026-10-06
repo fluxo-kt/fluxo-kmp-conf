@@ -2,6 +2,7 @@ package fluxo.conf
 
 import fluxo.artifact.proc.setupArtifactsProcessing
 import fluxo.conf.data.BuildConstants.DEPS_ANALYSIS_PLUGIN_VERSION
+import fluxo.conf.data.BuildConstants.FLUXO_BCV_JS_PLUGIN_VERSION
 import fluxo.conf.data.BuildConstants.GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION
 import fluxo.conf.data.BuildConstants.KSP_PLUGIN_VERSION
 import fluxo.conf.data.BuildConstants.PLUGIN_ID
@@ -164,6 +165,7 @@ public class FluxoKmpConfPlugin : Plugin<Project> {
             ksp = KSP_PLUGIN_VERSION,
             pluginPublish = GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION,
             dependencyAnalysis = DEPS_ANALYSIS_PLUGIN_VERSION,
+            bcvJs = FLUXO_BCV_JS_PLUGIN_VERSION,
         ).filter { it.tasks.isEmpty() }
         // Plugin repositories aren't visible from a project; the root build-script ones are
         // the consumer's closest choice, the Portal is Gradle's default for plugins.

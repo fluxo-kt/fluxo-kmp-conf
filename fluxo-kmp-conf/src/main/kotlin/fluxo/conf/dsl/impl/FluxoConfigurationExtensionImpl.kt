@@ -49,6 +49,20 @@ internal abstract class FluxoConfigurationExtensionImpl
     @Volatile
     private var parentCache: FluxoConfigurationExtensionImpl? = null
 
+    /**
+     * Set when `KMP_TARGETS` left out a target this module declares, so anything covering every
+     * target (the ABI dump) sees only part of the module. Read once configuration is over.
+     */
+    @Volatile
+    var kmpTargetFilteredOut: Boolean = false
+
+    /**
+     * Set when this module declares a JS or Wasm-JS target that is built. Known when the targets
+     * are declared, before Kotlin creates them (which can be after evaluation).
+     */
+    @Volatile
+    var kmpHasWebTarget: Boolean = false
+
 
     @get:Inject
     abstract override val project: Project

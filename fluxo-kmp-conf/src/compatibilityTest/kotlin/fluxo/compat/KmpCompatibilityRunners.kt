@@ -23,7 +23,50 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         runKmpAllTargetsCase(row + ("kgpVersion" to NEXT_KOTLIN), tempDir)
         runKmpWasiFilterCase(row, tempDir)
     }
+    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) runKmpTsApiChecksCase(row, tempDir)
 }
+
+/**
+ * TypeScript ABI checks (fluxo-bcv-js) read the Kotlin plugin's JS DSL, so the plugin must load
+ * where it can see the Kotlin plugin. Fetched through a Gradle script plugin it could not: its
+ * class initialiser failed with `NoClassDefFoundError: …/KotlinJsTargetDsl`. The settings plugin
+ * now puts it on the module's build classpath; with the configuration cache on it must apply.
+ */
+private fun runKmpTsApiChecksCase(row: Map<String, String>, tempDir: Path) {
+    val output = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kmp-ts-api",
+        projectDir = tempDir.resolve("${row.getValue("id")}-ts-api"),
+        tasks = listOf("help"),
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins {
+                id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
+                id("${pluginId()}") version "${pluginVersion()}"
+            }
+
+            fkcSetupMultiplatform(
+                config = {
+                    setupVerification = false
+                    enablePublication = false
+                    enableGradleDoctor = false
+                    setupCoroutines = false
+                    apiValidation { tsApiChecks = true }
+                },
+                kmp = { jvm(); js() },
+            )
+
+            println("$TS_API_MARKER" + plugins.hasPlugin("$FLUXO_BCV_JS_ID"))
+            """.trimIndent(),
+        )
+    }.output
+    check("${TS_API_MARKER}true" in output) { "fluxo-bcv-js not applied:\n$output" }
+}
+
+private const val TS_API_MARKER = "FLUXO_COMPAT_TS_API="
+private const val FLUXO_BCV_JS_ID = "io.github.fluxo-kt.binary-compatibility-validator-js"
 
 /**
  * `KMP_TARGETS=WASM_WASI` must keep the WASI target enabled: fluxo disables every target outside

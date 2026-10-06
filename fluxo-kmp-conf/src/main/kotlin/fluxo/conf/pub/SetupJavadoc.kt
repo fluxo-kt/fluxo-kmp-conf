@@ -3,7 +3,9 @@ package fluxo.conf.pub
 import com.vanniktech.maven.publish.JavadocJar
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.BuildConstants
+import fluxo.conf.deps.isConfigurationCacheActive
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
+import fluxo.conf.deps.missingFromBuildClasspathMessage
 import fluxo.conf.dsl.FluxoPublicationConfig
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
@@ -89,23 +91,37 @@ internal fun vanniktechJavaDocOption(
     }
 }
 
+/**
+ * Dokka reads the Kotlin plugin's model, so it must load where it can see the Kotlin plugin: from
+ * the module's build classpath. Fetched through a Gradle script plugin it could not ("Dokka could
+ * not load KotlinBasePlugin") and wrote docs with no Kotlin sources while the build passed. It is
+ * not added to every build classpath like KSP: it brings Jackson, coroutines and serialization.
+ * Undeclared under the configuration cache, the publication gets plain Javadoc and a warning with
+ * the `plugins {}` line (fluxo's own class loader, which sees the Kotlin plugin, can't be stored by
+ * the cache); without the cache fluxo loads it there. Publication setup errors are only logged
+ * (`onProjectInSyncRun`), so failing here would leave the publication half configured.
+ */
 private fun FluxoKmpConfContext.loadAndApplyDokkaIfNotApplied(project: Project): Boolean {
-    try {
-        val result = loadAndApplyPluginIfNotApplied(
-            id = BuildConstants.DOKKA_PLUGIN_ID,
-            version = BuildConstants.DOKKA_PLUGIN_VERSION,
-            catalogPluginId = BuildConstants.DOKKA_PLUGIN_ALIAS,
-            fetchWithGradle = true,
-            project = project,
+    val id = BuildConstants.DOKKA_PLUGIN_ID
+    val declared = project.buildscript.classLoader
+        .getResource("META-INF/gradle-plugins/$id.properties") != null
+    if (!declared && project.isConfigurationCacheActive()) {
+        project.logger.w(
+            missingFromBuildClasspathMessage(project, id, BuildConstants.DOKKA_PLUGIN_VERSION) +
+                " Until then the publication gets plain Javadoc.",
         )
-        if (result.applied) {
-            project.logger.l("Applied Dokka publication")
-        }
-        return result.applied
-    } catch (e: Throwable) {
-        project.logger.w("Dokka setup error: $e", e)
         return false
     }
+    val result = loadAndApplyPluginIfNotApplied(
+        id = id,
+        version = BuildConstants.DOKKA_PLUGIN_VERSION,
+        catalogPluginId = BuildConstants.DOKKA_PLUGIN_ALIAS,
+        project = project,
+    )
+    if (result.applied) {
+        project.logger.l("Applied Dokka publication")
+    }
+    return result.applied
 }
 
 

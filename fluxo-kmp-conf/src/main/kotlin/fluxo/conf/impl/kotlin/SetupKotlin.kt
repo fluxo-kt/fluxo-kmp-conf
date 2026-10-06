@@ -480,6 +480,7 @@ private fun KotlinTarget.disableIfFilteredOut(conf: FluxoConfigurationExtensionI
     }
 
     logger.d("Target '{}' is not in KMP_TARGETS, disabling its compilations", target.name)
+    conf.kmpTargetFilteredOut = true
     disableCompilations()
     disableDetektTasks(project)
     if (platformType != KotlinPlatformType.js) {

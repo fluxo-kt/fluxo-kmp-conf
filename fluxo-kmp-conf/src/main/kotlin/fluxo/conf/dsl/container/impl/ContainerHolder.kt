@@ -59,10 +59,14 @@ internal class ContainerHolder(
         var container = findByName<T>(targetName)
         if (container == null) {
             // Don't contruct the container for turned-off targets.
+            if (!code.isEnabled) conf.kmpTargetFilteredOut = true
             if (!code.isEnabled || !isAddable(targetName, code)) {
                 return
             }
             container = contruct(this, targetName)
+            if (code == KmpTargetCode.JS || code == KmpTargetCode.WASM_JS) {
+                conf.kmpHasWebTarget = true
+            }
             require(containers.add(container)) { "Couldn't add container for target '$targetName'" }
         }
         action(container)

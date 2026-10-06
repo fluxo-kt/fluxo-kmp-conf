@@ -14,14 +14,18 @@ import org.gradle.api.configuration.BuildFeatures
  * so with the cache on the build stops here with the line that fixes it.
  */
 internal fun missingFromBuildClasspath(project: Project, id: String, version: String?) {
-    val where = if (project.parent == null) "the root build script" else "'${project.path}'"
-    val line = "id(\"$id\")" + if (version != null) " version \"$version\"" else ""
-    val message = "'$id' is not on the build classpath of '${project.path}'. " +
-        "Add `$line` to the `plugins {}` block of $where."
-    val features = project.objects.newInstance(Features::class.java).buildFeatures
-    if (features.configurationCache.active.get()) throw GradleException(message)
+    val message = missingFromBuildClasspathMessage(project, id, version)
+    if (project.isConfigurationCacheActive()) throw GradleException(message)
     project.logger.w(message)
 }
+
+internal fun missingFromBuildClasspathMessage(project: Project, id: String, version: String?) =
+    "'$id' is not on the build classpath of '${project.path}'. Add `id(\"$id\")" +
+        (if (version != null) " version \"$version\"" else "") + "` to the `plugins {}` block of " +
+        (if (project.parent == null) "the root build script." else "'${project.path}'.")
+
+internal fun Project.isConfigurationCacheActive(): Boolean =
+    objects.newInstance(Features::class.java).buildFeatures.configurationCache.active.get()
 
 // `BuildFeatures` is only injectable; `StartParameter`'s cache flag is deprecated.
 internal open class Features @Inject constructor(val buildFeatures: BuildFeatures)

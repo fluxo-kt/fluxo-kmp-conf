@@ -4,7 +4,9 @@ import isRelease
 import org.gradle.api.Incubating
 
 /**
- * Configuration for the [kotlinx.validation.BinaryCompatibilityValidatorPlugin].
+ * Configuration of ABI validation, applied to whichever engine the module uses (see
+ * [FluxoConfigurationExtensionKotlin.enableApiValidation]): the Kotlin Gradle plugin's own on
+ * Kotlin 2.4+, else the [kotlinx.validation.BinaryCompatibilityValidatorPlugin].
  *
  * @see kotlinx.validation.ApiValidationExtension
  */
@@ -64,6 +66,8 @@ public class BinaryCompatibilityValidatorConfig(
 
     /**
      * Whether to verify KLib (Kotlin/Native) APIs.
+     *
+     * The Kotlin Gradle plugin's engine always verifies them, so `false` keeps the module on BCV.
      */
     // https://github.com/Kotlin/binary-compatibility-validator/issues/149#issuecomment-1768063785
     @Incubating
@@ -75,6 +79,8 @@ public class BinaryCompatibilityValidatorConfig(
      *
      * If validated klib doesn't contain appropriate signatures,
      * an exception will be thrown during the validation.
+     *
+     * BCV-only: setting it keeps the module on BCV.
      */
     @Incubating
     public var klibSignatureVersion: Int? = null,

@@ -93,8 +93,7 @@ internal fun markerAgp9KmpBuildScript(
     fkcSetupMultiplatform(
         config = {
             setupVerification = ${row.isExecutionFixture()}
-            // Exercises the AGP-9 KMP android-main API lane (registerAndroidMainApiTasks):
-            // androidApiBuild must register off the android `main` compilation. Exec-only.
+            // ABI validation must configure on the AGP-9 KMP Android target. Exec-only.
             enableApiValidation = ${row.isExecutionFixture()}
             enablePublication = false
             enableGradleDoctor = false

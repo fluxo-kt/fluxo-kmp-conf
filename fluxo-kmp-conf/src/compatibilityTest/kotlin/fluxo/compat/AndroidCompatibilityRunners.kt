@@ -29,6 +29,34 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
         runAgp9KmpSiblingDetektCase(row, tempDir, detekt1 = false)
         runKmpPlainDetektCase(row, tempDir)
         runAgp9KmpResourcesAndHostTestsCase(row, tempDir)
+        runAgp9KmpKgpAbiCase(row, tempDir)
+    }
+}
+
+/**
+ * On Kotlin 2.4+ the Kotlin Gradle plugin's ABI engine dumps the AGP 9 KMP Android `main`
+ * compilation itself (fluxo's own Android-main lane runs only with BCV), and BCV's `apiDump` name
+ * still works. Android-only and unfiltered: with targets left out the dump is skipped.
+ */
+private fun runAgp9KmpKgpAbiCase(row: Map<String, String>, tempDir: Path) {
+    val projectDir = tempDir.resolve(row.getValue("id") + "-kgp-abi")
+    runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-agp9-kmp-abi",
+        projectDir = projectDir,
+        tasks = listOf("apiDump"),
+        forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
+    ) {
+        it.resolve("build.gradle.kts").writeText(
+            markerAgp9KmpBuildScript(row)
+                .replace("kmp = { allDefaultTargets() }", "kmp = { androidLibrary() }"),
+        )
+        writeAndroidKmpSources(it)
+    }
+    val dumps = projectDir.resolve("api").toFile().walk().filter { it.isFile }.toList()
+    check(dumps.any { "androidTargetName" in it.readText() }) {
+        "No ABI dump holds the androidMain API: $dumps"
     }
 }
 

@@ -10,8 +10,8 @@ import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 
 /**
- * The settings part of fluxo-kmp-conf: puts the plugins fluxo applies by id (KSP, plugin-publish,
- * dependency analysis) on each project's own build classpath before it is evaluated
+ * The settings part of fluxo-kmp-conf: puts the plugins fluxo applies by id (KSP, fluxo-bcv-js,
+ * plugin-publish, dependency analysis) on each project's own build classpath before it is evaluated
  * ([addFluxoTools]). A separate artifact because settings plugins load into the settings class
  * loader, where the main plugin's classes couldn't see the Kotlin plugin.
  *
@@ -37,6 +37,7 @@ public class FluxoKmpConfSettingsPlugin : Plugin<Settings> {
             ksp = BuildConstants.KSP_PLUGIN_VERSION,
             pluginPublish = BuildConstants.GRADLE_PLUGIN_PUBLISH_PLUGIN_VERSION,
             dependencyAnalysis = BuildConstants.DEPS_ANALYSIS_PLUGIN_VERSION,
+            bcvJs = BuildConstants.FLUXO_BCV_JS_PLUGIN_VERSION,
         )
         // `pluginManagement {}` is evaluated before any settings plugin is applied.
         val repositories = settings.pluginManagement.repositories

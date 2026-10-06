@@ -110,7 +110,14 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
     // region BinaryCompatibilityValidator
 
     /**
-     * Flag to turn on the KotlinX BinaryCompatibilityValidator plugin.
+     * Flag to turn on ABI (binary compatibility) validation: public API dumps in `api/`,
+     * checked by `check`, updated by `apiDump`.
+     *
+     * On Kotlin 2.4+ it runs on the Kotlin Gradle plugin's own engine, with no extra plugin.
+     * Below that, or when the build applies the KotlinX BinaryCompatibilityValidator (BCV)
+     * plugin itself, or a BCV-only klib setting is used, it runs on BCV, which must then be
+     * declared in the build. Both write the same dumps. `FLUXO_EXPLAIN=true` prints which one a
+     * module uses.
      *
      * API dump is also used to generate R8/ProGuard keep rules!
      *

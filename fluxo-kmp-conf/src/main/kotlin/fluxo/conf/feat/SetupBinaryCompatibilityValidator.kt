@@ -49,12 +49,14 @@ internal fun setupBinaryCompatibilityValidator(
 
     when (val type = conf.mode) {
         ConfigurationType.KOTLIN_MULTIPLATFORM ->
-            setupKmpBinaryCompatibilityValidator(config, ctx)
+            setupKmpBinaryCompatibilityValidator(conf, config, ctx)
 
         ConfigurationType.ANDROID_LIB,
         ConfigurationType.KOTLIN_JVM,
         ConfigurationType.GRADLE_PLUGIN,
-        -> setupBinaryCompatibilityValidator(config, ctx)
+        -> if (!setupKotlinAbiValidationIfUsable(conf, isMultiplatform = false)) {
+            setupBinaryCompatibilityValidator(config, ctx)
+        }
 
         else ->
             error("Unsupported project type for BinaryCompatibilityValidator checks: $type")
@@ -62,16 +64,22 @@ internal fun setupBinaryCompatibilityValidator(
 }
 
 private fun Project.setupKmpBinaryCompatibilityValidator(
+    conf: FluxoConfigurationExtensionImpl,
     config: BinaryCompatibilityValidatorConfig?,
     ctx: FluxoKmpConfContext,
 ) {
-    setupBinaryCompatibilityValidator(config, ctx)
-    setupKmpAndroidMainApiValidation(ctx)
-
-    if (config?.tsApiChecks != false && ctx.isTargetEnabled(KmpTargetCode.JS)) {
-        setupBinaryCompatibilityValidatorTs(config, ctx)
+    val kgpEngine = setupKotlinAbiValidationIfUsable(conf, isMultiplatform = true)
+    if (!kgpEngine) {
+        setupBinaryCompatibilityValidator(config, ctx)
+        // KGP's engine dumps the Android main compilation itself.
+        setupKmpAndroidMainApiValidation(ctx)
     }
 
+    setupBinaryCompatibilityValidatorTs(config, ctx, hasWebTarget = conf.kmpHasWebTarget)
+    if (!kgpEngine) setupKmpBcvTargetFilters(ctx)
+}
+
+private fun Project.setupKmpBcvTargetFilters(ctx: FluxoKmpConfContext) {
     // API checks are available only for JVM and Android targets.
     if (!ctx.isTargetEnabled(KmpTargetCode.JVM) || !ctx.isTargetEnabled(KmpTargetCode.ANDROID)) {
         tasks.withType<KotlinApiCompareTask> {
@@ -218,7 +226,7 @@ private fun ApiValidationExtension.configureKlibValidation(
     }
 }
 
-private const val KOTLINX_BCV_PLUGIN_ID: String =
+internal const val KOTLINX_BCV_PLUGIN_ID: String =
     "org.jetbrains.kotlinx.binary-compatibility-validator"
 private const val ANDROID_API_BUILD_TASK = "androidApiBuild"
 private const val ANDROID_API_CHECK_TASK = "androidApiCheck"
@@ -246,21 +254,21 @@ private fun FluxoKmpConfContext.isMultiplatformApiTargetAllowed(target: ApiTarge
  * @see kotlinx.validation.KotlinApiBuildTask
  */
 internal fun Project.bindToApiDumpTasks(task: TaskProvider<*>, optional: Boolean = false) {
+    // Live by-name collections: they match BCV's tasks and the aliases fluxo registers for
+    // KGP's engine whenever those appear, and stay empty in modules without ABI validation.
     val tasks = tasks
-    plugins.withId(KOTLINX_BCV_PLUGIN_ID) {
-        val apiDumpTasks = tasks.namedCompat(API_DUMP_SPEC)
-        if (!optional) {
-            apiDumpTasks.configureEach { this.finalizedBy(task) }
-        }
-        task.configure { this.dependsOn(apiDumpTasks) }
+    val apiDumpTasks = tasks.namedCompat(API_DUMP_SPEC)
+    if (!optional) {
+        apiDumpTasks.configureEach { this.finalizedBy(task) }
+    }
+    task.configure { this.dependsOn(apiDumpTasks) }
 
-        // Fix the issue with Gradle:
-        //  "Task 'apiCheck' uses this output of task 'apiDump'
-        //  without declaring an explicit or implicit dependency."
-        val apiCheckTasks = tasks.namedCompat(API_CHECK_SPEC)
-        apiCheckTasks.configureEach {
-            this.mustRunAfter(apiDumpTasks)
-        }
+    // Fix the issue with Gradle:
+    //  "Task 'apiCheck' uses this output of task 'apiDump'
+    //  without declaring an explicit or implicit dependency."
+    val apiCheckTasks = tasks.namedCompat(API_CHECK_SPEC)
+    apiCheckTasks.configureEach {
+        this.mustRunAfter(apiDumpTasks)
     }
 }
 
@@ -273,12 +281,12 @@ private const val KOTLINX_BCV_EXTENSION_NAME = "apiValidation"
 
 // apiDump
 private val API_DUMP_SPEC = Spec<String> {
-    it.startsWith("api") && it.endsWith("Dump")
+    (it.startsWith("api") && it.endsWith("Dump")) || it == KGP_ABI_UPDATE_TASK
 }
 
 // apiCheck
 private val API_CHECK_SPEC = Spec<String> {
-    it.startsWith("api") && it.endsWith("Check")
+    (it.startsWith("api") && it.endsWith("Check")) || it == KGP_ABI_CHECK_TASK
 }
 
 

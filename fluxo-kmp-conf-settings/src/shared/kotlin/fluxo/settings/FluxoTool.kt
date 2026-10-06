@@ -17,15 +17,24 @@ import org.gradle.api.invocation.Gradle
 internal class FluxoTool(val id: String, val version: String, val tasks: Set<String> = emptySet())
 
 /** Versions come from the caller's generated constants (the version catalog). */
-internal fun fluxoTools(ksp: String, pluginPublish: String, dependencyAnalysis: String) = listOf(
+internal fun fluxoTools(
+    ksp: String,
+    pluginPublish: String,
+    dependencyAnalysis: String,
+    bcvJs: String,
+) = listOf(
     FluxoTool("com.google.devtools.ksp", ksp),
     FluxoTool("com.gradle.plugin-publish", pluginPublish),
+    // TypeScript ABI checks (`tsApiChecks`); its classes reference the Kotlin plugin's JS DSL.
+    FluxoTool(FLUXO_BCV_JS_PLUGIN_ID, bcvJs),
     FluxoTool(
         id = "com.autonomousapps.dependency-analysis",
         version = dependencyAnalysis,
         tasks = DEPENDENCY_ANALYSIS_TASKS,
     ),
 )
+
+internal const val FLUXO_BCV_JS_PLUGIN_ID = "io.github.fluxo-kt.binary-compatibility-validator-js"
 
 /** Dependency analysis is only needed for its own reports, so only these requests add it. */
 internal val DEPENDENCY_ANALYSIS_TASKS = setOf("buildHealth", "projectHealth", "reason")
@@ -62,7 +71,8 @@ internal fun Gradle.resolvableFluxoTools(
  * Puts [tools] on [project]'s own build-script classpath; call it before the project is
  * evaluated.
  *
- * Why: KSP, plugin-publish and dependency analysis need the Kotlin plugin's classes (or apply
+ * Why: KSP, fluxo-bcv-js, plugin-publish and dependency analysis need the Kotlin plugin's
+ * classes (or apply
  * helper plugins by id), so fluxo can't load them into a class loader of its own, and Gradle
  * applies a plugin by id only from the project's build classpath. On that classpath fluxo then
  * applies them by id, and the configuration cache stores the build.
