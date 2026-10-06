@@ -99,8 +99,8 @@ listOf("kotlinYarn", "kotlinWasmYarn").forEach { extensionName ->
     extensions.findByName(extensionName)?.let { extension ->
         (extension as BaseYarnRootExtension).apply {
             resolution("diff", "8.0.3")
-            // js-yaml 4.2.0 patches CVE-2026-53550 (merge-key quadratic DoS); <= 4.1.1 vulnerable.
-            resolution("js-yaml", "4.2.0")
+            // Newest 4.x: earlier 4.x releases carry DoS advisories; the tooling requests ^4.
+            resolution("js-yaml", "4.3.2")
             resolution("serialize-javascript", "7.0.5")
         }
     }
