@@ -34,8 +34,50 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         runKmpShortOptInCase(row, tempDir)
         runKmpStdlibSplitCase(row, tempDir)
         runKmpNpmToolVersionCase(row, tempDir)
+        runKmpBareSetupCase(row, tempDir)
     }
 }
+
+/**
+ * `fkcSetupMultiplatform()` without a `kmp`, `kotlin` or `android` block must still set the module
+ * up, like every other `fkcSetup*()`: it once returned early, so the module got no fluxo setup and
+ * its `defaults {}` (its own or a parent's) created no targets.
+ */
+private fun runKmpBareSetupCase(row: Map<String, String>, tempDir: Path) {
+    val output = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kmp-bare-setup",
+        projectDir = tempDir.resolve("${row.getValue("id")}-bare-setup"),
+        tasks = listOf("help"),
+    ) { projectDir ->
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins {
+                id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
+                id("${pluginId()}") version "${pluginVersion()}"
+            }
+
+            fkcSetupMultiplatform(
+                config = {
+                    setupVerification = false
+                    enablePublication = false
+                    enableGradleDoctor = false
+                    setupCoroutines = false
+                    defaults { jvm() }
+                },
+            )
+
+            println("$BARE_SETUP_MARKER" + kotlin.targets.names.sorted())
+            """.trimIndent(),
+        )
+    }.output
+    check("$BARE_SETUP_MARKER[jvm, metadata]" in output) {
+        "Bare fkcSetupMultiplatform() did not create the default jvm target:\n$output"
+    }
+}
+
+private const val BARE_SETUP_MARKER = "FLUXO_COMPAT_BARE_SETUP_TARGETS="
 
 /**
  * TypeScript ABI checks (fluxo-bcv-js) read the Kotlin plugin's JS DSL, so the plugin must load

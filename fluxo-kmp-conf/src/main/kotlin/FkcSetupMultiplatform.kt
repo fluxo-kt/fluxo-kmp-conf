@@ -56,7 +56,7 @@ public fun Project.fkcSetupMultiplatform(
     kotlin: (KotlinMultiplatformExtension.() -> Unit)? = null,
 ) {
     val project = this
-    project.fluxoConfiguration c@{
+    project.fluxoConfiguration {
         namespace?.let { this.androidNamespace = it }
         setupCompose?.let { this.enableCompose = it }
         enableBuildConfig?.let { this.enableBuildConfig = it }
@@ -66,10 +66,6 @@ public fun Project.fkcSetupMultiplatform(
         }
 
         config?.invoke(this)
-
-        if (kmp == null && kotlin == null && android == null) {
-            return@c
-        }
 
         asKmp {
             kmp?.invoke(this)
