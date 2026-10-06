@@ -246,10 +246,26 @@ testing {
                         "concurrent",
                     )
                     // Under `.gradle/` so it survives `clean`; see `compatGradleUserHome`.
-                    systemProperty(
-                        "fluxo.compat.gradle.home",
-                        rootDir.resolve(".gradle/compat-testkit").absolutePath,
-                    )
+                    val testKitHome = rootDir.resolve(".gradle/compat-testkit")
+                    systemProperty("fluxo.compat.gradle.home", testKitHome.absolutePath)
+                    // Gradle's own cleanup bounds the caches and distributions of this home
+                    // (versions unused for 30 days go), but deletes daemon logs only under
+                    // `daemon/`: TestKit daemons log to `test-kit-daemon/` and leave worker
+                    // classpath files in `.tmp/`, which grow by hundreds of MB a day. No fixture
+                    // daemon outlives the test JVM, so a day's files are enough for debugging.
+                    // Only those two kinds: `.tmp/.cache` is the Kotlin compiler's klib
+                    // expansion cache, which a partial delete would corrupt.
+                    doFirst {
+                        val cutoff = System.currentTimeMillis() - 24 * 60 * 60 * 1000L
+                        val logs = testKitHome.resolve("test-kit-daemon").listFiles().orEmpty()
+                            .flatMap { it.listFiles().orEmpty().asList() }
+                            .filter { it.name.startsWith("daemon-") && it.name.endsWith(".log") }
+                        val workerClasspaths = testKitHome.resolve(".tmp").listFiles().orEmpty()
+                            .filter { it.name.startsWith("gradle-worker-classpath") }
+                        (logs + workerClasspaths)
+                            .filter { it.isFile && it.lastModified() < cutoff }
+                            .forEach { it.delete() }
+                    }
                     // Fixture projects run to hundreds of MB per run. A failed run keeps its own
                     // for debugging; a green run, and the next run's start, delete them. They are
                     // deleted here, not by JUnit: TestKit daemons hold files in them until the test
