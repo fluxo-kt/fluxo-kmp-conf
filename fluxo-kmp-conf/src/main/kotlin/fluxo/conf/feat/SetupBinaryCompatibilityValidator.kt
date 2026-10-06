@@ -100,7 +100,7 @@ private fun Project.setupKmpBcvTargetFilters(ctx: FluxoKmpConfContext) {
     // it on target-restricted runs; the full-target lane (non-split CI step) still enforces
     // it. `apiCheck` is a lifecycle umbrella — its disabled deps are skipped, no extra wiring.
     if (isSplitTargetsEnabled()) {
-        tasks.matching { it.name == "klibApiCheck" }.configureEach {
+        tasks.named { it == "klibApiCheck" }.configureEach {
             if (enabled) {
                 enabled = false
                 logger.l("$this disabled under -Dsplit_targets")

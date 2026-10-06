@@ -526,6 +526,9 @@ private fun KotlinTarget.disableIfFilteredOut(conf: FluxoConfigurationExtensionI
      * @see org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask
      */
     project.afterEvaluate {
+        // Matched by package, which realises every task: KGP's JS task names share no prefix, and
+        // a typed `withType` list would miss task types a newer KGP adds. It runs only when
+        // KMP_TARGETS filters out a JS target.
         tasks.matching { task ->
             task::class.java.name
                 .startsWith("org.jetbrains.kotlin.gradle.targets.js.")

@@ -183,7 +183,7 @@ private const val KOTLIN_CHECK_SIGNING_TASK_NAME = "checkSigningConfiguration"
 private const val GRADLE_HOME_PATH_ACCESSOR = "getGradleHomePath"
 
 private fun Project.configureKotlinCheckSigningConfigurationTask() {
-    tasks.matching { it.name == KOTLIN_CHECK_SIGNING_TASK_NAME }.configureEach {
+    tasks.named { it == KOTLIN_CHECK_SIGNING_TASK_NAME }.configureEach {
         // KGP 2.2 exposes this required input but leaves it unset; reflection keeps the
         // workaround absent on older KGPs that do not have the task or property.
         val gradleHomePath = javaClass.methods
