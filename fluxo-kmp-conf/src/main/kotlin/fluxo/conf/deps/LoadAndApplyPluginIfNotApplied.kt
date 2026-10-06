@@ -6,6 +6,7 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
 import fluxo.log.e
+import fluxo.log.i
 import fluxo.log.v
 import fluxo.log.w
 import fluxo.vc.p
@@ -31,6 +32,7 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
     canLoadDynamically: Boolean = true,
     fetchWithGradle: Boolean = false,
     onBuildClasspath: Boolean = false,
+    loadedWorksWithCache: Boolean = false,
 ): ApplyPluginResult {
     val logger = project.logger
     val pluginManager = project.pluginManager
@@ -76,6 +78,7 @@ internal fun FluxoKmpConfContext.loadAndApplyPluginIfNotApplied(
         catalogPluginAlias = catalogPluginAlias,
         lookupClassName = lookupClassName,
         canLoadDynamically = canLoadDynamically,
+        loadedWorksWithCache = loadedWorksWithCache,
         project = project,
     ) ?: return ApplyPluginResult(applied = false, id = id, alias = catalogPluginAlias)
 
@@ -98,6 +101,7 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
     catalogPluginAlias: String?,
     lookupClassName: Boolean,
     canLoadDynamically: Boolean,
+    loadedWorksWithCache: Boolean,
     project: Project,
 ): Class<*>? {
     val logger = project.logger
@@ -133,7 +137,7 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
                     val message = "Found plugin '$pluginId' class on the classpath" +
                         " for '${project.path}': $name" +
                         CLASS_NAME_AUTO_DETECTED
-                    logger.w(message)
+                    logger.i(message)
                     return pluginClass
                 }
             }
@@ -160,12 +164,20 @@ private fun FluxoKmpConfContext.loadPluginArtifactAndGetClass(
         for (name in classNames) {
             pluginClass = Class.forName(name, true, classLoader)
             if (pluginClass != null) {
-                val confFile = "build.gradle.kts"
-                val warn = "Dynamically loaded plugin '$pluginId'" +
-                    " in '${project.path}' from [$coords]$detected.\n " +
-                    "You may want to add it to the classpath in the root $confFile instead! " +
-                    example
-                logger.w(warn)
+                // A plugin in fluxo's own class loader works without the configuration cache.
+                // With it, one that registers tasks can't be stored, so only then is declaring
+                // it something the consumer must do.
+                if (loadedWorksWithCache || !project.isConfigurationCacheActive()) {
+                    logger.i(
+                        "Loaded plugin '$pluginId' for '${project.path}' from [$coords]$detected",
+                    )
+                } else {
+                    logger.w(
+                        missingFromBuildClasspathMessage(project, pluginId, pluginVersion) +
+                            " fluxo loads it itself, which the configuration cache can't store" +
+                            " when the plugin registers tasks.",
+                    )
+                }
                 return pluginClass
             }
         }
@@ -331,16 +343,10 @@ private fun FluxoKmpConfContext.getPluginIdAndVersion(
 private const val CLASS_NAME_AUTO_DETECTED = " (class name is not provided and auto detected!)"
 
 /** Reports a plugin that must be declared by the consumer; with [fail], fails the build. */
-internal fun Project.loadPluginStaticallyError(
-    pluginId: String,
-    catalogPluginAlias: String? = null,
-    fail: Boolean = false,
-) {
-    val example = loadingWarnExample(pluginId, catalogPluginAlias)
-    val error = "Can't load plugin '$pluginId' dynamically in '$path'!"
-    val message = loadingErrorMessage(error, example)
+internal fun Project.loadPluginStaticallyError(pluginId: String, fail: Boolean = false) {
+    val message = missingFromBuildClasspathMessage(this, pluginId, version = null)
     if (fail) throw GradleException(message)
-    logger.e(message)
+    logger.w(message)
 }
 
 private fun loadingErrorMessage(err: String, example: String) = "$err\n " +

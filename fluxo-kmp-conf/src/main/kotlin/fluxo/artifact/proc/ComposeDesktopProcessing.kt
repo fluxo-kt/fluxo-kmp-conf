@@ -4,8 +4,8 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.lc
 import fluxo.conf.impl.named
 import fluxo.log.e
+import fluxo.log.i
 import fluxo.log.l
-import fluxo.log.w
 import fluxo.vc.l
 import fluxo.vc.v
 import org.gradle.api.Project
@@ -60,7 +60,7 @@ internal fun Project.processComposeDesktopArtifact(
         this.mainJar.set(jarProvider)
         doFirst {}
     }
-    logger.w("Default Compose Desktop app ProGuard IS NOW REPLACED with Fluxo processing!")
+    logger.i("Compose Desktop release ProGuard task runs fluxo's shrinker chain instead")
 }
 
 private const val JB_COMPOSE_PROGUARD_TASK = "proguardReleaseJars"

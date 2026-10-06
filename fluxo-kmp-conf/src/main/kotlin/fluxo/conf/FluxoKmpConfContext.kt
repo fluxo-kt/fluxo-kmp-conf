@@ -146,9 +146,8 @@ internal abstract class FluxoKmpConfContext
         // daemon reuses across builds, so one verbose build would leave every later one verbose.
         SHOW_DEBUG_LOGS = isVerbose
 
-        // The one lifecycle line per build: the toolchain fluxo adapts to and the modes that
-        // change what it sets up. Machine figures and bundled shrinkers go to info.
-        logger.lifecycle(environmentBanner(project))
+        // Machine figures and bundled shrinkers go to info; the banner follows once the modes
+        // it lists are known.
         run {
             var m = "$CPUs CPUs,  ${readableByteSize(XMX)} XMX"
             val ram = TOTAL_OS_MEMORY
@@ -165,10 +164,7 @@ internal abstract class FluxoKmpConfContext
                 val reason = projectInSyncFlag.firstOrNull()
                 logger.d("onProjectInSyncRun, because $reason")
                 if (testsDisabled) {
-                    logger.w(
-                        "You may want to enable tests for the IDE synchronization " +
-                            "to configure all tasks!",
-                    )
+                    logger.i("Tests are off, so their tasks are not configured for IDE sync")
                 }
             }
         }
@@ -223,16 +219,6 @@ internal abstract class FluxoKmpConfContext
         if (start.isContinueOnFailure) logger.i("ContinueOnFailure mode is enabled!")
         if (composeMetricsEnabled) logger.i("COMPOSE_METRICS are enabled!")
 
-        if (useKotlinDebug) logger.w("USE_KOTLIN_DEBUG is enabled!")
-        when {
-            isMaxDebug -> logger.w("MAX_DEBUG is enabled!")
-            isVerbose -> logger.w("FLUXO_VERBOSE is enabled!")
-        }
-        if (isDesugaringEnabled) logger.w("DESUGARING is enabled!")
-        if (project.isShrinkerDisabled().get()) {
-            logger.w("SHRINKING (R8/ProGuard) is disabled! (DISABLE_R8)")
-        }
-
         // Disable all tests if:
         //  - `DISABLE_TESTS` is enabled;
         //  - `check` or `test` tasks are excluded from the build;
@@ -247,13 +233,18 @@ internal abstract class FluxoKmpConfContext
             else -> null
         }
         testsDisabled = testsDisabledReason != null
+
+        // The one lifecycle line per build: the toolchain fluxo adapts to and the modes that
+        // change what it sets up.
+        logger.lifecycle(environmentBanner(project, testsDisabledReason))
+
         if (testsDisabled) {
-            logger.w("Tests are disabled! Because of: $testsDisabledReason")
-            for (name in startTaskNames) {
-                if (CHECK_TASK_NAME in name || TEST_TASK_NAME in name) {
-                    logger.e("DISABLE_TESTS mode is enabled while calling $name task!")
-                    break
-                }
+            val name = startTaskNames.firstOrNull { CHECK_TASK_NAME in it || TEST_TASK_NAME in it }
+            if (name != null) {
+                logger.w(
+                    "`$name` runs no tests: fluxo turns them off because of $testsDisabledReason." +
+                        " Unset DISABLE_TESTS, and don't exclude `check` or `test`, to run them.",
+                )
             }
         }
 
@@ -273,7 +264,7 @@ internal abstract class FluxoKmpConfContext
     internal val isProjectInSyncRun: Boolean
         get() = projectInSyncFlag.isNotEmpty()
 
-    private fun environmentBanner(project: Project): String = buildString {
+    private fun environmentBanner(project: Project, testsOffReason: String?): String = buildString {
         append("fluxo-kmp-conf: Gradle ${project.gradle.gradleVersion}, JDK $JRE_VERSION_STRING, ")
         append("Kotlin $kotlinPluginVersion")
         AgpVersion.current(project)?.let { append(", AGP $it") }
@@ -281,6 +272,14 @@ internal abstract class FluxoKmpConfContext
         if (isCI) append(", CI")
         if (isRelease) append(", RELEASE")
         if (!allTargetsEnabled) append(", KMP_TARGETS=${kmpTargets.joinToString(",")}")
+        when {
+            isMaxDebug -> append(", MAX_DEBUG")
+            project.isFluxoVerbose().get() -> append(", FLUXO_VERBOSE")
+        }
+        if (useKotlinDebug) append(", USE_KOTLIN_DEBUG")
+        if (isDesugaringEnabled) append(", DESUGARING")
+        if (project.isShrinkerDisabled().get()) append(", DISABLE_R8")
+        testsOffReason?.let { append(", tests off ($it)") }
     }
 
     /**
@@ -313,7 +312,10 @@ internal abstract class FluxoKmpConfContext
                 context.action()
             } catch (e: Throwable) {
                 if (rethrow) throw e
-                rootProject.logger.e("Failed to run onProjectInSyncRun action: $e", e)
+                // A warning: the build goes on, and the message names the fix. The trace is
+                // only for debugging fluxo itself.
+                rootProject.logger.w("Setup step skipped: ${e.message ?: e}")
+                rootProject.logger.v("Setup step failure", e)
             }
         }
         when {

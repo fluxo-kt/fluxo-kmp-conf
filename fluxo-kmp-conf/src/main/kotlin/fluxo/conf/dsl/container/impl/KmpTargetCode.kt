@@ -1,6 +1,6 @@
 package fluxo.conf.dsl.container.impl
 
-import fluxo.log.w
+import fluxo.log.i
 import org.gradle.api.logging.Logger
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -114,11 +114,14 @@ internal enum class KmpTargetCode {
         // KotlinPlatformType / Family entries added by JetBrains must degrade gracefully
         // (log + return null/empty) rather than throw NoWhenBranchMatchedException.
         @Suppress("CyclomaticComplexMethod", "REDUNDANT_ELSE_IN_WHEN")
-        internal fun fromKotlinTarget(target: KotlinTarget, logger: Logger?): KmpTargetCode? {
-            return when (val platformType = target.platformType) {
+        internal fun fromKotlinTarget(target: KotlinTarget, logger: Logger?): KmpTargetCode? =
+            when (val platformType = target.platformType) {
                 KotlinPlatformType.common -> COMMON
+
                 KotlinPlatformType.jvm -> JVM
+
                 KotlinPlatformType.androidJvm -> ANDROID
+
                 KotlinPlatformType.js -> JS
 
                 KotlinPlatformType.wasm -> when (target) {
@@ -126,18 +129,19 @@ internal enum class KmpTargetCode {
                     else -> WASM_JS
                 }
 
+                // Info only: a target newer than this plugin version stays unclassified, which
+                // the consumer can't change.
                 KotlinPlatformType.native -> {
                     val konanTarget = (target as KotlinNativeTarget).konanTarget
                     konanTarget.toKmpTargetCode()
-                        ?: null.also { logger?.w("Unexpected KonanTarget: $konanTarget") }
+                        ?: null.also { logger?.i("Unexpected KonanTarget: $konanTarget") }
                 }
 
                 else -> {
-                    logger?.w("Unexpected KotlinPlatformType: $platformType")
+                    logger?.i("Unexpected KotlinPlatformType: $platformType")
                     null
                 }
             }
-        }
 
         @Suppress("REDUNDANT_ELSE_IN_WHEN")
         internal fun fromKotlinFamily(family: Family): Array<KmpTargetCode> {

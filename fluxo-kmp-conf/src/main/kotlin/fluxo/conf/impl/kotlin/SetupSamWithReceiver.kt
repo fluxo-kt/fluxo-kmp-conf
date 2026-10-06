@@ -17,6 +17,8 @@ internal fun Project.setupSamWithReceiver(ctx: FluxoKmpConfContext) {
         // wins.
         version = KOTLIN_PLUGIN_VERSION_STRING,
         project = this,
+        // It registers no tasks, only a compiler plugin option, so the cache stores it.
+        loadedWorksWithCache = true,
     )
     if (!result.applied) {
         return

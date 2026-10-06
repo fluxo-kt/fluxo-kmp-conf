@@ -5,7 +5,6 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.e
 import fluxo.log.l
-import fluxo.log.w
 
 // Develocity: build scans, data to speed up build and improve build reliability.
 // https://scans.gradle.com/plugin/
@@ -30,7 +29,7 @@ internal fun FluxoKmpConfContext.prepareBuildScanPlugin(): Unit = rootProject.ru
         }
         val buildScan = extensions.findByName("buildScan")
         if (buildScan != null && configureLegacyBuildScan(buildScan)) {
-            logger.w("Configured the build scan plugin (legacy gradle.enterprise)")
+            logger.l("Configured the build scan plugin (legacy gradle.enterprise)")
         }
     } catch (e: Throwable) {
         if (SHOW_DEBUG_LOGS) {

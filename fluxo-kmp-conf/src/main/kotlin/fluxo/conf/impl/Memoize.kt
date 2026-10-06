@@ -2,7 +2,7 @@
 
 package fluxo.conf.impl
 
-import fluxo.log.e
+import fluxo.log.i
 import org.gradle.api.internal.provider.AbstractMinimalProvider
 import org.gradle.api.internal.provider.DefaultValueSourceProviderFactory
 import org.gradle.api.internal.provider.ProviderInternal
@@ -11,14 +11,13 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
 
 /** @see memoize */
-internal fun <T : Any> Provider<T>.memoizeSafe(logger: Logger?): Provider<T> {
-    return try {
-        memoize()
-    } catch (e: Throwable) {
-        if (logger == null) throw e
-        logger.e("Failed to memoize provider: $e", e)
-        this
-    }
+internal fun <T : Any> Provider<T>.memoizeSafe(logger: Logger?): Provider<T> = try {
+    memoize()
+} catch (e: Throwable) {
+    if (logger == null) throw e
+    // Info only: the unmemoized provider gives the same value, just computed more than once.
+    logger.i("Provider not memoized (Gradle internal API changed): $e")
+    this
 }
 
 /** @see org.jetbrains.intellij.memoize */

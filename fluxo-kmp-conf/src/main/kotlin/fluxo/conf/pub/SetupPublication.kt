@@ -597,11 +597,17 @@ private fun Project.applyMavenPublishPlugin(config: FluxoPublicationConfig): Pub
 internal fun Project.setProjectPublicationProps(config: FluxoPublicationConfig) {
     val v = config.version
     if (v.contains("unspecified", ignoreCase = true) || v.isBlank()) {
-        throw GradleException("Publication artifact version is not set!")
+        throw GradleException(
+            "Publication of '$path' has no version: set `version` in the build script or in " +
+                "fkcSetup*, or a `version` entry in the version catalog's [versions].",
+        )
     }
 
     if (config.group.isBlank()) {
-        throw GradleException("Publication artifact group is not set!")
+        throw GradleException(
+            "Publication of '$path' has no group: set `group` in the build script or in " +
+                "fkcSetup*, or a `group` entry in the version catalog's [versions].",
+        )
     }
 
     group = config.group

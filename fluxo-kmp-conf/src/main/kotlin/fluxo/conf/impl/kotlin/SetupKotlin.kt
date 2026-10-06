@@ -41,6 +41,7 @@ import fluxo.conf.pub.setupGradlePublishPlugin
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
 import fluxo.log.e
+import fluxo.log.i
 import fluxo.log.l
 import fluxo.log.v
 import fluxo.log.w
@@ -317,7 +318,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     project.description = conf.description
 
     if (!conf.setupKotlin) {
-        project.logger.w("NOT Configuring Kotlin extension (setupKotlin=false)")
+        project.logger.i("Kotlin extension not configured (setupKotlin = false)")
         return
     }
     project.logger.v("Configuring Kotlin extension")

@@ -3,7 +3,6 @@
 package fluxo.shrink
 
 import fluxo.conf.impl.ifNotEmpty
-import fluxo.log.e
 import fluxo.log.i
 import fluxo.log.v
 import java.io.BufferedReader
@@ -391,7 +390,7 @@ private fun Task.modifiersForClass(modifiers: List<String>) =
 
 private fun Task.filterModifiers(list: List<String>): List<String> {
     if (list.any { it !in ALLOWED_CLASS_MODIFIERS }) {
-        logger.e("Unexpected modifiers: {}", list)
+        logger.i("Unexpected modifiers in the API dump, ignored: {}", list)
         return list.filter { it in ALLOWED_CLASS_MODIFIERS }
     }
     return list

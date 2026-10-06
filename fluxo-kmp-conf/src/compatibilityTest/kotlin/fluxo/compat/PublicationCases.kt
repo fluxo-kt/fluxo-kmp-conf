@@ -6,12 +6,13 @@ import kotlin.io.path.writeText
 /**
  * Publication enabled but fluxo's setup can't run: no project version, or the Vanniktech plugin
  * not declared. A publishing build must fail with that cause, not run on with an error line and
- * stop later at a missing task; a build that doesn't publish keeps passing, as it did before.
+ * stop later at a missing task; a build that doesn't publish keeps passing, as it did before,
+ * with a warning that names the cause and its fix.
  */
 internal fun runPublicationSetupFailureCase(row: Map<String, String>, tempDir: Path) {
     val scenarios = mapOf(
-        "no-version" to "Publication artifact version is not set!",
-        "no-vanniktech" to "Can't load plugin 'com.vanniktech.maven.publish'",
+        "no-version" to "Publication of ':' has no version",
+        "no-vanniktech" to "'com.vanniktech.maven.publish' is not on the build classpath of ':'",
     )
     for ((scenario, cause) in scenarios) {
         fun case(tasks: List<String>, expectFailure: List<String>) = runConsumerCase(
@@ -32,7 +33,12 @@ internal fun runPublicationSetupFailureCase(row: Map<String, String>, tempDir: P
         val output = case(listOf("publishToMavenLocal"), expectFailure = listOf(cause))
         val whatWentWrong = output.substringAfter("* What went wrong:").substringBefore("* Try:")
         check(cause in whatWentWrong) { "$scenario: the build must fail with:\n$output" }
-        case(listOf("help"), expectFailure = emptyList())
+        // Not publishing: one warning with the cause and its fix, no error line.
+        val help = case(listOf("help"), expectFailure = emptyList())
+        check(help.lines().any { it.startsWith("w: ") && cause in it }) {
+            "$scenario: expected a warning with '$cause':\n$help"
+        }
+        check(help.lines().none { it.startsWith("e: ") }) { "$scenario: error line:\n$help" }
     }
 }
 

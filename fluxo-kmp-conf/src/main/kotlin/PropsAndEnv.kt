@@ -11,7 +11,6 @@ import fluxo.conf.impl.envOrPropFlagValue
 import fluxo.conf.impl.envOrPropValue
 import fluxo.conf.impl.envOrPropValueLenient
 import fluxo.conf.impl.memoizeSafe
-import fluxo.log.e
 import fluxo.log.i
 import java.util.regex.Pattern
 import org.gradle.api.Incubating
@@ -173,13 +172,15 @@ private fun Project.runCommand(command: String): String? {
             error.isEmpty() && exitCodeIsNormal -> exec.standardOutput.asText.get()
                 .trim().ifEmpty { null }
 
+            // Info only: every caller reads an optional SCM tag, and a build outside a git
+            // checkout (an unpacked source archive) simply has none.
             else -> {
-                logger.e("Error running command `{}`: {}", command, error)
+                logger.i("Command `$command` failed, no SCM tag from it: $error")
                 null
             }
         }
     } catch (e: Throwable) {
-        logger.e("Error running command `$command`: $e", e)
+        logger.i("Command `$command` failed, no SCM tag from it: $e")
         null
     }
 }

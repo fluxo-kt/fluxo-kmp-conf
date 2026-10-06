@@ -39,7 +39,7 @@ internal fun runDokkaCase(row: Map<String, String>, tempDir: Path) {
         }.output
         if (!declared) {
             check("'org.jetbrains.dokka' is not on the build classpath" in output) { output }
-            check("Failed to run onProjectInSyncRun action" !in output) { output }
+            check("Setup step skipped" !in output) { output }
             continue
         }
         val pages = projectDir.resolve("build/dokka").toFile().walk()
