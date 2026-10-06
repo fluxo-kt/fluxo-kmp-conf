@@ -4,7 +4,7 @@ import java.io.DataInputStream
 import java.nio.file.Path
 import kotlin.io.path.inputStream
 
-/** JVM target and JDK API cases of the Kotlin/JVM consumer fixture ([runKotlinJvmConsumer]). */
+/** JVM target and JDK API cases of the Kotlin/JVM consumer fixture ([kotlinJvmConsumerCases]). */
 internal fun runKotlinJvmTargetCases(row: Map<String, String>, tempDir: Path) {
     runJvmTarget26Case(row, tempDir)
     runDefaultJvmTargetCase(row, tempDir)

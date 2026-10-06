@@ -10,9 +10,9 @@ internal class KotlinJvmCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedKotlinJvmConsumersRunRequiredLifecycleTasks(): Iterable<DynamicTest> =
-        selectedRows(fixture = "kotlin-jvm").map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
-                runKotlinJvmConsumer(row, tempDir)
+        selectedRows(fixture = "kotlin-jvm").flatMap { row ->
+            kotlinJvmConsumerCases(row, tempDir).map { (case, run) ->
+                DynamicTest.dynamicTest("${row.getValue("id")} $case", run)
             }
         }
 

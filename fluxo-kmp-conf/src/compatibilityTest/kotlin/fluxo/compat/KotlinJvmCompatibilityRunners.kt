@@ -10,8 +10,33 @@ import org.gradle.testkit.runner.TaskOutcome
  * The consumer shape where the Kotlin plugin sits on the root `buildscript` classpath and only
  * fluxo is in `plugins {}`. Fluxo resolves from the local Maven repository like any consumer's,
  * so the row's `kgpVersion` is the Kotlin plugin it runs against.
+ *
+ * Each case builds its own project directory, so they run as separate, concurrent tests: one
+ * test per row ran them in a chain that alone outlasted the CI leg's budget.
  */
-internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
+internal fun kotlinJvmConsumerCases(
+    row: Map<String, String>,
+    tempDir: Path,
+): List<Pair<String, () -> Unit>> = buildList {
+    add("lifecycle" to { runKotlinJvmLifecycle(row, tempDir) })
+    add("deprecated-language-version" to { runDeprecatedLanguageVersionCase(row, tempDir) })
+    add("consumer-settings-win" to { runConsumerSettingsWinCase(row, tempDir) })
+    add("jvm-target" to { runKotlinJvmTargetCases(row, tempDir) })
+    add("root-classpath-pin" to { runRootClasspathPinCase(row, tempDir) })
+    add("fetched-tool" to { runFetchedToolCase(row, tempDir) })
+    add("tool-injection" to { runToolInjectionCase(row, tempDir) })
+    add("bundled-tool-versions" to { runBundledToolVersionCase(row, tempDir) })
+    add("detekt-type-resolution" to { runDetektTypeResolutionCase(row, tempDir) })
+    add("taskinfo" to { runTaskInfoCase(row, tempDir) })
+    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
+        add("dokka" to { runDokkaCase(row, tempDir) })
+        add("kotlin-defaults-switch" to { runKotlinDefaultsSwitchCase(row, tempDir) })
+        add("publication-setup-failure" to { runPublicationSetupFailureCase(row, tempDir) })
+    }
+}
+
+/** The row's main project: its required tasks, dependency resolution and `FLUXO_EXPLAIN`. */
+private fun runKotlinJvmLifecycle(row: Map<String, String>, tempDir: Path) {
     val writeProject = { projectDir: Path ->
         projectDir.resolve("build.gradle.kts").writeText(kotlinJvmConsumerBuildScript(row))
         writeKotlinJvmSources(projectDir)
@@ -45,21 +70,6 @@ internal fun runKotlinJvmConsumer(row: Map<String, String>, tempDir: Path) {
     }
     val plain = case(HELP, emptyList())
     check(EXPLAIN_HEADER !in plain) { "Without FLUXO_EXPLAIN no block is printed:\n$plain" }
-
-    runDeprecatedLanguageVersionCase(row, tempDir)
-    runConsumerSettingsWinCase(row, tempDir)
-    runKotlinJvmTargetCases(row, tempDir)
-    runRootClasspathPinCase(row, tempDir)
-    runFetchedToolCase(row, tempDir)
-    runToolInjectionCase(row, tempDir)
-    runBundledToolVersionCase(row, tempDir)
-    runDetektTypeResolutionCase(row, tempDir)
-    runTaskInfoCase(row, tempDir)
-    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
-        runDokkaCase(row, tempDir)
-        runKotlinDefaultsSwitchCase(row, tempDir)
-        runPublicationSetupFailureCase(row, tempDir)
-    }
 }
 
 /**
