@@ -5,18 +5,17 @@
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![Common Changelog](https://common-changelog.org/badge.svg)](CHANGELOG.md)
 
-Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects.
+Gradle plugin that configures Kotlin, KMP and Android modules from one root plugin and one `fkcSetup*()` call per module, with strict defaults you can switch off one by one.
 
-- Completely lazy on-demand project configuration framework with many nice-to-have things out-of-the-box.
-- Automatically configures hierarchical source sets and provides convenience DSL for them.
-- You can control which targets are enabled by passing properties at build time. With no errors in modules with all targets disabled!
+- Lazy: configures only what a module uses.
+- Sets up hierarchical KMP source sets (diagram below).
+- `KMP_TARGETS=JVM,JS` (or `KMP_TARGETS_ALL=true`) picks the targets to build, e.g. per CI job (codes: [`KmpTargetCode`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/container/impl/KmpTargetCode.kt)); a module with all its targets filtered out still configures.
 - Ready for Android, JS, KMP, JVM, Gradle plugin, or IDEA plugin modules.
 - Allows configuring verification tasks (Detekt, Lint, ABI validation — Kotlin's own engine on Kotlin 2.4+, else BCV — with TypeScript API checks for JS).
-  - Provides merged Sarif reports for the whole project.
-  - Provides baseline configuration tasks.
-- Convenience console tests report at the end of the build along with a merged XML report for the whole project.
-- Allows using ProGuard and/or R8 as an optimizer for JVM targets.
-- Enables passing of build targets via command line to control what gets configured (great for CI).
+  - One merged SARIF report per tool for the whole build.
+  - Baseline tasks (`./gradlew detektBaselineMerge updateLintBaseline apiDump`).
+- A test summary in the console at build end, plus one merged XML test report.
+- ProGuard and/or R8 shrinking of JVM artifacts.
 
 Initially made for the [Fluxo][fluxo] state management framework and other libraries, then published for general use.
 
