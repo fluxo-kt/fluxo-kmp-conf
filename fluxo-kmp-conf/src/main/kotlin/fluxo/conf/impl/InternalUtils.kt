@@ -16,7 +16,10 @@ private val TRUE_VALUES = arrayOf("true", "1", "on", "y", "yes")
 
 
 private fun Project.stringPropValue(name: String): String? {
-    // Exclude extensions, look only for regular props
+    // Exclude extensions, look only for regular props.
+    // `findProperty`, not `providers.gradleProperty`: flags may be set as `extra` properties or
+    // in a module's own gradle.properties, which only project properties see. Its walk up the
+    // parent projects is a cross-project read that Isolated Projects support has to replace.
     val filter: (Any) -> Boolean = { it is CharSequence || it is Number }
     var value = findProperty(name)?.takeIf(filter)?.toString()
     if (value.isNullOrEmpty() && '.' !in name) {
