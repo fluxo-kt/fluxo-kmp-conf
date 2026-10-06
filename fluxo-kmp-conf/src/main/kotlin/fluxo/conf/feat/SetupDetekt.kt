@@ -444,14 +444,20 @@ private fun Project.setupDetekt2(
  * task per source set (`detekt<SourceSet>SourceSet`), so a source set a JVM/Android compilation
  * covers would be analysed twice: double the time and duplicate findings in the merged report.
  * Only the source sets no such compilation covers (native, JS, Wasm, shared non-JVM ones) keep
- * their plain task. The plain `detekt` task is left out too: its default sources are what the
- * `main`/`test` compilations already analyse with types.
+ * their plain task. A compilation counts only while its Detekt task is enabled: with the JVM and
+ * Android targets filtered out by `KMP_TARGETS`, `commonTest` would otherwise go unanalysed.
+ * The plain `detekt` task is left out too: its default sources are what the `main`/`test`
+ * compilations already analyse with types.
  */
 private fun Project.detekt2AnalysisTasks(): Provider<List<Detekt2>> = provider {
     val kmp = mppExtOrNull
     val covered: Set<String>? = kmp?.targets
         ?.filter { it.platformType == KotlinPlatformType.jvm || it.platformType == KotlinPlatformType.androidJvm }
-        ?.flatMap { it.compilations }
+        ?.flatMap { t ->
+            t.compilations.filter { c ->
+                detektTaskNames(t, c, this).any { tasks.findByName(it)?.enabled == true }
+            }
+        }
         ?.flatMapTo(HashSet()) { c -> c.allKotlinSourceSets.map { it.name.capitalized() } }
     tasks.withType(Detekt2::class.java).filter { task ->
         val sourceSet = task.name.removePrefix(DETEKT_TASK_NAME).removeSuffix(SOURCE_SET_SUFFIX)
