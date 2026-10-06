@@ -1,7 +1,7 @@
 # Changelog [^1]
 
 
-## Unreleased
+## [0.16.0] - 2026-10-06
 
 [//]: # (Sections: Removed, Added, Changed, Fixed, Updated. Common Changelog style.)
 [//]: # (CONSUMER-FACING ONLY — see AGENTS.md "Conventions" for the strict scope rule.)
@@ -583,6 +583,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.16.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.16.0
 [0.15.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.15.1
 [0.15.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.15.0
 [0.14.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.14.1

@@ -34,7 +34,7 @@ Built with:<br>
 ```kotlin
 // in `settings.gradle.kts`, after `pluginManagement {}`.
 plugins {
-  id("io.github.fluxo-kt.fluxo-kmp-conf.settings") version "0.15.1" // <-- add here
+  id("io.github.fluxo-kt.fluxo-kmp-conf.settings") version "0.16.0" // <-- add here
 }
 ```
 
@@ -42,7 +42,7 @@ plugins {
 // in the root `build.gradle.kts`.
 plugins {
   kotlin("multiplatform") version "2.4.20"
-  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.15.1" // <-- and here
+  id("io.github.fluxo-kt.fluxo-kmp-conf") version "0.16.0" // <-- and here
 }
 ```
 
