@@ -1,9 +1,5 @@
 package fluxo.shrink
 
-import fluxo.artifact.proc.JvmShrinker
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicBoolean
-
 internal val BUNDLED_R8_VERSION: String? = run {
     try {
         // https://r8.googlesource.com/r8/+refs
@@ -24,7 +20,3 @@ internal val BUNDLED_PROGUARD_VERSION: String? = run {
         null
     }
 }
-
-internal var PREFER_BUNDLED_R8 = AtomicBoolean(true)
-
-internal var REMOTE_SHRINKER_VERSION = ConcurrentHashMap<JvmShrinker, String>()

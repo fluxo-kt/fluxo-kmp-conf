@@ -25,7 +25,8 @@ public interface ProcessorConfig : ArtifactProcessingChain {
     /**
      * The order of the call types to be used for this processor.
      *
-     * [ProcessorCallType.DEFAULT_FALLBACK_ORDER] by default (`EXTERNAL`, `BUNDLED`, `IN_MEMORY`).
+     * By default `EXTERNAL`, `BUNDLED`, `IN_MEMORY` for ProGuard, and `BUNDLED`, `EXTERNAL`,
+     * `IN_MEMORY` for R8, whose bundled copy is the R8 of the build's own AGP.
      *
      * @see forceBundled
      * @see forceUnbundled

@@ -347,14 +347,12 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         // 1. Try to call as a separate process first.
         // 2. Try to use the bundled ProGuard/R8.
         // 3. Fallback to custom classloader.
+        // R8 tries the bundled one first: it is the R8 of the build's own AGP, when present.
         val callFallbackOrder = callFallbackOrder.get()
             .ifEmpty {
-                when {
-                    shrinker == R8 && PREFER_BUNDLED_R8.get() ->
-                        ProcessorCallType.PREFER_BUNDLED_FALLBACK_ORDER
-
-                    else ->
-                        ProcessorCallType.DEFAULT_FALLBACK_ORDER
+                when (shrinker) {
+                    R8 -> ProcessorCallType.PREFER_BUNDLED_FALLBACK_ORDER
+                    ProGuard -> ProcessorCallType.DEFAULT_FALLBACK_ORDER
                 }
             }
             .toCollection(LinkedHashSet())
@@ -368,7 +366,10 @@ internal abstract class AbstractShrinkerTask : AbstractExternalFluxoTask() {
         val start = currentTimeMillis()
         callType@ for (callType in callFallbackOrder) {
             val version = when {
-                callType != ProcessorCallType.BUNDLED -> REMOTE_SHRINKER_VERSION[shrinker]
+                // The first coordinate is the shrinker itself: `group:name:version`.
+                callType != ProcessorCallType.BUNDLED -> toolCoordinates.get()
+                    .substringBefore(',').split(':').getOrNull(2)
+
                 else -> when (shrinker) {
                     ProGuard -> BUNDLED_PROGUARD_VERSION
                     R8 -> BUNDLED_R8_VERSION

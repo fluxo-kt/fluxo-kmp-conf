@@ -165,7 +165,6 @@ private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
                 val b = GradleVersion.version(bundledR8.substringBefore('-'))
                 if (v < b) {
                     message += " (bundled R8 is preferred: $bundledR8)"
-                    PREFER_BUNDLED_R8.set(true)
                     bundledIsPreferred = true
                 }
             } catch (e: Throwable) {
@@ -173,7 +172,6 @@ private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
             }
         }
         project.logger.v(message)
-        REMOTE_SHRINKER_VERSION[shrinker] = version
     }
     if (!isVerbose) {
         notifyThatToolIsStarting(shrinker.name, version)
