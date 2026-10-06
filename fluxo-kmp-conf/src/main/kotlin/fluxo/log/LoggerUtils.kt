@@ -86,8 +86,20 @@ internal fun Logger.i(message: String, arg1: Any?) = when {
 }
 
 
-internal fun Logger.l(message: String) = lifecycle(L + message)
-internal fun Logger.l(message: String, vararg args: Any) = lifecycle(L + message, *args)
+/**
+ * A routine line: what fluxo set up, nothing the consumer must act on. Info level, so a plain
+ * build prints only the environment banner, warnings and `FLUXO_EXPLAIN`'s block; verbose builds
+ * (`FLUXO_VERBOSE`, `MAX_DEBUG`, `--info`) show these at lifecycle as before.
+ */
+internal fun Logger.l(message: String) = when {
+    SHOW_DEBUG_LOGS -> lifecycle(L + message)
+    else -> info(L + message)
+}
+
+internal fun Logger.l(message: String, vararg args: Any) = when {
+    SHOW_DEBUG_LOGS -> lifecycle(L + message, *args)
+    else -> info(L + message, *args)
+}
 
 
 internal fun Logger.w(message: String) = warn("$W{}", message)

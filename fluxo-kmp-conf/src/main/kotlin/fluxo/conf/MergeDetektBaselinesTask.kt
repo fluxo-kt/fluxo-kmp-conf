@@ -91,7 +91,8 @@ internal abstract class MergeDetektBaselinesTask : DefaultTask() {
         val outputFile = outputFile.ioFile
         mergeDetektBaselines(files, outputFile)
         val fileRelative = outputFile.absoluteFile.relativeTo(rootProjectDir)
-        logger.l("Merged Detekt baseline to $fileRelative")
+        // The result of a task the consumer ran on purpose, so it stays at lifecycle.
+        logger.lifecycle("Merged Detekt baseline to $fileRelative")
     }
 }
 

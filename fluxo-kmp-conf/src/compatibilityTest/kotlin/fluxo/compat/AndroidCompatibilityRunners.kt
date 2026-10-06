@@ -12,7 +12,7 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
         row,
         tempDir,
         rootProjectName = "compat-agp9-kmp-consumer",
-        arguments = listOf("-PKMP_TARGETS=ANDROID"),
+        arguments = listOf("-PKMP_TARGETS=ANDROID", "-PFLUXO_EXPLAIN=true"),
         forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS + ANDROID_NOISE,
     ) { projectDir ->
         projectDir.resolve("build.gradle.kts").writeText(markerAgp9KmpBuildScript(row))
@@ -20,7 +20,7 @@ internal fun runAgp9KmpConsumer(row: Map<String, String>, tempDir: Path) {
             writeAndroidKmpSources(projectDir)
         }
     }
-    check("Android namespace 'compat.agp9.kmp' (KMP+Android)" in result.output) {
+    check("[:] Android namespace = compat.agp9.kmp (" in result.output) {
         result.output
     }
     if (row.isExecutionFixture()) {

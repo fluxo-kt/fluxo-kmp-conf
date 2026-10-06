@@ -201,7 +201,7 @@ private fun AbstractShrinkerTask.configureShrinkerMavenCoordinates(
 private fun DefaultTask.notifyThatToolIsStarting(tool: String, version: String? = null) {
     doFirst {
         val v = if (version != null) " v$version" else ""
-        logger.lifecycle("$tool$v starting ...")
+        logger.l("$tool$v starting ...")
     }
 }
 

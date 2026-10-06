@@ -563,9 +563,9 @@ private fun FluxoKmpConfContext.setupPublicationExtension(
         // Skip manual artifacts control for Gradle plugins
         val skipArtifacts = type === ConfigurationType.GRADLE_PLUGIN
 
-        val coords = "$groupId:$artifactId:$version"
+        // No coordinates here: plugin markers get their final ones later, from java-gradle-plugin.
         val artifacts = if (skipArtifacts) "" else "; artifacts added"
-        p.logger.l("setup maven publication '$pName': '$coords'$artifacts")
+        p.logger.l("setup maven publication '$pName'$artifacts")
 
         if (!skipArtifacts) {
             sourceJarTask?.let { artifact(it) }
@@ -608,7 +608,7 @@ internal fun Project.setProjectPublicationProps(config: FluxoPublicationConfig) 
     version = v
     config.projectDescription?.let { description = it }
 
-    logger.lifecycle(formatSummary("Publication setup: v$v"))
+    logger.l(formatSummary("Publication setup: v$v"))
 }
 
 internal val Project.gradlePluginExt: GradlePluginDevelopmentExtension

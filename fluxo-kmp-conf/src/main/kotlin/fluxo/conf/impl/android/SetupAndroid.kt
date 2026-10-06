@@ -18,6 +18,7 @@ import fluxo.conf.impl.registerCompat
 import fluxo.conf.impl.the
 import fluxo.log.e
 import fluxo.log.l
+import fluxo.log.logDecision
 import fluxo.vc.onLibrary
 import fluxo.vc.onVersion
 import org.gradle.api.Project
@@ -47,7 +48,7 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
 
             else -> {
                 namespace = ns
-                project.logger.l("Android namespace '$ns'")
+                conf.logNamespaceDecision(ns)
             }
         }
     }
@@ -270,6 +271,15 @@ internal fun CommonExtension.setupAndroidCommon(conf: FluxoConfigurationExtensio
 
     project.setupFinalizeAndroidDsl(ctx)
 }
+
+/** The namespace fluxo filled in, on both AGP lines. */
+internal fun FluxoConfigurationExtensionImpl.logNamespaceDecision(ns: String) = ctx.logDecision(
+    project,
+    setting = "Android namespace",
+    value = ns,
+    reason = "androidNamespace, by default the group or project name",
+    howToChange = "set androidNamespace, or namespace in android {}",
+)
 
 /**
  * `targetSdk` was removed from `LibraryBaseFlavor` in AGP 9 (target API affects apps, not

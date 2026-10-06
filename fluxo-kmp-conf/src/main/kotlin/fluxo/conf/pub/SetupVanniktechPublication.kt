@@ -31,7 +31,6 @@ import fluxo.log.l
 import fluxo.log.w
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 
@@ -153,12 +152,6 @@ internal fun MavenPublishBaseExtension.setupVanniktechPublication(
             automaticRelease = true,
             validateDeployment = DeploymentValidation.PUBLISHED,
         )
-    }
-
-    // Log publications
-    // TODO: https://github.com/gmazzo/gradle-report-publications-plugin
-    publishing.publications.withType<MavenPublication> {
-        p.logger.l("maven publication '$name': '$groupId:$artifactId:$version'")
     }
 }
 

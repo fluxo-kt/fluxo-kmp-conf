@@ -141,7 +141,7 @@ private fun KotlinMultiplatformAndroidLibraryExtension.applyNamespace(
     val ns = conf.androidNamespace
     if (ns.isNotBlank()) {
         namespace = ns
-        conf.project.logger.l("Android namespace '$ns' (KMP+Android)")
+        conf.logNamespaceDecision(ns)
     } else {
         // The new plugin REQUIRES namespace; surface clearly rather than letting AGP fail later
         // with `Namespace not specified` mid-task-graph.

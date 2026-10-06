@@ -12,6 +12,7 @@ import fluxo.conf.feat.registerLintMergeRootTask
 import fluxo.conf.impl.CPUs
 import fluxo.conf.impl.TOTAL_OS_MEMORY
 import fluxo.conf.impl.XMX
+import fluxo.conf.impl.android.AgpVersion
 import fluxo.conf.impl.kotlin.DeprecatedKotlinVersions
 import fluxo.conf.impl.kotlin.JRE_VERSION_STRING
 import fluxo.conf.impl.kotlin.kotlinPluginVersion
@@ -19,7 +20,7 @@ import fluxo.conf.impl.tryAsBoolean
 import fluxo.log.SHOW_DEBUG_LOGS
 import fluxo.log.d
 import fluxo.log.e
-import fluxo.log.l
+import fluxo.log.i
 import fluxo.log.v
 import fluxo.log.w
 import fluxo.shrink.BUNDLED_PROGUARD_VERSION
@@ -145,28 +146,18 @@ internal abstract class FluxoKmpConfContext
         // daemon reuses across builds, so one verbose build would leave every later one verbose.
         SHOW_DEBUG_LOGS = isVerbose
 
-        // Log environment
+        // The one lifecycle line per build: the toolchain fluxo adapts to and the modes that
+        // change what it sets up. Machine figures and bundled shrinkers go to info.
+        logger.lifecycle(environmentBanner(project))
         run {
-            var m = "Gradle ${gradle.gradleVersion},  " +
-                "JRE $JRE_VERSION_STRING,  " +
-                "Kotlin $kotlinPluginVersion,  " +
-                "$CPUs CPUs,  " +
-                "${readableByteSize(XMX)} XMX"
-
-            // TODO: GC stats
-            //  https://github.com/gradle/gradle/blob/3eda2dd/platforms/core-runtime/launcher/src/main/java/org/gradle/launcher/daemon/server/health/DaemonHealthStats.java#L87
+            var m = "$CPUs CPUs,  ${readableByteSize(XMX)} XMX"
             val ram = TOTAL_OS_MEMORY
             if (ram > 0) {
                 m += " from ${readableByteSize(ram)} RAM"
             }
-
-            // Classpath/Bundled R8 version
             BUNDLED_R8_VERSION?.let { r8 -> m += ", Bundled R8 $r8" }
-
-            // Classpath/Bundled ProGuard version
             BUNDLED_PROGUARD_VERSION?.let { pg -> m += ", Bundled ProGuard $pg" }
-
-            logger.l(m)
+            logger.i(m)
         }
 
         if (SHOW_DEBUG_LOGS) {
@@ -202,9 +193,9 @@ internal abstract class FluxoKmpConfContext
             "$includedBuilds gradle.includedBuilds, $includedBuilds2 start.includedBuilds"
 
         if (isInCompositeBuild) {
-            logger.l("COMPOSITE BUILD USED! ($compositeMsg)")
+            logger.i("COMPOSITE BUILD USED! ($compositeMsg)")
         } else if (isVerbose) {
-            logger.l("NOT in a COMPOSITE build! ($compositeMsg)")
+            logger.i("NOT in a COMPOSITE build! ($compositeMsg)")
         }
 
         // Detect when the project is a child of a composite build
@@ -212,26 +203,25 @@ internal abstract class FluxoKmpConfContext
         // https://github.com/JetBrains/intellij-community/blob/ccb1ede/plugins/kotlin/gradle/gradle-tooling/impl/src/org/jetbrains/kotlin/idea/gradleTooling/PrepareKotlinIdeaImportTaskModelBuilder.kt#L84
         isIncludedBuild = when (val parent = gradle.parent) {
             null -> false
+
             else -> {
                 val noTasks = startTaskNames.isEmpty()
-                if (noTasks) logger.l("INCLUDED BUILD!")
+                if (noTasks) logger.i("INCLUDED BUILD!")
 
                 val pDir = parent.startParameter.run { projectDir ?: currentDir }
                 val dir = pDir.run {
                     val relDir = relativeTo(start.projectDir ?: project.projectDir)
                     if (relDir.path.startsWith("..")) pDir else relDir
                 }
-                logger.l("Parent Gradle build: $dir")
+                logger.i("Parent Gradle build: $dir")
 
                 noTasks
             }
         }
 
-        if (start.isDryRun) logger.l("DryRun mode is enabled!")
-        if (start.isContinueOnFailure) logger.l("ContinueOnFailure mode is enabled!")
-        if (isCI) logger.l("CI mode is enabled!")
-        if (isRelease) logger.l("RELEASE mode is enabled!")
-        if (composeMetricsEnabled) logger.l("COMPOSE_METRICS are enabled!")
+        if (start.isDryRun) logger.i("DryRun mode is enabled!")
+        if (start.isContinueOnFailure) logger.i("ContinueOnFailure mode is enabled!")
+        if (composeMetricsEnabled) logger.i("COMPOSE_METRICS are enabled!")
 
         if (useKotlinDebug) logger.w("USE_KOTLIN_DEBUG is enabled!")
         when {
@@ -282,6 +272,16 @@ internal abstract class FluxoKmpConfContext
 
     internal val isProjectInSyncRun: Boolean
         get() = projectInSyncFlag.isNotEmpty()
+
+    private fun environmentBanner(project: Project): String = buildString {
+        append("fluxo-kmp-conf: Gradle ${project.gradle.gradleVersion}, JDK $JRE_VERSION_STRING, ")
+        append("Kotlin $kotlinPluginVersion")
+        AgpVersion.current(project)?.let { append(", AGP $it") }
+        composePluginVersion(project)?.let { append(", Compose $it") }
+        if (isCI) append(", CI")
+        if (isRelease) append(", RELEASE")
+        if (!allTargetsEnabled) append(", KMP_TARGETS=${kmpTargets.joinToString(",")}")
+    }
 
     /**
      * Configures the project to apply everything that can be applied.
@@ -352,4 +352,18 @@ internal abstract class FluxoKmpConfContext
         internal const val KOTLIN_IDEA_IMPORT_TASK = "prepareKotlinIdeaImport"
         internal const val KOTLIN_IDEA_BSM_TASK = "prepareKotlinBuildScriptModel"
     }
+}
+
+/**
+ * Compose Multiplatform's plugin version when it is on the root build classpath. Read by name: the
+ * plugin is optional, and its version is a `const` that a typed read would inline at our compile.
+ */
+private fun composePluginVersion(project: Project): String? = try {
+    val cl = project.buildscript.classLoader
+    Class.forName("org.jetbrains.compose.ComposeBuildConfig", false, cl)
+        .getField("composeVersion").get(null) as? String
+} catch (_: ReflectiveOperationException) {
+    null
+} catch (_: LinkageError) {
+    null
 }
