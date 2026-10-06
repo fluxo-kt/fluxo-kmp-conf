@@ -58,14 +58,10 @@ internal object AgpVersion {
      * `CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION`.
      * The companion-object access (`AndroidPluginVersion.Companion.getCurrent()`) survives the
      * 8.x → 9.x migration unchanged and requires only AGP on the classpath; it does NOT require
-     * AGP to be applied as a plugin.
-     *
-     * Falls back to the legacy `com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION` string field
-     * for very old AGP lines (3.x–6.x) that predate the new API. Returns `null` if neither is
-     * present.
+     * AGP to be applied as a plugin. It covers the whole supported AGP range (8.0+).
+     * Returns `null` if it is absent.
      */
-    private fun detect(cl: ClassLoader): KotlinVersion? =
-        detectViaAndroidPluginVersion(cl) ?: detectViaLegacyVersion(cl)
+    private fun detect(cl: ClassLoader): KotlinVersion? = detectViaAndroidPluginVersion(cl)
 
     /**
      * Primary detection path: `com.android.build.api.AndroidPluginVersion.getCurrent()` — AGP 7+.
@@ -85,40 +81,5 @@ internal object AgpVersion {
         null
     } catch (_: LinkageError) {
         null
-    }
-
-    /**
-     * Legacy detection path: `com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION` — AGP 3.x–6.x.
-     */
-    @Suppress("TooGenericExceptionCaught")
-    private fun detectViaLegacyVersion(cl: ClassLoader): KotlinVersion? = try {
-        val klass = Class.forName("com.android.Version", false, cl)
-        val raw = klass.getField("ANDROID_GRADLE_PLUGIN_VERSION").get(null) as? String
-        raw?.let(::parseVersionString)
-    } catch (_: ClassNotFoundException) {
-        null
-    } catch (_: ReflectiveOperationException) {
-        null
-    } catch (_: LinkageError) {
-        null
-    }
-
-    /**
-     * Parses a `MAJOR.MINOR.PATCH(-pre)?(+meta)?` string into a [KotlinVersion]. Pre-release and
-     * build-metadata suffixes are intentionally discarded — for branching purposes, an alpha of
-     * `9.1.0` is treated identically to the stable `9.1.0`. Missing patch defaults to `0`.
-     *
-     * Returns `null` when major or minor is absent / non-numeric. `internal` (not `private`) so
-     * `AgpVersionTest` can falsify the parser branches without going through the reflective
-     * detection paths (which need a real classloader to drive).
-     */
-    internal fun parseVersionString(raw: String): KotlinVersion? {
-        val core = raw.substringBefore('-').substringBefore('+')
-        val parts = core.split('.')
-        val major = parts.getOrNull(0)?.toIntOrNull()
-        val minor = parts.getOrNull(1)?.toIntOrNull()
-        if (major == null || minor == null) return null
-        val patch = parts.getOrNull(2)?.toIntOrNull() ?: 0
-        return KotlinVersion(major, minor, patch)
     }
 }

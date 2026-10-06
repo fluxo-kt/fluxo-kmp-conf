@@ -2,8 +2,6 @@
 @file:JvmMultifileClass
 
 import fluxo.conf.dsl.container.KotlinTargetContainer
-import fluxo.conf.impl.kotlin.KOTLIN_2_0
-import fluxo.conf.impl.kotlin.KOTLIN_PLUGIN_VERSION
 import fluxo.log.w
 import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -25,11 +23,7 @@ internal val DEFAULT_COMMON_JS_CONFIGURATION: KotlinTargetContainer<KotlinTarget
     }
 
 public val DEFAULT_COMMON_JS_CONF: KotlinTarget.() -> Unit = {
-    val isWasi = try {
-        KOTLIN_PLUGIN_VERSION > KOTLIN_2_0 && this is KotlinWasmWasiTargetDsl
-    } catch (_: Throwable) {
-        false
-    }
+    val isWasi = this is KotlinWasmWasiTargetDsl
 
     // set up browser & nodejs environment + test timeouts
     if (this is KotlinJsTargetDsl) {
@@ -130,9 +124,7 @@ private object JsConfAction : Action<KotlinJsCompilerOptions> {
 
         // Automatically turns on ES classes and modules and the newly supported ES generators.
         // https://kotlinlang.org/docs/whatsnew20.html#new-compilation-target
-        if (KOTLIN_PLUGIN_VERSION >= KOTLIN_2_0) {
-            o.target.set("es2015")
-        }
+        o.target.set("es2015")
     }
 }
 

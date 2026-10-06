@@ -174,17 +174,9 @@ private fun FluxoKmpConfContext.setupGradleProjectPublication(
     }
 }
 
-// Gradle 8.3+ exposes dirPermissions/filePermissions (Action-based); Gradle 9.0
-// removes the dirMode/fileMode integer setters entirely. Prefer the modern API;
-// `dirMode`/`fileMode` were removed in Gradle 9 — `dirPermissions`/`filePermissions`
-// (added in 8.3) is now the only path. Gradle 9 is the wrapper floor.
 private fun AbstractArchiveTask.applyReproducibleArchivePermissions() {
-    try {
-        dirPermissions { unix("0755") }
-        filePermissions { unix("0644") }
-    } catch (e: Throwable) {
-        logger.e("dirPermissions/filePermissions reproducibleArtifacts setup error: $e", e)
-    }
+    dirPermissions { unix("0755") }
+    filePermissions { unix("0644") }
 }
 
 private const val KOTLIN_CHECK_SIGNING_TASK_NAME = "checkSigningConfiguration"

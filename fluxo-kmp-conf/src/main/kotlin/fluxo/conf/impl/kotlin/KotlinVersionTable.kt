@@ -15,12 +15,6 @@ import kotlin.KotlinVersion
  * with `NoClassDefFoundError` — keep the discipline.
  */
 
-internal val KOTLIN_2_0 = KotlinVersion(2, 0, 0)
-
-internal val KOTLIN_2_0_20 = KotlinVersion(2, 0, 20)
-
-internal val KOTLIN_2_1 = KotlinVersion(2, 1, 0)
-
 internal val KOTLIN_2_2 = KotlinVersion(2, 2, 0)
 
 internal val KOTLIN_2_3 = KotlinVersion(2, 3, 0)

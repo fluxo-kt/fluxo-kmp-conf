@@ -330,7 +330,6 @@
     <ID>Kdoc:KmpHierarchyTemplate.kt:/** @see org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder.common */</ID>
     <ID>Kdoc:KotlinSourceSetsReportTask.kt:KotlinSourceSetsReportTask.KotlinSourceSetsModel$/** @see org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.associateWith */</ID>
     <ID>Kdoc:MultiplatformSourceSetUtils.kt:/** @see fluxo.conf.dsl.container.impl.target.TargetAndroidContainer.setup */</ID>
-    <ID>Kdoc:ProjectUtils.kt:/** @see OperatingSystemMXBean.getTotalMemorySize */</ID>
     <ID>Kdoc:SetupAndroidLintPluginWithNoAndroid.kt:/** * @see com.android.build.api.dsl.Lint * @see com.android.build.gradle.internal.plugins.LintPlugin * @see com.android.build.gradle.LintPlugin */</ID>
     <ID>Kdoc:SetupFinalizeAndroidDsl.kt:/** @see com.android.build.gradle.internal.dsl.BuildType */</ID>
     <ID>Kdoc:SetupKotlin.kt:/** * @see org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask * @see org.jetbrains.kotlin.gradle.targets.js.npm.PublicPackageJsonTask * @see org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask * @see org.jetbrains.kotlin.gradle.targets.js.typescript.TypeScriptValidationTask * @see org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockStoreTask */</ID>

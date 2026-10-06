@@ -2,7 +2,6 @@ package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.VersionCatalogConstants.VC_PINNED_BUNDLE_ALIAS
-import fluxo.conf.impl.kotlin.KOTLIN_2_1
 import fluxo.conf.impl.kotlin.KOTLIN_PLUGIN_VERSION_STRING
 import fluxo.conf.impl.logDependency
 import fluxo.log.d
@@ -25,18 +24,16 @@ internal fun FluxoKmpConfContext.prepareDependencyPinningBundle() {
 
     val pinnedDeps: PinnedDeps = HashMap()
 
-    if (kotlinPluginVersion >= KOTLIN_2_1) {
-        // KGP doesn't depend on the `kotlin-compiler-embeddable` dependency
-        // starting from Kotlin 2.1.0
-        // Other plugins can bring incompatible versions of the compiler.
-        // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1729256644747559?thread_ts=1729151089.194689&cid=C0KLZSCHF
-        val compilerEmbeddable = object : ModuleIdentifier {
-            override fun getGroup() = "org.jetbrains.kotlin"
-            override fun getName() = "kotlin-compiler-embeddable"
-        }
-        val version = KOTLIN_PLUGIN_VERSION_STRING
-        pinnedDeps[compilerEmbeddable] = Pair(version, "Pinned to Kotlin plugin version")
+    // KGP doesn't depend on the `kotlin-compiler-embeddable` dependency
+    // starting from Kotlin 2.1.0
+    // Other plugins can bring incompatible versions of the compiler.
+    // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1729256644747559?thread_ts=1729151089.194689&cid=C0KLZSCHF
+    val compilerEmbeddable = object : ModuleIdentifier {
+        override fun getGroup() = "org.jetbrains.kotlin"
+        override fun getName() = "kotlin-compiler-embeddable"
     }
+    val version = KOTLIN_PLUGIN_VERSION_STRING
+    pinnedDeps[compilerEmbeddable] = Pair(version, "Pinned to Kotlin plugin version")
 
     val bundleAliases = libs.bundleAliases
     if (bundleAliases.isNotEmpty()) {

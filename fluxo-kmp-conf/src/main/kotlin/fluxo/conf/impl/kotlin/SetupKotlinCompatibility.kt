@@ -110,12 +110,7 @@ internal val KotlinLangVersion?.isCurrentOrLater: Boolean
 internal val LATEST_KOTLIN_LANG_VERSION = KotlinLangVersion.values().last()
 
 /** @see org.jetbrains.kotlin.gradle.dsl.KotlinVersion */
-private val KOTLIN_LANG_VERSION = try {
-    KotlinLangVersion.DEFAULT
-} catch (_: NoSuchMethodError) {
-    val v = KOTLIN_PLUGIN_VERSION
-    KotlinLangVersion.fromVersion("${v.major}.${v.minor}")
-}
+private val KOTLIN_LANG_VERSION = KotlinLangVersion.DEFAULT
 
 // endregion
 
