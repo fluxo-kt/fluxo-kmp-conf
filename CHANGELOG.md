@@ -1,7 +1,7 @@
 # Changelog [^1]
 
 
-## Unreleased
+## [0.16.1] - 2026-10-06
 
 ### Fixed
 - A build whose project has no `plugins {}` block (no build file, e.g. an intermediate parent like `:benchmarks` of `:benchmarks:jmh`) failed configuration with "Cannot resolve external dependency com.google.devtools.ksp… because no repositories are defined": the tools fluxo puts on each project's build classpath had no repository to resolve from there. They now resolve through your plugin repositories.
@@ -600,6 +600,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.16.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.16.1
 [0.16.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.16.0
 [0.15.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.15.1
 [0.15.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.15.0
