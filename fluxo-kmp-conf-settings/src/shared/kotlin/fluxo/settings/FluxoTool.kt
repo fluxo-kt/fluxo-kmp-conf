@@ -91,11 +91,12 @@ internal fun Project.addFluxoTools(
     if (needed.isEmpty()) return
     val handler = buildscript
     // A build script's classpath resolves only through its own repositories. A `plugins {}`
-    // block makes Gradle copy the settings plugin repositories into them, and those forbid any
-    // other build-script repository when they use `exclusiveContent`. So ours go in next to the
-    // project's own, including ones its build script declares or Gradle copies after this runs.
-    // A script with neither (no build file, or no `plugins {}` block: an intermediate parent
-    // project) still has none when its classpath resolves; ours are then its only source.
+    // block that requests a plugin makes Gradle copy the settings plugin repositories into them
+    // (an empty block doesn't), and those forbid any other build-script repository when they
+    // use `exclusiveContent`. So ours go in next to the project's own, including ones its build
+    // script declares or Gradle copies after this runs. A module with neither (no build file, or
+    // no plugin requested) still has none when its classpath resolves; ours are then its only
+    // source.
     val own = handler.repositories
     var added = false
     val addOnce = {

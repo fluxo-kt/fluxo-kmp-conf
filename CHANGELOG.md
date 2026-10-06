@@ -4,8 +4,8 @@
 ## [0.16.1] - 2026-10-06
 
 ### Fixed
-- Multi-level builds failed configuration on 0.16.0. The plugins fluxo puts on build classpaths (KSP, plugin-publish) also went onto intermediate parents (e.g. `:benchmarks` of `:benchmarks:jmh`), so a submodule declaring one of them with a version failed ("already on the classpath with an unknown version"), and a parent without a build file failed with "Cannot resolve external dependency com.google.devtools.ksp… because no repositories are defined". Only modules without submodules get them now, and a module without a `plugins {}` block resolves them through your plugin repositories.
-- With Detekt 2 and a `KMP_TARGETS` filter that leaves out every JVM and Android target, `commonTest` (and other shared source sets those targets compile) went unanalysed: its own Detekt task was skipped as covered by the JVM/Android test task, which the filter disabled. Without such a filter it was and is analysed inside `detektTestJvm`/the Android test task.
+- Builds with nested modules (e.g. `:benchmarks:jmh`) failed configuration. fluxo put KSP and plugin-publish on parent modules too, so a submodule declaring one with a version failed ("already on the classpath with an unknown version"), and a module without a build file failed ("…because no repositories are defined"). Now only modules without submodules get these plugins, resolved through your plugin repositories.
+- Detekt 2 skipped `commonTest` (and other shared source sets) when `KMP_TARGETS` left out every JVM and Android target. Normally those sets are analysed inside the JVM/Android test tasks, which the filter disables.
 
 
 ## [0.16.0] - 2026-10-06

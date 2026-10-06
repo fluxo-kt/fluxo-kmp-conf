@@ -126,6 +126,7 @@ private fun runToolInjectionBuild(
         // A tool on a parent's classpath (`:nested`) would fail this versioned declaration with
         // "already on the classpath with an unknown version". `:empty` has no build file, so no
         // repositories of its own; the tools injected there must still resolve.
+        Files.createDirectories(projectDir.resolve("empty"))
         Files.createDirectories(projectDir.resolve("nested/leaf"))
         projectDir.resolve("nested/leaf/build.gradle.kts").writeText(
             "plugins { id(\"com.gradle.plugin-publish\") version \"2.2.1\" apply false }\n",
