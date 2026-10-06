@@ -33,8 +33,10 @@ jobs:
         channel: ['stable', 'pre']
         # The same legs as build.yml's compat legs; only rows on the newest line run here.
         shard:
-          - name: android
-            tests: "--tests 'fluxo.compat.Android*'"
+          - name: android-kmp
+            tests: "--tests 'fluxo.compat.AndroidKmp*'"
+          - name: android-lib
+            tests: "--tests 'fluxo.compat.AndroidLibrary*'"
           - name: compose
             tests: "--tests 'fluxo.compat.Compose*'"
           - name: gradle-plugin

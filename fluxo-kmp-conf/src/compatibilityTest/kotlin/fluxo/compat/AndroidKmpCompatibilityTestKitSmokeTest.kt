@@ -4,7 +4,7 @@ import java.nio.file.Path
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
 
-internal class AndroidCompatibilityTestKitSmokeTest {
+internal class AndroidKmpCompatibilityTestKitSmokeTest {
 
     private val tempDir: Path = newCompatProjectsDir()
 
@@ -33,19 +33,6 @@ internal class AndroidCompatibilityTestKitSmokeTest {
         }
 
     @TestFactory
-    fun generatedAndroidLibraryConsumersUseLegacyAndroidPath(): Iterable<DynamicTest> =
-        selectedRows(
-            "android-lib-agp8",
-            "android-lib-agp8-exec",
-            "android-lib-agp9",
-            "android-lib-agp9-exec",
-        ).map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
-                runAndroidLibraryConsumer(row, tempDir)
-            }
-        }
-
-    @TestFactory
     fun generatedKmpNewApiFailsCheckAtBuildEnd(): Iterable<DynamicTest> =
         selectedRows("android-kmp-agp8-exec", "android-kmp-agp9-exec").map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {
@@ -55,14 +42,6 @@ internal class AndroidCompatibilityTestKitSmokeTest {
                     markerAgp9KmpBuildScript(row)
                 }
                 runKmpNewApiFailsCheck(row, tempDir, script)
-            }
-        }
-
-    @TestFactory
-    fun generatedAndroidLibraryNewApiFailsCheckAtBuildEnd(): Iterable<DynamicTest> =
-        selectedRows("android-lib-agp8-exec", "android-lib-agp9-exec").map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
-                runAndroidLibraryNewApiFailsCheck(row, tempDir)
             }
         }
 }

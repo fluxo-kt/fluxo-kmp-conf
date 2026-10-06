@@ -180,10 +180,14 @@ jobs:
           # must match one leg's `--tests` pattern: `CompatibilityShardGuardTest` fails
           # otherwise, so a new fixture class can't go unrun. Timeouts allow for a cold
           # (read-only on non-default branches) Gradle cache re-downloading the pinned tools.
-          - name: compat-android
+          - name: compat-android-kmp
             directory: .
-            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.Android*' --continue --stacktrace --scan
-            timeout: 20
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.AndroidKmp*' --continue --stacktrace --scan
+            timeout: 15
+          - name: compat-android-lib
+            directory: .
+            command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.AndroidLibrary*' --continue --stacktrace --scan
+            timeout: 15
           - name: compat-compose
             directory: .
             command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.Compose*' --continue --stacktrace --scan
