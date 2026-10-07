@@ -27,6 +27,7 @@ internal fun kotlinJvmConsumerCases(
     add("tool-injection" to { runToolInjectionCase(row, tempDir) })
     add("bundled-tool-versions" to { runBundledToolVersionCase(row, tempDir) })
     add("detekt-type-resolution" to { runDetektTypeResolutionCase(row, tempDir) })
+    add("detekt-baseline-merge" to { runDetektBaselineMergeCase(row, tempDir) })
     add("taskinfo" to { runTaskInfoCase(row, tempDir) })
     if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
         add("dokka" to { runDokkaCase(row, tempDir) })

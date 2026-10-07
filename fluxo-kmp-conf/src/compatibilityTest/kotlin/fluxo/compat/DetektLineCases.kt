@@ -34,3 +34,51 @@ internal fun runDetektTypeResolutionCase(row: Map<String, String>, tempDir: Path
         )
     }
 }
+
+/**
+ * `detektBaselineMerge` merges only what this build's baseline tasks wrote. A baseline task fluxo
+ * disables (the experimental compilation's, whose sources `detektMain` analyses) still has its
+ * file from an older build in `build/`, and merging it put findings for long-gone code into the
+ * committed baseline, where nothing ever removes them.
+ */
+internal fun runDetektBaselineMergeCase(row: Map<String, String>, tempDir: Path) {
+    val projectDir = tempDir.resolve(row.getValue("id") + "-detekt-baseline-merge")
+    fun merge(again: Boolean = false) = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-detekt-baseline-merge",
+        projectDir = projectDir,
+        tasks = listOf("detektBaselineMerge"),
+        arguments = listOf("-PFLUXO_VERBOSE=true"),
+        // A leftover that is not an input leaves the merge UP-TO-DATE.
+        assertTasksSucceed = !again,
+    ) {
+        it.resolve("build.gradle.kts").writeText(
+            markerKotlinJvmBuildScript(row).replace(
+                "setupVerification = false",
+                "setupVerification = true\n        experimentalLatestCompilation = true",
+            ),
+        )
+        Files.createDirectories(it.resolve("src/main/kotlin/compat"))
+            .resolve("Api.kt").writeText("package compat\n\nfun api(): Int = 1\n")
+    }.output
+
+    val disabled = Regex("task ':(\\w+)' disabled, detektMain analyses the same sources")
+        .findAll(merge()).map { it.groupValues[1] }.filter { "Baseline" in it }.toSet()
+    check(disabled.isNotEmpty()) { "fluxo disabled no duplicate Detekt baseline task" }
+    val intermediates = Files.createDirectories(projectDir.resolve("build/intermediates/detekt"))
+    for (task in disabled) {
+        intermediates.resolve("baseline-$task.xml").writeText(
+            "<?xml version=\"1.0\" ?>\n<SmellBaseline>\n  <ManuallySuppressedIssues/>\n" +
+                "  <CurrentIssues>\n    <ID>$STALE_BASELINE_ID</ID>\n  </CurrentIssues>\n" +
+                "</SmellBaseline>\n",
+        )
+    }
+    merge(again = true)
+    val merged = projectDir.resolve("detekt-baseline.xml")
+    check(!Files.exists(merged) || STALE_BASELINE_ID !in String(Files.readAllBytes(merged))) {
+        "detektBaselineMerge merged the leftover baseline of disabled $disabled"
+    }
+}
+
+private const val STALE_BASELINE_ID = "CompatStaleFinding:Gone.kt:gone"

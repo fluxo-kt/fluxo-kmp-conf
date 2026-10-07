@@ -196,6 +196,18 @@ internal fun Project.setupDetekt(
     }
 }
 
+/**
+ * The baselines the merge reads: only those of tasks that run. A disabled task (a filtered-out
+ * target, or a compilation `detektMain` already covers) writes nothing, but its file from an older
+ * build stays in `build/`, and merging it kept findings for code long gone. Read lazily, so a task
+ * disabled after this call is left out too.
+ */
+private fun <T : Task> Task.enabledBaselines(
+    tasks: DomainObjectCollection<T>,
+    baseline: (T) -> Provider<RegularFile>,
+): Provider<List<Provider<RegularFile>>> =
+    project.provider { tasks.filter { it.enabled }.map(baseline) }
+
 /** What fluxo sets on either Detekt line; each line's adapter applies it in its own types. */
 private class DetektSettings(
     val ignoreFailures: Boolean,
@@ -312,7 +324,7 @@ private fun Project.setupDetekt1(
     }
     s.mergeBaselines?.configure {
         mustRunAfter(baselineTasks)
-        baselineFiles.from(baselineTasks.map { it.baseline })
+        baselineFiles.from(enabledBaselines(baselineTasks) { it.baseline })
     }
 
     detekt1SharedKmpSourceSets()
@@ -406,7 +418,7 @@ private fun Project.setupDetekt2(
     }
     s.mergeBaselines?.configure {
         mustRunAfter(baselineTasks)
-        baselineFiles.from(baselineTasks.map { it.baseline })
+        baselineFiles.from(enabledBaselines(baselineTasks) { it.baseline })
     }
 
     val detektTasks = tasks.withType<Detekt2> {
