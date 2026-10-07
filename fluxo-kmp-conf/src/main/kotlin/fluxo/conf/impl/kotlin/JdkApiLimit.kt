@@ -4,8 +4,12 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.log.FluxoProblem
 import fluxo.log.logDecision
 import fluxo.log.reportProblem
+import fluxo.log.w
 import java.io.File
+import java.util.zip.ZipFile
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.compile.JavaCompile
@@ -77,7 +81,52 @@ internal fun KotlinJvmCompile.limitKotlinJdkApi(
     conf.report(limit, "Kotlin JDK API limit ($name)", target, compileJdk)
     if (limit == JdkApiLimit.Apply) {
         compilerOptions.addArgsUnlessInherited(listOf("-Xjdk-release=$jvmTarget"), inheritedArgs)
+        // The classpath is resolved only when the task runs, so it is checked there.
+        val classpath = libraries
+        val isRelease = conf.ctx.isRelease
+        val gradleCache = project.gradle.gradleUserHomeDir
+        doFirst { checkNoJdkClassesOnClasspath(classpath, gradleCache, target, isRelease) }
     }
+}
+
+/**
+ * kotlinc resolves `java.*` from a classpath jar as well as from the `-Xjdk-release` API, so a
+ * jar declaring JDK classes lifts the limit: `android.jar` declares `InputStream.readAllBytes`,
+ * which then compiles at JVM 8 and fails on Java 8 with `NoSuchMethodError`. javac's `--release`
+ * ignores such jars. Such a build looks limited while it isn't, so it warns, and fails a release
+ * build, which would ship that bytecode.
+ *
+ * Runs on every compile, so it opens only jars outside [gradleCache]: repository libraries all
+ * resolve into it and don't ship `java.*`, while the jars that do (`android.jar` from the SDK, a
+ * local `files(…)` stub) live elsewhere. That keeps the cost at a few file stats.
+ */
+private fun Task.checkNoJdkClassesOnClasspath(
+    classpath: FileCollection,
+    gradleCache: File,
+    target: Int,
+    isRelease: Boolean,
+) {
+    val offending = classpath.filter {
+        when {
+            it.startsWith(gradleCache) -> false
+
+            it.isDirectory -> it.resolve("java").isDirectory
+
+            it.isFile && it.extension == "jar" -> ZipFile(it).use { zip ->
+                zip.entries().asSequence().any { e -> e.name.startsWith("java/") }
+            }
+
+            else -> false
+        }
+    }.files
+    if (offending.isEmpty()) return
+    val message = "$path: ${offending.joinToString { it.name }} on the classpath declares " +
+        "java.* classes, so the JDK API limit to JVM $target does not hold for Kotlin: newer " +
+        "JDK methods it declares compile and then fail at runtime on Java $target. " +
+        "Take it off this compilation's classpath (reach Android API by reflection or from an " +
+        "Android-only source set), or set useJdkRelease = false to accept the risk."
+    check(!isRelease) { message }
+    logger.w(message)
 }
 
 /**

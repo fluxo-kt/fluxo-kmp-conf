@@ -2,7 +2,11 @@ package fluxo.compat
 
 import java.io.DataInputStream
 import java.nio.file.Path
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+import kotlin.io.path.createDirectories
 import kotlin.io.path.inputStream
+import kotlin.io.path.outputStream
 
 /** JVM target and JDK API cases of the Kotlin/JVM consumer fixture ([kotlinJvmConsumerCases]). */
 internal fun runKotlinJvmTargetCases(row: Map<String, String>, tempDir: Path) {
@@ -108,7 +112,39 @@ private fun runJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
         sourceSet = "test",
         tasks = listOf("compileTestKotlin", "compileTestJava"),
     )
+    runJdkClassesOnClasspathCases(row, tempDir)
 }
+
+/**
+ * A jar with `java.*` classes on the Kotlin classpath (`android.jar` in shared JVM code) makes
+ * kotlinc accept JDK methods newer than the target despite `-Xjdk-release`, so the build must
+ * say so.
+ */
+private fun runJdkClassesOnClasspathCases(row: Map<String, String>, tempDir: Path) {
+    val name = "jdk21"
+    val projectDir = tempDir.resolve("${row.getValue("id")}-$name").createDirectories()
+    ZipOutputStream(projectDir.resolve(JDK_STUB_JAR).outputStream()).use {
+        // A real class: KGP's classpath snapshot parses every class file in the jar.
+        val objectClass = "java/lang/Object.class"
+        it.putNextEntry(ZipEntry(objectClass))
+        checkNotNull(ClassLoader.getSystemResourceAsStream(objectClass)).use { c -> c.copyTo(it) }
+        it.closeEntry()
+    }
+    val (_, output) = runKotlinJvmVariant(
+        row,
+        tempDir,
+        name,
+        "jvmTarget = \"17\"",
+        jdk = JDK_21,
+        // String form: fluxo applies the Kotlin plugin, so no `compileOnly` accessor exists here.
+        script = "dependencies { \"compileOnly\"(files(\"$JDK_STUB_JAR\")) }",
+    )
+    check(JDK_CLASSES_WARNING in output) { "No warning for $JDK_STUB_JAR:\n$output" }
+}
+
+private const val JDK_STUB_JAR = "jdk-stub.jar"
+
+private const val JDK_CLASSES_WARNING = "$JDK_STUB_JAR on the classpath declares java.* classes"
 
 /**
  * A JDK 21 Java toolchain with the build on JDK 17: both compilers' limits follow the compiler

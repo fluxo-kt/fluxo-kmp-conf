@@ -190,6 +190,10 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * * javac in a module that passes `--add-exports`, `--add-reads` or `--patch-module`, which
      *   javac rejects together with `--release`.
      *
+     * A jar or class directory with `java.*` classes on a Kotlin classpath (`android.jar` in
+     * shared JVM code) lets Kotlin see the JDK methods it declares despite the limit; javac is
+     * not affected. Each such compile warns, naming the jar, and a `RELEASE=true` build fails.
+     *
      * Android code gets no JVM-target limit, as its API is the device's, not the JDK's: Kotlin in
      * main (non-test) Android compilations stops seeing the JDK at all (`noJdk`, what KGP already
      * does for AGP 8's `kotlin-android`), so only `android.jar` is visible; Java is compiled by

@@ -6,6 +6,9 @@
 ### Changed
 - `useJdkRelease` no longer limits test code: JVM test compilations keep the JVM target's bytecode but see the compile JDK's full API, so tests can cover code paths that a runtime check enables only on newer JDKs. Main code is limited as before.
 
+### Added
+- A Kotlin JVM compile with the JDK API limit on now warns when a jar or class directory on its classpath contains `java.*` classes (e.g. `android.jar` added to shared JVM code): Kotlin then accepts JDK methods that jar declares, newer than the JVM target, and the build fails at runtime on that Java version. A `RELEASE=true` build fails instead. Jars from repositories (in the Gradle user home) are not checked.
+
 
 ## [0.17.0] - 2026-10-07
 
