@@ -3,11 +3,10 @@
 ### Plan
 
 High priority, requested for fluxo-io (Java 8 floor, newer JDK code paths chosen at runtime):
-1. Exact JDK API floor. fluxo-io reports `ByteArrayInputStream.readAllBytes()` (JDK 9) compiling
-   in a KMP JVM module at `useJdkRelease` + target 8, then `NoSuchMethodError` on Java 8. Not yet
-   reproduced: kotlinc 2.4.20 `-Xjdk-release=1.8` and a minimal fkc 0.16.2 KMP `jvmMain` both
-   reject it, so the leak needs a setup-specific path (source set, compilation or task) to be
-   found first.
+1. JDK API limit defeated by `android.jar`: on a JVM (non-Android) compile classpath it declares
+   JDK methods newer than the target (`InputStream.readAllBytes` at target 8), so they resolve
+   despite `-Xjdk-release` and fail at runtime. Warn when such a jar sits there while the limit
+   is on.
 2. Separate JDK API limits for main and test code: main gets the exact floor; tests get floor
    bytecode (so a floor-JDK test run loads them) and the build JDK's API.
 3. Test runs on several JDKs (e.g. `testJdks = listOf(8, 17, 25)` → one test task per JDK).

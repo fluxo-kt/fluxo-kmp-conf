@@ -7,6 +7,7 @@ The plugin lazily, target-aware, configures Kotlin/JVM, Android, KMP, Compose, I
 > Read the **Surprises** section first — most footguns here aren't grep-able.
 
 ## Vibe / core principles
+- **Warn on every misconfiguration the plugin can see**: when a consumer's setup silently defeats or contradicts what fluxo sets up (e.g. a jar with `java.*` classes on a Kotlin JVM compile classpath bypasses `-Xjdk-release`), detect it and warn with the cause, the consequence and the fix, in the consumer's words. A setting that silently does nothing is a defect even when the build is green. Detect at the cheapest point that sees the fact, never by resolving at configuration time.
 - **Lazy on-demand**: nothing configured eagerly; modules with every target disabled must still configure cleanly. Prefer `tasks.named` / `withType` over eager creation.
 - **Per-target filtering**: every target gate honours `KMP_TARGETS` (CSV of codes from `KmpTargetCode.kt`) or `KMP_TARGETS_ALL=true`. Don't assume a target is present.
 - **Strict by default, each strict setting with its own off-switch**: strictness is the product, the switch keeps it from blocking anyone. A new strict compiler default joins `KotlinDefault` (DSL property + `DISABLE_KOTLIN_DEFAULTS` name) in the same change; adopt each Kotlin version's new strictness behind its version gate. Experimental *APIs* stay opt-in: a module is opted in only to markers the consumer names (`optIns`). Check the relevant `FluxoConfigurationExtension*` KDoc and `CHANGELOG.md` before flipping any default.
