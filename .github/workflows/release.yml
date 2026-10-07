@@ -8,6 +8,12 @@ on:
 permissions:
   contents: read
 
+# One release at a time, never cancelled: publishing is irreversible, so a second tag waits
+# instead of racing the first one's publish or interrupting it halfway.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 env:
   CI: true
   RELEASE: true
@@ -35,6 +41,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Verify release invariants
@@ -62,6 +69,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       # 23 is the publish daemon (last = default JAVA_HOME); 17 is installed for the
       # `compatibilityTest` leg of `build assemble check`, whose fixtures pin per-row JDK via the
@@ -182,6 +191,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Prepare release settings
@@ -225,6 +235,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Verify Plugin Portal page
         run: .github/scripts/verify-plugin-portal-page.sh "${{ needs.verify_release.outputs.version }}"
