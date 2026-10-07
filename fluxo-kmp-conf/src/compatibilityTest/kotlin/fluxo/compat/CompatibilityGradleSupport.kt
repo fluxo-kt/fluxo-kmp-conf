@@ -208,6 +208,10 @@ private val PUBLICATION_ENV_PREFIXES = listOf(
     "SIGNING_",
     "MAVEN_CENTRAL_",
     "GRADLE_PUBLISH_",
+    // The outer build's commit and build number (CI sets SCM_TAG to its own SHA); a fixture
+    // has its own, so with these it would publish under the outer repo's commit.
+    "SCM_TAG",
+    "BUILD_NUMBER",
 )
 
 internal fun Map<String, String>.isExecutionFixture(): Boolean =
