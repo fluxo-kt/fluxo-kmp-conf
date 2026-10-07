@@ -6,7 +6,54 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.TaskOutcome
 
-internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
+/**
+ * Each case builds its own project directory, so they run as separate, concurrent tests: one test
+ * per row ran them in a chain that alone outlasted the CI leg's budget.
+ */
+internal fun kmpConsumerCases(
+    row: Map<String, String>,
+    tempDir: Path,
+): List<Pair<String, () -> Unit>> = buildList {
+    add("lifecycle" to { runKmpLifecycle(row, tempDir) })
+    add("js" to { runKmpJsCase(row, tempDir) })
+    add("common-compile-only" to { runKmpCommonCompileOnlyCase(row, tempDir) })
+    // Kotlin keeps deprecating native targets and then deletes them (watchosArm32 has no DSL
+    // method and no KonanTarget left in Kotlin 2.5), so target groups follow the consumer's
+    // Kotlin, never a list in the plugin. The newest row also runs on the next Kotlin.
+    if (row.getValue("kotlinLangVersion") == "-") {
+        // The WASI filter case rebuilds the all-targets project, so it runs after it, not beside.
+        add(
+            "all-targets" to {
+                runKmpAllTargetsCase(row, tempDir)
+                runKmpWasiFilterCase(row, tempDir)
+            },
+        )
+        // Already on it in the newest-upstream run; the same project again would only reuse
+        // the configuration cache and print none of the markers.
+        if (row["kgpVersion"] != NEXT_KOTLIN) {
+            val next = row + ("kgpVersion" to NEXT_KOTLIN)
+            add("all-targets-next" to { runKmpAllTargetsCase(next, tempDir) })
+        }
+    }
+    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
+        add("short-opt-in" to { runKmpShortOptInCase(row, tempDir) })
+        add("stdlib-split" to { runKmpStdlibSplitCase(row, tempDir) })
+        add("npm-tool-version" to { runKmpNpmToolVersionCase(row, tempDir) })
+        add("bare-setup" to { runKmpBareSetupCase(row, tempDir) })
+        add("browser-tests" to { runKmpBrowserTestsCase(row, tempDir) })
+        for (kgp in KGP_ABI_LINES + row.getValue("kgpVersion")) {
+            add("kgp-abi-$kgp" to { runKgpAbiCase(row, tempDir, kgp, jvm = false) })
+        }
+        // Only 2.2/2.3 reach Kotlin's engine through reflection, which differs on Kotlin/JVM (no
+        // klib member) and which bcv-ts reads; 2.4 is typed, so compile-checked.
+        for (kgp in KGP_ABI_LINES) {
+            add("kgp-abi-jvm-$kgp" to { runKgpAbiCase(row, tempDir, kgp, jvm = true) })
+        }
+        add("ts-api" to { runKmpTsApiChecksCase(row, tempDir, KGP_ABI_LINES.first()) })
+    }
+}
+
+private fun runKmpLifecycle(row: Map<String, String>, tempDir: Path) {
     runConsumerCase(
         row,
         tempDir,
@@ -16,34 +63,6 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
     ) { projectDir ->
         projectDir.resolve("build.gradle.kts").writeText(markerKmpBuildScript(row))
         writeKmpSources(projectDir)
-    }
-    runKmpJsCase(row, tempDir)
-    runKmpCommonCompileOnlyCase(row, tempDir)
-    // Kotlin keeps deprecating native targets and then deletes them (watchosArm32 has no DSL
-    // method and no KonanTarget left in Kotlin 2.5), so target groups follow the consumer's
-    // Kotlin, never a list in the plugin. The newest row also runs on the next Kotlin.
-    if (row.getValue("kotlinLangVersion") == "-") {
-        runKmpAllTargetsCase(row, tempDir)
-        // Already on it in the newest-upstream run; the same project again would only reuse
-        // the configuration cache and print none of the markers.
-        if (row["kgpVersion"] != NEXT_KOTLIN) {
-            runKmpAllTargetsCase(row + ("kgpVersion" to NEXT_KOTLIN), tempDir)
-        }
-        runKmpWasiFilterCase(row, tempDir)
-    }
-    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
-        runKmpShortOptInCase(row, tempDir)
-        runKmpStdlibSplitCase(row, tempDir)
-        runKmpNpmToolVersionCase(row, tempDir)
-        runKmpBareSetupCase(row, tempDir)
-        runKmpBrowserTestsCase(row, tempDir)
-        for (kgp in KGP_ABI_LINES + row.getValue("kgpVersion")) {
-            runKgpAbiCase(row, tempDir, kgp, jvm = false)
-        }
-        // Only 2.2/2.3 reach Kotlin's engine through reflection, which differs on Kotlin/JVM (no
-        // klib member) and which bcv-ts reads; 2.4 is typed, so compile-checked.
-        for (kgp in KGP_ABI_LINES) runKgpAbiCase(row, tempDir, kgp, jvm = true)
-        runKmpTsApiChecksCase(row, tempDir, KGP_ABI_LINES.first())
     }
 }
 

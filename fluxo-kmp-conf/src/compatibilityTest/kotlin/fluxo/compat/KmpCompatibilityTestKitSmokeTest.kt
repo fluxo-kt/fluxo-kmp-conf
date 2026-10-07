@@ -10,9 +10,9 @@ internal class KmpCompatibilityTestKitSmokeTest {
 
     @TestFactory
     fun generatedKmpJvmFilteredConsumersRunRequiredLifecycleTasks(): Iterable<DynamicTest> =
-        selectedRows("kmp").map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
-                runKmpConsumer(row, tempDir)
+        selectedRows("kmp").flatMap { row ->
+            kmpConsumerCases(row, tempDir).map { (case, run) ->
+                DynamicTest.dynamicTest("${row.getValue("id")} $case", run)
             }
         }
 
