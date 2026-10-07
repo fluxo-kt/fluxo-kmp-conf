@@ -6,6 +6,9 @@
 ### Changed
 - On Kotlin 2.4+, BCV's task names (`apiCheck`, `klibApiCheck`, `jvmApiCheck`, `apiDump`, …) are aliases of `checkKotlinAbi` or `updateKotlinAbi`, so `-x apiCheck` skips nothing; their task descriptions now say so and name the task to exclude.
 
+### Fixed
+- In modules with publication set up and a release (non-SNAPSHOT) version, every build ran git to read the current tag or commit, which only snapshot versions use; since git's output is a configuration-cache input, each new commit or tag discarded the configuration cache, even for `help`. Git now runs only for snapshot versions, whose version contains the commit.
+
 
 ## [0.16.2] - 2026-10-06
 

@@ -22,7 +22,8 @@ internal class PublicationDefaultsTest {
 
         config.finalizePublicationDefaults(
             githubProjectUrl = "https://github.com/fluxo-kt/fluxo-kmp-conf",
-            fallbackScmTag = "dev",
+            // Reading it runs git, which would discard the configuration cache on every commit.
+            fallbackScmTag = { error("a release version must not read the git fallback") },
             reproducibleArtifacts = true,
             localSnapshotSuffix = "-local",
         )
@@ -47,7 +48,7 @@ internal class PublicationDefaultsTest {
 
         config.finalizePublicationDefaults(
             githubProjectUrl = "https://github.com/fluxo-kt/fluxo-kmp-conf",
-            fallbackScmTag = "abc1234",
+            fallbackScmTag = { "abc1234" },
             reproducibleArtifacts = true,
             localSnapshotSuffix = "-local",
         )
@@ -73,7 +74,7 @@ internal class PublicationDefaultsTest {
 
         config.finalizePublicationDefaults(
             githubProjectUrl = "https://github.com/fluxo-kt/fluxo-kmp-conf",
-            fallbackScmTag = "abc1234",
+            fallbackScmTag = { "abc1234" },
             reproducibleArtifacts = true,
             localSnapshotSuffix = "-local",
         )

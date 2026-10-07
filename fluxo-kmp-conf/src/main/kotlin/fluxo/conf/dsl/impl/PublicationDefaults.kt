@@ -8,17 +8,20 @@ import java.util.TimeZone
 
 internal fun FluxoPublicationConfig.finalizePublicationDefaults(
     githubProjectUrl: String?,
-    fallbackScmTag: String,
+    /**
+     * Read only for snapshot versions: it runs git, and git's output is a configuration-cache
+     * input, so reading it for a release version would discard the cache on every commit.
+     */
+    fallbackScmTag: () -> String,
     reproducibleArtifacts: Boolean?,
     localSnapshotSuffix: String,
     timestamp: Date = Date(),
 ) {
     isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
-    val resolvedScmTag = scmTag.orEmpty().ifBlank { fallbackScmTag }
     if (reproducibleArtifacts != false && isSnapshot) {
         version = reproducibleSnapshotVersion(
             rawVersion = version,
-            scmTag = resolvedScmTag,
+            scmTag = scmTag.orEmpty().ifBlank(fallbackScmTag),
             localSnapshotSuffix = localSnapshotSuffix,
             timestamp = timestamp,
         )
@@ -26,7 +29,7 @@ internal fun FluxoPublicationConfig.finalizePublicationDefaults(
     isSnapshot = version.contains("SNAPSHOT", ignoreCase = true)
     if (scmTag.isNullOrBlank()) {
         scmTag = when {
-            isSnapshot -> fallbackScmTag
+            isSnapshot -> fallbackScmTag()
             else -> "v$version"
         }
     }
