@@ -7,8 +7,9 @@ import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
 import fluxo.conf.impl.MAIN_SOURCE_SET_POSTFIX
 import fluxo.conf.impl.TEST_SOURCE_SET_NAME
 import fluxo.conf.impl.TEST_SOURCE_SET_POSTFIX
+import fluxo.conf.impl.apiAndLog
+import fluxo.conf.impl.compileOnlyAndLog
 import fluxo.conf.impl.implementation
-import fluxo.conf.impl.implementationAndLog
 import fluxo.conf.impl.isTestRelated
 import fluxo.conf.impl.kotlin
 import fluxo.conf.impl.kotlin.KOTLIN_SOURCE_SETS_DEPENDS_ON_DEPRECATION
@@ -380,13 +381,11 @@ public infix fun Iterable<KotlinSourceSet>.dependencies(
 /**
  * Adds [dependencyNotation] to the `commonMain` source set of a KMP project.
  *
- * Despite the name, the dependency is applied as `implementation`, not `compileOnly`: a
- * `commonMain` `compileOnly` dependency is not propagated onto the JS/Wasm/Native platform
- * *compile* classpaths, so common code referencing it fails to compile for those targets.
- * `implementation` is the only
- * configuration valid across every target, so the dependency does reach the runtime classpath. Use
- * it for dependencies a downstream plugin already provides at runtime (e.g. the Compose runtime),
- * where compile-time visibility in common code — not runtime exclusion — is the goal.
+ * It is `compileOnly` for JVM and Android, so their consumers don't get it at runtime. JS, Wasm
+ * and Native get it as `api` of their main source set: a klib needs its dependencies when
+ * consumers compile against it, so those targets can't have compile-only dependencies (KGP
+ * warns about them). Use it for dependencies a downstream plugin already provides at runtime
+ * (e.g. the Compose runtime).
  *
  * @param project resolved from the receiver's first target when omitted.
  * @param addConstraint also pins the version via an `implementation` dependency constraint, when
@@ -411,7 +410,17 @@ public fun <E> E.commonCompileOnly(
     with(p) {
         val sourceSets = sourceSets
         sourceSets.commonMain.dependencies {
-            implementationAndLog(dependencyNotation)
+            compileOnlyAndLog(dependencyNotation)
+        }
+        targets.configureEach {
+            when (platformType) {
+                KotlinPlatformType.js, KotlinPlatformType.wasm, KotlinPlatformType.native ->
+                    compilations.named(MAIN_SOURCE_SET_NAME) {
+                        defaultSourceSet.dependencies { apiAndLog(dependencyNotation) }
+                    }
+
+                else -> {}
+            }
         }
 
         if (addConstraint) {

@@ -4,6 +4,7 @@
 ## Unreleased
 
 ### Changed
+- **breaking** `commonCompileOnly(…)` now adds the dependency as `compileOnly`, as its name says, so JVM and Android consumers of your library no longer get it at runtime; it used to be `implementation` everywhere. JS, Wasm and Native get it as `api` (Kotlin can't build them against a compile-only dependency). This also applies to the Compose runtime fluxo adds for `@Stable`/`@Immutable` in KMP modules with JetBrains Compose. If your JVM consumers need the dependency at runtime, declare it with `implementation`.
 - On Kotlin 2.4+, BCV's task names (`apiCheck`, `klibApiCheck`, `jvmApiCheck`, `apiDump`, …) are aliases of `checkKotlinAbi` or `updateKotlinAbi`, so `-x apiCheck` skips nothing; their task descriptions now say so and name the task to exclude.
 - With publication set up, a SNAPSHOT version gets the current commit (`1.2-abc1234-SNAPSHOT`) only in builds that run a publishing task (`publish*`, `upload*`, `deploy*`, `release*`, `ship*`, `distribute*`, `install*`); other builds keep the declared version, so their jars are named `lib-1.2-SNAPSHOT.jar`. Published coordinates are unchanged.
 

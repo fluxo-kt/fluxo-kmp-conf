@@ -110,6 +110,11 @@ internal fun KotlinDependencyHandler.compileOnlyAndLog(dependencyNotation: Any) 
         }
     }
 
+internal fun KotlinDependencyHandler.apiAndLog(dependencyNotation: Any) =
+    api(dependencyNotation).also {
+        logKmpDependency("api", it ?: dependencyNotation) { apiConfigurationName }
+    }
+
 
 internal fun <T : ModuleDependency> T.exclude(group: String? = null, module: String? = null): T =
     uncheckedCast(exclude(excludeMapFor(group, module)))
