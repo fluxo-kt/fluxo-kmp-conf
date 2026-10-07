@@ -12,7 +12,7 @@ It configures Kotlin, KMP and Android modules from one root plugin and one `fkcS
 - Sets up hierarchical KMP source sets (diagram below).
 - `KMP_TARGETS=JVM,JS` (or `KMP_TARGETS_ALL=true`) picks the targets to build, e.g. per CI job (codes: [`KmpTargetCode`](fluxo-kmp-conf/src/main/kotlin/fluxo/conf/dsl/container/impl/KmpTargetCode.kt)); a module with all its targets filtered out still configures.
 - Ready for Android, JS, KMP, JVM, Gradle plugin, or IDEA plugin modules.
-- Allows configuring verification tasks (Detekt, Lint, ABI validation — Kotlin's own engine on Kotlin 2.4+, else BCV — with TypeScript API checks for JS).
+- Allows configuring verification tasks (Detekt, Lint, ABI validation — Kotlin's own engine on Kotlin 2.2+, else BCV — with TypeScript API checks for JS).
   - One merged SARIF report per tool for the whole build.
   - Baseline tasks (`./gradlew detektBaselineMerge updateLintBaseline apiDump`).
 - A test summary in the console at build end, plus one merged XML test report.

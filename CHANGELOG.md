@@ -4,6 +4,7 @@
 ## Unreleased
 
 ### Changed
+- On Kotlin 2.2 and 2.3, ABI validation now uses Kotlin's own engine, as on 2.4+, so no BCV plugin is needed: its dumps are byte-identical to BCV's, so committed dumps keep passing, and `apiDump`/`apiCheck` (and their per-target names) still work. `check` runs Kotlin's check (`checkLegacyAbi` on 2.2, `checkKotlinAbi` on 2.3). Applying BCV in the build keeps BCV.
 - **breaking** With BCV and no `apiValidation {}` block, KMP modules now also dump and check klib ABI (`<module>.klib.api`), as `klibValidationEnabled` (default `true`) always said and as Kotlin's own engine does. Run `apiDump` once and commit the new file, or set `apiValidation { klibValidationEnabled = false }`.
 - **breaking** `commonCompileOnly(…)` now adds the dependency as `compileOnly`, as its name says, so JVM and Android consumers of your library no longer get it at runtime; it used to be `implementation` everywhere. JS, Wasm and Native get it as `api` (Kotlin can't build them against a compile-only dependency). This also applies to the Compose runtime fluxo adds for `@Stable`/`@Immutable` in KMP modules with JetBrains Compose. If your JVM consumers need the dependency at runtime, declare it with `implementation`.
 - On Kotlin 2.4+, BCV's task names (`apiCheck`, `klibApiCheck`, `jvmApiCheck`, `apiDump`, …) are aliases of `checkKotlinAbi` or `updateKotlinAbi`, so `-x apiCheck` skips nothing; their task descriptions now say so and name the task to exclude.

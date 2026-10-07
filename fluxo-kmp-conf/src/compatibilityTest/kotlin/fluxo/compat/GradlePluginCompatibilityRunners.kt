@@ -182,10 +182,10 @@ private val PUBLICATION_EXTRAS_SCRIPT = """
 private val UNSIGNED_REFUSAL = listOf("Refusing to publish non-snapshot compat:compat-plugin:1.2.3")
 
 /** The first Kotlin whose own ABI validation fluxo uses. */
-private val KGP_ABI_VALIDATION = KotlinVersion(2, 4)
+private val KGP_ABI_VALIDATION = KotlinVersion(2, 2)
 
 /**
- * On Kotlin 2.4+ ABI validation runs on the Kotlin Gradle plugin's engine, with no BCV declared:
+ * On Kotlin 2.2+ ABI validation runs on the Kotlin Gradle plugin's engine, with no BCV declared:
  * BCV's `apiDump` writes the dump, `check` runs the KGP check, and `apiCheck` fails on an API
  * change the dump doesn't have.
  */
@@ -310,8 +310,8 @@ private fun gradlePluginBuildScript(row: Map<String, String>): String =
 
     fkcSetupGradlePlugin(pluginName = "compat-plugin", pluginClass = "$PLUGIN_CLASS") {
         setupVerification = false
-        // On by default for Gradle plugins, and below Kotlin 2.4 it needs BCV declared by the
-        // consumer; runKgpAbiCase covers it on 2.4+.
+        // On by default for Gradle plugins, and below Kotlin 2.2 it needs BCV declared by the
+        // consumer; runKgpAbiCase covers it on 2.2+.
         enableApiValidation = false
         enablePublication = false
         enableGradleDoctor = false

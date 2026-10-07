@@ -38,6 +38,7 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         runKmpNpmToolVersionCase(row, tempDir)
         runKmpBareSetupCase(row, tempDir)
         runKmpBrowserTestsCase(row, tempDir)
+        (KGP_ABI_LINES + row.getValue("kgpVersion")).forEach { runKmpKgpAbiCase(row, tempDir, it) }
     }
 }
 

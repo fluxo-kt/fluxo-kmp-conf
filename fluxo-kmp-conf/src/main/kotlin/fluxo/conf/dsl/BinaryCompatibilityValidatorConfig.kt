@@ -6,7 +6,7 @@ import org.gradle.api.Incubating
 /**
  * Configuration of ABI validation, applied to whichever engine the module uses (see
  * [FluxoConfigurationExtensionKotlin.enableApiValidation]): the Kotlin Gradle plugin's own on
- * Kotlin 2.4+, else the [kotlinx.validation.BinaryCompatibilityValidatorPlugin].
+ * Kotlin 2.2+, else the [kotlinx.validation.BinaryCompatibilityValidatorPlugin].
  *
  * @see kotlinx.validation.ApiValidationExtension
  */
