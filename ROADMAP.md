@@ -2,6 +2,20 @@
 
 ### Plan
 
+High priority, requested for fluxo-io (Java 8 floor, newer JDK code paths chosen at runtime):
+1. Exact JDK API floor. `-Xjdk-release=1.8` rejects JDK 9+ classes but lets through JDK 9+ methods
+   on old classes (`ByteArrayInputStream.readAllBytes()` compiles, then `NoSuchMethodError` on
+   Java 8), so `useJdkRelease` breaks its KDoc promise. Check JVM targets 9–17 for the same leak;
+   compile against the floor JDK's class library when installed, else check the bytecode against
+   API signatures; fail loudly when neither is possible.
+2. Separate JDK API limits for main and test code: main gets the exact floor; tests get floor
+   bytecode (so a floor-JDK test run loads them) and the build JDK's API.
+3. Test runs on several JDKs (e.g. `testJdks = listOf(8, 17, 25)` → one test task per JDK).
+4. Multi-release jars for KMP JVM targets: a `jvm<N>Main` source set compiled against JDK N into
+   `META-INF/versions/N`, plus a check that Android D8/R8 still accept the jar.
+5. Benchmarks module preset: kotlinx-benchmark (JVM, native), androidx.benchmark (Android);
+   unpublished, excluded from Dependency Guard and API checks.
+
 - Adds experimental support to jvm for configuring multi-release Jars to include `module-info.java`
   [1](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/45/files).
 - JS browser tests on KGP 2.4+: the Playwright runner (`kotlinInstallPlaywrightBrowsers`) needs no
