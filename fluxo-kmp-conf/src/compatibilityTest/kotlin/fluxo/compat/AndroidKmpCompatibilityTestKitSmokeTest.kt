@@ -17,6 +17,16 @@ internal class AndroidKmpCompatibilityTestKitSmokeTest {
         }
 
     @TestFactory
+    fun generatedAgp8KmpLibraryPluginConsumers(): Iterable<DynamicTest> =
+        selectedRows("android-kmp-agp8").flatMap { row ->
+            listOf("8.4.0", "8.7.3", "8.8.0", row.getValue("agpVersion")).map { agp ->
+                DynamicTest.dynamicTest("${row.getValue("id")}-kmp-library-plugin-$agp") {
+                    runAgp8KmpLibraryPluginCase(row, tempDir, agp)
+                }
+            }
+        }
+
+    @TestFactory
     fun generatedAgp9KmpConsumersUseKmpAwareAndroidPath(): Iterable<DynamicTest> =
         selectedRows("android-kmp-agp9", "android-kmp-agp9-exec").map { row ->
             DynamicTest.dynamicTest(row.getValue("id")) {

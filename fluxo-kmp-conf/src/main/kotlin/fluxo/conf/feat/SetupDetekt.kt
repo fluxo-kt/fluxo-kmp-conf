@@ -10,8 +10,8 @@ import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.MergeDetektBaselinesTask
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.addAndLog
-import fluxo.conf.impl.android.ANDROID_KMP_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.AgpVersion
+import fluxo.conf.impl.android.withKmpAndroidLibPlugin
 import fluxo.conf.impl.configureExtensionIfAvailable
 import fluxo.conf.impl.dependencies
 import fluxo.conf.impl.disableTask
@@ -101,7 +101,7 @@ internal fun Project.setupDetekt(
             },
         )
         if (!detekt2) {
-            pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) {
+            withKmpAndroidLibPlugin(context) {
                 useCompilerClasspathInKmpAndroidDetekt()
             }
         }

@@ -9,6 +9,7 @@
 - With publication set up, a SNAPSHOT version gets the current commit (`1.2-abc1234-SNAPSHOT`) only in builds that run a publishing task (`publish*`, `upload*`, `deploy*`, `release*`, `ship*`, `distribute*`, `install*`); other builds keep the declared version, so their jars are named `lib-1.2-SNAPSHOT.jar`. Published coordinates are unchanged.
 
 ### Fixed
+- On AGP 8.4–8.7, a KMP module applying `com.android.kotlin.multiplatform.library` failed configuration with `NoClassDefFoundError: …KotlinMultiplatformAndroidLibraryTarget`: that AGP's plugin has an older target type. fluxo now leaves such a module's Android target to AGP's defaults and prints one warning naming AGP 8.8, from which fluxo sets it up as on AGP 9.
 - With publication set up, every build ran git to read the current tag or commit; git's output is a configuration-cache input, so each new commit or tag discarded the configuration cache, even for `help`. Git now runs only when a SNAPSHOT version is published.
 - A two-part SNAPSHOT version lost its minor part when stamped with the commit: `1.2-SNAPSHOT` was published as `1-abc1234-SNAPSHOT`. The commit replaces only a patch part now (`1.2.3-SNAPSHOT` → `1.2-abc1234-SNAPSHOT`, `1.2-SNAPSHOT` → `1.2-abc1234-SNAPSHOT`).
 

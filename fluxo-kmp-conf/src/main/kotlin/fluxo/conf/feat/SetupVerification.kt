@@ -7,8 +7,8 @@ import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.android.ANDROID_APP_PLUGIN_ID
-import fluxo.conf.impl.android.ANDROID_KMP_LIB_PLUGIN_ID
 import fluxo.conf.impl.android.ANDROID_LIB_PLUGIN_ID
+import fluxo.conf.impl.android.withKmpAndroidLibPlugin
 import fluxo.conf.impl.isRootProject
 import fluxo.conf.impl.namedCompat
 import fluxo.conf.impl.withAnyPlugin
@@ -42,7 +42,7 @@ internal fun Project.setupVerification(conf: FluxoConfigurationExtensionImpl) {
     withAnyPlugin(ANDROID_LIB_PLUGIN_ID, ANDROID_APP_PLUGIN_ID) {
         setupAndroidLint(conf, ignoredBuildTypes, ignoredFlavors, testsDisabled)
     }
-    pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) {
+    withKmpAndroidLibPlugin(ctx) {
         setupKmpAndroidLint(conf, ignoredBuildTypes, ignoredFlavors, testsDisabled)
     }
 

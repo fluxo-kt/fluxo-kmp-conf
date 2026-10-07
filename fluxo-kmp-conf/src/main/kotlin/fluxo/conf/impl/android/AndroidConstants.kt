@@ -1,8 +1,12 @@
 package fluxo.conf.impl.android
 
 import com.android.builder.core.ToolsRevisionUtils
+import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.data.BuildConstants
 import fluxo.conf.impl.kotlin.KOTLIN_MPP_PLUGIN_ID
+import fluxo.log.FluxoProblem
+import fluxo.log.reportProblem
+import org.gradle.api.Project
 import org.gradle.api.plugins.PluginAware
 
 /** Current AndroidX libraries declare `minSdkVersion="23"`: below it the manifest merge fails. */
@@ -33,7 +37,8 @@ internal const val ANDROID_APP_PLUGIN_ID = "com.android.application"
 internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
 
 /**
- * KMP-aware Android library plugin id (AGP `>= 8.8.0`, required from AGP `9.0`).
+ * KMP-aware Android library plugin id (required from AGP `9.0`; fluxo configures it from AGP
+ * `8.8`, see [withKmpAndroidLibPlugin]).
  *
  * Replaces the `com.android.library` + `kotlin("multiplatform")` co-application,
  * which AGP 9 hard-rejects. The plugin auto-creates a `KotlinMultiplatformAndroidLibraryTarget`
@@ -57,11 +62,41 @@ internal val PluginAware.hasAndroidLibPlugin: Boolean
     get() = pluginManager.hasPlugin(ANDROID_LIB_PLUGIN_ID)
 
 /**
- * `com.android.kotlin.multiplatform.library` (AGP `>= 8.8.0`, required from AGP `9.0`).
+ * `com.android.kotlin.multiplatform.library` (required from AGP `9.0`).
  * Mutually exclusive with [hasAndroidLibPlugin] under AGP 9+.
  */
 internal val PluginAware.hasAndroidKmpLibPlugin: Boolean
     get() = pluginManager.hasPlugin(ANDROID_KMP_LIB_PLUGIN_ID)
+
+/**
+ * Runs [action] once `com.android.kotlin.multiplatform.library` is applied, if this AGP has the
+ * target type fluxo configures it through. AGP 8.4–8.7 ship the plugin with an older target
+ * type, so there every fluxo call into it would fail with `NoClassDefFoundError`; fluxo leaves
+ * such a module to AGP's own defaults and says so once per build. Probed by class presence, so
+ * any AGP that has the type works.
+ */
+internal fun Project.withKmpAndroidLibPlugin(ctx: FluxoKmpConfContext, action: () -> Unit) {
+    pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) {
+        val hasTargetApi = runCatching {
+            Class.forName(KMP_ANDROID_LIB_TARGET, false, FluxoProblem::class.java.classLoader)
+        }.isSuccess
+        when {
+            hasTargetApi -> action()
+
+            ctx.firstInBuild("kmp-android-lib-target-missing") -> reportProblem(
+                FluxoProblem.SETUP_STEP_SKIPPED,
+                "This AGP's `$ANDROID_KMP_LIB_PLUGIN_ID` lacks `$KMP_ANDROID_LIB_TARGET` " +
+                    "(added in AGP 8.8), so fluxo doesn't set up its Android targets: no " +
+                    "namespace and SDK defaults, Lint or Detekt setup for them.",
+                fix = "Use AGP 8.8 or newer, or `com.android.library` with fluxo's " +
+                    "`androidLibrary()` target on AGP 8.",
+            )
+        }
+    }
+}
+
+private const val KMP_ANDROID_LIB_TARGET =
+    "com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget"
 
 internal val PluginAware.hasRoomPlugin: Boolean
     get() = pluginManager.hasPlugin(ANDROIDX_ROOM_PLUGIN_ID)

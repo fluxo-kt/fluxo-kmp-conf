@@ -40,7 +40,7 @@ import org.gradle.api.Project
 internal fun Project.setupKmpAndroidExtension(conf: FluxoConfigurationExtensionImpl) {
     // The callback only calls a function: the oldest-version linkage check can't see the file's
     // annotation from a lambda nested in another lambda.
-    pluginManager.withPlugin(ANDROID_KMP_LIB_PLUGIN_ID) { configureKmpAndroidTargets(conf) }
+    withKmpAndroidLibPlugin(conf.ctx) { configureKmpAndroidTargets(conf) }
 }
 
 private fun Project.configureKmpAndroidTargets(conf: FluxoConfigurationExtensionImpl) {
