@@ -5,8 +5,6 @@ package fluxo.conf.feat
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.deps.loadAndApplyPluginIfNotApplied
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
-import fluxo.conf.dsl.DEFAULT_CONSTRUCTOR_MARKER_CLASS
-import fluxo.conf.dsl.JVM_SYNTHETIC_CLASS
 import fluxo.conf.dsl.container.impl.KmpTargetCode
 import fluxo.conf.dsl.impl.ConfigurationType
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
@@ -125,17 +123,14 @@ private fun Project.setupBinaryCompatibilityValidator(
         canLoadDynamically = false,
     ).orThrow()
 
+    // Without an `apiValidation {}` block the documented defaults apply, klib dumps included, as
+    // on the Kotlin Gradle plugin's engine; the dumps then match whichever engine runs.
+    val settings = config ?: BinaryCompatibilityValidatorConfig()
     configureExtension<ApiValidationExtension>(KOTLINX_BCV_EXTENSION_NAME) {
-        if (config != null) {
-            ignoredPackages += config.ignoredPackages
-            nonPublicMarkers += config.nonPublicMarkers
-            ignoredClasses += config.ignoredClasses
-            configureKlibValidation(config)
-        } else {
-            nonPublicMarkers.add(JVM_SYNTHETIC_CLASS)
-            // Sealed classes constructors are not actually public
-            ignoredClasses.add(DEFAULT_CONSTRUCTOR_MARKER_CLASS)
-        }
+        ignoredPackages += settings.ignoredPackages
+        nonPublicMarkers += settings.nonPublicMarkers
+        ignoredClasses += settings.ignoredClasses
+        configureKlibValidation(settings)
     }
 }
 
