@@ -1,6 +1,12 @@
 # Changelog [^1]
 
 
+## [Unreleased]
+
+### Changed
+- `useJdkRelease` no longer limits test code: JVM test compilations keep the JVM target's bytecode but see the compile JDK's full API, so tests can cover code paths that a runtime check enables only on newer JDKs. Main code is limited as before.
+
+
 ## [0.17.0] - 2026-10-07
 
 ### Changed

@@ -174,6 +174,7 @@ internal fun runKotlinJvmVariant(
     script: String = "",
     source: String? = null,
     javaSource: String? = null,
+    sourceSet: String = "main",
     tasks: List<String> = listOf("compileKotlin"),
     arguments: List<String> = emptyList(),
     expectFailure: List<String> = emptyList(),
@@ -195,15 +196,20 @@ internal fun runKotlinJvmVariant(
             .writeText(kotlinJvmConsumerBuildScript(row, *setup) + "\n" + script)
         writeKotlinJvmSources(it)
         // Rewritten or removed on every run, as cases share one project directory.
-        val extra = it.resolve("src/main/kotlin/compat/Extra.kt")
-        if (source == null) extra.deleteIfExists() else extra.writeText(source)
-        val javaDir = it.resolve("src/main/java/compat")
-        val javaFile = javaDir.resolve("Extra.java")
-        if (javaSource == null) {
-            javaFile.deleteIfExists()
-        } else {
-            javaDir.createDirectories()
-            javaFile.writeText(javaSource)
+        val extras = listOf(
+            "kotlin/compat/Extra.kt" to source,
+            "java/compat/Extra.java" to javaSource,
+        )
+        for (set in listOf("main", "test")) {
+            for ((file, text) in extras) {
+                val path = it.resolve("src/$set/$file")
+                if (set != sourceSet || text == null) {
+                    path.deleteIfExists()
+                } else {
+                    path.parent.createDirectories()
+                    path.writeText(text)
+                }
+            }
         }
     }.output
     return projectDir to output

@@ -406,7 +406,8 @@ private fun KotlinProjectExtension.setupTargets(
             }
         }
         // Android: AGP rejects javac --release (it sets up its own boot classpath).
-        if (!isAndroid && kc.useJdkRelease) {
+        // Tests: full JDK API, as for Kotlin below.
+        if (!isAndroid && !isTest && kc.useJdkRelease) {
             jvmTargetVersion?.let { v ->
                 javaCompileTaskProviderCompat?.configure { limitJavaJdkApi(conf, v) }
             }
@@ -475,14 +476,14 @@ private fun KotlinProjectExtension.setupTargets(
                     coroutinesOptIns = coroutinesOptIns,
                 )
             }
-            if (kc.useJdkRelease && this is KotlinJvmCompile) {
-                when {
-                    !isAndroid -> jvmTargetVersion?.let {
-                        limitKotlinJdkApi(conf, it, inheritedArgs)
-                    }
-
-                    // Host tests run on a JDK, so they keep its API.
-                    !isTest -> hideJdkFromAndroidCode(conf)
+            // Tests keep the compile JDK's full API, so they can exercise code paths a runtime
+            // check enables only on newer JDKs. They ship nowhere, and a test calling newer API
+            // unguarded still fails loudly when the tests run on an older JDK.
+            if (kc.useJdkRelease && !isTest && this is KotlinJvmCompile) {
+                if (isAndroid) {
+                    hideJdkFromAndroidCode(conf)
+                } else {
+                    jvmTargetVersion?.let { limitKotlinJdkApi(conf, it, inheritedArgs) }
                 }
             }
         }

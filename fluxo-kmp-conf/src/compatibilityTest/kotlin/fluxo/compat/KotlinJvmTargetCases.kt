@@ -95,6 +95,19 @@ private fun runJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
         javaSource = USES_JDK_21_API_JAVA,
         tasks = listOf("compileKotlin") + COMPILE_JAVA,
     )
+    // Test code keeps the full JDK API, so it can cover paths a runtime check enables on newer
+    // JDKs; the limit stays on for main code in the same module.
+    runKotlinJvmVariant(
+        row,
+        tempDir,
+        "jdk21",
+        "jvmTarget = \"17\"",
+        jdk = JDK_21,
+        source = USES_JDK_21_API,
+        javaSource = USES_JDK_21_API_JAVA,
+        sourceSet = "test",
+        tasks = listOf("compileTestKotlin", "compileTestJava"),
+    )
 }
 
 /**

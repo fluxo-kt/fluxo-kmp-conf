@@ -193,8 +193,12 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * Android code gets no JVM-target limit, as its API is the device's, not the JDK's: Kotlin in
      * main (non-test) Android compilations stops seeing the JDK at all (`noJdk`, what KGP already
      * does for AGP 8's `kotlin-android`), so only `android.jar` is visible; Java is compiled by
-     * AGP against the Android SDK. Lint's `NewApi` check covers calls above `minSdk`. Host tests
-     * run on a JDK and keep its API.
+     * AGP against the Android SDK. Lint's `NewApi` check covers calls above `minSdk`.
+     *
+     * Test code is not limited, on JVM and Android alike: it keeps the JVM target's bytecode but
+     * sees the compile JDK's full API, so tests can exercise code paths that a runtime check
+     * enables only on newer JDKs. Test code ships nowhere, and an unguarded call to newer API
+     * still fails when the tests run on an older JDK.
      *
      * Default value: `true`. Inherited from the parent project if not set.
      * Run with `FLUXO_EXPLAIN=true` to print each task's decision and its reason.
