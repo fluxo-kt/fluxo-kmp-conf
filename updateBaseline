@@ -3,8 +3,6 @@
 # SC2086: Double quote to prevent globbing and word splitting.
 # shellcheck disable=SC2086
 
-./gradlew --stop --info
-
 COMMON_TASKS="dependencyGuardBaseline detektBaselineMerge updateLintBaseline --continue -Dlint.baselines.continue=true"
 # checks/kmp has lint configured but with baseline=off — updateLintBaseline is not registered there.
 KMP_TASKS="dependencyGuardBaseline detektBaselineMerge --continue"
