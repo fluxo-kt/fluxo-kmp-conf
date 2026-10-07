@@ -41,11 +41,18 @@ internal fun runKgpAbiCase(row: Map<String, String>, tempDir: Path, kgp: String,
             .writeText("package compat\n\nclass Api {\n    fun f(): Int = 1\n}\n$extraSource")
     }
 
+    if (jvm) {
+        // Engine parity with BCV is proven by the KMP variant; here only the adapter must work.
+        val output = run(listOf("apiDump"), bcv = false).output
+        check("ABI validation engine = Kotlin Gradle plugin" in output) { output }
+        check(projectDir.resolve("api").readTree().size == 1) { "no JVM dump:\n$output" }
+        return
+    }
     val bcvOutput = run(listOf("apiDump"), bcv = true).output
     check("ABI validation engine = BCV" in bcvOutput) { bcvOutput }
     val bcvDumps = projectDir.resolve("api").readTree()
-    check(if (jvm) bcvDumps.size == 1 else bcvDumps.keys.any { it.endsWith(".klib.api") }) {
-        "BCV wrote no JVM or klib dump: ${bcvDumps.keys}\n$bcvOutput"
+    check(bcvDumps.keys.any { it.endsWith(".klib.api") }) {
+        "BCV wrote no klib dump: ${bcvDumps.keys}\n$bcvOutput"
     }
     projectDir.resolve("api").toFile().deleteRecursively()
 

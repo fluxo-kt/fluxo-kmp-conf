@@ -39,9 +39,11 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         runKmpBrowserTestsCase(row, tempDir)
         for (kgp in KGP_ABI_LINES + row.getValue("kgpVersion")) {
             runKgpAbiCase(row, tempDir, kgp, jvm = false)
-            runKgpAbiCase(row, tempDir, kgp, jvm = true)
-            runKmpTsApiChecksCase(row, tempDir, kgp)
         }
+        // Only 2.2/2.3 reach Kotlin's engine through reflection, which differs on Kotlin/JVM (no
+        // klib member) and which bcv-ts reads; 2.4 is typed, so compile-checked.
+        for (kgp in KGP_ABI_LINES) runKgpAbiCase(row, tempDir, kgp, jvm = true)
+        runKmpTsApiChecksCase(row, tempDir, KGP_ABI_LINES.first())
     }
 }
 
