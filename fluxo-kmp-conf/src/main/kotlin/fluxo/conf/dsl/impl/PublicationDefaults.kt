@@ -46,10 +46,10 @@ internal fun reproducibleSnapshotVersion(
 ): String {
     var result = rawVersion.substringBeforeLast("SNAPSHOT")
     if (scmTag.isNotEmpty()) {
-        // Version structure: `major.minor-COMMIT_SHA-SNAPSHOT`.
+        // Version structure: `major.minor-COMMIT_SHA-SNAPSHOT`: the commit replaces the patch,
+        // so a version without one (`1.2`) keeps all its parts.
         result = result.trimEnd { !it.isDigit() }
-        val idx = result.lastIndexOf('.')
-        if (idx > 0) result = result.substring(0, idx)
+        if (result.count { it == '.' } >= 2) result = result.substringBeforeLast('.')
         return "$result-$scmTag-SNAPSHOT"
     }
 

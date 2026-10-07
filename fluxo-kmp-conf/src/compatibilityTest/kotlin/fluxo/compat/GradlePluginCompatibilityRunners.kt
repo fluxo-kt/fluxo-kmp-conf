@@ -26,7 +26,71 @@ internal fun runGradlePluginConsumer(row: Map<String, String>, tempDir: Path) {
         buildAndCheckGradlePlugin(oldGradle, tempDir.resolve(row.getValue("id") + "-gradle-floor"))
     }
     if (row.kgpMinor() >= KGP_ABI_VALIDATION) runKgpAbiCase(row, tempDir)
-    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) runPublicationWithoutVanniktechCase(row, tempDir)
+    if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
+        runPublicationWithoutVanniktechCase(row, tempDir)
+        runSnapshotVersionCase(row, tempDir)
+    }
+}
+
+/**
+ * A SNAPSHOT version is stamped with the current commit only when the build publishes. Reading
+ * the commit runs git, and git's output is a configuration-cache input, so stamping it in every
+ * build made each new commit discard the cache of ordinary builds.
+ */
+private fun runSnapshotVersionCase(row: Map<String, String>, tempDir: Path) {
+    val projectDir = tempDir.resolve(row.getValue("id") + "-snapshot")
+    val repo = projectDir.resolve("m2")
+    fun run(tasks: List<String>) = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-gradle-plugin-consumer",
+        projectDir = projectDir,
+        tasks = tasks,
+        arguments = listOf("-Dmaven.repo.local=$repo"),
+    ) {
+        val script = gradlePluginBuildScript(row)
+            .replace("version = \"1.0.0\"\n", "")
+            .replace(
+                "enablePublication = false",
+                "this.version = \"1.2-SNAPSHOT\"\n    publicationConfig()",
+            )
+        it.resolve("build.gradle.kts").writeText(script)
+        writeCompatPluginSource(it)
+    }
+
+    // Its own repository, so the commits are the case's, not those of the checkout around it.
+    fun git(vararg args: String): String {
+        val config = listOf(
+            "user.name=compat",
+            "user.email=compat@invalid",
+            "commit.gpgSign=false",
+        )
+        val command = listOf("git") + config.flatMap { listOf("-c", it) } + args
+        val process = ProcessBuilder(command)
+            .directory(projectDir.toFile())
+            .redirectErrorStream(true)
+            .start()
+        val output = process.inputStream.bufferedReader().readText().trim()
+        check(process.waitFor() == 0) { "git ${args.joinToString(" ")}: $output" }
+        return output
+    }
+
+    Files.createDirectories(projectDir)
+    git("init", "-q")
+    git("commit", "-q", "--allow-empty", "-m", "first")
+    run(listOf("help"))
+    git("commit", "-q", "--allow-empty", "-m", "second")
+    val reused = run(listOf("help")).output
+    check("Configuration cache entry reused" in reused) {
+        "A new commit discarded the configuration cache of a non-publishing build:\n$reused"
+    }
+
+    run(listOf("publishToMavenLocal"))
+    val stamped = "1.2-${git("rev-parse", "--short=7", "HEAD")}-SNAPSHOT"
+    val published = Files.walk(repo).use { s -> s.filter(Files::isRegularFile).toList() }
+    check(published.any { it.toString().endsWith("compat-plugin-$stamped.pom") }) {
+        "No POM at the commit-stamped version $stamped; published: $published"
+    }
 }
 
 /**

@@ -96,7 +96,10 @@ public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChai
     /**
      * Flag to control reproducible artifact generation.
      *
-     * Defaults to `true`.
+     * Defaults to `true`. A SNAPSHOT version is then stamped with the current commit
+     * (`1.2-abc1234-SNAPSHOT`) in builds that run a publishing task (`publish*`, `upload*`,
+     * `deploy*`, `release*`, `ship*`, `distribute*`, `install*`); other builds keep the declared
+     * version, so they never run git and keep the configuration cache across commits.
      *
      * @FIXME: Check with shrinker enabled.
      */

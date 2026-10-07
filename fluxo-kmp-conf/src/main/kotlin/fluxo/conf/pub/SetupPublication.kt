@@ -90,6 +90,12 @@ private val CALL_TASK_PREFIXES = arrayOf(
 
 private val PUBLISH_TASK_PREFIXES = CALL_TASK_PREFIXES.filter { it != "check" && it != "verify" }
 
+/** Whether a requested task publishes; `check`/`verify` run on every CI build, so they don't. */
+internal val FluxoKmpConfContext.buildPublishes: Boolean
+    get() = startTaskNames.any { name ->
+        PUBLISH_TASK_PREFIXES.any { prefix -> name.substringAfterLast(':').startsWith(prefix) }
+    }
+
 internal fun setupPublication(
     conf: FluxoConfigurationExtensionImpl,
 ) {
@@ -108,10 +114,7 @@ internal fun setupPublication(
     }
     // A publishing build must fail on a broken publication setup instead of publishing a
     // half-configured one; `check`/`verify` run on every CI build, so they only log it.
-    val publishes = ctx.startTaskNames.any { name ->
-        PUBLISH_TASK_PREFIXES.any { prefix -> name.substringAfterLast(':').startsWith(prefix) }
-    }
-    ctx.onProjectInSyncRun(forceIf = isCalled, rethrow = publishes) {
+    ctx.onProjectInSyncRun(forceIf = isCalled, rethrow = ctx.buildPublishes) {
         setupGradleProjectPublication(conf.project, config, conf)
     }
 }

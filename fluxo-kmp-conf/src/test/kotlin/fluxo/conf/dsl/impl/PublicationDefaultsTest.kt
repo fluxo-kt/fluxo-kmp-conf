@@ -37,6 +37,14 @@ internal class PublicationDefaultsTest {
     }
 
     @Test
+    fun `the commit replaces only a patch version`() {
+        fun stamp(version: String) = reproducibleSnapshotVersion(version, "abc1234", "", Date())
+        assertEquals("0.14-abc1234-SNAPSHOT", stamp("0.14.1-SNAPSHOT"))
+        assertEquals("1.2-abc1234-SNAPSHOT", stamp("1.2-SNAPSHOT"))
+        assertEquals("1-abc1234-SNAPSHOT", stamp("1-SNAPSHOT"))
+    }
+
+    @Test
     fun `snapshot defaults derive from scm tag when reproducible artifacts are enabled`() {
         val config = FluxoPublicationConfig(
             group = "io.github.fluxo-kt",

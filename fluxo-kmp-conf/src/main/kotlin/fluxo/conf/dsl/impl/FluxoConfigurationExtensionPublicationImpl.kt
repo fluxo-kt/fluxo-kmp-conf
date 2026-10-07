@@ -10,6 +10,7 @@ import fluxo.artifact.proc.JvmShrinker
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 import fluxo.conf.dsl.FluxoPublicationConfig
+import fluxo.conf.pub.buildPublishes
 import fluxo.shrink.AUTOGEN_KEEP_MODIFIERS
 import fluxo.vc.v
 import org.gradle.api.provider.ListProperty
@@ -210,10 +211,18 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
                         ?: project.envOrPropValue("MAVEN_CENTRAL_PASSWORD")
                         ?: project.envOrPropValue("OSSRH_PASSWORD"),
                 ).apply(configure).also {
+                    // The commit-stamped snapshot version matters only for what gets published.
+                    // Reading the commit runs git, a configuration-cache input, so a build that
+                    // publishes nothing keeps the plain version and its cache across commits.
+                    val publishes = ctx.buildPublishes
                     it.finalizePublicationDefaults(
                         githubProjectUrl = url,
-                        fallbackScmTag = { ctx.scmTag.ifBlank { defaultGitBranchName } },
-                        reproducibleArtifacts = reproducibleArtifacts,
+                        fallbackScmTag = {
+                            val tag = if (publishes) ctx.scmTag else ""
+                            tag.ifBlank { defaultGitBranchName }
+                        },
+                        // `null` is the default and means on, so it must pass through as is.
+                        reproducibleArtifacts = if (publishes) reproducibleArtifacts else false,
                         localSnapshotSuffix = project.buildNumberSuffix("-local", "-"),
                     )
                 }

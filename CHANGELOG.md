@@ -5,9 +5,11 @@
 
 ### Changed
 - On Kotlin 2.4+, BCV's task names (`apiCheck`, `klibApiCheck`, `jvmApiCheck`, `apiDump`, …) are aliases of `checkKotlinAbi` or `updateKotlinAbi`, so `-x apiCheck` skips nothing; their task descriptions now say so and name the task to exclude.
+- With publication set up, a SNAPSHOT version gets the current commit (`1.2-abc1234-SNAPSHOT`) only in builds that run a publishing task (`publish*`, `upload*`, `deploy*`, `release*`, `ship*`, `distribute*`, `install*`); other builds keep the declared version, so their jars are named `lib-1.2-SNAPSHOT.jar`. Published coordinates are unchanged.
 
 ### Fixed
-- In modules with publication set up and a release (non-SNAPSHOT) version, every build ran git to read the current tag or commit, which only snapshot versions use; since git's output is a configuration-cache input, each new commit or tag discarded the configuration cache, even for `help`. Git now runs only for snapshot versions, whose version contains the commit.
+- With publication set up, every build ran git to read the current tag or commit; git's output is a configuration-cache input, so each new commit or tag discarded the configuration cache, even for `help`. Git now runs only when a SNAPSHOT version is published.
+- A two-part SNAPSHOT version lost its minor part when stamped with the commit: `1.2-SNAPSHOT` was published as `1-abc1234-SNAPSHOT`. The commit replaces only a patch part now (`1.2.3-SNAPSHOT` → `1.2-abc1234-SNAPSHOT`, `1.2-SNAPSHOT` → `1.2-abc1234-SNAPSHOT`).
 
 
 ## [0.16.2] - 2026-10-06
