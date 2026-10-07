@@ -4,31 +4,10 @@
 
 - Adds experimental support to jvm for configuring multi-release Jars to include `module-info.java`
   [1](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/45/files).
-- Drop `org.gradle.configureondemand=true` from root and `self/` `gradle.properties`: KGP warns
-  "Kotlin targets do not support Configuration on Demand" (already gone from `checks/kmp`). Root file doubles as the consumer reference, so a copied setting spreads.
-- Find why root `gradle.properties` sets `systemProp.org.gradle.internal.publish.checksums.insecure=true`
-  (it stops SHA-256/512 checksum upload); drop it unless a repository needs it.
-- Bound `.gradle/compat-testkit`: it grows by tens of GB within days, mostly
-  `caches/<gradle>/transforms` (every plugin rebuild makes new transform keys; Gradle keeps unused
-  ones for days). Lower retention in that home or prune transforms in the task. Local disk only.
-- `main` protection lists required CI job names apart from `build.yml`: a renamed or added job
-  needs both. Derive one from the other, or check them in CI.
-- AGP Lint (`lintAnalyzeJvmTest`) read `.kt` files under `fluxo-kmp-conf/build/` though its model
-  roots exclude it; cause unknown. Compat fixtures live in `.gradle/compat-projects` to avoid it.
-- `dependencyUpdates` reportedly needs `--no-parallel` (peer report, log lost); not reproduced with
-  parallel on. Reproduce before acting.
-- Inventory reflective lookups (`Class.forName`, `getDeclaredMethod`): `checkFloorLinkage` can't
-  see them, so each needs a floor-row test or a guard.
 - JS browser tests on KGP 2.4+: the Playwright runner (`kotlinInstallPlaywrightBrowsers`) needs no
   local Chrome. JS-only, downloads a browser per machine, so not the default.
 - Isolated Projects: single-module consumers are one change away (root plugin's
   `gradle.extensions` marker read); see `docs/isolated-projects.md`.
-- Detekt 2 loads no compiler plugins, so sam-with-receiver `Action` lambdas log compiler errors
-  (upstream; not findings).
-- Compose Multiplatform on Kotlin 2.1: CMP 1.11+ rejects KGP < 2.2, so the floor is CMP 1.10.x.
-  README line if consumers ask.
-- JitPack tag builds of v0.16.1 and v0.16.2 are cached as `Error` (transient wrapper-jar failure);
-  only a rebuild in the JitPack UI clears them.
 
 
 ### Research roadmap
