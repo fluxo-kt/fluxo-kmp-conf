@@ -716,6 +716,8 @@ val linkageFloorJars: Configuration by configurations.creating {
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
 }
+// Floor versions stay out of the version catalog so dependency updates never move them.
+@Suppress("UseTomlInstead")
 dependencies {
     linkageTool(libs.animal.sniffer)
     // The JDK 8 API, only so inherited members (`Collection.add`, `Enum.ordinal`) resolve; JDK
