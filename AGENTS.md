@@ -100,7 +100,7 @@ When reasoning about API drift, "dead-under-our-floor" code, ProGuard keep rules
 | Run an integration check | `cd checks/<kmp\|gradle-plugin\|compose-desktop\|android> && ./gradlew build check` |
 | Run IntelliJ Platform check (local only, needs ~800 MB IDEA download) | `cd checks/intellij-platform && ./gradlew check` |
 | Fast lint with the gate's verdict | `./gradlew :plugin:detektMain :plugin:detektTest :plugin:detektCompatibilityTest` — plain `detekt` skips the rules that need type resolution, so it can pass code `check` fails; `./gradlew check --dry-run` lists every task the gate runs |
-| Update **all** baselines (api, detekt, lint, depGuard) | `./updateBaseline` — runs root + every `checks/*` |
+| Update **all** baselines (api, detekt, lint, depGuard) | `./updateBaseline` — runs root + every CI `checks/*`; for the local-only `checks/intellij-platform` run `./gradlew dependencyGuardBaseline check` there after any dependency or pin change, or its baseline drifts unseen |
 | Per-area baselines | `./gradlew apiDump dependencyGuardBaseline detektBaselineMerge updateLintBaseline --continue` |
 | Limit KMP targets | `KMP_TARGETS=<csv> ./gradlew …` (codes in `KmpTargetCode.kt`) or `KMP_TARGETS_ALL=true` |
 | Disable shrinker | `DISABLE_R8=true …` (aliases in `PropsAndEnv.kt`) |
