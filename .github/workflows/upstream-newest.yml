@@ -35,7 +35,8 @@ jobs:
         # about half of build.yml's, so half its leg count keeps each leg as short.
         shard: [1, 2, 3, 4]
     name: 'Newest ${{ matrix.channel }} / ${{ matrix.shard }} of 4'
-    timeout-minutes: 30
+    # Above the step timeout plus setup, so the step's timeout fires first.
+    timeout-minutes: 75
     runs-on: ubuntu-latest
 
     steps:
@@ -79,8 +80,10 @@ jobs:
           sed -i -E "s/^ksp = \"[^\"]*\"/ksp = \"$(v ksp)\"/" gradle/libs.versions.toml
           grep -E '^ksp = ' gradle/libs.versions.toml
 
+      # Only stops a hang (about 8× a normal leg; shared runners can be far slower), never a
+      # speed budget: nothing below it catches a hung TestKit build.
       - name: Run compat fixtures
-        timeout-minutes: 20
+        timeout-minutes: 60
         run: ./gradlew :plugin:compatibilityTest -PcompatShard=${{ matrix.shard }}/4 --continue --stacktrace
 
       - name: Upload the build report

@@ -152,81 +152,86 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # `timeout` (minutes) only stops a hung leg; it is not a speed budget. Each is about 8× a
+        # normal run of its leg, because a shared runner can be many times slower and a timeout
+        # that fires on a slow-but-healthy leg is a false red. Nothing below it catches hangs:
+        # JUnit timeouts don't cover dynamic tests, and a TestKit build runs in its own daemon.
         include:
           - name: check-gradle-plugin
             directory: checks/gradle-plugin
             command: ./gradlew build assemble check --continue --stacktrace --scan
-            timeout: 6
+            timeout: 8
           - name: check-kmp
             directory: checks/kmp
             command: ./gradlew build assemble check printKotlinSourceSetsGraph --continue --stacktrace --scan
-            timeout: 12
+            timeout: 30
           - name: check-compose-desktop
             directory: checks/compose-desktop
             command: ./gradlew build assemble check packageReleaseDistributionForCurrentOS --continue --stacktrace --scan
-            timeout: 14
+            timeout: 20
           # Keeps the legacy non-KMP Android library path covered after checks/kmp
           # moved to the AGP-9 KMP+Android plugin line.
           - name: check-android
             directory: checks/android
             command: ./gradlew build assemble check --continue --stacktrace --scan
-            timeout: 8
+            timeout: 10
           - name: self-check
             directory: self
             command: ./gradlew build assemble check --continue --stacktrace --scan
-            timeout: 4
+            timeout: 6
           # The compatibility TestKit suite, excluded from the per-OS×JDK `build assemble
           # check` step, runs here as 8 legs, each taking every 8th row of compat/matrix.tsv
-          # (`selectedRows`), so every row runs in exactly one leg whatever the leg count.
-          # Timeouts allow for a cold Gradle cache re-downloading the pinned tools.
+          # (`selectedRows`), so every row runs in exactly one leg as long as the legs are
+          # exactly 1/N…N/N: nothing checks that, so a dropped or duplicated leg skips rows
+          # silently. `main`'s branch protection requires each leg by name; keep both in step.
           - name: compat-1-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=1/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 60
           - name: compat-2-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=2/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 60
           - name: compat-3-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=3/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 60
           - name: compat-4-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=4/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 60
           - name: compat-5-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=5/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 60
           - name: compat-6-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=6/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 60
           - name: compat-7-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=7/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 60
           - name: compat-8-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=8/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 60
           # Windows matters for consumers, not for the plugin's own build: the Kotlin/JVM
           # consumer fixtures run here, the plugin itself builds on ubuntu only.
           - name: compat-kotlin-jvm-windows-1-of-2
             os: windows
             directory: .
             command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.KotlinJvm*' -PcompatShard=1/2 --continue --stacktrace --scan
-            timeout: 15
+            timeout: 60
           - name: compat-kotlin-jvm-windows-2-of-2
             os: windows
             directory: .
             command: ./gradlew :plugin:compatibilityTest --tests 'fluxo.compat.KotlinJvm*' -PcompatShard=2/2 --continue --stacktrace --scan
-            timeout: 15
+            timeout: 60
     name: 'Integration check / ${{ matrix.name }}'
-    # Above the largest leg step (15) plus checkout/JDK/Gradle setup overhead, so a
-    # healthy-but-slow leg is never cancelled mid-flight.
-    timeout-minutes: 25
+    # Above the largest leg step timeout plus checkout/JDK/Gradle setup, so the step's own
+    # timeout always fires first and names the hung leg.
+    timeout-minutes: 75
     runs-on: "${{ matrix.os || 'ubuntu' }}-latest"
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, 'ci skip') }}
     env:
@@ -306,7 +311,7 @@ jobs:
 
   codeql:
     name: CodeQL
-    timeout-minutes: 30
+    timeout-minutes: 40
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, 'ci skip') }}
 
@@ -345,7 +350,7 @@ jobs:
           dependency-caching: restore
 
       - name: Compile plugin for CodeQL
-        timeout-minutes: 10
+        timeout-minutes: 20
         run: ./gradlew :plugin:compileKotlin --rerun-tasks --continue --stacktrace
 
       - name: Perform CodeQL Analysis
