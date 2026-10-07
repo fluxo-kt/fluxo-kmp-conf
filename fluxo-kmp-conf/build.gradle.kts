@@ -688,16 +688,16 @@ val verifyBuildScriptMirror = tasks.register("verifyBuildScriptMirror") {
 val linkageFloor = Properties().apply {
     rootProject.file("compat/linkage-floor.properties").reader().use { load(it) }
 }
-val linkageTool: Configuration by configurations.creating {
+val linkageTool: Configuration = configurations.create("linkageTool") {
     isCanBeConsumed = false
 }
-val linkageJdkSignature: Configuration by configurations.creating {
+val linkageJdkSignature: Configuration = configurations.create("linkageJdkSignature") {
     isCanBeConsumed = false
 }
-val linkageGradleDistribution: Configuration by configurations.creating {
+val linkageGradleDistribution: Configuration = configurations.create("linkageGradleDistribution") {
     isCanBeConsumed = false
 }
-val linkageFloorJars: Configuration by configurations.creating {
+val linkageFloorJars: Configuration = configurations.create("linkageFloorJars") {
     isCanBeConsumed = false
     attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
