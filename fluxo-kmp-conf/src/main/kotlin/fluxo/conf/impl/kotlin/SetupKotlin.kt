@@ -449,10 +449,10 @@ private fun KotlinProjectExtension.setupTargets(
             else -> null
         }
         // Read from the graph this compilation resolves anyway, when the task reads its options.
-        val coroutinesOptIns = if (!isTest) {
+        val coroutinesOptIns = if (!isTest && !kc.optInInternal) {
             null
         } else {
-            kc.coroutinesTestOptIns(
+            kc.coroutinesOptIns(
                 target.project.configurations.named(compileDependencyConfigurationName)
                     .flatMap { it.incoming.resolutionResult.rootComponent },
             )
@@ -472,7 +472,6 @@ private fun KotlinProjectExtension.setupTargets(
                     latestSettings = isExperimentalTest,
                     jvmTargetVersion = jvmTargetVersion,
                     isAndroid = isAndroid,
-                    isTest = isTest,
                     isMultiplatform = isMultiplatform,
                     inheritedArgs = inheritedArgs,
                     optInPlatform = optInPlatform,

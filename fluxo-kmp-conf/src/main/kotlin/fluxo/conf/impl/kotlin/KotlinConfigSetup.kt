@@ -97,11 +97,7 @@ internal fun FluxoConfigurationExtensionImpl.KotlinConfig(
     val setupCoroutines = setupCoroutines ?: true
     val optInInternal = optInInternal ?: false
     val resolvedOptIns = resolveOptIns(DEFAULT_OPT_INS + optIns)
-    val optIns = prepareOptIns(
-        optIns = resolvedOptIns.everywhere,
-        setupCoroutines = setupCoroutines,
-        optInInternal = optInInternal,
-    )
+    val optIns = resolvedOptIns.everywhere
 
     val setupRoom = setupRoom == true || project.hasRoomPlugin
 

@@ -255,12 +255,13 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
     public var optIns: List<String>
 
     /**
-     * Flag to add opt-ins for internal Kotlin and Coroutines features.
-     *
-     * For Coroutines:
+     * Opts main code into the coroutines markers test code always gets (with [setupCoroutines]):
      * - [kotlinx.coroutines.DelicateCoroutinesApi]
      * - [kotlinx.coroutines.ExperimentalCoroutinesApi]
+     * - [kotlinx.coroutines.FlowPreview]
      * - [kotlinx.coroutines.InternalCoroutinesApi]
+     *
+     * Each compilation gets them only when `kotlinx-coroutines-core` is among its dependencies.
      *
      * Inherited from the parent project if not set.
      *

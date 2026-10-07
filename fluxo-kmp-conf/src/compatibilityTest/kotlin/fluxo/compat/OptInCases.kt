@@ -60,8 +60,8 @@ private fun optInBuildScript(row: Map<String, String>, optIns: String) =
  * coroutines markers: `getCancellationException` is ERROR-level `InternalCoroutinesApi`, so the
  * test sources compile only with them. fluxo reads that from the compilation's resolved graph,
  * where the module is named per platform (`…-core-jvm`, `…-core-linuxx64`), hence one JVM and one
- * native target. The other half, no coroutines and no markers, is the KMP lifecycle case: every
- * case forbids an unresolved marker.
+ * native target. `optInInternal` asks for the markers in main code too, which has no coroutines
+ * here: it must get none, or the CI-mode compile fails on the unresolved markers.
  */
 internal fun runKmpCoroutinesOptInCase(row: Map<String, String>, tempDir: Path) {
     runConsumerCase(
@@ -69,7 +69,12 @@ internal fun runKmpCoroutinesOptInCase(row: Map<String, String>, tempDir: Path) 
         tempDir,
         rootProjectName = "compat-kmp-coroutines-opt-ins",
         projectDir = tempDir.resolve(row.getValue("id") + "-coroutines-opt-ins"),
-        tasks = listOf("compileTestKotlinJvm", "compileTestKotlinLinuxX64"),
+        tasks = listOf(
+            "compileKotlinJvm",
+            "compileKotlinLinuxX64",
+            "compileTestKotlinJvm",
+            "compileTestKotlinLinuxX64",
+        ),
         forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
     ) { projectDir ->
         projectDir.resolve("build.gradle.kts").writeText(
@@ -84,6 +89,7 @@ internal fun runKmpCoroutinesOptInCase(row: Map<String, String>, tempDir: Path) 
                     setupVerification = false
                     enablePublication = false
                     enableGradleDoctor = false
+                    optInInternal = true
                 },
                 kmp = {
                     jvm()
@@ -100,5 +106,7 @@ internal fun runKmpCoroutinesOptInCase(row: Map<String, String>, tempDir: Path) 
             "package compat\n\nimport kotlinx.coroutines.Job\n\n" +
                 "fun cause(job: Job): Any = job.getCancellationException()\n",
         )
+        projectDir.resolve("src/commonMain/kotlin").createDirectories().resolve("M.kt")
+            .writeText("package compat\n\nfun one(): Int = 1\n")
     }
 }

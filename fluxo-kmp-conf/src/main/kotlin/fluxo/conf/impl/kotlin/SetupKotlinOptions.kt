@@ -93,7 +93,6 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     warningsAsErrorsOff: Boolean,
     latestSettings: Boolean,
     isAndroid: Boolean,
-    isTest: Boolean,
     isMultiplatform: Boolean,
     jvmTargetVersion: String?,
     inheritedArgs: Provider<List<String>>?,
@@ -113,10 +112,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     }
 
     val compilerArgs = LinkedHashSet(DEFAULT_OPTS)
-    if (isTest) {
-        optIn.addAll(kc.prepareTestOptIns(withCoroutines = false) - kc.optIns)
-        coroutinesOptIns?.let(optIn::addAll)
-    }
+    coroutinesOptIns?.let(optIn::addAll)
     optIn.addAll(kc.platformOptIns.forPlatform(optInPlatform))
 
     if (useLatestSettings) {
