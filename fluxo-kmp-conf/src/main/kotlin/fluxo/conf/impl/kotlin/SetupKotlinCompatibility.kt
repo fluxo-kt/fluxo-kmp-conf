@@ -66,7 +66,7 @@ private fun KotlinMultiplatformExtension.setupSharedSourceSetsCoroutinesOptIns(
             target.compilations.map { it.defaultSourceSet }
         }
         sourceSets.forEach { set ->
-            if (set !in compiled && (kc.optInInternal || set.isTestRelated())) {
+            if (set !in compiled && kc.getsCoroutinesOptIns(isTest = set.isTestRelated())) {
                 COROUTINES_OPT_INS.forEach(set.languageSettings::optIn)
             }
         }

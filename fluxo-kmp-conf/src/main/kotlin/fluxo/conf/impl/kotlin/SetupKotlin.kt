@@ -449,14 +449,11 @@ private fun KotlinProjectExtension.setupTargets(
             else -> null
         }
         // Read from the graph this compilation resolves anyway, when the task reads its options.
-        val coroutinesOptIns = if (!isTest && !kc.optInInternal) {
-            null
-        } else {
-            kc.coroutinesOptIns(
-                target.project.configurations.named(compileDependencyConfigurationName)
-                    .flatMap { it.incoming.resolutionResult.rootComponent },
-            )
-        }
+        val coroutinesOptIns = kc.coroutinesOptIns(
+            isTest = isTest,
+            graph = target.project.configurations.named(compileDependencyConfigurationName)
+                .flatMap { it.incoming.resolutionResult.rootComponent },
+        )
         compileTaskProvider.configure {
             compilerOptions {
                 setupKotlinCompatibility(
