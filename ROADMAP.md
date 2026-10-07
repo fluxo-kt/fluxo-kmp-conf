@@ -2,24 +2,32 @@
 
 ### Plan
 
-High priority, requested for fluxo-io (Java 8 floor, newer JDK code paths chosen at runtime):
-1. JDK API limit defeated by `android.jar`: on a JVM (non-Android) compile classpath it declares
-   JDK methods newer than the target (`InputStream.readAllBytes` at target 8), so they resolve
-   despite `-Xjdk-release` and fail at runtime. Warn when such a jar sits there while the limit
-   is on.
-2. Separate JDK API limits for main and test code: main gets the exact floor; tests get floor
-   bytecode (so a floor-JDK test run loads them) and the build JDK's API.
-3. Test runs on several JDKs (e.g. `testJdks = listOf(8, 17, 25)` → one test task per JDK).
-4. Multi-release jars for KMP JVM targets: a `jvm<N>Main` source set compiled against JDK N into
-   `META-INF/versions/N`, plus a check that Android D8/R8 still accept the jar.
-5. Benchmarks module preset: kotlinx-benchmark (JVM, native), androidx.benchmark (Android);
-   unpublished, excluded from Dependency Guard and API checks.
+Every item below is to be implemented now, high priority. The first five come from fluxo-io
+(Java 8 floor, newer JDK code paths chosen at runtime). Checked = done, listed under
+`CHANGELOG.md` Unreleased until released.
 
-- Adds experimental support to jvm for configuring multi-release Jars to include `module-info.java`
-  [1](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/45/files).
-- JS browser tests on KGP 2.4+: the Playwright runner (`kotlinInstallPlaywrightBrowsers`) needs no
-  local Chrome. JS-only, downloads a browser per machine, so not the default.
-- Isolated Projects: single-module consumers are one change away (root plugin's
+- [x] JDK API limit defeated by `android.jar`: on a JVM (non-Android) compile classpath it
+  declares JDK methods newer than the target (`InputStream.readAllBytes` at target 8), so they
+  resolve despite `-Xjdk-release` and fail at runtime. A Kotlin JVM compile with the limit on
+  now warns (a release build fails) when a non-repository jar or class directory there holds
+  `java.*` classes.
+- [x] Separate JDK API limits for main and test code: main gets the exact floor; tests get floor
+  bytecode (so a floor-JDK test run loads them) and the build JDK's full API.
+- [ ] Test runs on another JDK: a `TEST_JDK=<N>` property/env flag points every JVM `Test` task
+  at JDK N through Gradle toolchains; a CI matrix runs one leg per JDK. Replaces fluxo-io's
+  hand-written `-Pfluxo.testJdk`.
+- [ ] Multi-release jars for KMP JVM targets: a `jvm<N>Main` source set compiled on JDK N into
+  `META-INF/versions/N` of the JVM jar, with the `Multi-Release` manifest entry. The same
+  mechanism carries `module-info.class` in `versions/9`
+  [1](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/45/files). Requested
+  extra: a check that Android D8/R8 accept the jar. Objection: that needs AGP/R8 tooling in our
+  tests to prove what D8 already guarantees (it ignores `META-INF/versions`); not planned
+  unless Art overrules.
+- [ ] Benchmarks module preset: kotlinx-benchmark (JVM, native), androidx.benchmark (Android);
+  unpublished, excluded from Dependency Guard and API checks.
+- [ ] JS browser tests on KGP 2.4+: the Playwright runner (`kotlinInstallPlaywrightBrowsers`)
+  needs no local Chrome. JS-only, downloads a browser per machine, so opt-in, not the default.
+- [ ] Isolated Projects: single-module consumers are one change away (root plugin's
   `gradle.extensions` marker read); see `docs/isolated-projects.md`.
 
 
