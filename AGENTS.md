@@ -43,7 +43,7 @@ When reasoning about API drift, "dead-under-our-floor" code, ProGuard keep rules
 - `fluxo-kmp-conf-settings/` — published settings plugin (`…fluxo-kmp-conf.settings`), a separate jar because the settings class loader can't see the Kotlin plugin. Its `src/shared/kotlin` (the tool injector) is also compiled into the main plugin and `self/` via `kotlin.srcDir`, for the root-only fallback hook; keep that directory Gradle-API only. `checks/*` apply it from the included root build; the root build itself can't (it would need `self/` to build it), so it dogfoods the root-only path.
 - `checks/{kmp,gradle-plugin,compose-desktop,android,intellij-platform}/` — five integration-test Gradle builds with their own `settings.gradle.kts` and `build.gradle.kts`, but `gradle/`, `gradlew`, `gradlew.bat`, `config/` are **symlinks to root** (one wrapper, one catalog). `gradle-plugin`, `compose-desktop`, `android`, and `intellij-platform` additionally symlink `gradle.properties` to `self/gradle.properties` (configuration cache on, problems only warned); `checks/kmp` keeps its own with configuration cache off for `printKotlinSourceSetsGraph`. CI cd's into each except `intellij-platform` (requires local IntelliJ IDEA download).
 - `gradle/libs.versions.toml` — single source of truth for versions; resource-copied at build time as `fluxo.versions.toml` (comments stripped) and exposed at runtime via `FluxoVersionCatalog`.
-- `ROADMAP.md` = research/links scratchpad, **not** active TODOs. `CHANGELOG.md` follows Common Changelog.
+- `ROADMAP.md` = product direction only: features and research that would change what consumers get. NEVER file internal work there (build properties, CI, disk use, release ops, unreproduced reports, upstream limits), even when told to "file the leftovers on the roadmap": fix it now or keep it in the working plan. `CHANGELOG.md` follows Common Changelog.
 - ProGuard/R8 keep rules live per-module in `<module>/pg/` (plugin's own at `fluxo-kmp-conf/pg/`).
 - Optional integrations live in `fluxo/conf/feat/` (`Setup*.kt` / `Prepare*.kt` patterns); per-target KMP containers in `fluxo/conf/dsl/container/{,impl,target}`.
 
@@ -124,7 +124,7 @@ Tests are integration-style: `fluxo-kmp-conf/src/test/` is sparse (mostly shrink
 - **Release / CI / publish footguns** → `.github/AGENTS.md` (auto-loads when touching `.github/`): `main` promotion, Portal-page rendering, JitPack laziness, dependency-submission scoping, release secrets, AI-review.
 - Hierarchical KMP source-set diagram → `README.md` `## Hierarchical KMP project structure`.
 - Commit / PR style + commit-message types → `CONTRIBUTING.md`.
-- Future research / inspirations → `ROADMAP.md` (scratchpad — *not* active TODOs).
+- Future product features / research → `ROADMAP.md` (rule under *Layout*).
 - Release history → `CHANGELOG.md`.
 - Per-flag semantics → KDoc on `fluxo/conf/dsl/FluxoConfigurationExtension*.kt`.
 - Per-feature integration code → `fluxo/conf/feat/Setup*.kt` / `Prepare*.kt`.
