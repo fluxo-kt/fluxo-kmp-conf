@@ -746,7 +746,7 @@ val unpackFloorGradleApi = tasks.register<Sync>("unpackFloorGradleApi") {
     )
     eachFile { path = name }
     includeEmptyDirs = false
-    into(layout.buildDirectory.dir("linkage/gradle-api"))
+    into(layout.buildDirectory.dir("linkage-gradle-api"))
 }
 
 val buildFloorSignature = tasks.register<BuildSignatureTask>("buildFloorSignature") {
