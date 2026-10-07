@@ -15,9 +15,11 @@ internal val KGP_ABI_LINES = listOf("2.2.21", "2.3.21")
  * byte for byte (consumers' committed BCV dumps keep passing), BCV's `apiDump`/`apiCheck`
  * names keep working, and `check` runs the Kotlin check. A build that applies BCV keeps BCV.
  */
-internal fun runKmpKgpAbiCase(row: Map<String, String>, tempDir: Path, kgp: String) {
+internal fun runKgpAbiCase(row: Map<String, String>, tempDir: Path, kgp: String, jvm: Boolean) {
     val kgpRow = row + ("kgpVersion" to kgp)
-    val projectDir = tempDir.resolve(row.getValue("id") + "-kgp-abi-$kgp")
+    val kind = if (jvm) "jvm" else "kmp"
+    val projectDir = tempDir.resolve(row.getValue("id") + "-kgp-abi-$kind-$kgp")
+    val sourceDir = if (jvm) "src/main/kotlin" else "src/commonMain/kotlin"
     fun run(
         tasks: List<String>,
         bcv: Boolean,
@@ -27,23 +29,23 @@ internal fun runKmpKgpAbiCase(row: Map<String, String>, tempDir: Path, kgp: Stri
     ) = runConsumerCase(
         kgpRow,
         tempDir,
-        rootProjectName = "compat-kmp-abi",
+        rootProjectName = "compat-$kind-abi",
         projectDir = projectDir,
         tasks = tasks,
         arguments = listOf("-PFLUXO_EXPLAIN=true"),
         expectFailure = expectFailure,
         assertTasksSucceed = !dryRun,
     ) {
-        it.resolve("build.gradle.kts").writeText(kgpAbiBuildScript(kgpRow, bcv))
-        it.resolve("src/commonMain/kotlin").createDirectories().resolve("A.kt")
+        it.resolve("build.gradle.kts").writeText(kgpAbiBuildScript(kgpRow, bcv, jvm))
+        it.resolve(sourceDir).createDirectories().resolve("A.kt")
             .writeText("package compat\n\nclass Api {\n    fun f(): Int = 1\n}\n$extraSource")
     }
 
     val bcvOutput = run(listOf("apiDump"), bcv = true).output
     check("ABI validation engine = BCV" in bcvOutput) { bcvOutput }
     val bcvDumps = projectDir.resolve("api").readTree()
-    check(bcvDumps.keys.any { it.endsWith(".klib.api") } && bcvDumps.size >= 2) {
-        "BCV wrote no JVM and klib dumps: ${bcvDumps.keys}\n$bcvOutput"
+    check(if (jvm) bcvDumps.size == 1 else bcvDumps.keys.any { it.endsWith(".klib.api") }) {
+        "BCV wrote no JVM or klib dump: ${bcvDumps.keys}\n$bcvOutput"
     }
     projectDir.resolve("api").toFile().deleteRecursively()
 
@@ -73,27 +75,25 @@ private fun Path.readTree(): Map<String, String> = Files.walk(this).use { paths 
         .associate { it.relativeTo(this).toString() to String(it.readBytes()) }
 }
 
-private fun kgpAbiBuildScript(row: Map<String, String>, bcv: Boolean) =
-    """
+private fun kgpAbiBuildScript(row: Map<String, String>, bcv: Boolean, jvm: Boolean): String {
+    val flags = "enablePublication = false; enableGradleDoctor = false; " +
+        "setupCoroutines = false; enableApiValidation = true"
+    val setup = if (jvm) {
+        "fkcSetupKotlin { $flags }"
+    } else {
+        // A klib target that needs no Node.js: Kotlin 2.2 adds a project repository for it.
+        "fkcSetupMultiplatform(config = { $flags }, kmp = { jvm(); linuxX64() })"
+    }
+    val kotlinId = "org.jetbrains.kotlin." + if (jvm) "jvm" else "multiplatform"
+    return """
     plugins {
-        id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
+        id("$kotlinId") version "${row.getValue("kgpVersion")}"
         ${if (bcv) "id(\"org.jetbrains.kotlinx.binary-compatibility-validator\") version \"$BCV\"" else ""}
         id("${pluginId()}") version "${pluginVersion()}"
     }
 
-    fkcSetupMultiplatform(
-        config = {
-            enablePublication = false
-            enableGradleDoctor = false
-            setupCoroutines = false
-            enableApiValidation = true
-        },
-        kmp = {
-            jvm()
-            // A klib target that needs no Node.js: Kotlin 2.2 adds a project repository for it.
-            linuxX64()
-        },
-    )
+    $setup
     """.trimIndent()
+}
 
 private const val BCV = "0.18.2"

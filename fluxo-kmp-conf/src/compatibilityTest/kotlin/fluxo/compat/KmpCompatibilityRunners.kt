@@ -32,13 +32,16 @@ internal fun runKmpConsumer(row: Map<String, String>, tempDir: Path) {
         runKmpWasiFilterCase(row, tempDir)
     }
     if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
-        runKmpTsApiChecksCase(row, tempDir)
         runKmpShortOptInCase(row, tempDir)
         runKmpStdlibSplitCase(row, tempDir)
         runKmpNpmToolVersionCase(row, tempDir)
         runKmpBareSetupCase(row, tempDir)
         runKmpBrowserTestsCase(row, tempDir)
-        (KGP_ABI_LINES + row.getValue("kgpVersion")).forEach { runKmpKgpAbiCase(row, tempDir, it) }
+        for (kgp in KGP_ABI_LINES + row.getValue("kgpVersion")) {
+            runKgpAbiCase(row, tempDir, kgp, jvm = false)
+            runKgpAbiCase(row, tempDir, kgp, jvm = true)
+            runKmpTsApiChecksCase(row, tempDir, kgp)
+        }
     }
 }
 
@@ -156,19 +159,26 @@ private const val BARE_SETUP_MARKER = "FLUXO_COMPAT_BARE_SETUP_TARGETS="
  * where it can see the Kotlin plugin. Fetched through a Gradle script plugin it could not: its
  * class initialiser failed with `NoClassDefFoundError: …/KotlinJsTargetDsl`. The settings plugin
  * now puts it on the module's build classpath; with the configuration cache on it must apply.
+ * Its `.d.ts` dump must land next to Kotlin's on every Kotlin line's ABI engine: it follows
+ * Kotlin's own from 2.2 (fluxo's default there), so each line runs here.
  */
-private fun runKmpTsApiChecksCase(row: Map<String, String>, tempDir: Path) {
+private fun runKmpTsApiChecksCase(row: Map<String, String>, tempDir: Path, kgp: String) {
+    val kgpRow = row + ("kgpVersion" to kgp)
+    val projectDir = tempDir.resolve("${row.getValue("id")}-ts-api-$kgp")
     val output = runConsumerCase(
-        row,
+        kgpRow,
         tempDir,
         rootProjectName = "compat-kmp-ts-api",
-        projectDir = tempDir.resolve("${row.getValue("id")}-ts-api"),
-        tasks = listOf("help"),
-    ) { projectDir ->
-        projectDir.resolve("build.gradle.kts").writeText(
+        projectDir = projectDir,
+        tasks = listOf("apiDump"),
+    ) { dir ->
+        // Dumping JS API sets up Node.js, from a repository KGP adds to the project.
+        val settings = dir.resolve("settings.gradle.kts")
+        settings.writeText(settings.readText().replace("FAIL_ON_PROJECT_REPOS", "PREFER_PROJECT"))
+        dir.resolve("build.gradle.kts").writeText(
             """
             plugins {
-                id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
+                id("org.jetbrains.kotlin.multiplatform") version "$kgp"
                 id("${pluginId()}") version "${pluginVersion()}"
             }
 
@@ -178,6 +188,7 @@ private fun runKmpTsApiChecksCase(row: Map<String, String>, tempDir: Path) {
                     enablePublication = false
                     enableGradleDoctor = false
                     setupCoroutines = false
+                    enableApiValidation = true
                     apiValidation { tsApiChecks = true }
                 },
                 kmp = { jvm(); js() },
@@ -186,8 +197,21 @@ private fun runKmpTsApiChecksCase(row: Map<String, String>, tempDir: Path) {
             println("$TS_API_MARKER" + plugins.hasPlugin("$FLUXO_BCV_JS_ID"))
             """.trimIndent(),
         )
+        dir.resolve("src/commonMain/kotlin").createDirectories().resolve("A.kt").writeText(
+            "package compat\n\nclass Api {\n    fun f(): Int = 1\n}\n",
+        )
+        dir.resolve("src/jsMain/kotlin").createDirectories().resolve("Js.kt").writeText(
+            "package compat\n\n@JsExport\nclass JsApi {\n    fun g(): Int = 2\n}\n",
+        )
     }.output
     check("${TS_API_MARKER}true" in output) { "fluxo-bcv-js not applied:\n$output" }
+    val dumps = projectDir.resolve("api").toFile().walk().filter { it.isFile }
+        .associate { it.relativeTo(projectDir.toFile()).invariantSeparatorsPath to it.readText() }
+    // The klib dump lists JsApi too, so only a `.d.ts` dump naming it proves the TypeScript check.
+    val tsDump = dumps.filterKeys { it.endsWith(".d.ts") }.values
+    check(dumps.keys.any { it.endsWith(".klib.api") } && tsDump.any { "JsApi" in it }) {
+        "Kotlin $kgp: no klib dump or no TypeScript dump naming JsApi: ${dumps.keys}\n$output"
+    }
 }
 
 private const val TS_API_MARKER = "FLUXO_COMPAT_TS_API="

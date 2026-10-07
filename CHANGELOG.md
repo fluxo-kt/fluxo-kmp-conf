@@ -5,9 +5,9 @@
 
 ### Changed
 - Kotlin 2.2 and 2.3 now validate ABI with Kotlin's own engine, as 2.4+ already did, so no BCV plugin is needed. Its dumps are byte-identical to BCV's, so committed dumps keep passing. `apiDump`, `apiCheck` and the per-target names still work; `check` runs Kotlin's check (`checkLegacyAbi` before Kotlin 2.3.20, `checkKotlinAbi` from it). To keep BCV, apply it in the build.
-- **breaking** With BCV and no `apiValidation {}` block, KMP modules now also dump and check klib ABI (`<module>.klib.api`), as `klibValidationEnabled` (default `true`) always said and as Kotlin's own engine does. Run `apiDump` once and commit the new file, or set `apiValidation { klibValidationEnabled = false }`.
+- **breaking** KMP modules with no `apiValidation {}` block now also dump and check klib ABI (`<module>.klib.api`), with BCV and with Kotlin's own engine (which Kotlin 2.2 and 2.3 modules now get), as `klibValidationEnabled` (default `true`) always said. Run `apiDump` once and commit the new file, or set `apiValidation { klibValidationEnabled = false }`.
 - **breaking** `commonCompileOnly(…)` now adds the dependency as `compileOnly`, so JVM and Android consumers of your library no longer get it at runtime; it used to be `implementation` everywhere. JS, Wasm and Native get it as `api` (Kotlin can't build them against a compile-only dependency). This also applies to the Compose runtime fluxo adds for `@Stable`/`@Immutable` in KMP modules with JetBrains Compose. If your JVM consumers need the dependency at runtime, declare it with `implementation`.
-- On Kotlin 2.4+, BCV's task names (`apiCheck`, `klibApiCheck`, `jvmApiCheck`, `apiDump`, …) are aliases of `checkKotlinAbi` or `updateKotlinAbi`, so `-x apiCheck` skips nothing; their task descriptions now say so and name the task to exclude.
+- On Kotlin 2.2+, BCV's task names (`apiCheck`, `klibApiCheck`, `jvmApiCheck`, `apiDump`, …) are aliases of `checkKotlinAbi` or `updateKotlinAbi`, so `-x apiCheck` skips nothing; their task descriptions now say so and name the task to exclude.
 - With publication set up, a SNAPSHOT version gets the current commit (`1.2-abc1234-SNAPSHOT`) only in builds that run a publishing task (`publish*`, `upload*`, `deploy*`, `release*`, `ship*`, `distribute*`, `install*`); other builds keep the declared version, so their jars are named `lib-1.2-SNAPSHOT.jar`. Published coordinates are unchanged.
 
 ### Fixed
@@ -15,6 +15,9 @@
 - On AGP 8.4–8.7, a KMP module applying `com.android.kotlin.multiplatform.library` failed configuration with `NoClassDefFoundError: …KotlinMultiplatformAndroidLibraryTarget`: that AGP's plugin has an older target type. fluxo now leaves such a module's Android target to AGP's defaults and prints one warning naming AGP 8.8, from which fluxo sets it up as on AGP 9.
 - With publication set up, every build ran git to read the current tag or commit; git's output is a configuration-cache input, so each new commit or tag discarded the configuration cache, even for `help`. Git now runs only when a SNAPSHOT version is published.
 - A two-part SNAPSHOT version lost its minor part when stamped with the commit: `1.2-SNAPSHOT` was published as `1-abc1234-SNAPSHOT`. The commit replaces only a patch part now (`1.2.3-SNAPSHOT` → `1.2-abc1234-SNAPSHOT`, `1.2-SNAPSHOT` → `1.2-abc1234-SNAPSHOT`).
+
+### Updated
+- fluxo-bcv-js 1.3.0, applied for `tsApiChecks`: it dumps and checks the TypeScript API next to Kotlin's own ABI engine on Kotlin 2.2+.
 
 
 ## [0.16.2] - 2026-10-06
