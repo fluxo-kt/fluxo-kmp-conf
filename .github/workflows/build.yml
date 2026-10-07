@@ -178,39 +178,40 @@ jobs:
           # The compatibility TestKit suite, excluded from the per-OS×JDK `build assemble
           # check` step, runs here as 8 legs, each taking every 8th row of compat/matrix.tsv
           # (`selectedRows`), so every row runs in exactly one leg whatever the leg count.
-          # Timeouts allow for a cold Gradle cache re-downloading the pinned tools.
+          # Timeouts only stop a hung leg: they allow for a cold Gradle cache re-downloading the
+          # pinned tools and for the slowest leg, the newest KMP row, which runs many cases.
           - name: compat-1-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=1/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 15
           - name: compat-2-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=2/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 15
           - name: compat-3-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=3/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 15
           - name: compat-4-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=4/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 15
           - name: compat-5-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=5/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 15
           - name: compat-6-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=6/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 15
           - name: compat-7-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=7/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 15
           - name: compat-8-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=8/8 --continue --stacktrace --scan
-            timeout: 10
+            timeout: 15
           # Windows matters for consumers, not for the plugin's own build: the Kotlin/JVM
           # consumer fixtures run here, the plugin itself builds on ubuntu only.
           - name: compat-kotlin-jvm-windows-1-of-2
