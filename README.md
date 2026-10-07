@@ -80,9 +80,9 @@ pluginManagement {
   resolutionStrategy.eachPlugin {
     when (requested.id.toString()) { // ← specify a version or commit
       "io.github.fluxo-kt.fluxo-kmp-conf" ->
-        useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:ba0298cd83")
+        useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf:ff63ed1d9b")
       "io.github.fluxo-kt.fluxo-kmp-conf.settings" ->
-        useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf-settings:ba0298cd83")
+        useModule("com.github.fluxo-kt.fluxo-kmp-conf:fluxo-kmp-conf-settings:ff63ed1d9b")
     }
   }
 }
