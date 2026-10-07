@@ -1,7 +1,7 @@
 # Changelog [^1]
 
 
-## Unreleased
+## [0.17.0] - 2026-10-07
 
 ### Changed
 - Kotlin 2.2 and 2.3 now validate ABI with Kotlin's own engine, as 2.4+ already did, so no BCV plugin is needed. Its dumps are byte-identical to BCV's, so committed dumps keep passing. `apiDump`, `apiCheck` and the per-target names still work; `check` runs Kotlin's check (`checkLegacyAbi` before Kotlin 2.3.20, `checkKotlinAbi` from it). To keep BCV, apply it in the build.
@@ -627,6 +627,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.17.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.17.0
 [0.16.2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.16.2
 [0.16.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.16.1
 [0.16.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.16.0
