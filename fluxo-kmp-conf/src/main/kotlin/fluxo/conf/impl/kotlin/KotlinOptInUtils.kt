@@ -1,5 +1,8 @@
 package fluxo.conf.impl.kotlin
 
+import org.gradle.api.artifacts.result.ResolvedComponentResult
+import org.gradle.api.artifacts.result.ResolvedDependencyResult
+import org.gradle.api.provider.Provider
 
 /**
  * Markers that only let the author write a construct on purpose, and change nothing until used.
@@ -21,13 +24,54 @@ private val DELICATE_COROUTINES_API_OPT_INS = listOf(
     "kotlinx.coroutines.InternalCoroutinesApi",
 )
 
-internal fun KotlinConfig.prepareTestOptIns(): Set<String> {
-    return prepareOptIns(
-        optIns = optIns,
-        setupCoroutines = setupCoroutines,
-        optInInternal = optInInternal,
-        isTest = true,
-    )
+/**
+ * Test-only opt-ins. Compile tasks pass `withCoroutines = false` and get the coroutines markers
+ * from [coroutinesTestOptIns], which checks their classpath; a source set's `languageSettings`
+ * take only a fixed list, so shared test source sets get them whenever coroutines are set up.
+ */
+internal fun KotlinConfig.prepareTestOptIns(withCoroutines: Boolean): Set<String> = prepareOptIns(
+    optIns = optIns,
+    setupCoroutines = setupCoroutines && withCoroutines,
+    optInInternal = optInInternal,
+    isTest = true,
+)
+
+/**
+ * The coroutines markers for a test compilation, only when its dependency [graph] has
+ * `kotlinx-coroutines-core`, which declares all four: an opt-in to a marker the compiler can't
+ * find prints "Opt-in requirement marker … is unresolved" on every compile. The resolved graph
+ * decides, not whether fluxo added the dependency, so a consumer who declares coroutines
+ * themselves keeps them (`InternalCoroutinesApi` is error-level: without the opt-in their tests
+ * stop compiling). Null when nothing is added here: coroutines not set up, or [optInInternal]
+ * already opts every compilation in, as the consumer asked.
+ */
+internal fun KotlinConfig.coroutinesTestOptIns(
+    graph: Provider<ResolvedComponentResult>,
+): Provider<List<String>>? {
+    if (!setupCoroutines || optInInternal) return null
+    return graph.map {
+        if (it.hasCoroutinesCore()) DELICATE_COROUTINES_API_OPT_INS else emptyList()
+    }
+}
+
+/** Any platform variant counts (`kotlinx-coroutines-core-jvm`, `…-iosarm64`, …). */
+private fun ResolvedComponentResult.hasCoroutinesCore(): Boolean {
+    val seen = HashSet<ResolvedComponentResult>()
+    val queue = ArrayDeque<ResolvedComponentResult>().apply { add(this@hasCoroutinesCore) }
+    while (queue.isNotEmpty()) {
+        val component = queue.removeFirst()
+        if (!seen.add(component)) continue
+        val module = component.moduleVersion
+        if (module?.group == "org.jetbrains.kotlinx" &&
+            module.name.startsWith("kotlinx-coroutines-core")
+        ) {
+            return true
+        }
+        for (dependency in component.dependencies) {
+            if (dependency is ResolvedDependencyResult) queue.add(dependency.selected)
+        }
+    }
+    return false
 }
 
 internal fun prepareOptIns(

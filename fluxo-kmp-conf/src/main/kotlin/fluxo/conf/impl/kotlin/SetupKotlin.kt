@@ -352,7 +352,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
         conf.setupCompose()
         setupModuleKotlinOptions(conf)
         setupTargets(conf)
-        setupSourceSetsKotlinCompatibility(kc)
+        setupSourceSetsKotlinCompatibility(project, kc)
 
         // TODO: Check KSP setup for KMP modules
         if (kc.setupKsp && this is KotlinJvmProjectExtension) {
@@ -448,6 +448,15 @@ private fun KotlinProjectExtension.setupTargets(
 
             else -> null
         }
+        // Read from the graph this compilation resolves anyway, when the task reads its options.
+        val coroutinesOptIns = if (!isTest) {
+            null
+        } else {
+            kc.coroutinesTestOptIns(
+                target.project.configurations.named(compileDependencyConfigurationName)
+                    .flatMap { it.incoming.resolutionResult.rootComponent },
+            )
+        }
         compileTaskProvider.configure {
             compilerOptions {
                 setupKotlinCompatibility(
@@ -467,6 +476,7 @@ private fun KotlinProjectExtension.setupTargets(
                     isMultiplatform = isMultiplatform,
                     inheritedArgs = inheritedArgs,
                     optInPlatform = optInPlatform,
+                    coroutinesOptIns = coroutinesOptIns,
                 )
             }
             if (kc.useJdkRelease && this is KotlinJvmCompile) {

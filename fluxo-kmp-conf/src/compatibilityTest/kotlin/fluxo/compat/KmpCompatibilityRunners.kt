@@ -37,6 +37,7 @@ internal fun kmpConsumerCases(
     }
     if (row.kgpMinor() >= NEWEST_TESTED_KOTLIN) {
         add("short-opt-in" to { runKmpShortOptInCase(row, tempDir) })
+        add("coroutines-opt-ins" to { runKmpCoroutinesOptInCase(row, tempDir) })
         add("stdlib-split" to { runKmpStdlibSplitCase(row, tempDir) })
         add("npm-tool-version" to { runKmpNpmToolVersionCase(row, tempDir) })
         add("bare-setup" to { runKmpBareSetupCase(row, tempDir) })

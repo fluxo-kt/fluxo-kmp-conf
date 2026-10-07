@@ -157,7 +157,7 @@ internal fun runConsumerCase(
         return result
     }
     val noise = forbiddenOutput + PUBLICATION_NOISE_SIGNATURES + DEPENDENCY_GUARD_BASELINE_NOISE +
-        UNSUPPORTED_COMPILER_FLAG
+        UNSUPPORTED_COMPILER_FLAG + OPT_IN_MARKER_DIAGNOSTIC
     assertFalse(result.output.containsAny(noise), result.output)
     if (assertTasksSucceed) {
         tasks.forEach { result.assertTaskSuccess(":$it") }
@@ -254,6 +254,13 @@ internal val DEPENDENCY_GUARD_BASELINE_NOISE = listOf(
  */
 internal const val UNSUPPORTED_COMPILER_FLAG =
     "Flag is not supported by this version of the compiler"
+
+/**
+ * An `-opt-in` naming a marker the compiler can't find ("… is unresolved") or deprecates. Fixtures
+ * pass opt-ins only through fluxo, so this means fluxo gave a compilation a marker it can't use: a
+ * warning on every compile that warnings-as-errors never catches in test, metadata or JS ones.
+ */
+internal const val OPT_IN_MARKER_DIAGNOSTIC = "Opt-in requirement marker"
 
 internal const val CHECK_TASK = "check"
 

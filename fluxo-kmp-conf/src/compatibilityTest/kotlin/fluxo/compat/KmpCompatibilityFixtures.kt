@@ -19,7 +19,6 @@ internal fun markerKmpBuildScript(row: Map<String, String>): String =
             setupVerification = false
             enablePublication = false
             enableGradleDoctor = false
-            setupCoroutines = false
         },
         kmp = { allDefaultTargets() },
     )

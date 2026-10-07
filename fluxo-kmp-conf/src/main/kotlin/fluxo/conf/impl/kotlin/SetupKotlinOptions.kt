@@ -98,6 +98,7 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
     jvmTargetVersion: String?,
     inheritedArgs: Provider<List<String>>?,
     optInPlatform: OptInPlatform?,
+    coroutinesOptIns: Provider<List<String>>?,
 ) {
     val context = conf.ctx
     val isCI = context.isCI
@@ -113,7 +114,8 @@ internal fun KotlinCommonCompilerOptions.setupKotlinOptions(
 
     val compilerArgs = LinkedHashSet(DEFAULT_OPTS)
     if (isTest) {
-        optIn.addAll(kc.prepareTestOptIns() - kc.optIns)
+        optIn.addAll(kc.prepareTestOptIns(withCoroutines = false) - kc.optIns)
+        coroutinesOptIns?.let(optIn::addAll)
     }
     optIn.addAll(kc.platformOptIns.forPlatform(optInPlatform))
 

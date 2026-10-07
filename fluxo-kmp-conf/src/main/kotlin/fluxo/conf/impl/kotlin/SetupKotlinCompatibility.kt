@@ -6,8 +6,10 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.impl.isTestRelated
 import fluxo.log.e
 import kotlin.KotlinVersion
+import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KotlinLangVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -32,9 +34,51 @@ internal fun KotlinCommonCompilerOptions.setupKotlinCompatibility(
 }
 
 internal fun KotlinProjectExtension.setupSourceSetsKotlinCompatibility(
+    project: Project,
     kc: KotlinConfig,
-    testOptIns: Set<String> = kc.prepareTestOptIns(),
+    testOptIns: Set<String> = kc.prepareTestOptIns(withCoroutines = false),
     disableTests: Boolean = false,
+) {
+    configureSourceSets(kc, testOptIns, disableTests)
+    if (this is KotlinMultiplatformExtension) setupSharedTestSetsCoroutinesOptIns(project, kc)
+}
+
+/**
+ * The coroutines test opt-ins for the IDE in shared test source sets (`commonTest`,
+ * `nativeTest`, …), which have no compiler of their own: compile tasks get them from
+ * [coroutinesTestOptIns], only when coroutines are on their classpath. A compilation's own source
+ * set must not get them here: its `languageSettings` are that compilation's options, so they
+ * would reach the compiler unconditionally (an "is unresolved" warning without coroutines).
+ *
+ * Deferred to `afterEvaluate` because which source sets are some compilation's own is known only
+ * once every compilation exists: KGP creates a target's source sets before registering its
+ * compilations, so `KotlinSourceSet` reports none while `sourceSets.configureEach` runs.
+ * Removable once KGP exposes that on the source set when it is created. Single-target modules
+ * need none of this: every source set there is a compilation's own.
+ */
+private fun KotlinMultiplatformExtension.setupSharedTestSetsCoroutinesOptIns(
+    project: Project,
+    kc: KotlinConfig,
+) {
+    val coroutines = kc.prepareTestOptIns(withCoroutines = true) -
+        kc.prepareTestOptIns(withCoroutines = false) - kc.optIns
+    if (coroutines.isEmpty()) return
+    project.afterEvaluate {
+        val compiled = targets.flatMapTo(HashSet()) { target ->
+            target.compilations.map { it.defaultSourceSet }
+        }
+        sourceSets.forEach { set ->
+            if (set !in compiled && set.isTestRelated()) {
+                coroutines.forEach(set.languageSettings::optIn)
+            }
+        }
+    }
+}
+
+private fun KotlinProjectExtension.configureSourceSets(
+    kc: KotlinConfig,
+    testOptIns: Set<String>,
+    disableTests: Boolean,
 ) = sourceSets.configureEach {
     val isTestSet = isTestRelated()
 
