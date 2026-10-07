@@ -1,6 +1,12 @@
 # Changelog [^1]
 
 
+## Unreleased
+
+### Changed
+- On Kotlin 2.4+, BCV's task names (`apiCheck`, `klibApiCheck`, `jvmApiCheck`, `apiDump`, …) are aliases of `checkKotlinAbi` or `updateKotlinAbi`, so `-x apiCheck` skips nothing; their task descriptions now say so and name the task to exclude.
+
+
 ## [0.16.2] - 2026-10-06
 
 ### Fixed
