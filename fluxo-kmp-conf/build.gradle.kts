@@ -304,19 +304,25 @@ testing {
                     doFirst {
                         testKitHome.resolve("init.d/kotlin-tools-per-fixture.gradle").writeText(
                             """
+                            // Statically compiled: AGP's types are invisible to an init script,
+                            // so anything that resolves them fails ("VariantBuilder not
+                            // present"): `extensionsSchema` (declared types), and any dynamic
+                            // Groovy call on an AGP object (its metaclass). `asMap` is internal.
+                            @groovy.transform.CompileStatic
+                            static Map<String, Object> kgpEnvSpecs(Project p) {
+                                def all = ((org.gradle.api.internal.plugins.ExtensionContainerInternal) p.extensions).asMap
+                                all.findAll { String name, Object ext ->
+                                    for (Class c = ext?.getClass(); c != null; c = c.getSuperclass()) {
+                                        if (c.name == 'org.jetbrains.kotlin.gradle.targets.js.EnvSpec') return true
+                                    }
+                                    false
+                                }
+                            }
                             gradle.projectsEvaluated { g ->
                                 def dir = g.rootProject.layout.projectDirectory.dir('.gradle/kotlin-tools')
                                 g.rootProject.allprojects { p ->
-                                    // `asMap` (internal), not `extensionsSchema`: the schema
-                                    // resolves every extension's declared type, and AGP's are
-                                    // invisible to an init script ("VariantBuilder not present").
-                                    p.extensions.asMap.each { name, ext ->
-                                        for (def c = ext?.getClass(); c != null; c = c.superclass) {
-                                            if (c.name == 'org.jetbrains.kotlin.gradle.targets.js.EnvSpec') {
-                                                ext.installationDirectory.set(dir.dir(name))
-                                                break
-                                            }
-                                        }
+                                    kgpEnvSpecs(p).each { name, spec ->
+                                        spec.installationDirectory.set(dir.dir(name))
                                     }
                                 }
                             }
