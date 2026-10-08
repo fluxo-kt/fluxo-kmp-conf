@@ -294,18 +294,13 @@ testing {
                                 }
                                 """.trimIndent(),
                             )
-                    }
-                    // KGP unpacks its JS/Wasm tools (Node.js and others) into the shared Gradle
-                    // home, and Gradle hashes a task's outputs before it runs, so two
-                    // concurrent fixtures installing the same tool read files the other is
-                    // replacing. Each fixture gets its own folder; the downloads stay in Gradle's
-                    // locked shared cache. Matched by KGP's `EnvSpec` base class (Kotlin 2.1+),
-                    // so a new tool is covered without listing it.
-                    doFirst {
-                        // `doFirst` actions run last-registered first, so this one can't rely
-                        // on the block above having created `init.d`.
-                        val initD = testKitHome.resolve("init.d").apply { mkdirs() }
-                        initD.resolve("kotlin-tools-per-fixture.gradle").writeText(
+                        // KGP unpacks its JS/Wasm tools (Node.js and others) into the shared
+                        // Gradle home, and Gradle hashes a task's outputs before it runs, so two
+                        // concurrent fixtures installing the same tool read files the other is
+                        // replacing. Each fixture gets its own folder; the downloads stay in
+                        // Gradle's locked shared cache. Matched by KGP's `EnvSpec` base class
+                        // (Kotlin 2.1+), so a new tool is covered without listing it.
+                        testKitHome.resolve("init.d/kotlin-tools-per-fixture.gradle").writeText(
                             """
                             // Statically compiled: AGP's types are invisible to an init script,
                             // so anything that resolves them fails ("VariantBuilder not
