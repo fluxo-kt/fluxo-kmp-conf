@@ -10,6 +10,7 @@ import fluxo.artifact.proc.JvmShrinker
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication
 import fluxo.conf.dsl.FluxoConfigurationExtensionPublication.Companion.DEFAULT_BRANCH_NAME
 import fluxo.conf.dsl.FluxoPublicationConfig
+import fluxo.conf.feat.isBenchmarkModule
 import fluxo.conf.pub.buildPublishes
 import fluxo.shrink.AUTOGEN_KEEP_MODIFIERS
 import fluxo.vc.v
@@ -27,7 +28,10 @@ internal interface FluxoConfigurationExtensionPublicationImpl :
     override var enablePublication: Boolean?
         // A project's own `publicationConfig {}` call enables it there (the KDoc promise). Not
         // inherited: a shared POM config at the root must not make every module publish.
-        get() = explicitEnablePublication ?: true.takeIf { publicationConfigProp.isPresent }
+        // A benchmark module ships nothing, whatever a parent asks for.
+        get() = enablePublicationProp.orNull
+            ?: false.takeIf { project.isBenchmarkModule }
+            ?: explicitEnablePublication ?: true.takeIf { publicationConfigProp.isPresent }
         set(value) = enablePublicationProp.set(value)
 
     private val explicitEnablePublication: Boolean?

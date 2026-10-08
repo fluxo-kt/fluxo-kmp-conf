@@ -23,7 +23,7 @@ Every item below is to be implemented now, high priority. The first five come fr
   extra: a check that Android D8/R8 accept the jar. Objection: that needs AGP/R8 tooling in our
   tests to prove what D8 already guarantees (it ignores `META-INF/versions`); not planned
   unless Art overrules.
-- [ ] Benchmarks module preset: kotlinx-benchmark (JVM, native), androidx.benchmark (Android);
+- [x] Benchmarks module preset: kotlinx-benchmark (JVM, native), androidx.benchmark (Android);
   unpublished, excluded from Dependency Guard and API checks.
 - [ ] JS browser tests on KGP 2.4+: the Playwright runner (`kotlinInstallPlaywrightBrowsers`)
   needs no local Chrome. JS-only, downloads a browser per machine, so opt-in, not the default.

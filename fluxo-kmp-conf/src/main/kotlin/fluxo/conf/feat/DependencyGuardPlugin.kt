@@ -60,6 +60,10 @@ internal fun FluxoKmpConfContext.prepareDependencyGuardPlugin() {
             //  creation ("No configurations provided to Dependency Guard Plugin"), so skip the
             //  apply on those projects instead — guarding an empty graph adds no signal anyway.
             project.afterEvaluate {
+                if (isBenchmarkModule) {
+                    logger.d("dependencyGuard skipped on $path: a benchmark module ships nothing")
+                    return@afterEvaluate
+                }
                 val matching = configurations.filter { it.isShouldBeGuarded() }
                 if (matching.isEmpty()) {
                     logger.d("dependencyGuard skipped on $path: no matching configurations")

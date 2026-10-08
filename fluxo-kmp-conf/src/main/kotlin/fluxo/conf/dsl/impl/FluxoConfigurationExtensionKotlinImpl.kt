@@ -2,6 +2,7 @@ package fluxo.conf.dsl.impl
 
 import fluxo.conf.dsl.BinaryCompatibilityValidatorConfig
 import fluxo.conf.dsl.FluxoConfigurationExtensionKotlin
+import fluxo.conf.feat.isBenchmarkModule
 import fluxo.vc.v
 import org.gradle.api.GradleException
 import org.gradle.api.provider.ListProperty
@@ -152,7 +153,10 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     @get:Input
     val explicitApiProp: Property<ExplicitApiMode>
     override var explicitApi: ExplicitApiMode?
-        get() = explicitApiProp.orNull ?: parent?.explicitApi
+        // A benchmark module has no API to declare (see isBenchmarkModule).
+        get() = explicitApiProp.orNull
+            ?: ExplicitApiMode.Disabled.takeIf { project.isBenchmarkModule }
+            ?: parent?.explicitApi
         set(value) = explicitApiProp.set(value)
 
 
@@ -355,7 +359,9 @@ internal interface FluxoConfigurationExtensionKotlinImpl :
     @get:Input
     val enableApiValidationProp: Property<Boolean>
     override var enableApiValidation: Boolean
-        get() = enableApiValidationProp.orNull ?: parent?.enableApiValidation ?: false
+        get() = enableApiValidationProp.orNull
+            ?: false.takeIf { project.isBenchmarkModule }
+            ?: parent?.enableApiValidation ?: false
         set(value) = enableApiValidationProp.set(value)
 
     @get:Input

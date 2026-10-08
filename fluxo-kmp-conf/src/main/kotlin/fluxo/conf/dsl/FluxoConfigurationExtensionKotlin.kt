@@ -135,7 +135,8 @@ public interface FluxoConfigurationExtensionKotlin : FluxoConfigurationExtension
      *
      * API dump is also used to generate R8/ProGuard keep rules!
      *
-     * Default value: `false`.
+     * Default value: `false`. A benchmark module (kotlinx-benchmark or androidx.benchmark
+     * applied) ignores the parent's value, as it has no API to keep: only its own setting counts.
      *
      * @see FluxoConfigurationExtensionPublication.autoGenerateKeepRulesFromApis
      */

@@ -28,6 +28,8 @@ public interface FluxoConfigurationExtensionPublication : ArtifactProcessingChai
      * When neither this project nor a parent sets it, publication is on only in a project that
      * calls [publicationConfig] itself, so a shared config at the root publishes no module on
      * its own. `true` without any [publicationConfig] publishes with the derived defaults.
+     * A benchmark module (kotlinx-benchmark or androidx.benchmark applied) ships nothing, so it
+     * ignores the parent's value: only its own setting counts.
      */
     public var enablePublication: Boolean?
 

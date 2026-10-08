@@ -288,6 +288,8 @@ public interface FluxoConfigurationExtensionKotlinOptions : FluxoConfigurationEx
      * Inherited from the parent project if not set.
      * Default value:
      *  * `ExplicitApiMode.Strict` for Gradle plugins configured via [fkcSetupGradlePlugin]!
+     *  * `ExplicitApiMode.Disabled` for a benchmark module (kotlinx-benchmark or
+     *    androidx.benchmark applied), whatever the parent sets: it has no API;
      *  * in other cases `null`.
      *
      * @see org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension.explicitApi

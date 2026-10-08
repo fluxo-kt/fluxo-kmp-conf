@@ -21,6 +21,7 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.builderMethod
 import fluxo.conf.feat.checkTestJdkFits
 import fluxo.conf.feat.disableDetektTasks
+import fluxo.conf.feat.setupBenchmarks
 import fluxo.conf.feat.setupTestJdk
 import fluxo.conf.feat.setupVerification
 import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
@@ -320,6 +321,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     project.version = conf.version
     project.description = conf.description
     project.setupTestJdk(conf.ctx)
+    project.setupBenchmarks(conf.ctx)
 
     if (!conf.setupKotlin) {
         project.logger.i("Kotlin extension not configured (setupKotlin = false)")
