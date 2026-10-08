@@ -154,6 +154,7 @@ private fun runKmpPlaywrightCase(row: Map<String, String>, tempDir: Path) {
         tasks = listOf(task.removePrefix(":")),
         assertTasksSucceed = false,
         environment = mapOf("CHROME_BIN" to projectDir.resolve("no-chrome").toString()),
+        forbiddenOutput = listOf(MOCHA_WARNING),
     ) {
         val settings = it.resolve("settings.gradle.kts")
         settings.writeText(settings.readText().replace("FAIL_ON_PROJECT_REPOS", "PREFER_PROJECT"))

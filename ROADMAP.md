@@ -4,9 +4,6 @@
 
 Implement now, high priority. A done item leaves this list; `CHANGELOG.md` describes it.
 
-- [ ] Warn when a consumer pins `js-mocha` 12 or newer: Kotlin's JS test reporter calls Mocha
-  reporters without `new`, and Mocha 12's reporters are ES classes, so Node and browser tests
-  break. Detect it by the reporter's behaviour, never by a version table.
 - [ ] Isolated Projects: single-module consumers are one change away (root plugin's
   `gradle.extensions` marker read); see `docs/isolated-projects.md`.
 

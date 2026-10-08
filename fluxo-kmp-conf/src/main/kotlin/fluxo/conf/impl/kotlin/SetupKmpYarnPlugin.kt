@@ -7,7 +7,9 @@ import fluxo.conf.impl.checkIsRootProject
 import fluxo.conf.impl.configureExtension
 import fluxo.conf.impl.logDependency
 import fluxo.conf.impl.withType
+import fluxo.log.FluxoProblem
 import fluxo.log.l
+import fluxo.log.reportProblem
 import fluxo.vc.FluxoVersionCatalog
 import fluxo.vc.onVersion
 import java.io.File
@@ -67,17 +69,18 @@ internal fun Project.setupKmpYarnPlugin(ctx: FluxoKmpConfContext) = afterEvaluat
             setFromCatalog(root, libs, "js-uaParserJs", "ua-parser-js")
         }
 
-        if (!setupDependencies) {
-            return@configuration
-        }
         val nodeJsName = kgp.extensionName("kotlinNodeJs", ::nodeJsExtensionName)
         configureExtension<NodeJsRootExtension>(nodeJsName) {
             val v = versions
-            setFromCatalog(libs, "js-karma", v.karma)
-            setFromCatalog(libs, "js-mocha", v.mocha)
-            setFromCatalog(libs, "js-webpack", v.webpack)
-            setFromCatalog(libs, "js-webpackCli", v.webpackCli)
-            setFromCatalog(libs, "js-webpackDevServer", v.webpackDevServer)
+            if (setupDependencies) {
+                setFromCatalog(libs, "js-karma", v.karma)
+                setFromCatalog(libs, "js-mocha", v.mocha)
+                setFromCatalog(libs, "js-webpack", v.webpack)
+                setFromCatalog(libs, "js-webpackCli", v.webpackCli)
+                setFromCatalog(libs, "js-webpackDevServer", v.webpackDevServer)
+            }
+            // After the catalog, so it sees the version from there or from the consumer's DSL.
+            warnIfNewerMochaMajor(v.mocha.version)
         }
     }
 }
@@ -119,6 +122,24 @@ private fun Project.setFromCatalog(
             logDependency(KJS, "${npv.name}:$it")
         }
     }
+}
+
+/**
+ * Kotlin's JS test reporter calls Mocha's base reporter without `new`, which a newer Mocha major
+ * can reject (Mocha 12, see [pinBrowserTestMocha]), failing every Node and browser test run.
+ * Compared with [kotlinMocha], so the warning stops once a Kotlin release ships a newer Mocha.
+ */
+private fun Project.warnIfNewerMochaMajor(mocha: String) {
+    val kotlin = kotlinMocha
+    val major = KotlinToolingVersion(kotlin).major
+    if (KotlinToolingVersion(mocha).major <= major) return
+    reportProblem(
+        FluxoProblem.JS_TOOL_TOO_NEW,
+        "Mocha $mocha is a newer major than Kotlin's own Mocha $kotlin: Kotlin's JS test " +
+            "reporter can't run on it, so JS tests fail.",
+        "Set the `js-mocha` catalog entry (or `versions.mocha.version` in Kotlin's Node.js " +
+            "settings) to $major.x, or remove it.",
+    )
 }
 
 /** [project] is passed in: `YarnRootExtension.project` doesn't exist on Kotlin 2.1. */

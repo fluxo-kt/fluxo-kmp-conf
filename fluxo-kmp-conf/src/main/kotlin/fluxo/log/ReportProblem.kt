@@ -38,6 +38,7 @@ internal enum class FluxoProblem(val displayName: String) {
     TESTS_OFF("Tests are off"),
     SETUP_STEP_SKIPPED("Setup step skipped"),
     DEPRECATED_SETTING("Deprecated setting"),
+    JS_TOOL_TOO_NEW("JS tool version newer than Kotlin supports"),
     ;
 
     val id: String = name.lowercase().replace('_', '-')
