@@ -2,6 +2,7 @@ package fluxo.compat
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.Locale
 import kotlin.io.path.writeText
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
@@ -196,26 +197,31 @@ internal fun seedDependencyGuardBaseline(
     result.assertTaskSuccess(":$DEPENDENCY_GUARD_BASELINE_TASK")
 }
 
-// The release job exports the signing key and publication credentials (env vars and
-// `ORG_GRADLE_PROJECT_*` Gradle properties); a fixture that inherits them signs and publishes
-// where it must refuse, and the real secrets would reach consumer builds.
+/**
+ * A fixture gets only the OS and toolchain variables a build needs, never the outer
+ * environment. The plugin reads its flags from env vars (`RELEASE`, `MAX_DEBUG`,
+ * `DISABLE_KOTLIN_DEFAULTS`, `KMP_TARGETS`, …) and the release job exports `RELEASE=true`,
+ * signing keys and credentials, so an inherited variable silently changes what a case tests, or
+ * signs and publishes where it must refuse. A denylist misses every flag added later, and the
+ * miss shows only in the release run, after tagging. An allowlist fails loudly instead: a
+ * fixture missing a variable it needs breaks on dev CI too; add the variable here. A case that needs a flag passes it itself (`-PRELEASE=true`).
+ * Windows names differ in case (`Path`, `SystemRoot`), hence the case-insensitive match.
+ */
 internal fun sanitizedEnvironment(): Map<String, String> = System.getenv().filterKeys { key ->
-    key !in KMP_TARGET_ENV_KEYS && PUBLICATION_ENV_PREFIXES.none { key.startsWith(it) }
+    val k = key.uppercase(Locale.ROOT)
+    k in FIXTURE_ENV_KEYS || FIXTURE_ENV_PREFIXES.any { k.startsWith(it) }
 }
 
-private val PUBLICATION_ENV_PREFIXES = listOf(
-    "ORG_GRADLE_PROJECT_",
-    "SIGNING_",
-    "MAVEN_CENTRAL_",
-    "GRADLE_PUBLISH_",
-    // The outer build's commit and build number (CI sets SCM_TAG to its own SHA); a fixture
-    // has its own, so with these it would publish under the outer repo's commit.
-    "SCM_TAG",
-    "BUILD_NUMBER",
-    // release.yml sets RELEASE for the whole job; inherited, it turns every fixture into a
-    // release build, where warnings a case expects fail it. Cases pass -PRELEASE=true themselves.
-    "RELEASE",
+private val FIXTURE_ENV_KEYS = setOf(
+    "PATH", "HOME", "USER", "LOGNAME", "SHELL", "TMPDIR", "TMP", "TEMP", "TZ", "LANG",
+    "JAVA_HOME", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
+    // Windows: the JVM and child processes fail without these.
+    "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "USERPROFILE", "APPDATA", "LOCALAPPDATA",
+    "PROGRAMDATA", "PROGRAMFILES", "PROGRAMFILES(X86)", "HOMEDRIVE", "HOMEPATH",
+    "NUMBER_OF_PROCESSORS", "PROCESSOR_ARCHITECTURE",
 )
+
+private val FIXTURE_ENV_PREFIXES = listOf("LC_", "XDG_", "JAVA_HOME_", "ANDROID_")
 
 internal fun Map<String, String>.isExecutionFixture(): Boolean =
     getValue("fixture").endsWith("-exec")
@@ -285,9 +291,4 @@ internal val ANDROID_LINT_VERSION_NOISE = listOf(
 internal val FORBIDDEN_RUNTIME_LEAKS = listOf(
     "kotlin-compiler-embeddable",
     "detekt-core",
-)
-
-internal val KMP_TARGET_ENV_KEYS = setOf(
-    "KMP_TARGETS",
-    "KMP_TARGETS_ALL",
 )
