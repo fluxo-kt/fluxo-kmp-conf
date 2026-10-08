@@ -57,6 +57,9 @@ jobs:
         # macOS). Windows matters for consumers, so it runs consumer compat fixtures in
         # `integrationChecks` instead.
         os: ['ubuntu']
+    # `main`'s branch protection requires this check by its exact name; reading the protection
+    # needs an admin token, so CI can't compare them. A rename silently drops the requirement:
+    # update it in the same change (`gh api repos/fluxo-kt/fluxo-kmp-conf/branches/main/protection`).
     name: 'Build and check on ${{ matrix.os }} / JDK ${{ matrix.java }}'
     # Keep the job budget above the sum of the guarded Gradle/check steps. Otherwise
     # a slow but healthy matrix leg can be cancelled after its checks already passed.
@@ -157,6 +160,9 @@ jobs:
         # that fires on a slow-but-healthy leg is a false red. Nothing below it catches hangs:
         # JUnit timeouts don't cover dynamic tests, and a TestKit build runs in its own daemon.
         include:
+          # `main`'s branch protection requires every leg below by its exact name; reading the protection
+          # needs an admin token, so CI can't compare them. A rename silently drops the requirement:
+          # update it in the same change (`gh api repos/fluxo-kt/fluxo-kmp-conf/branches/main/protection`).
           - name: check-gradle-plugin
             directory: checks/gradle-plugin
             command: ./gradlew build assemble check --continue --stacktrace --scan
@@ -183,7 +189,7 @@ jobs:
           # check` step, runs here as 8 legs, each taking every 8th row of compat/matrix.tsv
           # (`selectedRows`), so every row runs in exactly one leg as long as the legs are
           # exactly 1/N…N/N: nothing checks that, so a dropped or duplicated leg skips rows
-          # silently. `main`'s branch protection requires each leg by name; keep both in step.
+          # silently.
           - name: compat-1-of-8
             directory: .
             command: ./gradlew :plugin:compatibilityTest -PcompatShard=1/8 --continue --stacktrace --scan
