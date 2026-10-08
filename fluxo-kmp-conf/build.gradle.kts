@@ -307,11 +307,13 @@ testing {
                             gradle.projectsEvaluated { g ->
                                 def dir = g.rootProject.layout.projectDirectory.dir('.gradle/kotlin-tools')
                                 g.rootProject.allprojects { p ->
-                                    p.extensions.extensionsSchema.each { s ->
-                                        def ext = p.extensions.findByName(s.name)
+                                    // `asMap` (internal), not `extensionsSchema`: the schema
+                                    // resolves every extension's declared type, and AGP's are
+                                    // invisible to an init script ("VariantBuilder not present").
+                                    p.extensions.asMap.each { name, ext ->
                                         for (def c = ext?.getClass(); c != null; c = c.superclass) {
                                             if (c.name == 'org.jetbrains.kotlin.gradle.targets.js.EnvSpec') {
-                                                ext.installationDirectory.set(dir.dir(s.name))
+                                                ext.installationDirectory.set(dir.dir(name))
                                                 break
                                             }
                                         }
