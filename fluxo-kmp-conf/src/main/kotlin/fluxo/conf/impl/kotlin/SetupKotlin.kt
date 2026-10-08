@@ -20,6 +20,7 @@ import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.builderMethod
 import fluxo.conf.feat.disableDetektTasks
+import fluxo.conf.feat.setupTestJdk
 import fluxo.conf.feat.setupVerification
 import fluxo.conf.impl.MAIN_SOURCE_SET_NAME
 import fluxo.conf.impl.MAIN_SOURCE_SET_POSTFIX
@@ -317,6 +318,7 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     project.group = conf.group
     project.version = conf.version
     project.description = conf.description
+    project.setupTestJdk(conf.ctx)
 
     if (!conf.setupKotlin) {
         project.logger.i("Kotlin extension not configured (setupKotlin = false)")

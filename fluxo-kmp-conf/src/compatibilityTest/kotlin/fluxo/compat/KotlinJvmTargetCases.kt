@@ -113,7 +113,28 @@ private fun runJdkApiLimitCases(row: Map<String, String>, tempDir: Path) {
         tasks = listOf("compileTestKotlin", "compileTestJava"),
     )
     runJdkClassesOnClasspathCases(row, tempDir)
+    runTestJdkCase(row, tempDir)
 }
+
+/** `TEST_JDK=21` on a build running JDK 17: the tests themselves must run on 21. */
+private fun runTestJdkCase(row: Map<String, String>, tempDir: Path) {
+    runKotlinJvmVariant(
+        row,
+        tempDir,
+        "testjdk",
+        source = "package compat\n\nimport kotlin.test.Test\nimport kotlin.test.assertEquals\n\n" +
+            "class TestJdkTest {\n    @Test\n    fun runsOnTestJdk() = " +
+            "assertEquals(\"$JDK_21\", System.getProperty(\"java.specification.version\"))\n}\n",
+        sourceSet = "test",
+        tasks = listOf("test"),
+        arguments = listOf("-PTEST_JDK=$JDK_21") + jdk21Installations(),
+    )
+}
+
+private fun jdk21Installations() = listOf(
+    "-Dorg.gradle.java.installations.paths=" + resolveCompatJdkHome(JDK_21).absolutePath,
+    "-Dorg.gradle.java.installations.auto-download=false",
+)
 
 /**
  * A jar with `java.*` classes on the Kotlin classpath (`android.jar` in shared JVM code) makes
@@ -169,10 +190,7 @@ private fun runToolchainJdkApiLimitCases(row: Map<String, String>, tempDir: Path
     // Gradle API form: fluxo applies the Kotlin plugin, so no `kotlin {}` accessor exists here.
     val toolchain = "configure<JavaPluginExtension> { " +
         "toolchain.languageVersion.set(JavaLanguageVersion.of($JDK_21)) }"
-    val installations = listOf(
-        "-Dorg.gradle.java.installations.paths=" + resolveCompatJdkHome(JDK_21).absolutePath,
-        "-Dorg.gradle.java.installations.auto-download=false",
-    )
+    val installations = jdk21Installations()
     val (_, explicitOutput) = runKotlinJvmVariant(
         row,
         tempDir,

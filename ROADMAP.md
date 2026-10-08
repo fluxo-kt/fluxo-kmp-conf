@@ -13,7 +13,7 @@ Every item below is to be implemented now, high priority. The first five come fr
   `java.*` classes.
 - [x] Separate JDK API limits for main and test code: main gets the exact floor; tests get floor
   bytecode (so a floor-JDK test run loads them) and the build JDK's full API.
-- [ ] Test runs on another JDK: a `TEST_JDK=<N>` property/env flag points every JVM `Test` task
+- [x] Test runs on another JDK: a `TEST_JDK=<N>` property/env flag points every JVM `Test` task
   at JDK N through Gradle toolchains; a CI matrix runs one leg per JDK. Replaces fluxo-io's
   hand-written `-Pfluxo.testJdk`.
 - [ ] Multi-release jars for KMP JVM targets: a `jvm<N>Main` source set compiled on JDK N into
