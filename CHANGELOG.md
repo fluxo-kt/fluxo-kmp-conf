@@ -1,7 +1,7 @@
 # Changelog [^1]
 
 
-## [Unreleased]
+## [0.18.0] - 2026-10-08
 
 ### Changed
 - `useJdkRelease` no longer limits test code: JVM test compilations keep the JVM target's bytecode but see the compile JDK's full API, so tests can cover code paths that a runtime check enables only on newer JDKs. Main code is limited as before.
@@ -644,6 +644,7 @@ _Stabilization release._
 
 ## Notes
 
+[0.18.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.18.0
 [0.17.0]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.17.0
 [0.16.2]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.16.2
 [0.16.1]: https://github.com/fluxo-kt/fluxo-kmp-conf/releases/tag/v0.16.1
