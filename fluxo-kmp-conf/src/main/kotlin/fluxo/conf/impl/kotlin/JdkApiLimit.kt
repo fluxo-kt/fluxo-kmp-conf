@@ -86,6 +86,10 @@ internal fun KotlinJvmCompile.limitKotlinJdkApi(
         val isRelease = conf.ctx.isRelease
         val gradleCache = project.gradle.gradleUserHomeDir
         doFirst { checkNoJdkClassesOnClasspath(classpath, gradleCache, target, isRelease) }
+        // An up-to-date or cached task skips doFirst, and CI compiles release and non-release
+        // builds alike, so a release build would reuse output a non-release build only warned
+        // about. Keying the task on release mode makes a release build compile, and check.
+        inputs.property("fluxoReleaseBuild", isRelease)
     }
 }
 

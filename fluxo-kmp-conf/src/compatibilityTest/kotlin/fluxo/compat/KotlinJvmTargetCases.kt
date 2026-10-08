@@ -130,16 +130,31 @@ private fun runJdkClassesOnClasspathCases(row: Map<String, String>, tempDir: Pat
         checkNotNull(ClassLoader.getSystemResourceAsStream(objectClass)).use { c -> c.copyTo(it) }
         it.closeEntry()
     }
+    // String form: fluxo applies the Kotlin plugin, so no `compileOnly` accessor exists here.
+    val script = "dependencies { \"compileOnly\"(files(\"$JDK_STUB_JAR\")) }"
+    val ci = listOf("-PCI=true")
     val (_, output) = runKotlinJvmVariant(
         row,
         tempDir,
         name,
         "jvmTarget = \"17\"",
         jdk = JDK_21,
-        // String form: fluxo applies the Kotlin plugin, so no `compileOnly` accessor exists here.
-        script = "dependencies { \"compileOnly\"(files(\"$JDK_STUB_JAR\")) }",
+        script = script,
+        arguments = ci,
     )
     check(JDK_CLASSES_WARNING in output) { "No warning for $JDK_STUB_JAR:\n$output" }
+    // CI compiles release and non-release alike, so a release build reuses the CI build's
+    // output (up to date or from the build cache) and must still fail on the same classpath.
+    runKotlinJvmVariant(
+        row,
+        tempDir,
+        name,
+        "jvmTarget = \"17\"",
+        jdk = JDK_21,
+        script = script,
+        arguments = ci + "-PRELEASE=true",
+        expectFailure = listOf(JDK_CLASSES_WARNING),
+    )
 }
 
 private const val JDK_STUB_JAR = "jdk-stub.jar"
