@@ -204,7 +204,8 @@ internal fun seedDependencyGuardBaseline(
  * signing keys and credentials, so an inherited variable silently changes what a case tests, or
  * signs and publishes where it must refuse. A denylist misses every flag added later, and the
  * miss shows only in the release run, after tagging. An allowlist fails loudly instead: a
- * fixture missing a variable it needs breaks on dev CI too; add the variable here. A case that needs a flag passes it itself (`-PRELEASE=true`).
+ * fixture missing a variable it needs breaks on dev CI too; add the variable here. A case that
+ * needs a flag passes it itself (`-PRELEASE=true`).
  * Windows names differ in case (`Path`, `SystemRoot`), hence the case-insensitive match.
  */
 internal fun sanitizedEnvironment(): Map<String, String> = System.getenv().filterKeys { key ->
