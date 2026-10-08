@@ -273,6 +273,24 @@ testing {
                     // daemon outlives the test JVM, so a day's files are enough for debugging.
                     // Only those two kinds: `.tmp/.cache` is the Kotlin compiler's klib
                     // expansion cache, which a partial delete would corrupt.
+                    // Each plugin rebuild makes new artifact-transform keys in this home, so with
+                    // Gradle's default retention (7 days for created resources) it grew by tens
+                    // of GB in days. Fixtures need only what the current plugin build uses.
+                    // Downloads (default 30 days) shrink to a week: a matrix bump strands the
+                    // previous toolchain's artifacts, and a re-download costs one run.
+                    doFirst {
+                        testKitHome.resolve("init.d").apply { mkdirs() }
+                            .resolve("cache-retention.gradle").writeText(
+                                """
+                                beforeSettings { settings ->
+                                    settings.caches {
+                                        createdResources.removeUnusedEntriesAfterDays = 1
+                                        downloadedResources.removeUnusedEntriesAfterDays = 7
+                                    }
+                                }
+                                """.trimIndent(),
+                            )
+                    }
                     doFirst {
                         val cutoff = System.currentTimeMillis() - 24 * 60 * 60 * 1000L
                         val logs = testKitHome.resolve("test-kit-daemon").listFiles().orEmpty()
