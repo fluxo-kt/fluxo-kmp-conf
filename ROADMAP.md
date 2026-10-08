@@ -2,40 +2,25 @@
 
 ### Plan
 
-Every item below is to be implemented now, high priority. The first five come from fluxo-io
-(Java 8 floor, newer JDK code paths chosen at runtime). Checked = done, listed under
-`CHANGELOG.md` Unreleased until released.
+Implement now, high priority. A done item leaves this list; `CHANGELOG.md` describes it.
 
-- [x] JDK API limit defeated by `android.jar`: on a JVM (non-Android) compile classpath it
-  declares JDK methods newer than the target (`InputStream.readAllBytes` at target 8), so they
-  resolve despite `-Xjdk-release` and fail at runtime. A Kotlin JVM compile with the limit on
-  now warns (a release build fails) when a non-repository jar or class directory there holds
-  `java.*` classes.
-- [x] Separate JDK API limits for main and test code: main gets the exact floor; tests get floor
-  bytecode (so a floor-JDK test run loads them) and the build JDK's full API.
-- [x] Test runs on another JDK: a `TEST_JDK=<N>` property/env flag points every JVM `Test` task
-  at JDK N through Gradle toolchains; a CI matrix runs one leg per JDK. Replaces fluxo-io's
-  hand-written `-Pfluxo.testJdk`.
-- [x] Multi-release jars for KMP JVM targets: a `jvm<N>Main` source set compiled on JDK N into
-  `META-INF/versions/N` of the JVM jar, with the `Multi-Release` manifest entry. The same
-  mechanism carries `module-info.class` in `versions/9`
-  [1](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/45/files). Requested
-  extra: a check that Android D8/R8 accept the jar. Objection: that needs AGP/R8 tooling in our
-  tests to prove what D8 already guarantees (it ignores `META-INF/versions`); not planned
-  unless Art overrules.
-- [x] Benchmarks module preset: kotlinx-benchmark (JVM, native), androidx.benchmark (Android);
-  unpublished, excluded from Dependency Guard and API checks.
-- [x] JS browser tests on KGP 2.4+: the Playwright runner (`kotlinInstallPlaywrightBrowsers`)
-  needs no local Chrome. JS-only, downloads a browser per machine, so opt-in through KGP's own
-  `browser { test { chromium() } }`, not the default.
+- [ ] Warn when a consumer pins `js-mocha` 12 or newer: Kotlin's JS test reporter calls Mocha
+  reporters without `new`, and Mocha 12's reporters are ES classes, so Node and browser tests
+  break. Detect it by the reporter's behaviour, never by a version table.
 - [ ] Isolated Projects: single-module consumers are one change away (root plugin's
   `gradle.extensions` marker read); see `docs/isolated-projects.md`.
+
+Not planned: a test that Android D8/R8 accept multi-release jars. D8 already ignores
+`META-INF/versions`, and proving it would need AGP/R8 tooling in this repo's tests.
 
 
 ### Research roadmap
 
 <details>
   <summary>Show</summary>
+
+<!-- The maintainer's own notes. Agents: never edit, remove, reorder, dedupe or "clean up"
+anything in this block, even a stale, done or duplicate item; report it instead. -->
 
 * Interesting KMP architecture sample
   * https://github.com/VasilyRylov/architecture-samples/tree/main
