@@ -48,7 +48,7 @@ wait_run() { # <workflow file> <commit sha> [job]
   # A rerun resumes from an existing tag, so a fix in a new commit needs the tag moved first;
   # that is outward-facing, hence the maintainer's call, never done here.
   [[ "$conclusion" == success ]] ||
-    fail "$1 run $id ${3:-run} ended '$conclusion'. Read: gh run view $id --log-failed. A fix needs a new commit on dev; if $tag exists and nothing was published (gh run view $id: publish_release did not succeed), ask the maintainer to move $tag (git push origin :refs/tags/$tag && git tag -d $tag), then rerun"
+    fail "$1 run $id ${3:-run} ended '$conclusion'. Read: gh run view $id --log-failed. A fix needs a new commit on dev; if $tag exists, ask the maintainer to move it (publish steps skip a repository that already has $version, so a partial publish resumes) (git push origin :refs/tags/$tag && git tag -d $tag), then rerun"
   echo "release: $1 run $id ${3:-run} succeeded"
 }
 

@@ -30,6 +30,8 @@ jobs:
       version: ${{ steps.verify.outputs.version }}
       tag: ${{ steps.verify.outputs.tag }}
       prerelease: ${{ steps.verify.outputs.prerelease }}
+      central_published: ${{ steps.verify.outputs.central_published }}
+      portal_published: ${{ steps.verify.outputs.portal_published }}
 
     steps:
       - name: Harden Runner
@@ -152,6 +154,7 @@ jobs:
           --no-build-cache --no-configuration-cache --stacktrace
 
       - name: Validate Plugin Portal publication
+        if: needs.verify_release.outputs.portal_published != 'true'
         run: >
           ./gradlew :plugin:verifyPluginPortalMetadata publishPlugins --validate-only
           --no-build-cache --no-configuration-cache --stacktrace
@@ -159,16 +162,22 @@ jobs:
       # SEPARATE sequential invocations, never one `gradlew A B`: both are :plugin
       # tasks with no dependency between them, so Gradle does not guarantee their
       # command-line order — a combined list could run the Portal publish before
-      # these IRREVERSIBLE Central steps. Separate steps serialize them and let a
-      # Central failure abort BEFORE the Portal publish (a failed step stops the
-      # job) → clean full retry. Central goes first: slower/flakier endpoint, the
-      # cheap failure to recover; a 2nd-step fail leaves Central done, re-run Portal.
+      # these IRREVERSIBLE Central steps. Central goes first: slower/flakier endpoint.
+      # Each step skips a repository that already has the version, so after a partial
+      # publish a rerun (fix on dev, move the tag, ./release) finishes the other one.
       - name: Publish to Maven Central
+        if: needs.verify_release.outputs.central_published != 'true'
+        env:
+          # Vanniktech waits for Central to reach PUBLISHED (default 15 min, which
+          # Central has outlasted). A hang guard only: a timeout fails the job after
+          # Central already published, skipping the Portal.
+          ORG_GRADLE_PROJECT_SONATYPE_CLOSE_TIMEOUT_SECONDS: 3600
         run: >
           ./gradlew publishAndReleaseToMavenCentral
           --no-build-cache --no-configuration-cache --stacktrace
 
       - name: Publish to Gradle Plugin Portal
+        if: needs.verify_release.outputs.portal_published != 'true'
         run: >
           ./gradlew publishPlugins
           --no-build-cache --no-configuration-cache --stacktrace

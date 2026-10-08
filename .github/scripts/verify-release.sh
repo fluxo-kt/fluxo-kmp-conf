@@ -27,26 +27,41 @@ if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
   fail "GitHub release ${GITHUB_REF_NAME} already exists"
 fi
 
+# A version already on a repository is not an error but a finished step: each publish step
+# skips its repository when it already has the version, so a run that failed after publishing
+# to one of them can be rerun (from a moved tag) and finishes the other.
 plugin_url="https://plugins.gradle.org/plugin/io.github.fluxo-kt.fluxo-kmp-conf/${catalog_version}"
 plugin_status="$(curl -sS -o /dev/null -w '%{http_code}' "${plugin_url}" || true)"
-[[ "${plugin_status}" != "200" ]] ||
-  fail "Gradle Plugin Portal already has io.github.fluxo-kt.fluxo-kmp-conf ${catalog_version}"
-[[ "${plugin_status}" == "400" || "${plugin_status}" == "404" ]] ||
-  fail "Could not verify Gradle Plugin Portal status for ${catalog_version} (${plugin_status})"
+portal_published=false
+case "${plugin_status}" in
+  200) portal_published=true ;;
+  400 | 404) ;;
+  *) fail "Could not verify Gradle Plugin Portal status for ${catalog_version} (${plugin_status})" ;;
+esac
 
 declare -a central_artifacts=(
   "io.github.fluxo-kt|fluxo-kmp-conf|https://repo1.maven.org/maven2/io/github/fluxo-kt/fluxo-kmp-conf/${catalog_version}/fluxo-kmp-conf-${catalog_version}.pom"
   "io.github.fluxo-kt.fluxo-kmp-conf|io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin|https://repo1.maven.org/maven2/io/github/fluxo-kt/fluxo-kmp-conf/io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin/${catalog_version}/io.github.fluxo-kt.fluxo-kmp-conf.gradle.plugin-${catalog_version}.pom"
 )
 
+# One Central deployment publishes every artifact at once, so all present means published and
+# a mix means it is still propagating: fail rather than publish the version a second time.
+central_found=0
 for artifact_spec in "${central_artifacts[@]}"; do
   IFS='|' read -r group artifact_id central_url <<< "${artifact_spec}"
   central_status="$(curl -sS -o /dev/null -w '%{http_code}' "${central_url}" || true)"
-  [[ "${central_status}" != "200" ]] ||
-    fail "Maven Central already has ${group}:${artifact_id}:${catalog_version}"
-  [[ "${central_status}" == "404" ]] ||
-    fail "Could not verify Maven Central status for ${group}:${artifact_id}:${catalog_version} (${central_status})"
+  case "${central_status}" in
+    200) central_found=$((central_found + 1)) ;;
+    404) ;;
+    *) fail "Could not verify Maven Central status for ${group}:${artifact_id}:${catalog_version} (${central_status})" ;;
+  esac
 done
+central_published=false
+case "${central_found}" in
+  0) ;;
+  "${#central_artifacts[@]}") central_published=true ;;
+  *) fail "Maven Central has only some ${catalog_version} artifacts (still propagating); rerun later" ;;
+esac
 
 # Single source of truth for "is this a pre-release". Semver places the marker
 # after a hyphen (e.g. v0.15.0-alpha01); anchoring on `-` avoids false positives
@@ -61,4 +76,6 @@ fi
   echo "version=${catalog_version}"
   echo "tag=${GITHUB_REF_NAME}"
   echo "prerelease=${prerelease}"
+  echo "central_published=${central_published}"
+  echo "portal_published=${portal_published}"
 } >> "${GITHUB_OUTPUT}"
