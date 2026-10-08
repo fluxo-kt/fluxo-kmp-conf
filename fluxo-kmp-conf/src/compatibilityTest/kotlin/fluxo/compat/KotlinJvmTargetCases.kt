@@ -129,6 +129,17 @@ private fun runTestJdkCase(row: Map<String, String>, tempDir: Path) {
         tasks = listOf("test"),
         arguments = listOf("-PTEST_JDK=$JDK_21") + jdk21Installations(),
     )
+    // Tests compiled for 21 can't load on 17: the build must say so before any test runs.
+    runKotlinJvmVariant(
+        row,
+        tempDir,
+        "testjdk",
+        "jvmTarget = \"$JDK_21\"",
+        jdk = JDK_21,
+        tasks = listOf("test"),
+        arguments = listOf("-PTEST_JDK=17"),
+        expectFailure = listOf("TEST_JDK=17 is below JVM $JDK_21"),
+    )
 }
 
 private fun jdk21Installations() = listOf(

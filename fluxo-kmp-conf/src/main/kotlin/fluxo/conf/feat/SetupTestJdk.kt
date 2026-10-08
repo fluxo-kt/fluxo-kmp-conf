@@ -2,6 +2,7 @@ package fluxo.conf.feat
 
 import fluxo.conf.FluxoKmpConfContext
 import fluxo.conf.impl.envOrPropValue
+import fluxo.conf.impl.kotlin.toJvmMajorVersion
 import fluxo.log.logDecision
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
@@ -21,11 +22,7 @@ import org.gradle.jvm.toolchain.JavaToolchainService
  * unit tests are `Test` tasks and follow it too.
  */
 internal fun Project.setupTestJdk(ctx: FluxoKmpConfContext) {
-    val value = envOrPropValue(TEST_JDK) ?: return
-    // A typo must not silently test on the build JDK, which is the run it was meant to replace.
-    val jdk = requireNotNull(value.toIntOrNull()?.takeIf { it > 0 }) {
-        "$TEST_JDK=$value is not a JDK feature version; use a number such as 17 or 21."
-    }
+    val jdk = testJdk() ?: return
     ctx.logDecision(
         this,
         setting = "Test JDK",
@@ -40,6 +37,28 @@ internal fun Project.setupTestJdk(ctx: FluxoKmpConfContext) {
         javaLauncher.convention(
             toolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(jdk)) },
         )
+    }
+}
+
+/**
+ * Tests compiled for a JVM target above `TEST_JDK` can't even load there
+ * (`UnsupportedClassVersionError` per test class), so the build fails up front with the fix.
+ */
+internal fun Project.checkTestJdkFits(testJvmTarget: String, compilation: String) {
+    val jdk = testJdk() ?: return
+    val target = testJvmTarget.toJvmMajorVersion()
+    require(jdk >= target) {
+        "$TEST_JDK=$jdk is below JVM $target, the bytecode target of $path $compilation, so " +
+            "its tests can't load on JDK $jdk. Use $TEST_JDK=$target or higher, or lower " +
+            "the module's jvmTarget."
+    }
+}
+
+private fun Project.testJdk(): Int? {
+    val value = envOrPropValue(TEST_JDK) ?: return null
+    // A typo must not silently test on the build JDK, which is the run it was meant to replace.
+    return requireNotNull(value.toIntOrNull()?.takeIf { it > 0 }) {
+        "$TEST_JDK=$value is not a JDK feature version; use a number such as 17 or 21."
     }
 }
 

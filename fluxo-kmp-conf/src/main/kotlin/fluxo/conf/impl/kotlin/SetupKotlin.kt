@@ -19,6 +19,7 @@ import fluxo.conf.dsl.impl.ConfigurationType.IDEA_PLUGIN
 import fluxo.conf.dsl.impl.ConfigurationType.KOTLIN_MULTIPLATFORM
 import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.conf.dsl.impl.builderMethod
+import fluxo.conf.feat.checkTestJdkFits
 import fluxo.conf.feat.disableDetektTasks
 import fluxo.conf.feat.setupTestJdk
 import fluxo.conf.feat.setupVerification
@@ -403,6 +404,7 @@ private fun KotlinProjectExtension.setupTargets(
             latestSettings = isExperimentalTest,
         )
         jvmTargetVersion?.let { setupJvmCompatibility(it) }
+        if (isTest) jvmTargetVersion?.let { target.project.checkTestJdkFits(it, name) }
         val defaulted = !kc.jvmTargetExplicit && versionedJvmTarget == null
         if (platformType === KotlinPlatformType.jvm && defaulted) {
             jvmTargetVersion?.let { v ->
