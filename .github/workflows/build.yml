@@ -57,9 +57,6 @@ jobs:
         # macOS). Windows matters for consumers, so it runs consumer compat fixtures in
         # `integrationChecks` instead.
         os: ['ubuntu']
-    # `main`'s branch protection requires this check by its exact name; reading the protection
-    # needs an admin token, so CI can't compare them. A rename silently drops the requirement:
-    # update it in the same change (`gh api repos/fluxo-kt/fluxo-kmp-conf/branches/main/protection`).
     name: 'Build and check on ${{ matrix.os }} / JDK ${{ matrix.java }}'
     # Keep the job budget above the sum of the guarded Gradle/check steps. Otherwise
     # a slow but healthy matrix leg can be cancelled after its checks already passed.
@@ -160,9 +157,6 @@ jobs:
         # that fires on a slow-but-healthy leg is a false red. Nothing below it catches hangs:
         # JUnit timeouts don't cover dynamic tests, and a TestKit build runs in its own daemon.
         include:
-          # `main`'s branch protection requires every leg below by its exact name; reading the protection
-          # needs an admin token, so CI can't compare them. A rename silently drops the requirement:
-          # update it in the same change (`gh api repos/fluxo-kt/fluxo-kmp-conf/branches/main/protection`).
           - name: check-gradle-plugin
             directory: checks/gradle-plugin
             command: ./gradlew build assemble check --continue --stacktrace --scan
@@ -372,3 +366,33 @@ jobs:
 
 # TODO: CI Improvements
 #  https://github.com/ajalt/clikt/blob/master/.github/workflows/build.yml
+
+  # `main`'s branch protection requires checks by exact job name, kept apart from these files;
+  # a renamed or dropped job then silently stops gating merges. The public branch endpoint
+  # shows the required names without an admin token, so compare them with every job name
+  # this run produced (matrix legs expanded) plus the job names of the other workflows.
+  requiredChecksExist:
+    name: Required checks exist
+    needs: [buildAndCheck, integrationChecks]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/workflows
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN: ${{ github.run_id }}
+        run: |
+          required=$(curl -fsS "https://api.github.com/repos/$REPO/branches/main" \
+            | jq -r '.protection.required_status_checks.contexts[]?' | sort -u)
+          known=$( { gh api --paginate "repos/$REPO/actions/runs/$RUN/jobs" --jq '.jobs[].name'
+            yq -N '.jobs | to_entries | .[] | (.value.name // .key)' .github/workflows/*.yml; } | sort -u)
+          missing=$(comm -23 <(printf '%s\n' "$required") <(printf '%s\n' "$known"))
+          [ -z "$missing" ] && exit 0
+          printf '::error::main requires checks no job produces any more (renamed or removed job?):\n%s\n' "$missing"
+          echo "Fix: rename the job back, or update main's required checks in the same change:"
+          echo "  gh api -X PATCH repos/$REPO/branches/main/protection/required_status_checks --input <json>"
+          exit 1

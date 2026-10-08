@@ -12,8 +12,6 @@ permissions:
   issues: write
 
 jobs:
-  # `main`'s branch protection requires this job by its name `pr-check`; renaming it silently
-  # drops the requirement, so update the protection in the same change.
   pr-check:
     runs-on: ubuntu-latest
     concurrency:
