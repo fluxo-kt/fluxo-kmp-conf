@@ -385,6 +385,7 @@ private fun KotlinProjectExtension.setupTargets(
     // A single-target module's target inherits the module's options, set already; a convention
     // on the target would cut that link.
     if (isMultiplatform) setupTargetKotlinOptions(conf)
+    setupMultiReleaseJar(conf)
     val inheritedArgs = (this as? HasConfigurableKotlinCompilerOptions<*>)
         ?.compilerOptions?.freeCompilerArgs
     compilations.configureEach compilation@{
@@ -395,13 +396,15 @@ private fun KotlinProjectExtension.setupTargets(
         val ctx = conf.ctx
         val platformType = target.platformType
         val isAndroid = platformType.let { KotlinPlatformType.androidJvm === it }
-        val jvmTargetVersion = kc.jvmTargetVersion(
+        val versionedJvmTarget = versionedJvmTarget()
+        val jvmTargetVersion = versionedJvmTarget ?: kc.jvmTargetVersion(
             isTest = isTest,
             isAndroid = isAndroid,
             latestSettings = isExperimentalTest,
         )
         jvmTargetVersion?.let { setupJvmCompatibility(it) }
-        if (platformType === KotlinPlatformType.jvm && !kc.jvmTargetExplicit) {
+        val defaulted = !kc.jvmTargetExplicit && versionedJvmTarget == null
+        if (platformType === KotlinPlatformType.jvm && defaulted) {
             jvmTargetVersion?.let { v ->
                 conf.hintDefaultedJvmTarget(compileTaskProvider.name, v)
                 javaCompileTaskProviderCompat?.let { conf.hintDefaultedJvmTarget(it.name, v) }

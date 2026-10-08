@@ -17,6 +17,7 @@ internal fun kmpConsumerCases(
     add("lifecycle" to { runKmpLifecycle(row, tempDir) })
     add("js" to { runKmpJsCase(row, tempDir) })
     add("common-compile-only" to { runKmpCommonCompileOnlyCase(row, tempDir) })
+    add("multi-release" to { runKmpMultiReleaseJarCase(row, tempDir) })
     // Kotlin keeps deprecating native targets and then deletes them (watchosArm32 has no DSL
     // method and no KonanTarget left in Kotlin 2.5), so target groups follow the consumer's
     // Kotlin, never a list in the plugin. The newest row also runs on the next Kotlin.

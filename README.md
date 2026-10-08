@@ -198,6 +198,8 @@ The plugin opportunistically wires in the following aliases when defined in your
 
 Target groups (`allDefaultTargets()`, `ios()`, `watchos()`, …) add only the targets your Kotlin version fully supports, and never `iosX64`. To keep a target your Kotlin deprecates but still builds, call it explicitly (e.g. `macosX64()` on Kotlin 2.4).
 
+Multi-release jar: code in `src/jvm<N>Main` (N ≥ 9, e.g. `src/jvm11Main/kotlin`) is compiled for JVM N against `jvmMain` (its `internal` declarations included) and packed into `META-INF/versions/N` of the JVM jar, which Java N+ loads in place of the base classes. A `module-info.java` in `src/jvm9Main/java` makes the jar a Java module on Java 9+ while it still runs on Java 8.
+
 
 ### Build and development notes
 

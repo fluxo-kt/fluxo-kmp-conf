@@ -16,7 +16,7 @@ Every item below is to be implemented now, high priority. The first five come fr
 - [x] Test runs on another JDK: a `TEST_JDK=<N>` property/env flag points every JVM `Test` task
   at JDK N through Gradle toolchains; a CI matrix runs one leg per JDK. Replaces fluxo-io's
   hand-written `-Pfluxo.testJdk`.
-- [ ] Multi-release jars for KMP JVM targets: a `jvm<N>Main` source set compiled on JDK N into
+- [x] Multi-release jars for KMP JVM targets: a `jvm<N>Main` source set compiled on JDK N into
   `META-INF/versions/N` of the JVM jar, with the `Multi-Release` manifest entry. The same
   mechanism carries `module-info.class` in `versions/9`
   [1](https://github.com/05nelsonm/gradle-kmp-configuration-plugin/pull/45/files). Requested
