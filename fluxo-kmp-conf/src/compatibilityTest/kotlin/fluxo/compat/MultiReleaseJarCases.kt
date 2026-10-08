@@ -22,7 +22,9 @@ internal fun runKmpMultiReleaseJarCase(row: Map<String, String>, tempDir: Path) 
         tempDir,
         rootProjectName = "compat-kmp-multi-release",
         projectDir = projectDir,
-        tasks = listOf("jvmJar"),
+        // jvmTest on JDK 17 must run the versions/11 code: tests that only ever saw the base
+        // classes would leave the newer-JDK paths untested whatever TEST_JDK says.
+        tasks = listOf("jvmJar", "jvmTest"),
         forbiddenOutput = KMP_NO_TARGET_DIAGNOSTICS,
     ) { dir ->
         dir.resolve("build.gradle.kts").writeText(multiReleaseBuildScript(row))
@@ -33,6 +35,12 @@ internal fun runKmpMultiReleaseJarCase(row: Map<String, String>, tempDir: Path) 
         )
         // Versioned code replaces an internal implementation as a rule, so main's internals count.
         dir.writeSource("jvm11Main/kotlin/compat/Jdk.kt", jdkObject(level = "BASE + 3"))
+        dir.writeSource(
+            "jvmTest/kotlin/compat/JdkTest.kt",
+            "package compat\n\nimport kotlin.test.Test\nimport kotlin.test.assertEquals\n\n" +
+                "class JdkTest {\n    @Test\n    fun usesVersionedCode() = " +
+                "assertEquals(11, Jdk.level())\n}\n",
+        )
         dir.writeSource(
             "jvm9Main/java/module-info.java",
             "/* A comment naming module fake { */\n" +
@@ -85,4 +93,8 @@ private fun multiReleaseBuildScript(row: Map<String, String>) =
         },
         kmp = { jvm() },
     )
+
+    kotlin {
+        sourceSets.getByName("jvmTest").dependencies { implementation(kotlin("test")) }
+    }
     """.trimIndent()

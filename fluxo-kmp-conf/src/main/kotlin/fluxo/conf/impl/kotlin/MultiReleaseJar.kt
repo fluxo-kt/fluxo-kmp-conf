@@ -4,6 +4,7 @@ import fluxo.conf.dsl.impl.FluxoConfigurationExtensionImpl
 import fluxo.log.logDecision
 import fluxo.log.w
 import java.io.File
+import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
 import org.gradle.process.CommandLineArgumentProvider
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -52,6 +53,16 @@ internal fun KotlinTarget.setupMultiReleaseJar(conf: FluxoConfigurationExtension
     val main = compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
     val jar = project.tasks.named(artifactsTaskName, Jar::class.java)
     jar.configure { manifest.attributes(mapOf("Multi-Release" to true)) }
+    // The JVM applies `versions/` only inside a jar, so tests on main's class directories would
+    // never run the versioned code. On the jar, the test JVM picks the variant for its own
+    // version, so each TEST_JDK leg covers the code that version ships.
+    val testTaskName = "${targetName}Test"
+    project.tasks.withType(Test::class.java).configureEach {
+        if (name == testTaskName) {
+            val original = classpath
+            classpath = project.files(jar) + original.minus(main.output.classesDirs)
+        }
+    }
     for (version in used) {
         val compilation = compilations.create("$version$MAIN_SUFFIX")
         // Not `associateWith(main)`: KGP then compiles against main's jar, which holds this
