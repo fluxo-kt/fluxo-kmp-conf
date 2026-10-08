@@ -295,6 +295,32 @@ testing {
                                 """.trimIndent(),
                             )
                     }
+                    // KGP unpacks Node.js, Yarn, Binaryen, D8 and Wasmtime into one folder of the
+                    // Gradle home, and Gradle hashes a task's outputs before it runs, so two
+                    // concurrent fixtures installing the same tool read files the other is
+                    // replacing. Each fixture gets its own folder; the downloads stay in Gradle's
+                    // locked shared cache. Matched by KGP's `EnvSpec` base class (Kotlin 2.1+),
+                    // so a new tool is covered without listing it.
+                    doFirst {
+                        testKitHome.resolve("init.d/kotlin-tools-per-fixture.gradle").writeText(
+                            """
+                            gradle.projectsEvaluated { g ->
+                                def dir = g.rootProject.layout.projectDirectory.dir('.gradle/kotlin-tools')
+                                g.rootProject.allprojects { p ->
+                                    p.extensions.extensionsSchema.each { s ->
+                                        def ext = p.extensions.findByName(s.name)
+                                        for (def c = ext?.getClass(); c != null; c = c.superclass) {
+                                            if (c.name == 'org.jetbrains.kotlin.gradle.targets.js.EnvSpec') {
+                                                ext.installationDirectory.set(dir.dir(s.name))
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            """.trimIndent(),
+                        )
+                    }
                     doFirst {
                         val cutoff = System.currentTimeMillis() - 24 * 60 * 60 * 1000L
                         val logs = testKitHome.resolve("test-kit-daemon").listFiles().orEmpty()
