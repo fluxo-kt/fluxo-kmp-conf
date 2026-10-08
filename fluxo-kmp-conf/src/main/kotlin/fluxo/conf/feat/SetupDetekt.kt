@@ -38,6 +38,8 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.api.provider.Provider
+import org.gradle.api.services.BuildService
+import org.gradle.api.services.BuildServiceParameters
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -421,7 +423,17 @@ private fun Project.setupDetekt2(
         baselineFiles.from(enabledBaselines(baselineTasks) { it.baseline })
     }
 
+    // Detekt 2 runs Kotlin's Analysis API inside the Gradle daemon, and that registers its
+    // services in one process-wide application object: two Detekt 2 tasks starting together
+    // race on it and one fails at random ("Key …BuiltinsVirtualFileProvider duplicated" from
+    // `StandaloneProjectFactory.registerApplicationServices`). So they run one at a time.
+    val analysisLock = gradle.sharedServices.registerIfAbsent(
+        "fluxoDetekt2AnalysisLock",
+        Detekt2AnalysisLock::class.java,
+    ) { maxParallelUsages.set(1) }
+    tasks.withType<Detekt2CreateBaselineTask> { usesService(analysisLock) }
     val detektTasks = tasks.withType<Detekt2> {
+        usesService(analysisLock)
         if (s.testsDisabled) {
             disableTask("tests are disabled")
         }
@@ -636,3 +648,6 @@ private const val EXT = "xml"
 private const val DETEKT_BASELINE_FILE_NAME = "detekt-$BASELINE.$EXT"
 
 private val TEST_TASK_PREFIXES = arrayOf(CHECK_TASK_NAME, TEST_TASK_NAME)
+
+/** A lock only: registered with `maxParallelUsages = 1`, it holds no state. */
+internal interface Detekt2AnalysisLock : BuildService<BuildServiceParameters.None>
