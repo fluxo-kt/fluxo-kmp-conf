@@ -44,6 +44,7 @@ internal fun kmpConsumerCases(
         add("npm-tool-version" to { runKmpNpmToolVersionCase(row, tempDir) })
         add("bare-setup" to { runKmpBareSetupCase(row, tempDir) })
         add("browser-tests" to { runKmpBrowserTestsCase(row, tempDir) })
+        add("playwright" to { runKmpPlaywrightCase(row, tempDir) })
         for (kgp in KGP_ABI_LINES + row.getValue("kgpVersion")) {
             add("kgp-abi-$kgp" to { runKgpAbiCase(row, tempDir, kgp, jvm = false) })
         }
@@ -135,6 +136,68 @@ private fun runKmpBrowserTestsCase(row: Map<String, String>, tempDir: Path) {
         "$task without Chrome was ${noChrome.task(task)?.outcome}\n${noChrome.output}"
     }
     check("$task skipped: no Chrome found" in noChrome.output) { noChrome.output }
+}
+
+/**
+ * A consumer's own Playwright runner (KGP 2.4.20+, `browser { test { chromium() } }`) runs JS
+ * browser tests in a browser KGP downloads, so they need no local Chrome: fluxo's skip for Karma
+ * without Chrome must not touch them. Wasm-JS stays on Karma, as KGP rejects the runner there.
+ */
+private fun runKmpPlaywrightCase(row: Map<String, String>, tempDir: Path) {
+    val projectDir = tempDir.resolve("${row.getValue("id")}-playwright")
+    val task = ":jsBrowserTest"
+    val result = runConsumerCase(
+        row,
+        tempDir,
+        rootProjectName = "compat-kmp-playwright",
+        projectDir = projectDir,
+        tasks = listOf(task.removePrefix(":")),
+        assertTasksSucceed = false,
+        environment = mapOf("CHROME_BIN" to projectDir.resolve("no-chrome").toString()),
+    ) {
+        val settings = it.resolve("settings.gradle.kts")
+        settings.writeText(settings.readText().replace("FAIL_ON_PROJECT_REPOS", "PREFER_PROJECT"))
+        it.resolve("build.gradle.kts").writeText(
+            """
+            plugins {
+                id("org.jetbrains.kotlin.multiplatform") version "${row.getValue("kgpVersion")}"
+                id("${pluginId()}") version "${pluginVersion()}"
+            }
+
+            fkcSetupMultiplatform(
+                config = {
+                    setupVerification = false
+                    enablePublication = false
+                    enableGradleDoctor = false
+                    setupCoroutines = false
+                },
+                kmp = { js(); wasmJs() },
+                kotlin = {
+                    // Here, not in `kmp { js { } }`: a block there replaces fluxo's JS defaults,
+                    // which this case runs Playwright with.
+                    js {
+                        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalJsTestDsl::class)
+                        browser { test { chromium() } }
+                    }
+                    sourceSets.commonTest.dependencies { implementation(kotlin("test")) }
+                },
+            )
+            """.trimIndent(),
+        )
+        it.resolve("src/commonTest/kotlin").createDirectories().resolve("BrowserTest.kt")
+            .writeText(
+                "package compat\n\nimport kotlin.test.Test\nimport kotlin.test.assertEquals\n\n" +
+                    "class BrowserTest {\n    @Test\n    fun adds() = assertEquals(2, 1 + 1)\n}\n",
+            )
+    }
+    check(result.task(task)?.outcome == TaskOutcome.SUCCESS) {
+        "$task with Playwright was ${result.task(task)?.outcome}\n${result.output}"
+    }
+    val results = projectDir.resolve("build/test-results/jsBrowserTest").toFile()
+    val reports = results.listFiles().orEmpty().filter { it.name.endsWith(".xml") }
+    check(reports.any { "adds" in it.readText() }) {
+        "$task ran no test: no result for 'adds' in $results"
+    }
 }
 
 /**

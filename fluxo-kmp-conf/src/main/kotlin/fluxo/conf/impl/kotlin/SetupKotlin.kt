@@ -321,6 +321,8 @@ private fun KotlinProjectExtension.setupKotlinExtensionAndProject(
     project.version = conf.version
     project.description = conf.description
     project.setupTestJdk(conf.ctx)
+    // Per module, not in the JS target defaults: a consumer's own `js { … }` block replaces those.
+    project.pinBrowserTestMocha()
     project.setupBenchmarks(conf.ctx)
 
     if (!conf.setupKotlin) {

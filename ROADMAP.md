@@ -25,8 +25,9 @@ Every item below is to be implemented now, high priority. The first five come fr
   unless Art overrules.
 - [x] Benchmarks module preset: kotlinx-benchmark (JVM, native), androidx.benchmark (Android);
   unpublished, excluded from Dependency Guard and API checks.
-- [ ] JS browser tests on KGP 2.4+: the Playwright runner (`kotlinInstallPlaywrightBrowsers`)
-  needs no local Chrome. JS-only, downloads a browser per machine, so opt-in, not the default.
+- [x] JS browser tests on KGP 2.4+: the Playwright runner (`kotlinInstallPlaywrightBrowsers`)
+  needs no local Chrome. JS-only, downloads a browser per machine, so opt-in through KGP's own
+  `browser { test { chromium() } }`, not the default.
 - [ ] Isolated Projects: single-module consumers are one change away (root plugin's
   `gradle.extensions` marker read); see `docs/isolated-projects.md`.
 
