@@ -212,6 +212,9 @@ private val PUBLICATION_ENV_PREFIXES = listOf(
     // has its own, so with these it would publish under the outer repo's commit.
     "SCM_TAG",
     "BUILD_NUMBER",
+    // release.yml sets RELEASE for the whole job; inherited, it turns every fixture into a
+    // release build, where warnings a case expects fail it. Cases pass -PRELEASE=true themselves.
+    "RELEASE",
 )
 
 internal fun Map<String, String>.isExecutionFixture(): Boolean =
