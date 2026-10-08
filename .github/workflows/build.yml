@@ -367,10 +367,10 @@ jobs:
 # TODO: CI Improvements
 #  https://github.com/ajalt/clikt/blob/master/.github/workflows/build.yml
 
-  # `main`'s branch protection requires checks by exact job name, kept apart from these files;
-  # a renamed or dropped job then silently stops gating merges. The public branch endpoint
-  # shows the required names without an admin token, so compare them with every job name
-  # this run produced (matrix legs expanded) plus the job names of the other workflows.
+  # `main`'s branch protection lists required checks by exact job name in GitHub settings, not
+  # in this repo, so renaming or removing a job silently stops it gating merges. The public
+  # branch endpoint returns that list without an admin token; compare it with the job names
+  # this run produced (matrix legs expanded) plus the other workflows' job names.
   requiredChecksExist:
     name: Required checks exist
     needs: [buildAndCheck, integrationChecks]
