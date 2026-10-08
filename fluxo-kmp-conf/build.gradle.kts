@@ -295,8 +295,8 @@ testing {
                                 """.trimIndent(),
                             )
                     }
-                    // KGP unpacks Node.js, Yarn, Binaryen, D8 and Wasmtime into one folder of the
-                    // Gradle home, and Gradle hashes a task's outputs before it runs, so two
+                    // KGP unpacks its JS/Wasm tools (Node.js and others) into the shared Gradle
+                    // home, and Gradle hashes a task's outputs before it runs, so two
                     // concurrent fixtures installing the same tool read files the other is
                     // replacing. Each fixture gets its own folder; the downloads stay in Gradle's
                     // locked shared cache. Matched by KGP's `EnvSpec` base class (Kotlin 2.1+),
