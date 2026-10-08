@@ -20,7 +20,7 @@ internal class AndroidLibraryCompatibilityTestKitSmokeTest {
             "android-lib-agp9",
             "android-lib-agp9-exec",
         ).map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
+            compatTest(row.getValue("id")) {
                 runAndroidLibraryConsumer(row, tempDir)
             }
         }
@@ -28,7 +28,7 @@ internal class AndroidLibraryCompatibilityTestKitSmokeTest {
     @TestFactory
     fun generatedAndroidLibraryNewApiFailsCheckAtBuildEnd(): Iterable<DynamicTest> =
         selectedRows("android-lib-agp8-exec", "android-lib-agp9-exec").map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
+            compatTest(row.getValue("id")) {
                 runAndroidLibraryNewApiFailsCheck(row, tempDir)
             }
         }

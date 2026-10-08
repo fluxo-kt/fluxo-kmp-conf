@@ -241,6 +241,10 @@ testing {
                     providers.gradleProperty("compatShard").orNull?.let {
                         systemProperty("fluxo.compat.shard", it)
                     }
+                    // `-PcompatCase=<text>`: run only the cases whose name contains it.
+                    providers.gradleProperty("compatCase").orNull?.let {
+                        systemProperty("fluxo.compat.case", it)
+                    }
                     // Every fixture builds in its own row-keyed directory, so classes, methods and
                     // rows all run concurrently. Each running fixture is a Gradle daemon of up to
                     // 3 GB (`compatRunner`'s heap + Metaspace) plus its Kotlin daemon, so the pool

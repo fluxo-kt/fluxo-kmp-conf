@@ -2,6 +2,9 @@ package fluxo.compat
 
 import java.nio.file.Files
 import java.nio.file.Path
+import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.DynamicTest.dynamicTest
 
 /**
  * The rows of [fixtures] this run tests. CI runs the suite as n legs passing
@@ -22,6 +25,18 @@ internal fun selectedRows(vararg fixtures: String): List<Map<String, String>> {
         row["fixture"] in fixtures && i % SHARD.second == SHARD.first - 1
     }
 }
+
+/**
+ * Every compat test. `-PcompatCase=<text>` runs only those whose name contains the text and
+ * skips the rest, so one case can be iterated on alone: Gradle's `--tests` matches the factory
+ * method, never a dynamic test's name.
+ */
+internal fun compatTest(name: String, run: () -> Unit): DynamicTest = dynamicTest(name) {
+    assumeTrue(CASE.isEmpty() || CASE in name) { "Not selected by -PcompatCase=$CASE" }
+    run()
+}
+
+private val CASE = System.getProperty("fluxo.compat.case").orEmpty()
 
 /** `<k>/<n>` from `fluxo.compat.shard` (1-based), else the whole matrix as one shard. */
 private val SHARD: Pair<Int, Int> = System.getProperty("fluxo.compat.shard").orEmpty().let {

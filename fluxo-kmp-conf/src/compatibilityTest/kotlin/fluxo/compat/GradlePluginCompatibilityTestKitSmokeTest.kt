@@ -11,7 +11,7 @@ internal class GradlePluginCompatibilityTestKitSmokeTest {
     @TestFactory
     fun generatedGradlePluginConsumersPublishTheRequestedPluginId(): Iterable<DynamicTest> =
         selectedRows("gradle-plugin").map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
+            compatTest(row.getValue("id")) {
                 runGradlePluginConsumer(row, tempDir)
             }
         }

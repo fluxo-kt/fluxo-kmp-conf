@@ -11,7 +11,7 @@ internal class ComposeCompatibilityTestKitSmokeTest {
     @TestFactory
     fun generatedComposeDesktopConsumersRunRequiredLifecycleTasks(): Iterable<DynamicTest> =
         selectedRows("compose-desktop", "compose-desktop-preapplied").map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
+            compatTest(row.getValue("id")) {
                 runComposeDesktopConsumer(row, tempDir)
             }
         }
@@ -19,7 +19,7 @@ internal class ComposeCompatibilityTestKitSmokeTest {
     @TestFactory
     fun generatedComposeKmpAndroidConsumersRunRequiredLifecycleTasks(): Iterable<DynamicTest> =
         selectedRows("compose-kmp-agp8", "compose-kmp-agp9").map { row ->
-            DynamicTest.dynamicTest(row.getValue("id")) {
+            compatTest(row.getValue("id")) {
                 runComposeKmpAndroidConsumer(row, tempDir)
             }
         }
