@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# The attended release pass (`.github/AGENTS.md` § Release flow), as one resumable script.
+# Run it ONLY for a release the maintainer named: it pushes a signed tag, publishes the GitHub
+# release and moves `main`, all outward-facing and irreversible.
+#
+# Why a script: done by hand, each release rebuilt ~10 commands, and hand-written checks gave
+# false verdicts — a grep for "good signature" missed git's `Good "git" signature` and an early
+# exit of `gh run watch` read as a red CI. Every step here decides from data that can't be
+# misread: a run's `conclusion` field, a command's exit status, an HTTP status code. Never pipe a
+# deciding command through grep/head/tail when changing this file.
+#
+# Each step skips itself when already done, so after any failure fix the cause and rerun.
+# Steps: CI green on the release commit → signed tag, verified by `git tag -v`'s exit status →
+# release.yml green (it publishes and verifies Central + Portal) → GitHub release published →
+# `main` promoted (stable only) → JitPack commit build warmed → README JitPack example updated.
+#
+# Usage: ./release   (from the `dev` commit carrying the version bump, already pushed)
+set -euo pipefail
+cd "$(dirname "$0")"
+
+fail() { echo "release: $*" >&2; exit 1; }
+
+version="$(awk -F '"' '/^version[[:space:]]*=/ { print $2; exit }' gradle/libs.versions.toml)"
+[[ -n "$version" ]] || fail "no version in gradle/libs.versions.toml"
+tag="v$version"
+prerelease=false
+[[ "$version" == *-* ]] && prerelease=true
+
+# Waits for the newest run of a workflow on a commit and succeeds only on conclusion=success.
+# Polls the run's own fields: `gh run watch`'s exit status once reported failure mid-run.
+wait_run() { # <workflow file> <commit sha>
+  local id="" status conclusion
+  for _ in $(seq 30); do
+    id="$(gh run list --workflow "$1" --commit "$2" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+    [[ -n "$id" ]] && break
+    sleep 10
+  done
+  [[ -n "$id" ]] || fail "$1 never started for $2"
+  while :; do
+    # Command substitution, not `< <(…)`: a failing gh then stops the script instead of looping.
+    local fields
+    fields="$(gh run view "$id" --json status,conclusion --jq '"\(.status) \(.conclusion)"')"
+    read -r status conclusion <<<"$fields"
+    [[ "$status" == completed ]] && break
+    echo "release: $1 run $id is $status, waiting"
+    sleep 60
+  done
+  [[ "$conclusion" == success ]] ||
+    fail "$1 run $id ended '$conclusion': gh run view $id --log-failed; fix, push, rerun"
+  echo "release: $1 run $id succeeded"
+}
+
+if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+  commit="$(git rev-parse "$tag^{commit}")"
+  echo "release: $tag exists on $commit, resuming"
+else
+  [[ -z "$(git status --porcelain)" ]] || fail "working tree is dirty; commit first"
+  git fetch -q origin dev
+  commit="$(git rev-parse HEAD)"
+  [[ "$commit" == "$(git rev-parse origin/dev)" ]] ||
+    fail "HEAD is not origin/dev; push the release commit to dev first"
+  grep -Fq "## [$version]" CHANGELOG.md || fail "CHANGELOG.md has no section for $version"
+  wait_run build.yml "$commit"
+  git tag -s "$tag" -m "$tag" "$commit"
+fi
+
+# Exit status is the verdict: git prints `Good "git" signature`, which phrase greps miss.
+git tag -v "$tag" >/dev/null 2>&1 ||
+  fail "$tag has no valid signature (git tag -v $tag shows why; SSH signing needs gpg.ssh.allowedSignersFile)"
+git ls-remote --exit-code -q origin "refs/tags/$tag" >/dev/null || git push origin "$tag"
+
+wait_run release.yml "$commit"
+
+if [[ "$(gh release view "$tag" --json isDraft --jq .isDraft)" == true ]]; then
+  if $prerelease; then
+    gh release edit "$tag" --draft=false --prerelease
+  else
+    gh release edit "$tag" --draft=false --latest
+  fi
+fi
+
+# Pre-releases never move `main`: it is the stable JitPack/`main`-tracking surface.
+if ! $prerelease; then
+  git push origin "$commit:refs/heads/main"
+fi
+
+# JitPack builds a ref only when first requested, and caches a failure per ref; the README
+# example must name a commit whose own pom returned 200 (a green tag proves nothing for it).
+ref="${commit:0:10}"
+pom="https://jitpack.io/com/github/fluxo-kt/fluxo-kmp-conf/fluxo-kmp-conf/$ref/fluxo-kmp-conf-$ref.pom"
+code=""
+for _ in $(seq 30); do
+  code="$(curl -sS -o /dev/null -m 120 -w '%{http_code}' "$pom" || true)"
+  [[ "$code" == 200 ]] && break
+  state="$(curl -sS https://jitpack.io/api/builds/com.github.fluxo-kt.fluxo-kmp-conf |
+    jq -r --arg r "$ref" '.["com.github.fluxo-kt"]["fluxo-kmp-conf"][$r] // "building"')"
+  [[ "$state" == Error ]] &&
+    fail "JitPack build of $ref is Error (cached); rebuild it in the JitPack UI, then rerun. README unchanged"
+  echo "release: JitPack $ref pom $code ($state), waiting"
+  sleep 60
+done
+[[ "$code" == 200 ]] || fail "JitPack pom for $ref still $code; rerun later. README unchanged"
+
+perl -pi -e "s/(fluxo-kmp-conf(?:-settings)?:)[0-9a-f]{10}\"/\${1}$ref\"/" README.md
+echo "release: $tag done. README JitPack example now names $ref: commit it as docs(readme): JitPack example to $ref."

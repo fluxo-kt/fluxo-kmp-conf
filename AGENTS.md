@@ -112,6 +112,7 @@ When reasoning about API drift, "dead-under-our-floor" code, ProGuard keep rules
 | Limit KMP targets | `KMP_TARGETS=<csv> ./gradlew …` (codes in `KmpTargetCode.kt`) or `KMP_TARGETS_ALL=true` |
 | Disable shrinker | `DISABLE_R8=true …` (aliases in `PropsAndEnv.kt`) |
 | Force release semantics | `RELEASE=true …` |
+| Cut a release (only one the maintainer named; after the version-bump commit is pushed to `dev`) | `./release` — CI check, signed tag, publish wait, GitHub release, `main`, JitPack, README; resumable. Never do these steps by hand: hand-written checks misread results (a grep missed git's `Good "git" signature`) |
 | Clean up before ending any task that built (one full compat run leaves gigabytes in `.gradle/compat-testkit`) | `./cleanBuildOutputs` (`--dry-run` lists). Never delete outputs by hand with `find … rm`: `_/` holds the maintainer's untracked files, and `gradle --stop` kills other sessions' daemons |
 
 Tests are integration-style: `fluxo-kmp-conf/src/test/` is sparse (mostly shrinker via `kotlin-compile-testing` + ProGuard/R8). The real test surface is the `checks/*` builds (five total; `intellij-platform` is local-only).
@@ -126,7 +127,7 @@ Tests are integration-style: `fluxo-kmp-conf/src/test/` is sparse (mostly shrink
 - **Adding a 3rd-party Gradle plugin we wrap**: mirror in `self/build.gradle.kts` *and* `fluxo-kmp-conf/build.gradle.kts` (`compileOnly`/`implementation` + `buildConfigField`). See *Surprises* — no guard.
 
 ## Where deep context lives (don't duplicate)
-- **Release / CI / publish footguns** → `.github/AGENTS.md`, read it before any edit under `.github/` (it auto-loads only when a file there is opened with the Read/Edit tools, never for a shell or script edit): `main` promotion, Portal-page rendering, JitPack laziness, dependency-submission scoping, release secrets, AI-review.
+- **Release / CI / publish footguns** → `.github/AGENTS.md`, read it before cutting a release or any edit under `.github/` (it auto-loads only when a file there is opened with the Read/Edit tools, never for a shell or script edit): `main` promotion, Portal-page rendering, JitPack laziness, dependency-submission scoping, release secrets, AI-review.
 - Hierarchical KMP source-set diagram → `README.md` `## Hierarchical KMP project structure`.
 - Commit / PR style + commit-message types → `CONTRIBUTING.md`.
 - Future product features / research → `ROADMAP.md` (rule under *Layout*).
