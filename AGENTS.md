@@ -124,7 +124,7 @@ Tests are integration-style: `fluxo-kmp-conf/src/test/` is sparse (mostly shrink
 - **Adding a 3rd-party Gradle plugin we wrap**: mirror in `self/build.gradle.kts` *and* `fluxo-kmp-conf/build.gradle.kts` (`compileOnly`/`implementation` + `buildConfigField`). See *Surprises* — no guard.
 
 ## Where deep context lives (don't duplicate)
-- **Release / CI / publish footguns** → `.github/AGENTS.md` (auto-loads when touching `.github/`): `main` promotion, Portal-page rendering, JitPack laziness, dependency-submission scoping, release secrets, AI-review.
+- **Release / CI / publish footguns** → `.github/AGENTS.md`, read it before any edit under `.github/` (it auto-loads only when a file there is opened with the Read/Edit tools, never for a shell or script edit): `main` promotion, Portal-page rendering, JitPack laziness, dependency-submission scoping, release secrets, AI-review.
 - Hierarchical KMP source-set diagram → `README.md` `## Hierarchical KMP project structure`.
 - Commit / PR style + commit-message types → `CONTRIBUTING.md`.
 - Future product features / research → `ROADMAP.md` (rule under *Layout*).
