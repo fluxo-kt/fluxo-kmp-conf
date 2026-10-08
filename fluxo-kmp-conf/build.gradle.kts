@@ -302,7 +302,10 @@ testing {
                     // locked shared cache. Matched by KGP's `EnvSpec` base class (Kotlin 2.1+),
                     // so a new tool is covered without listing it.
                     doFirst {
-                        testKitHome.resolve("init.d/kotlin-tools-per-fixture.gradle").writeText(
+                        // `doFirst` actions run last-registered first, so this one can't rely
+                        // on the block above having created `init.d`.
+                        val initD = testKitHome.resolve("init.d").apply { mkdirs() }
+                        initD.resolve("kotlin-tools-per-fixture.gradle").writeText(
                             """
                             // Statically compiled: AGP's types are invisible to an init script,
                             // so anything that resolves them fails ("VariantBuilder not
