@@ -3,16 +3,12 @@
 # Run it ONLY for a release the maintainer named: it pushes a signed tag, publishes the GitHub
 # release and moves `main`, all outward-facing and irreversible.
 #
-# Why a script: done by hand, each release rebuilt ~10 commands, and hand-written checks gave
-# false verdicts — a grep for "good signature" missed git's `Good "git" signature` and an early
-# exit of `gh run watch` read as a red CI. Every step here decides from data that can't be
-# misread: a run's `conclusion` field, a command's exit status, an HTTP status code. Never pipe a
-# deciding command through grep/head/tail when changing this file.
+# Why a script: checks retyped by hand each release decide from printed text, and text lies —
+# a phrase grep misses a reworded line, a watcher's exit status isn't the run's verdict. Every
+# step here decides from a field that means exactly the verdict: a run or job `conclusion`, a
+# command's exit status, an HTTP code. Never pipe a deciding command through grep/head/tail here.
 #
 # Each step skips itself when already done, so after any failure fix the cause and rerun.
-# Steps: CI green on the release commit → signed tag, verified by `git tag -v`'s exit status →
-# release.yml green (it publishes and verifies Central + Portal) → GitHub release published →
-# `main` promoted (stable only) → JitPack commit build warmed → README JitPack example updated.
 #
 # Usage: ./release   (from the `dev` commit carrying the version bump, already pushed)
 set -euo pipefail
@@ -26,9 +22,10 @@ tag="v$version"
 prerelease=false
 [[ "$version" == *-* ]] && prerelease=true
 
-# Waits for the newest run of a workflow on a commit and succeeds only on conclusion=success.
-# Polls the run's own fields: `gh run watch`'s exit status once reported failure mid-run.
-wait_run() { # <workflow file> <commit sha>
+# Waits for the newest run of a workflow on a commit, then requires conclusion=success of [job],
+# or of the whole run without one. A job verdict exists because release.yml keeps its Portal-page
+# check out of the release path on purpose: a whole-run verdict would let that check block it.
+wait_run() { # <workflow file> <commit sha> [job]
   local id="" status conclusion
   for _ in $(seq 30); do
     id="$(gh run list --workflow "$1" --commit "$2" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
@@ -39,15 +36,18 @@ wait_run() { # <workflow file> <commit sha>
   while :; do
     # Command substitution, not `< <(…)`: a failing gh then stops the script instead of looping.
     local fields
-    fields="$(gh run view "$id" --json status,conclusion --jq '"\(.status) \(.conclusion)"')"
-    read -r status conclusion <<<"$fields"
+    fields="$(gh run view "$id" --json status,conclusion,jobs)"
+    status="$(jq -r .status <<<"$fields")"
     [[ "$status" == completed ]] && break
     echo "release: $1 run $id is $status, waiting"
     sleep 60
   done
+  conclusion="$(jq -r --arg j "${3:-}" \
+    'if $j == "" then .conclusion else ([.jobs[] | select(.name == $j)][0].conclusion // "missing") end' \
+    <<<"$fields")"
   [[ "$conclusion" == success ]] ||
-    fail "$1 run $id ended '$conclusion': gh run view $id --log-failed; fix, push, rerun"
-  echo "release: $1 run $id succeeded"
+    fail "$1 run $id ${3:-run} ended '$conclusion': gh run view $id --log-failed; fix, push, rerun"
+  echo "release: $1 run $id ${3:-run} succeeded"
 }
 
 if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
@@ -69,7 +69,8 @@ git tag -v "$tag" >/dev/null 2>&1 ||
   fail "$tag has no valid signature (git tag -v $tag shows why; SSH signing needs gpg.ssh.allowedSignersFile)"
 git ls-remote --exit-code -q origin "refs/tags/$tag" >/dev/null || git push origin "$tag"
 
-wait_run release.yml "$commit"
+# gh_release needs publish_release, so its success means Central, Portal and the draft all exist.
+wait_run release.yml "$commit" gh_release
 
 if [[ "$(gh release view "$tag" --json isDraft --jq .isDraft)" == true ]]; then
   if $prerelease; then

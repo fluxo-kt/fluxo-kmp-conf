@@ -112,7 +112,7 @@ When reasoning about API drift, "dead-under-our-floor" code, ProGuard keep rules
 | Limit KMP targets | `KMP_TARGETS=<csv> ./gradlew …` (codes in `KmpTargetCode.kt`) or `KMP_TARGETS_ALL=true` |
 | Disable shrinker | `DISABLE_R8=true …` (aliases in `PropsAndEnv.kt`) |
 | Force release semantics | `RELEASE=true …` |
-| Cut a release (only one the maintainer named; after the version-bump commit is pushed to `dev`) | `./release` — CI check, signed tag, publish wait, GitHub release, `main`, JitPack, README; resumable. Never do these steps by hand: hand-written checks misread results (a grep missed git's `Good "git" signature`) |
+| Cut a release (only one the maintainer named; after the version-bump commit is pushed to `dev`) | `./release` — CI check, signed tag, publish wait, GitHub release, `main`, JitPack, README; resumable. Never do these steps by hand: it decides each from a conclusion field, exit status or HTTP code, which a retyped check reading printed text does not |
 | Clean up before ending any task that built (one full compat run leaves gigabytes in `.gradle/compat-testkit`) | `./cleanBuildOutputs` (`--dry-run` lists). Never delete outputs by hand with `find … rm`: `_/` holds the maintainer's untracked files, and `gradle --stop` kills other sessions' daemons |
 
 Tests are integration-style: `fluxo-kmp-conf/src/test/` is sparse (mostly shrinker via `kotlin-compile-testing` + ProGuard/R8). The real test surface is the `checks/*` builds (five total; `intellij-platform` is local-only).
