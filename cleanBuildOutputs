@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Deletes the outputs every Gradle build here leaves behind: each `build/`, `.gradle/` and
+# `.kotlin/` directory git ignores (root, self/, plugin modules, checks/*). One full compat run
+# alone leaves gigabytes in `.gradle/compat-testkit`, and nothing else removes them.
+#
+# Git decides what is generated: only IGNORED directories with exactly those names go. Tracked
+# files can't match, and an ignored folder such as the maintainer's `_/` is reported by git as one
+# entry, so a `build/` inside it is never reached. Gradle daemons stay up: `gradle --stop` would
+# also stop other sessions' daemons, and idle daemons exit on their own.
+#
+# Usage: ./cleanBuildOutputs [--dry-run]   (--dry-run only lists what would be deleted)
+set -euo pipefail
+cd "$(dirname "$0")"
+
+dry_run=false
+[ "${1:-}" = "--dry-run" ] && dry_run=true
+
+git ls-files --others --ignored --exclude-standard --directory -z |
+  while IFS= read -r -d '' path; do
+    case "/${path%/}" in
+      */build | */.gradle | */.kotlin)
+        echo "$path"
+        $dry_run || rm -r -- "$path"
+        ;;
+    esac
+  done
