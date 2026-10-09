@@ -5,8 +5,7 @@
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![Common Changelog](https://common-changelog.org/badge.svg)](CHANGELOG.md)
 
-Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects.
-It configures Kotlin, KMP and Android modules from one root plugin and one `fkcSetup*()` call per module, with strict defaults you can switch off one by one.
+A Gradle plugin that configures Kotlin, KMP and Android modules from one root plugin and one `fkcSetup*()` call per module, with strict defaults you can switch off one by one.
 
 - Lazy: configures only what a module uses.
 - Sets up hierarchical KMP source sets (diagram below).
@@ -134,7 +133,7 @@ A few examples of configuration:
 
 #### Recognised version-catalog aliases
 
-The plugin opportunistically wires in the following aliases when defined in your `gradle/libs.versions.toml`. Absence is silent; presence triggers the documented behaviour.
+fluxo uses these aliases if your `gradle/libs.versions.toml` defines them:
 
 | Alias | Where to define | What it does |
 |---|---|---|
@@ -201,6 +200,8 @@ Target groups (`allDefaultTargets()`, `ios()`, `watchos()`, …) add only the ta
 JS browser tests: by default they run in Karma with a local Chrome and are skipped with a warning where none is found. On Kotlin 2.4.20+, `kotlin { js { browser { test { chromium() } } } }` (opt in with `@OptIn(ExperimentalJsTestDsl::class)`) runs them with Playwright in a browser Gradle downloads, so they run where Chrome isn't installed; Wasm targets stay on Karma.
 
 Multi-release jar: code in `src/jvm<N>Main` (N ≥ 9, e.g. `src/jvm11Main/kotlin`) is compiled for JVM N against `jvmMain` (its `internal` declarations included) and packed into `META-INF/versions/N` of the JVM jar, which Java N+ loads in place of the base classes. A `module-info.java` in `src/jvm9Main/java` makes the jar a Java module on Java 9+ while it still runs on Java 8.
+
+`TEST_JDK=<N>` (env var or Gradle property) runs every JVM test task, Android unit tests included, on JDK N (a Gradle toolchain), while the build itself stays on its own JDK. Run one CI leg per JDK you support to test the code each JDK actually loads: multi-release variants, or paths chosen by a runtime version check.
 
 
 ### Build and development notes
