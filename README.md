@@ -5,7 +5,8 @@
 [![Build](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 [![Common Changelog](https://common-changelog.org/badge.svg)](CHANGELOG.md)
 
-A Gradle plugin that configures Kotlin, KMP and Android modules from one root plugin and one `fkcSetup*()` call per module, with strict defaults you can switch off one by one.
+Convenience Gradle plugin for reliable configuration of Kotlin & KMP projects.
+It configures Kotlin, KMP and Android modules from one root plugin and one `fkcSetup*()` call per module, with strict defaults you can switch off one by one.
 
 - Lazy: configures only what a module uses.
 - Sets up hierarchical KMP source sets (diagram below).
