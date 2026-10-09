@@ -43,7 +43,7 @@ title="${release_tag}${RELEASE_SUFFIX:-}"
 # --draft is SETTLED policy, not a stopgap: publishing is an ATTENDED step, done by the root
 # `./release` script that the maintainer (or an agent they authorise per release) runs
 # (see .github/AGENTS.md "Release flow & `main` promotion"). Do NOT flip to --draft=false
-# here: what's rejected is UNATTENDED CI auto-publish, not agency.
+# here: the rule only forbids CI publishing a release while nobody is watching.
 release_flags=(--draft --title "$title" --notes-file "$notes_file" --target "$target_commit")
 if [[ "${RELEASE_PRE:-false}" == "true" ]]; then
   release_flags+=(--prerelease)
