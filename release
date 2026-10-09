@@ -105,4 +105,8 @@ done
 [[ "$code" == 200 ]] || fail "JitPack pom for $ref still $code; rerun later. README unchanged"
 
 perl -pi -e "s/(fluxo-kmp-conf(?:-settings)?:)[0-9a-f]{10}\"/\${1}$ref\"/" README.md
-echo "release: $tag done. README JitPack example now names $ref: commit it as docs(readme): JitPack example to $ref."
+# The final line reports GitHub's own state, so whoever relays the result quotes a readback,
+# never what the docs say should have happened.
+[[ "$(gh release view "$tag" --json isDraft --jq .isDraft)" == false ]] ||
+  fail "GitHub release $tag is still a draft; rerun"
+echo "release: $tag done. GitHub release published: $(gh release view "$tag" --json url --jq .url). README JitPack example now names $ref: commit it as docs(readme): JitPack example to $ref."
