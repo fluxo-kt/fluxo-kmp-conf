@@ -119,8 +119,8 @@ org.glassfish.jaxb:txw2:2.3.2
 org.gradle.plugin:compatibility-plugin:1.1.0
 org.jdom:jdom2:2.0.6
 org.jetbrains.compose.hot-reload:hot-reload-gradle-plugin:1.2.0
-org.jetbrains.compose:compose-gradle-plugin:1.12.1
-org.jetbrains.compose:org.jetbrains.compose.gradle.plugin:1.12.1
+org.jetbrains.compose:compose-gradle-plugin:1.12.2
+org.jetbrains.compose:org.jetbrains.compose.gradle.plugin:1.12.2
 org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.4.20
 org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.4.20
 org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.4.20

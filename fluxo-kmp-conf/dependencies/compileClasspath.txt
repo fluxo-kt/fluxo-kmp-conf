@@ -68,7 +68,7 @@ org.jboss.threads:jboss-threads:3.9.2
 org.jboss.xnio:xnio-api:3.8.16.Final
 org.jdom:jdom2:2.0.6.1
 org.jetbrains.compose.hot-reload:hot-reload-gradle-plugin:1.2.0
-org.jetbrains.compose:compose-gradle-plugin:1.12.1
+org.jetbrains.compose:compose-gradle-plugin:1.12.2
 org.jetbrains.dokka:dokka-core:2.2.0
 org.jetbrains.dokka:dokka-gradle-plugin:2.2.0
 org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:2.2.0
