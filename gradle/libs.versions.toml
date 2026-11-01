@@ -398,12 +398,12 @@ gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.2.1" }
 # https://scans.gradle.com/plugin/
 # https://plugins.gradle.org/plugin/com.gradle.develocity
 # NOTE: Don't forget to edit a version in all `settings.gradle.kts` files as well!
-develocity = { id = "com.gradle.develocity", version = "4.6.0" }
+develocity = { id = "com.gradle.develocity", version = "4.6.1" }
 
 # Gradle Versions Plugin: provides a task to determine, which dependencies have updates.
 # https://github.com/ben-manes/gradle-versions-plugin/releases
 # https://plugins.gradle.org/plugin/io.github.ben-manes.versions
-deps-versions = { id = "io.github.ben-manes.versions", version = "0.64.0" }
+deps-versions = { id = "io.github.ben-manes.versions", version = "0.66.0" }
 
 # Detect unused and misused dependencies. Provides advice for managing dependencies and other applied plugins.
 # https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin/blob/main/CHANGELOG.md
@@ -429,7 +429,7 @@ task-tree = { id = "com.dorongold.task-tree", version = "4.0.2" }
 # Provides task metadata and dependency information, execution queue, and more
 # https://gitlab.com/barfuin/gradle-taskinfo/-/releases
 # https://plugins.gradle.org/plugin/org.barfuin.gradle.taskinfo
-task-info = { id = "org.barfuin.gradle.taskinfo", version = "3.0.2" }
+task-info = { id = "org.barfuin.gradle.taskinfo", version = "3.1.0" }
 
 # `graphModules` task to create an image with the graph of how Gradle modules depend on each other
 # https://github.com/savvasdalkitsis/module-dependency-graph/tags
