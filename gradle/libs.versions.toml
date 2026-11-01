@@ -180,7 +180,7 @@ asm = "9.10.1"
 
 # KMP I/O library.
 # https://square.github.io/okhttp/changelogs/changelog_4x/
-okhttp = "4.12.0"
+okhttp = "4.12.1"
 
 # KMP I/O library.
 # https://square.github.io/okio/changelog/
