@@ -225,7 +225,6 @@
     <ID>FunctionExpressionBody:InternalUtils.kt:{ return envVarValue(name)?.takeIf { it.isNotEmpty() } ?: stringPropValue(name)?.takeIf { it.isNotEmpty() } }</ID>
     <ID>FunctionExpressionBody:InternalUtils.kt:{ return providers.environmentVariable(name).orNull ?: System.getProperty(name) }</ID>
     <ID>FunctionExpressionBody:KmpTargetCode.kt:KmpTargetCode.Companion${ return when (family) { Family.ANDROID -&gt; ANDROID_NATIVE Family.MINGW -&gt; MINGW Family.LINUX -&gt; LINUX Family.OSX -&gt; OSX Family.IOS -&gt; IOS Family.TVOS -&gt; TVOS Family.WATCHOS -&gt; WATCHOS else -&gt; arrayOf() } }</ID>
-    <ID>FunctionExpressionBody:KotlinOptInUtils.kt:{ return prepareOptIns( optIns = optIns, setupCoroutines = setupCoroutines, optInInternal = optInInternal, isTest = true, ) }</ID>
     <ID>FunctionExpressionBody:KotlinSourceSetsReportTask.kt:KotlinSourceSetsReportTask${ return if (showOnlyTests) isTest else showTests || !isTest }</ID>
     <ID>FunctionExpressionBody:KotlinSourceSetsReportTask.kt:KotlinSourceSetsReportTask.KotlinSourceSetsModel${ return map.getOrPut(name) { val node = KotlinSourceSetGraphNode(name) fillNode(node, s) node } }</ID>
     <ID>FunctionExpressionBody:LoadAndApplyPluginIfNotApplied.kt:{ return SEPARATOR.matcher(name).replaceAll(".") }</ID>
